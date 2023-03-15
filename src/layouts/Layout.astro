@@ -10,37 +10,58 @@ const { title } = Astro.props;
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={Astro.generator} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href="https://kbrdn.dev/" />
+    <meta property="og:url" content="https://kbrdn.dev/" />
+    <!-- Apple -->
+    <meta name="apple-mobile-web-app-title" content="" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+    <meta name="format-detection" content="telephone=no" />
+    <link
+      href="/apple-touch-icon.png"
+      rel="apple-touch-icon"
+      type="image/png"
+    />
+    <link
+      href="touch-icon-ipad.png"
+      rel="apple-touch-icon"
+      sizes="72x72"
+      type="image/png"
+    />
+    <link href="/startup.png" rel="apple-touch-startup-image" />
+    <!-- Google tags -->
+    <meta
+      name="news_keywords"
+      content="Kylian, Bardini, Devlopper, Développeur, Full Stack, Metz, MNS, Metz Numeric School, Virtual Immersion, Astro, JavaScript, React, Typescript, Symfony, MERN, Portfolio, Web, Mobile, Web Mobile, Formation, Projets, Projects, Site, Site Web, Application, Swift, Apple, SwiftUI, React Native, Licence, BAC, iOS, Android, Github, AI, IA, Internet, Site Internet, Blog, CV, SQL, Full JS, JS, Full JavaScript, LinkedIn, HTML, CSS, SCSS, SASS, Freelance, ENT, Entreprise, Corporation, Corp, E-Sport, IT, IoT, Framework, Compile, Compilation, Editor"
+    />
+    <!-- Preview -->
+    <meta property="og:image" content="https://kbrdn.dev/" />
+    <meta property="og:image:secure_url" content="https://kbrdn.dev/" />
+    <meta property="og:image:type" content="image/jpg" />
+    <meta property="og:image:width" content="1920" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="kylian-bardini" />
+    <link rel="image_src" href="https://kbrdn.dev/" />
+    <!-- Infos -->
+    <link rel="icon" href="" type="image/x-icon" />
+    <meta property="og:description" content="" />
+    <meta name="description" content="" />
+    <meta property="og:title" content={title} />
+    <title>{title}</title>
+    <!-- Google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
       rel="stylesheet"
     />
-    <title>{title}</title>
   </head>
   <body>
     <slot />
   </body>
 </html>
-<style is:global>
-  :root {
-    --accent: 124, 58, 237;
-    --accent-gradient: linear-gradient(
-      45deg,
-      rgb(var(--accent)),
-      #da62c4 30%,
-      white 60%
-    );
-  }
-  html {
-    font-family: system-ui, sans-serif;
-    background-color: #f6f6f6;
-  }
-  code {
-    font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-      DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-  }
-</style>
