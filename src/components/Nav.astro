@@ -1,4 +1,9 @@
 ---
+import { getNav } from "../utils.ts";
+
+const content = await getNav("fr");
+console.log(content);
+
 import {
   Compass,
   Repository,
@@ -42,7 +47,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             stiffness: 100,
           }}
         >
-          Développeur Full Stack
+          {content.me.job}
         </motion.span>
         <motion.span
           client:load
@@ -59,7 +64,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             stiffness: 100,
           }}
         >
-          Développeur JavaScript
+          {content.me.spec}
         </motion.span>
       </div>
     </div>
@@ -79,7 +84,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Explorer
+          {content.links.explore}
         </div>
       </a>
       <a href="">
@@ -95,7 +100,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Projets
+          {content.links.projects}
         </div>
       </a>
       <a href="">
@@ -111,7 +116,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Blog
+          {content.links.blog}
         </div>
       </a>
       <a href="">
@@ -127,13 +132,13 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Engagez-moi
+          {content.links.hire}
         </div>
       </a>
     </div>
     <div class="flex flex-col gap-[2px] w-full text-[14px]">
       <div class="ml-[12px]">
-        <p class="font-medium text-grey-1 text-[10px]">RESSOURCES</p>
+        <p class="font-medium text-grey-1 text-[10px]">{content.subtitle.resources}</p>
       </div>
       <a href="">
         <div
@@ -148,7 +153,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Compétances
+          {content.links.skills}
         </div>
       </a>
       <a href="">
@@ -164,7 +169,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Outils
+          {content.links.stack}
         </div>
       </a>
       <a href="">
@@ -179,7 +184,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Maintenant
+          {content.links.now}
         </div>
       </a>
     </div>
@@ -239,7 +244,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          Lire mon CV
+          {content.links.cv}
         </div>
       </a>
     </div>

@@ -1,4 +1,7 @@
 ---
+import { getFooter} from "../utils.ts"
+const content = await getFooter("fr");
+
 let year = new Date().getFullYear();
 ---
 
@@ -6,13 +9,13 @@ let year = new Date().getFullYear();
   class="ml-[244px] flex justify-center gap-[24px] p-[32px] text-[16px] text-white border-t border-black-3"
 >
   <p>
-    Built with <a
+    {content.build} <a
       href="https://astro.build"
       class="text-grey-1 hover:text-white transition-all">{Astro.generator}</a>
   </p>
   <span class="text-grey-1">°</span>
   <p>
-    Hosted on <a
+    {content.hosted} <a
       href="https://vercel.com"
       class="text-grey-1 hover:text-white transition-all">Vercel</a>
   </p>
