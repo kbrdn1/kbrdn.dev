@@ -65,6 +65,10 @@ const { title, lang } = Astro.props;
   </head>
   <body class="bg-black-1">
     <Navbar />
-    <slot />
+    <main class="ml-[244px] pt-[120px] pb-[64px] flex justify-center">
+       <div class="w-[768px]">
+        <slot />
+       </div>
+    </main>
   </body>
 </html>

@@ -68,9 +68,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
     <div class="flex flex-col gap-[2px] w-full">
       <a href="">
         <div
-          class={currentPath == ""
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == ""
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <Compass
             className="group-hover:rotate-[10deg] transition-all"
@@ -83,9 +84,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
       </a>
       <a href="">
         <div
-          class={currentPath == "projects"
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == "projects"
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <Repository
             className="group-hover:rotate-[10deg] transition-all"
@@ -98,9 +100,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
       </a>
       <a href="">
         <div
-          class={currentPath == "blog"
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == "blog"
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <Edit
             className="group-hover:rotate-[10deg] transition-all"
@@ -113,9 +116,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
       </a>
       <a href="">
         <div
-          class={currentPath == "contact"
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == "contact"
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <BrainElectricity
             className="group-hover:rotate-[10deg] transition-all"
@@ -133,9 +137,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
       </div>
       <a href="">
         <div
-          class={currentPath == "skills"
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == "skills"
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <LeaderboardStar
             className="group-hover:rotate-[10deg] transition-all"
@@ -148,9 +153,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
       </a>
       <a href="">
         <div
-          class={currentPath == "tools"
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == "tools"
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <Wrench
             className="group-hover:rotate-[10deg] transition-all"
@@ -163,9 +169,9 @@ const currentPath = pathname.slice(1); // remove the first "/"
       </a>
       <a href="">
         <div
-          class={currentPath == "now"
-            ? "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] border border-grey-2 bg-black-3 text-white duration-150 ease-out group"
-            : "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == "now"
+            ? "border border-grey-2 bg-black-3 text-white "
+            :"")+ "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <AppleImac2021Side
             className="group-hover:rotate-[10deg] transition-all"
