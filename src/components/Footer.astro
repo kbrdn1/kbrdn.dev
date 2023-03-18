@@ -1,6 +1,11 @@
 ---
-import { getFooter} from "../utils.ts"
-const content = await getFooter("fr");
+import { t, setDefaultNamespace } from "i18next";
+setDefaultNamespace("footer");
+
+const content = {
+  build: t("build"),
+  hosted: t("hosted"),
+};
 
 let year = new Date().getFullYear();
 ---
