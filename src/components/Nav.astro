@@ -46,7 +46,7 @@ import { motion } from "framer-motion";
 <nav
   class="bg-black-2 fixed flex flex-col gap-[40px] h-screen border-r border-black-3 text-grey-1 py-[40px] px-[24px]"
 >
-  <a href="" class="flex gap-[12px] hover:opacity-80 duration-200 ease-out">
+  <a href={localizePath("/")} class="flex gap-[12px] hover:opacity-80 duration-200 ease-out">
     <img src="/me.jpg" alt="profile-picture" class="rounded-full h-[40px]" />
     <div class="flex flex-col gap-[2px] text-[14px]">
       <p class="font-medium text-white">Kylian Bardini</p>
@@ -90,9 +90,9 @@ import { motion } from "framer-motion";
   </a>
   <div class="flex flex-col gap-[32px] w-full text-[14px]">
     <div class="flex flex-col gap-[2px] w-full">
-      <a href="">
+      <a href={localizePath("/")}>
         <div
-          class={(currentPath == ""
+          class={(currentPath == "" || currentPath == "en"
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -106,9 +106,9 @@ import { motion } from "framer-motion";
           {content.explore}
         </div>
       </a>
-      <a href="">
+      <a href={localizePath("/projects")}>
         <div
-          class={(currentPath == "projects"
+          class={(currentPath.includes("projects")
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -124,7 +124,7 @@ import { motion } from "framer-motion";
       </a>
       <a href={localizePath("/blog")}>
         <div
-          class={(currentPath == "blog"
+          class={(currentPath.includes("blog")
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -138,9 +138,9 @@ import { motion } from "framer-motion";
           {content.blog}
         </div>
       </a>
-      <a href="">
+      <a href={localizePath("/contact")}>
         <div
-          class={(currentPath == "contact"
+          class={(currentPath.includes("contact")
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -161,9 +161,9 @@ import { motion } from "framer-motion";
           {content.resources}
         </p>
       </div>
-      <a href="">
+      <a href={localizePath("/skills")}>
         <div
-          class={(currentPath == "skills"
+          class={(currentPath.includes("skills")
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -177,9 +177,9 @@ import { motion } from "framer-motion";
           {content.skills}
         </div>
       </a>
-      <a href="">
+      <a href={localizePath("/stack")}>
         <div
-          class={(currentPath == "tools"
+          class={(currentPath.includes("stack")
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -193,9 +193,9 @@ import { motion } from "framer-motion";
           {content.stack}
         </div>
       </a>
-      <a href="">
+      <a href={localizePath("/now")}>
         <div
-          class={(currentPath == "now"
+          class={(currentPath.includes("now")
             ? "border border-grey-2 bg-black-3 text-white "
             : "") +
             "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
@@ -256,9 +256,12 @@ import { motion } from "framer-motion";
           LinkedIn
         </div>
       </a>
-      <a href="">
+      <a href={localizePath("/cv")}>
         <div
-          class="flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"
+          class={(currentPath.includes("cv")
+            ? "border border-grey-2 bg-black-3 text-white "
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <JournalPage
             className="group-hover:rotate-[10deg] transition-all"
