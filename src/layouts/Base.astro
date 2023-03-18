@@ -28,7 +28,7 @@ import Footer from "@components/Footer.astro";
     <meta name="apple-mobile-web-app-status-bar-style" content="white" />
     <meta name="format-detection" content="telephone=no" />
     <link href="/startup.png" rel="apple-touch-startup-image" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <HeadHrefLangs />
     <SEO
@@ -49,10 +49,10 @@ import Footer from "@components/Footer.astro";
       rel="stylesheet"
     />
   </head>
-  <body class="bg-black-1">
+  <body class="bg-black-1 font-body">
     <Nav />
-    <main class="ml-[244px] pt-[120px] pb-[64px] flex justify-center">
-      <div class="w-[768px] px-[36px]">
+    <main class="xl:ml-[244px] md:pt-[150px] pt-[120px] pb-[64px] flex md:justify-center">
+      <div class="md:w-[768px] px-[24px] lg:px-[36px]">
         <slot />
       </div>
     </main>
