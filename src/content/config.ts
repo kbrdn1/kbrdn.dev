@@ -1,7 +1,7 @@
 import { z, defineCollection } from 'astro:content';
 
-import { footerSchema } from '../model';
-import { navSchema } from '../model';
+import { footerSchema } from '@app/model';
+import { navSchema } from '@app/model';
 
 const footerCollection = defineCollection({
   schema: footerSchema,

@@ -3,9 +3,11 @@ import tailwind from "@astrojs/tailwind";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
+import astroI18next from "astro-i18next";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://kbrdn.dev",
   integrations: [
     tailwind(),
     react(),
@@ -19,6 +21,6 @@ export default defineConfig({
         },
       },
     }),
+    astroI18next(),
   ],
-  site: "https://kbrdn.dev",
 });

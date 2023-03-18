@@ -1,8 +1,28 @@
 ---
-import { getNav } from "../utils.ts";
+import i18next, { t, setDefaultNamespace } from "i18next";
+import { localizePath } from "astro-i18next";
+import { getPath, getPathname, getLang } from "@app/utils";
 
-const content = await getNav("fr");
-console.log(content);
+const path = getPath(Astro.request.url)
+const currentPath = getPathname(Astro.request.url);
+const currentLanguage = getLang();
+
+setDefaultNamespace("nav");
+const content = {
+  job: t("job"),
+  spec: t("spec"),
+  resources: t("resources"),
+  social: t("social"),
+  explore: t("explore"),
+  projects: t("projects"),
+  blog: t("blog"),
+  hire: t("hire"),
+  skills: t("skills"),
+  stack: t("stack"),
+  now: t("now"),
+  cv: t("cv"),
+  languages: t("languages"),
+};
 
 import {
   Compass,
@@ -16,12 +36,11 @@ import {
   Twitter,
   LinkedIn,
   JournalPage,
+  Translate,
+  NavArrowLeft,
 } from "iconoir-react";
 
 import { motion } from "framer-motion";
-
-const pathname = new URL(Astro.request.url).pathname;
-const currentPath = pathname.slice(1); // remove the first "/"
 ---
 
 <nav
@@ -47,7 +66,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             stiffness: 100,
           }}
         >
-          {content.me.job}
+          {content.job}
         </motion.span>
         <motion.span
           client:load
@@ -64,7 +83,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             stiffness: 100,
           }}
         >
-          {content.me.spec}
+          {content.spec}
         </motion.span>
       </div>
     </div>
@@ -84,7 +103,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.explore}
+          {content.explore}
         </div>
       </a>
       <a href="">
@@ -100,10 +119,10 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.projects}
+          {content.projects}
         </div>
       </a>
-      <a href="">
+      <a href={localizePath("/blog")}>
         <div
           class={(currentPath == "blog"
             ? "border border-grey-2 bg-black-3 text-white "
@@ -116,7 +135,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.blog}
+          {content.blog}
         </div>
       </a>
       <a href="">
@@ -132,13 +151,15 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.hire}
+          {content.hire}
         </div>
       </a>
     </div>
     <div class="flex flex-col gap-[2px] w-full text-[14px]">
       <div class="ml-[12px]">
-        <p class="font-medium text-grey-1 text-[10px]">{content.subtitle.resources}</p>
+        <p class="font-medium text-grey-1 text-[10px]">
+          {content.resources}
+        </p>
       </div>
       <a href="">
         <div
@@ -153,7 +174,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.skills}
+          {content.skills}
         </div>
       </a>
       <a href="">
@@ -169,14 +190,15 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.stack}
+          {content.stack}
         </div>
       </a>
       <a href="">
         <div
           class={(currentPath == "now"
             ? "border border-grey-2 bg-black-3 text-white "
-            :"")+ "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+            : "") +
+            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
         >
           <AppleImac2021Side
             className="group-hover:rotate-[10deg] transition-all"
@@ -184,7 +206,7 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.now}
+          {content.now}
         </div>
       </a>
     </div>
@@ -244,9 +266,57 @@ const currentPath = pathname.slice(1); // remove the first "/"
             height={20}
             strokeWidth="1.2"
           />
-          {content.links.cv}
+          {content.cv}
         </div>
       </a>
     </div>
   </div>
+  <div
+    class="flex flex-col gap-[5px] cursor-pointer w-full rounded-[6px] px-[12px] py-[8px] border border-black-3 duration-150 ease-out"
+  >
+    <div
+      id="current-language"
+      class="flex items-center justify-between hover:text-white group"
+    >
+      <div class="flex gap-[10px] items-center">
+        <Translate
+          className="group-hover:rotate-[10deg] transition-all"
+          width={20}
+          height={20}
+          strokeWidth="1.2"
+        />
+        {content.languages}
+      </div>
+      <NavArrowLeft
+        className="group-focus:rotate-[-90deg] transition-all arrow"
+        width={20}
+        height={20}
+        strokeWidth="1.2"
+      />
+    </div>
+    <a href={localizePath(path, currentLanguage)}>
+      <div
+        id="translate"
+        class="flex gap-[10px] items-center hover:text-white group h-0 overflow-hidden transition-all"
+      >
+        <Translate
+          className="group-hover:rotate-[10deg] transition-all"
+          width={20}
+          height={20}
+          strokeWidth="1.2"
+        />
+        {content.languages === "Français" ? "English" : "Français"}
+      </div>
+    </a>
+  </div>
+  <script>
+    const translate = document.querySelector("#translate");
+    const currentLanguage = document.querySelector("#current-language");
+    currentLanguage?.addEventListener("click", () => {
+      translate?.classList.toggle("h-0");
+      currentLanguage
+        ?.querySelector(".arrow")
+        ?.classList.toggle("rotate-[-90deg]");
+    });
+  </script>
 </nav>
