@@ -1,15 +1,15 @@
 ---
-import { changeLanguage, setDefaultNamespace, t } from "i18next";
-import Base from "@layouts/Base.astro";
+import { changeLanguage, setDefaultNamespace, t } from 'i18next'
+import Base from '@layouts/Base.astro'
 
-changeLanguage("fr");
+changeLanguage('fr')
 
-setDefaultNamespace("contact");
+setDefaultNamespace('contact')
 const content = {
-    title: t("title"),
-};
+  title: t('title'),
+}
 ---
 
 <Base forceUseDefaultOgTitle title={content.title}>
-    <h1 class="text-[40px] font-semibold text-white">Contact page ! 🙋🏽</h1>
+  <h1 class="text-[40px] font-semibold text-white">Contact page ! 🙋🏽</h1>
 </Base>
