@@ -1,11 +1,15 @@
 ---
-import { changeLanguage } from "i18next";
+import { changeLanguage, setDefaultNamespace, t } from "i18next";
 import Base from "@layouts/Base.astro";
-import { motion } from "framer-motion";
 
 changeLanguage("fr");
+
+setDefaultNamespace("inprogress");
+const content = {
+    title: t("title"),
+};
 ---
 
-<Base>
+<Base forceUseDefaultOgTitle title={content.title}>
     <h1 class="text-[40px] font-semibold text-white">Now page ! ⬇️</h1>
 </Base>

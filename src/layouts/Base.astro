@@ -4,10 +4,28 @@ import { Trans, HeadHrefLangs } from "astro-i18next/components";
 import { SEO } from "astro-seo";
 setDefaultNamespace("seo");
 
+export interface Props {
+  forceUseDefaultOgTitle?: boolean;
+  title?: string;
+  description?: string;
+  ogTitle?: string;
+  ogType?: "website" | "article";
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogDescription?: string;
+}
+
 const {
-  title = t("title") as string,
-  description = t("description") as string,
-  site = t("site") as string,
+  forceUseDefaultOgTitle = false,
+  title = t("defaultTitle") as string,
+  description = t("defaultDescription") as string,
+  ogTitle = forceUseDefaultOgTitle
+    ? (t("defaultOgTitle") as string)
+    : title ?? (t("defaultOgTitle") as string),
+  ogType = "website",
+  ogImage = t("defaultOgImage") as string,
+  ogImageAlt = t("defaultOgImageAlt", { title: ogTitle }) as string,
+  ogDescription = description,
 } = Astro.props;
 
 const lang = i18next.language;
@@ -34,11 +52,28 @@ import Footer from "@components/Footer.astro";
     <SEO
       title={title}
       description={description}
-      url={site}
+      titleDefault={t("defaultTitle")!}
+      titleTemplate={t("titleTemplate")!}
+      openGraph={{
+        basic: {
+          title: ogTitle,
+          image: ogImage,
+          type: ogType,
+        },
+        image: {
+          alt: ogImageAlt,
+          width: 1200,
+          height: 627,
+        },
+      }}
       twitter={{
         card: "summary_large_image",
         site: "@kbrdn1",
         creator: "@kbrdn1",
+        title: ogTitle,
+        description: ogDescription,
+        image: ogImage,
+        imageAlt: ogImageAlt,
       }}
     />
     <!-- Google fonts -->
@@ -51,7 +86,9 @@ import Footer from "@components/Footer.astro";
   </head>
   <body class="bg-black-1 font-body">
     <Nav />
-    <main class="xl:ml-[244px] md:pt-[150px] pt-[120px] pb-[64px] flex md:justify-center">
+    <main
+      class="xl:ml-[244px] md:pt-[150px] pt-[120px] pb-[64px] flex md:justify-center"
+    >
       <div class="md:w-[768px] px-[24px] lg:px-[36px]">
         <slot />
       </div>
