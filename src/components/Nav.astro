@@ -1,28 +1,28 @@
 ---
-import i18next, { t, setDefaultNamespace } from "i18next";
-import { localizePath } from "astro-i18next";
-import { getPath, getPathname, getLang } from "@app/utils";
+import i18next, { t, setDefaultNamespace } from 'i18next'
+import { localizePath } from 'astro-i18next'
+import { getPath, getPathname, getLang } from '@app/utils'
 
-const path = getPath(Astro.request.url);
-const currentPath = getPathname(Astro.request.url);
-const currentLanguage = getLang();
+const path = getPath(Astro.request.url)
+const currentPath = getPathname(Astro.request.url)
+const currentLanguage = getLang()
 
-setDefaultNamespace("nav");
+setDefaultNamespace('nav')
 const content = {
-  job: t("job"),
-  spec: t("spec"),
-  resources: t("resources"),
-  social: t("social"),
-  explore: t("explore"),
-  projects: t("projects"),
-  blog: t("blog"),
-  hire: t("hire"),
-  skills: t("skills"),
-  stack: t("stack"),
-  now: t("now"),
-  cv: t("cv"),
-  languages: t("languages"),
-};
+  job: t('job'),
+  spec: t('spec'),
+  resources: t('resources'),
+  social: t('social'),
+  explore: t('explore'),
+  projects: t('projects'),
+  blog: t('blog'),
+  hire: t('hire'),
+  skills: t('skills'),
+  stack: t('stack'),
+  now: t('now'),
+  cv: t('cv'),
+  languages: t('languages'),
+}
 
 import {
   Menu,
@@ -39,16 +39,16 @@ import {
   JournalPage,
   Translate,
   NavArrowLeft,
-} from "iconoir-react";
+} from 'iconoir-react'
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion'
 ---
 
 <nav
   class="bg-black-1 w-full fixed flex items-center justify-between border-b border-black-3 text-grey-1 p-[24px] xl:hidden"
 >
   <a
-    href={localizePath("/")}
+    href={localizePath('/')}
     class="flex gap-[12px] hover:opacity-80 duration-200 ease-out"
   >
     <img src="/me.jpg" alt="profile-picture" class="rounded-full h-[40px]" />
@@ -62,10 +62,10 @@ import { motion } from "framer-motion";
           transition={{
             delay: 8,
             duration: 0.7,
-            type: "spring",
+            type: 'spring',
             repeat: 999999,
-            repeatType: "mirror",
-            ease: "easeInOut",
+            repeatType: 'mirror',
+            ease: 'easeInOut',
             repeatDelay: 8,
             stiffness: 100,
           }}
@@ -79,10 +79,10 @@ import { motion } from "framer-motion";
           transition={{
             delay: 8,
             duration: 0.7,
-            type: "spring",
+            type: 'spring',
             repeat: 999999,
-            repeatType: "mirror",
-            ease: "easeInOut",
+            repeatType: 'mirror',
+            ease: 'easeInOut',
             repeatDelay: 8,
             stiffness: 100,
           }}
@@ -104,14 +104,13 @@ import { motion } from "framer-motion";
     />
   </div>
 </nav>
-<div id="nav-focus" class="fixed bg-black-1 w-full h-full opacity-90 hidden">
-</div>
+<div id="nav-focus" class="fixed bg-black-1 w-full h-full opacity-90 hidden"></div>
 <nav
   id="nav"
   class="bg-black-2 fixed flex flex-col gap-[40px] h-full border-r border-black-3 text-grey-1 py-[40px] px-[24px] w-[255px] xl:w-fit xl:visible -translate-x-full xl:-translate-x-0 duration-300 ease-out"
 >
   <a
-    href={localizePath("/")}
+    href={localizePath('/')}
     class="flex gap-[12px] hover:opacity-80 duration-200 ease-out"
   >
     <img src="/me.jpg" alt="profile-picture" class="rounded-full h-[40px]" />
@@ -125,10 +124,10 @@ import { motion } from "framer-motion";
           transition={{
             delay: 8,
             duration: 0.7,
-            type: "spring",
+            type: 'spring',
             repeat: 999999,
-            repeatType: "mirror",
-            ease: "easeInOut",
+            repeatType: 'mirror',
+            ease: 'easeInOut',
             repeatDelay: 8,
             stiffness: 100,
           }}
@@ -142,10 +141,10 @@ import { motion } from "framer-motion";
           transition={{
             delay: 8,
             duration: 0.7,
-            type: "spring",
+            type: 'spring',
             repeat: 999999,
-            repeatType: "mirror",
-            ease: "easeInOut",
+            repeatType: 'mirror',
+            ease: 'easeInOut',
             repeatDelay: 8,
             stiffness: 100,
           }}
@@ -157,12 +156,12 @@ import { motion } from "framer-motion";
   </a>
   <div class="flex flex-col gap-[32px] w-full text-[14px]">
     <div class="flex flex-col gap-[2px] w-full">
-      <a href={localizePath("/")}>
+      <a href={localizePath('/')}>
         <div
-          class={(currentPath == "" || currentPath == "en"
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath == ''
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Compass
             className="group-hover:rotate-[10deg] transition-all"
@@ -173,12 +172,12 @@ import { motion } from "framer-motion";
           {content.explore}
         </div>
       </a>
-      <a href={localizePath("/projects")}>
+      <a href={localizePath('/projects')}>
         <div
-          class={(currentPath.includes("projects")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('projects')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Repository
             className="group-hover:rotate-[10deg] transition-all"
@@ -189,12 +188,12 @@ import { motion } from "framer-motion";
           {content.projects}
         </div>
       </a>
-      <a href={localizePath("/blog")}>
+      <a href={localizePath('/blog')}>
         <div
-          class={(currentPath.includes("blog")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('blog')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Edit
             className="group-hover:rotate-[10deg] transition-all"
@@ -205,12 +204,12 @@ import { motion } from "framer-motion";
           {content.blog}
         </div>
       </a>
-      <a href={localizePath("/contact")}>
+      <a href={localizePath('/contact')}>
         <div
-          class={(currentPath.includes("contact")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('contact')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <BrainElectricity
             className="group-hover:rotate-[10deg] transition-all"
@@ -228,12 +227,12 @@ import { motion } from "framer-motion";
           {content.resources}
         </p>
       </div>
-      <a href={localizePath("/skills")}>
+      <a href={localizePath('/skills')}>
         <div
-          class={(currentPath.includes("skills")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('skills')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <LeaderboardStar
             className="group-hover:rotate-[10deg] transition-all"
@@ -244,12 +243,12 @@ import { motion } from "framer-motion";
           {content.skills}
         </div>
       </a>
-      <a href={localizePath("/stack")}>
+      <a href={localizePath('/stack')}>
         <div
-          class={(currentPath.includes("stack")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('stack')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Wrench
             className="group-hover:rotate-[10deg] transition-all"
@@ -260,12 +259,12 @@ import { motion } from "framer-motion";
           {content.stack}
         </div>
       </a>
-      <a href={localizePath("/now")}>
+      <a href={localizePath('/now')}>
         <div
-          class={(currentPath.includes("now")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('now')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <AppleImac2021Side
             className="group-hover:rotate-[10deg] transition-all"
@@ -307,10 +306,7 @@ import { motion } from "framer-motion";
           Twitter
         </div>
       </a>
-      <a
-        href="https://www.linkedin.com//in/kylian-bardini-aa0528234/"
-        target="_blank"
-      >
+      <a href="https://www.linkedin.com//in/kylian-bardini-aa0528234/" target="_blank">
         <div
           class="flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"
         >
@@ -323,12 +319,12 @@ import { motion } from "framer-motion";
           LinkedIn
         </div>
       </a>
-      <a href={localizePath("/cv")}>
+      <a href={localizePath('/cv')}>
         <div
-          class={(currentPath.includes("cv")
-            ? "border border-grey-2 bg-black-3 text-white "
-            : "") +
-            "flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"}
+          class={(currentPath.includes('cv')
+            ? 'border border-grey-2 bg-black-3 text-white '
+            : '') +
+            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <JournalPage
             className="group-hover:rotate-[10deg] transition-all"
@@ -375,30 +371,28 @@ import { motion } from "framer-motion";
           height={20}
           strokeWidth="1.2"
         />
-        {content.languages === "Français" ? "English" : "Français"}
+        {content.languages === 'Français' ? 'English' : 'Français'}
       </div>
     </a>
   </div>
   <script>
-    const nav = document.querySelector("#nav"),
-      navFocus = document.querySelector("#nav-focus"),
-      navBtn = document.querySelector("#nav-btn"),
-      translate = document.querySelector("#translate"),
-      currentLanguage = document.querySelector("#current-language");
+    const nav = document.querySelector('#nav'),
+      navFocus = document.querySelector('#nav-focus'),
+      navBtn = document.querySelector('#nav-btn'),
+      translate = document.querySelector('#translate'),
+      currentLanguage = document.querySelector('#current-language')
 
     const toggleNav = () => {
-      nav?.classList.toggle("-translate-x-full");
-      navFocus?.classList.toggle("hidden");
-    };
+      nav?.classList.toggle('-translate-x-full')
+      navFocus?.classList.toggle('hidden')
+    }
 
-    navBtn?.addEventListener("click", toggleNav);
-    navFocus?.addEventListener("click", toggleNav);
+    navBtn?.addEventListener('click', toggleNav)
+    navFocus?.addEventListener('click', toggleNav)
 
-    currentLanguage?.addEventListener("click", () => {
-      translate?.classList.toggle("h-0");
-      currentLanguage
-        ?.querySelector(".arrow")
-        ?.classList.toggle("rotate-[-90deg]");
-    });
+    currentLanguage?.addEventListener('click', () => {
+      translate?.classList.toggle('h-0')
+      currentLanguage?.querySelector('.arrow')?.classList.toggle('rotate-[-90deg]')
+    })
   </script>
 </nav>

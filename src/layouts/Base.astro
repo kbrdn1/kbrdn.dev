@@ -1,37 +1,37 @@
 ---
-import i18next, { t, setDefaultNamespace } from "i18next";
-import { Trans, HeadHrefLangs } from "astro-i18next/components";
-import { SEO } from "astro-seo";
-setDefaultNamespace("seo");
+import i18next, { t, setDefaultNamespace } from 'i18next'
+import { HeadHrefLangs } from 'astro-i18next/components'
+import { SEO } from 'astro-seo'
+setDefaultNamespace('seo')
 
 export interface Props {
-  forceUseDefaultOgTitle?: boolean;
-  title?: string;
-  description?: string;
-  ogTitle?: string;
-  ogType?: "website" | "article";
-  ogImage?: string;
-  ogImageAlt?: string;
-  ogDescription?: string;
+  forceUseDefaultOgTitle?: boolean
+  title?: string
+  description?: string
+  ogTitle?: string
+  ogType?: 'website' | 'article'
+  ogImage?: string
+  ogImageAlt?: string
+  ogDescription?: string
 }
 
 const {
   forceUseDefaultOgTitle = false,
-  title = t("defaultTitle") as string,
-  description = t("defaultDescription") as string,
+  title = t('defaultTitle') as string,
+  description = t('defaultDescription') as string,
   ogTitle = forceUseDefaultOgTitle
-    ? (t("defaultOgTitle") as string)
-    : title ?? (t("defaultOgTitle") as string),
-  ogType = "website",
-  ogImage = t("defaultOgImage") as string,
-  ogImageAlt = t("defaultOgImageAlt", { title: ogTitle }) as string,
+    ? (t('defaultOgTitle') as string)
+    : title ?? (t('defaultOgTitle') as string),
+  ogType = 'website',
+  ogImage = t('defaultOgImage') as string,
+  ogImageAlt = t('defaultOgImageAlt', { title: ogTitle }) as string,
   ogDescription = description,
-} = Astro.props;
+} = Astro.props
 
-const lang = i18next.language;
+const lang = i18next.language
 
-import Nav from "@components/Nav.astro";
-import Footer from "@components/Footer.astro";
+import Nav from '@components/Nav.astro'
+import Footer from '@components/Footer.astro'
 ---
 
 <!DOCTYPE html>
@@ -52,8 +52,8 @@ import Footer from "@components/Footer.astro";
     <SEO
       title={title}
       description={description}
-      titleDefault={t("defaultTitle")!}
-      titleTemplate={t("titleTemplate")!}
+      titleDefault={t('defaultTitle')!}
+      titleTemplate={t('titleTemplate')!}
       openGraph={{
         basic: {
           title: ogTitle,
@@ -67,9 +67,9 @@ import Footer from "@components/Footer.astro";
         },
       }}
       twitter={{
-        card: "summary_large_image",
-        site: "@kbrdn1",
-        creator: "@kbrdn1",
+        card: 'summary_large_image',
+        site: '@kbrdn1',
+        creator: '@kbrdn1',
         title: ogTitle,
         description: ogDescription,
         image: ogImage,
@@ -86,9 +86,7 @@ import Footer from "@components/Footer.astro";
   </head>
   <body class="bg-black-1 font-body">
     <Nav />
-    <main
-      class="xl:ml-[244px] md:pt-[150px] pt-[120px] pb-[64px] flex md:justify-center"
-    >
+    <main class="xl:ml-[244px] md:pt-[150px] pt-[120px] pb-[64px] flex md:justify-center">
       <div class="md:w-[768px] px-[24px] lg:px-[36px]">
         <slot />
       </div>
