@@ -6,7 +6,7 @@
     "precommit": "lint-staged",
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "pnpm generate && astro build",
     "build-local": "pnpm run clean && pnpm generate && astro build",
     "preview": "astro preview",
     "astro": "astro",
