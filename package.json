@@ -1,18 +1,18 @@
 {
-  "name": "",
+  "name": "kbrdn.dev",
   "type": "module",
-  "version": "0.0.1",
+  "version": "beta-0.1",
   "scripts": {
     "precommit": "lint-staged",
     "dev": "astro dev",
     "start": "astro dev",
     "build": "pnpm generate && astro build",
-    "build-local": "pnpm run clean && pnpm generate && astro build",
+    "build-local": "pnpm clean && pnpm generate && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "prettier \"./**/*.{md,mdx,json,js,mjs,cjs,ts,astro,html}\" --write",
-    "generate": "astro-i18next generate && pnpm run lint",
-    "clean": "rmdir /s src\\pages\\en && rmdir /s dist"
+    "generate": "astro-i18next generate && pnpm lint",
+    "clean": "rmdir /s /q src\\pages\\en && rmdir /s /q dist"
   },
   "dependencies": {
     "@astrojs/mdx": "^0.18.1",
