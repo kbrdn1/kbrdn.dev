@@ -1,6 +1,13 @@
 {
-  "title": "Kylian Bardini - Dev Full Stack",
-  "description": "Bonjour, je suis Kylian Bardini, développeur Full Stack a Metz. Je suis passionné par l'informatique et la découverte de nouvelles technologies.",
-  "site": "https://kbrdn.dev",
-  "keywords": "Kylian, Bardini, Devlopper, Développeur, Full Stack, Metz, MNS, Metz Numeric School, Virtual Immersion, Astro, JavaScript, React, Typescript, Symfony, MERN, Portfolio, Web, Mobile, Web Mobile, Formation, Projets, Projects, Site, Site Web, Application, Swift, Apple, SwiftUI, React Native, Licence, BAC, iOS, Android, Github, AI, IA, Internet, Site Internet, Blog, CV, SQL, Full JS, JS, Full JavaScript, LinkedIn, HTML, CSS, SCSS, SASS, Freelance, ENT, Entreprise, Corporation, Corp, E-Sport, IT, IoT, Framework, Compile, Compilation, Editor"
+  "titleTemplate": "%s - Kylian Bardini | Dev Full Stack",
+  "defaultTitle": "Kylian Bardini | Dev Full Stack",
+  "defaultOgTitle": "Kylian Bardini | Dev Full Stack",
+  "ogTitle": "Kylian Bardini | Dev Full Stack",
+  "defaultDescription": "Bonjour, je suis Kylian Bardini, développeur Full Stack a Metz. Je suis passionné par l'informatique et la découverte de nouvelles technologies.",
+  "ogDescription": "Bonjour, je suis Kylian Bardini, développeur Full Stack a Metz. Je suis passionné par l'informatique et la découverte de nouvelles technologies.",
+  "defaultOgImage": "https://kylianbardini.fr/og-image.jpg",
+  "ogImage": "https://kylianbardini.fr/og-image.jpg",
+  "defaultOgImageAlt": "{{title}}, ??",
+  "ogImageAlt": "{{title}}, ??",
+  "keywords": "Kylian Bardini, Devlopper, Développeur, Full Stack, Metz, MNS, Metz Numeric School, Virtual Immersion, Astro, JavaScript, React, Typescript, Symfony, MERN, Portfolio, Web, Mobile, Web Mobile, Formation, Projets, Projects, Site, Site Web, Application, Swift, Apple, SwiftUI, React Native, Licence, BAC, iOS, Android, Github, AI, IA, Internet, Site Internet, Blog, CV, SQL, Full JS, JS, Full JavaScript, LinkedIn, HTML, CSS, SCSS, SASS, Freelance, ENT, Entreprise, Corporation, Corp, E-Sport, IT, IoT, Framework, Compile, Compilation, Editor"
 }
