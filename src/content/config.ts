@@ -1,17 +1,23 @@
 import { z, defineCollection } from 'astro:content'
 
-import { footerSchema } from '@app/model'
-import { navSchema } from '@app/model'
+import { blogShema } from '@app/model'
+import { stackShema } from '@app/model'
+import { projectsShema } from '@app/model'
 
-const footerCollection = defineCollection({
-  schema: footerSchema,
+const blogCollection = defineCollection({
+  schema: blogShema,
 })
 
-const navCollection = defineCollection({
-  schema: navSchema,
+const stackCollection = defineCollection({
+  schema: stackShema,
+})
+
+const projectsCollection = defineCollection({
+  schema: projectsShema,
 })
 
 export const collections = {
-  footer: footerCollection,
-  nav: navCollection,
+  blog: blogCollection,
+  stack: stackCollection,
+  projects: projectsCollection,
 }
