@@ -58,10 +58,11 @@ import { motion } from 'framer-motion'
   <div class="flex flex-col text-[14px]">
       <p class="font-medium text-white">Kylian Bardini</p>
       <div class="w-full h-[20px] flex flex-col overflow-hidden">
-        <motion.span
+        <motion.div
           client:load
-          initial={{ y: 0, opacity: 1 }}
-          animate={{ y: -20, opacity: 0 }}
+          className="flex flex-col gap-[2px]"
+          initial={{ y: 0 }}
+          animate={{ y: -22 }}
           transition={{
             delay: 8,
             duration: 0.7,
@@ -73,25 +74,9 @@ import { motion } from 'framer-motion'
             stiffness: 100,
           }}
         >
-          {content.job}
-        </motion.span>
-        <motion.span
-          client:load
-          initial={{ y: 0, opacity: 0 }}
-          animate={{ y: -20, opacity: 1 }}
-          transition={{
-            delay: 8,
-            duration: 0.7,
-            type: 'spring',
-            repeat: 999999,
-            repeatType: 'mirror',
-            ease: 'easeInOut',
-            repeatDelay: 8,
-            stiffness: 100,
-          }}
-        >
-          {content.spec}
-        </motion.span>
+          <span>{content.job}</span>
+          <span>{content.spec}</span>
+        </motion.div>
       </div>
     </div>
   </a>
@@ -119,11 +104,12 @@ import { motion } from 'framer-motion'
     <Image src={profilePicture} height={40} class="rounded-full" alt="profile-picture"/>
     <div class="flex flex-col text-[14px]">
       <p class="font-medium text-white">Kylian Bardini</p>
-      <div class="w-full h-[20px] flex flex-col overflow-hidden">
-        <motion.span
+      <div class="w-full h-[22px] flex flex-col overflow-hidden">
+        <motion.div
           client:load
-          initial={{ y: 0, opacity: 1 }}
-          animate={{ y: -20, opacity: 0 }}
+          className="flex flex-col gap-[2px]"
+          initial={{ y: 0 }}
+          animate={{ y: -22 }}
           transition={{
             delay: 8,
             duration: 0.7,
@@ -135,25 +121,9 @@ import { motion } from 'framer-motion'
             stiffness: 100,
           }}
         >
-          {content.job}
-        </motion.span>
-        <motion.span
-          client:load
-          initial={{ y: 0, opacity: 0 }}
-          animate={{ y: -20, opacity: 1 }}
-          transition={{
-            delay: 8,
-            duration: 0.7,
-            type: 'spring',
-            repeat: 999999,
-            repeatType: 'mirror',
-            ease: 'easeInOut',
-            repeatDelay: 8,
-            stiffness: 100,
-          }}
-        >
-          {content.spec}
-        </motion.span>
+          <span>{content.job}</span>
+          <span>{content.spec}</span>
+        </motion.div>
       </div>
     </div>
   </a>
