@@ -10,7 +10,7 @@
       "@layouts/*": ["layouts/*"],
       "@pages/*": ["pages/*"],
       "@content/*": ["content/*"],
-      "@public/*": ["../public/*"],
+      "@public/*": ["../public/*"]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react",

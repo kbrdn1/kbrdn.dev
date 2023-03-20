@@ -14,6 +14,15 @@ const { text, url, icon } = Astro.props as Props
   href={url}
   class="flex items-center gap-[10px] hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
 >
-  {icon && <SendMail width={20} height={20} strokeWidth="1.2" className="group-hover:rotate-[-10deg] transition-all" />}
+  {
+    icon && (
+      <SendMail
+        width={20}
+        height={20}
+        strokeWidth="1.2"
+        className="group-hover:rotate-[-10deg] transition-all"
+      />
+    )
+  }
   {text}
 </a>
