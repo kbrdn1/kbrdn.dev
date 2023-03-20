@@ -40,7 +40,8 @@ import {
   Translate,
   NavArrowLeft,
 } from 'iconoir-react'
-
+import enFlag from '/flags/en.svg'
+import frFlag from '/flags/fr.svg'
 import { motion } from 'framer-motion'
 ---
 
@@ -365,12 +366,21 @@ import { motion } from 'framer-motion'
         id="translate"
         class="flex gap-[10px] items-center hover:text-white group h-0 overflow-hidden duration-300 ease-out"
       >
-        <Translate
-          className="group-hover:rotate-[10deg] transition-all"
-          width={20}
-          height={20}
-          strokeWidth="1.2"
-        />
+        {
+          content.languages === 'Français' ? (
+            <img
+              src={enFlag}
+              alt="en_EN"
+              class="w-[20px] rounded-sm group-hover:rotate-[10deg] transition-all"
+            />
+          ) : (
+            <img
+              src={frFlag}
+              alt="fr_FR"
+              class="w-[20px] rounded-sm group-hover:rotate-[10deg] transition-all"
+            />
+          )
+        }
         {content.languages === 'Français' ? 'English' : 'Français'}
       </div>
     </a>
