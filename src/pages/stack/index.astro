@@ -1,0 +1,27 @@
+---
+import i18next, { changeLanguage, setDefaultNamespace, t } from 'i18next'
+import { getArticles } from '@app/utils'
+
+import Base from '@layouts/Base.astro'
+
+changeLanguage('fr')
+
+const stacks = await getArticles('stack', i18next.language)
+console.log(stacks)
+
+setDefaultNamespace('stack')
+const content = {
+  title: t('title'),
+}
+---
+
+<Base forceUseDefaultOgTitle title={content.title}>
+  <h1 class="text-[40px] font-semibold text-white">Stack page ! 🔧</h1>
+  {stacks.map((stack) => (
+    <div class="text-white">
+      <h2>{stack.data.title}</h2>
+      <p>{stack.data.description}</p>
+      <img src={stack.data.icon} alt="">
+    </div>
+  ))}
+</Base>
