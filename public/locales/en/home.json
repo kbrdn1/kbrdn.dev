@@ -1,3 +1,15 @@
 {
-  "title": "Home"
+  "title": "Develop and Design concepts",
+  "tspan": "innovative.",
+  "description": "Full Stack Developer currently on a work-study program (Software and Network Project Manager) at Metz Numeric School.",
+  "hCTA": "About",
+  "hBtn": "E-mail",
+  "newResources": "New resources",
+  "blogDescription": "Check out my latest posts on my blog.",
+  "blogCTA": "All posts",
+  "contactDescription": "Vous avez une question ? N'hésitez pas à me contacter.",
+  "contactCTA": "Confirm",
+  "stack": "Stack",
+  "stackDescription": "Check out the latest tools I use to develop.",
+  "stackCTA": "All tools"
 }
