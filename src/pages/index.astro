@@ -11,6 +11,7 @@ changeLanguage('fr')
 setDefaultNamespace('home')
 const content = {
   title: t('title'),
+  htitle: t('htitle'),
   tspan: t('tspan'),
   description: t('description'),
   hCTA: t('hCTA'),
@@ -28,7 +29,7 @@ const content = {
 
 <Base forceUseDefaultOgTitle title={content.title}>
   <Header
-    title={content.title}
+    title={content.htitle}
     span={content.tspan}
     description={content.description}
     hCTA={content.hCTA}
