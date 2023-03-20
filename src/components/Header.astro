@@ -1,6 +1,6 @@
 ---
-import CTA from '@components/buttons/CTA.astro'
-import Secondary from '@components/buttons/Secondry.astro'
+import CTABtn from '@components/buttons/CTA.astro'
+import SecondaryBtn from '@components/buttons/Secondary.astro'
 
 export interface Props {
   title: string
@@ -23,7 +23,7 @@ const { title, span, description, hCTA, hCTAUrl, hBtn, hBtnUrl } = Astro.props a
   </h1>
   <p class="text-[16px]">{description}</p>
   <div class="flex gap-[16px] pt-[6px]">
-    <CTA text={hCTA} url={hCTAUrl} />
-    <Secondary text={hBtn} url={hBtnUrl} icon />
+    <CTABtn text={hCTA} url={hCTAUrl} />
+    <SecondaryBtn text={hBtn} url={hBtnUrl} icon />
   </div>
 </header>

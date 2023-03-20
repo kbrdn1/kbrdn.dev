@@ -5,5 +5,13 @@
   "hCTA": "A propos",
   "hCTAUrl": "/about",
   "hBtn": "E-mail",
-  "hBtnUrl": "mailto:kylianb1@icloud.com"
+  "hBtnUrl": "mailto:kylianb1@icloud.com",
+  "newResources": "Nouvelles ressources",
+  "blogDescription": "Découvrez mes derniers articles sur mon blog.",
+  "blogCTA": "Voir les blog",
+  "contactDescription": "Vous avez une question ? N'hésitez pas à me contacter.",
+  "contactCTA": "Valider",
+  "stack": "Outils",
+  "stackDescription": "Découvrez les derniers outils que j'utilise pour développer.",
+  "stackCTA": "Voir les outils"
 }

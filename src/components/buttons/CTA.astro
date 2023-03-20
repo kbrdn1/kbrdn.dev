@@ -4,14 +4,15 @@ import { localizePath } from 'astro-i18next'
 export interface Props {
   text: string
   url: string
+  full?: boolean
 }
 
-const { text, url } = Astro.props as Props
+const { text, url, full } = Astro.props as Props
 ---
 
 <a
   href={localizePath(url)}
-  class="flex items-center  hover:border-grey-2 bg-black-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] transition-all"
+  class={(full ? 'w-full ' : '' ) + "flex justify-center items-center  hover:border-grey-2 bg-black-2 border border-black-3 rounded-[6px] text-[14px] text-white px-[24px] py-[12px] transition-all" }
 >
   {text}
 </a>
