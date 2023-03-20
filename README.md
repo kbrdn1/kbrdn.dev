@@ -12,9 +12,9 @@ A monorepo for my personal website and projects, built with Astro and pnpm.
 
 <a href="https://www.kbrdn.dev">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kbrdn1/kbrdn1/main/public/og-image.jpg">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/kbrdn1/kbrdn1/main/public/og-image-light.jpg">
-    <img alt="Kylian Bardini - Full Stack Developer Junior" src="https://raw.githubusercontent.com/kbrdn1/kbrdn1/main/public/og-image.jpg" width="100%" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kbrdn1/kbrdn.dev/main/public/og-image.jpg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/kbrdn1/kbrdn.dev/main/public/og-image-light.jpg">
+    <img alt="Kylian Bardini - Full Stack Developer Junior" src="https://raw.githubusercontent.com/kbrdn1/kbrdn.dev/main/public/og-image.jpg" width="100%" />
   </picture>
 </a>
 
