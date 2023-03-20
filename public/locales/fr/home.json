@@ -1,3 +1,16 @@
 {
-  "title": "Accueil"
+  "title":"Accueil",
+  "htitle": "Développer et designer des concepts",
+  "tspan": "innovants.",
+  "description": "Développeur Full Stack actuellement en alternance pour une licence (Chef de Projet Logiciel et Réseau) au sein de Metz Numeric School.",
+  "hCTA": "A propos",
+  "hBtn": "E-mail",
+  "newResources": "Nouvelles ressources",
+  "blogDescription": "Découvrez mes derniers articles sur mon blog.",
+  "blogCTA": "Voir les blog",
+  "contactDescription": "Vous avez une question ? N'hésitez pas à me contacter.",
+  "contactCTA": "Valider",
+  "stack": "Outils",
+  "stackDescription": "Découvrez les derniers outils que j'utilise pour développer.",
+  "stackCTA": "Voir les outils"
 }

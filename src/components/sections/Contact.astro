@@ -1,0 +1,38 @@
+---
+import { Image } from '@astrojs/image/components'
+import icon from '@assets/contact.png'
+import CTABtn from '@components/buttons/CTA.astro'
+
+export interface Props {
+  description: string
+  Btn: string
+}
+
+const { description, Btn } = Astro.props as Props
+---
+
+<section class="px-[12px] w-full">
+  <div class="border border-black-3 rounded-[6px] flex flex-col md:flex-row w-full">
+    <div
+      class="bg-black-2 border-r border-r-black-3 flex items-center justify-center p-[44px]"
+    >
+      <Image src={icon} width={56} height={56} alt="E-mail-icon" />
+    </div>
+    <div class="flex flex-col gap-[16px] p-[24px] w-full">
+      <div class="flex flex-col">
+        <h3 class="text-white text-[14px] font-semibold">Contact</h3>
+        <p class="text-grey-1 text-[14px]">{description}</p>
+      </div>
+      <div class="flex gap-[10px]">
+        <input
+          type="email"
+          name="email"
+          id="email"
+          placeholder="your@email.com"
+          class="px-[16px] py-[12px] rounded-[6px] bg-black-2 hover:border-grey-2 border border-black-3 text-grey-1 placeholder:text-grey-1 focus:text-white focus:border-grey-1 w-full"
+        />
+        <CTABtn text={Btn} url="/contact" />
+      </div>
+    </div>
+  </div>
+</section>

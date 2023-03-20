@@ -1,4 +1,5 @@
 ---
+import '@app/styles/app.css'
 import i18next, { t, setDefaultNamespace } from 'i18next'
 import { HeadHrefLangs } from 'astro-i18next/components'
 import { SEO } from 'astro-seo'
@@ -76,18 +77,11 @@ import Footer from '@components/Footer.astro'
         imageAlt: ogImageAlt,
       }}
     />
-    <!-- Google fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body class="bg-black-1 font-body">
     <Nav />
     <main class="xl:ml-[244px] md:pt-[150px] pt-[120px] pb-[64px] flex md:justify-center">
-      <div class="md:w-[768px] px-[24px] lg:px-[36px]">
+      <div class="md:w-[768px] px-[24px] lg:px-[36px] flex flex-col gap-[64px]">
         <slot />
       </div>
     </main>
