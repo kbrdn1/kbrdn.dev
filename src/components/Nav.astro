@@ -40,8 +40,10 @@ import {
   Translate,
   NavArrowLeft,
 } from 'iconoir-react'
-import enFlag from '/flags/en.svg'
-import frFlag from '/flags/fr.svg'
+import { Image } from '@astrojs/image/components'
+import profilePicture from '@public/me.jpg'
+import enFlag from '@public/flags/en.svg'
+import frFlag from '@public/flags/fr.svg'
 import { motion } from 'framer-motion'
 ---
 
@@ -52,8 +54,8 @@ import { motion } from 'framer-motion'
     href={localizePath('/')}
     class="flex gap-[12px] hover:opacity-80 duration-200 ease-out"
   >
-    <img src="/me.jpg" alt="profile-picture" class="rounded-full h-[40px]" />
-    <div class="flex flex-col text-[14px]">
+<Image src={profilePicture} height={40} class="rounded-full" alt="profile-picture"/>
+  <div class="flex flex-col text-[14px]">
       <p class="font-medium text-white">Kylian Bardini</p>
       <div class="w-full h-[20px] flex flex-col overflow-hidden">
         <motion.span
@@ -114,7 +116,7 @@ import { motion } from 'framer-motion'
     href={localizePath('/')}
     class="flex gap-[12px] hover:opacity-80 duration-200 ease-out"
   >
-    <img src="/me.jpg" alt="profile-picture" class="rounded-full h-[40px]" />
+    <Image src={profilePicture} height={40} class="rounded-full" alt="profile-picture"/>
     <div class="flex flex-col text-[14px]">
       <p class="font-medium text-white">Kylian Bardini</p>
       <div class="w-full h-[20px] flex flex-col overflow-hidden">
@@ -368,16 +370,18 @@ import { motion } from 'framer-motion'
       >
         {
           content.languages === 'Français' ? (
-            <img
+            <Image
               src={enFlag}
               alt="en_EN"
-              class="w-[20px] rounded-sm group-hover:rotate-[10deg] transition-all"
+              width={20}
+              class="rounded-sm group-hover:rotate-[10deg] transition-all"
             />
           ) : (
-            <img
+            <Image
               src={frFlag}
               alt="fr_FR"
-              class="w-[20px] rounded-sm group-hover:rotate-[10deg] transition-all"
+              width={20}
+              class="rounded-sm group-hover:rotate-[10deg] transition-all"
             />
           )
         }
