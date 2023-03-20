@@ -8,9 +8,9 @@
 </div>
 A monorepo for my personal website and projects, built with Astro and pnpm.
 
-## ⚡ [kbrdn.dev](https://www.kbrdn.dev)
+## ⚡ [kbrdn.dev](https://kbrdn.dev)
 
-<a href="https://www.kbrdn.dev">
+<a href="https://kbrdn.dev">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/kbrdn1/kbrdn.dev/main/public/og-image.jpg">
     <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/kbrdn1/kbrdn.dev/main/public/og-image-light.jpg">
