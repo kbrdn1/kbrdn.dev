@@ -1,0 +1,29 @@
+---
+import CTA from '@components/buttons/CTA.astro'
+import Secondary from '@components/buttons/Secondry.astro'
+
+export interface Props {
+  title: string
+  span: string
+  description: string
+  hCTA: string
+  hCTAUrl: string
+  hBtn: string
+  hBtnUrl: string
+}
+
+const { title, span, description, hCTA, hCTAUrl, hBtn, hBtnUrl } = Astro.props as Props
+---
+
+<header class="w-full text-white flex flex-col gap-[24px]">
+  <h1 class="text-[40px] font-semibold leading-[44px]">
+    {title}&nbsp;<span
+      class="bg-clip-text text-transparent bg-gradient-to-r from-white to-accent font-[700]"
+      >{span}</span>
+  </h1>
+  <p class="text-[16px]">{description}</p>
+  <div class="flex gap-[16px] pt-[6px]">
+    <CTA text={hCTA} url={hCTAUrl} />
+    <Secondary text={hBtn} url={hBtnUrl} icon />
+  </div>
+</header>

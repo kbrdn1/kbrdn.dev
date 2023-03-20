@@ -1,15 +1,30 @@
 ---
 import { changeLanguage, setDefaultNamespace, t } from 'i18next'
 import Base from '@layouts/Base.astro'
+import Header from '@components/Header.astro'
 
 changeLanguage('fr')
 
 setDefaultNamespace('home')
 const content = {
   title: t('title'),
+  tspan: t('tspan'),
+  description: t('description'),
+  hCTA: t('hCTA'),
+  hCTAUrl: t('hCTAUrl'),
+  hBtn: t('hBtn'),
+  hBtnUrl: t('hBtnUrl'),
 }
 ---
 
 <Base forceUseDefaultOgTitle title={content.title}>
-  <h1 class="text-[40px] font-semibold text-white">Hello from Astro ! 🚀</h1>
+  <Header
+    title={content.title}
+    span={content.tspan}
+    description={content.description}
+    hCTA={content.hCTA}
+    hCTAUrl={content.hCTAUrl}
+    hBtn={content.hBtn}
+    hBtnUrl={content.hBtnUrl}
+  />
 </Base>
