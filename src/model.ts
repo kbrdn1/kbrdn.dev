@@ -21,7 +21,6 @@ export const stackShema = z.object({
   icon: z.string(),
   iconFormat: z.string(),
   iconAlt: z.string(),
-  tags: z.array(z.string()),
   heroImage: z.string(),
   heroFormat: z.string(),
   heroImageAlt: z.string(),
