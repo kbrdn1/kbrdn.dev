@@ -21,6 +21,7 @@ specifiers:
   prettier-plugin-astro: 0.8.0
   react: ^18.0.0
   react-dom: ^18.0.0
+  sass: ^1.59.3
   tailwindcss: ^3.0.24
 
 dependencies:
@@ -31,13 +32,14 @@ dependencies:
   '@astrojs/tailwind': 3.1.1_2l4ywwlgzw2satesmi43zum3jy
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.11
-  astro: 2.1.3
+  astro: 2.1.3_sass@1.59.3
   framer-motion: 10.3.2_biqbaboplfbrettd7655fr4n2y
   i18next: 22.4.12
   i18next-fs-backend: 2.1.1
   iconoir-react: 6.4.0_react@18.2.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
+  sass: 1.59.3
   tailwindcss: 3.2.7
 
 devDependencies:
@@ -77,7 +79,7 @@ packages:
         optional: true
     dependencies:
       '@altano/tiny-async-pool': 1.0.2
-      astro: 2.1.3
+      astro: 2.1.3_sass@1.59.3
       http-cache-semantics: 4.1.1
       image-size: 1.0.2
       kleur: 4.1.5
@@ -108,7 +110,7 @@ packages:
       astro: ^2.1.0
     dependencies:
       '@astrojs/prism': 2.1.1
-      astro: 2.1.3
+      astro: 2.1.3_sass@1.59.3
       github-slugger: 1.5.0
       image-size: 1.0.2
       import-meta-resolve: 2.2.2
@@ -191,7 +193,7 @@ packages:
       tailwindcss: ^3.0.24
     dependencies:
       '@proload/core': 0.3.3
-      astro: 2.1.3
+      astro: 2.1.3_sass@1.59.3
       autoprefixer: 10.4.14_postcss@8.4.21
       postcss: 8.4.21
       postcss-load-config: 4.0.1_postcss@8.4.21
@@ -1029,7 +1031,7 @@ packages:
     dependencies:
       '@proload/core': 0.3.3
       '@proload/plugin-tsm': 0.2.1_@proload+core@0.3.3
-      astro: 2.1.3
+      astro: 2.1.3_sass@1.59.3
       i18next: 22.4.12
       i18next-browser-languagedetector: 7.0.1
       i18next-fs-backend: 2.1.1
@@ -1045,7 +1047,7 @@ packages:
     resolution: {integrity: sha512-8Yo1nQrl2iB5zj+VUAHrvGIck8bZ4WAmXQgJOeF9FuAZGQD5qK6DtSZaRbpBXsFfZYHA6tE8pjs3btHhLbC1zQ==}
     dev: true
 
-  /astro/2.1.3:
+  /astro/2.1.3_sass@1.59.3:
     resolution: {integrity: sha512-5LFo/ixDXs84tgrSbzz0X5c7nzLfkag7w4tgOpBRL/DkveP83v+nSe3KjqwYLPL5vNY9UvryKHsfC0uu4TQz0g==}
     engines: {node: '>=16.12.0', npm: '>=6.14.0'}
     hasBin: true
@@ -1105,7 +1107,7 @@ packages:
       typescript: 4.9.5
       unist-util-visit: 4.1.2
       vfile: 5.3.7
-      vite: 4.1.4
+      vite: 4.1.4_sass@1.59.3
       vitefu: 0.2.4_vite@4.1.4
       yargs-parser: 21.1.1
       zod: 3.21.4
@@ -2092,6 +2094,9 @@ packages:
     hasBin: true
     dependencies:
       queue: 6.0.2
+
+  /immutable/4.3.0:
+    resolution: {integrity: sha512-0AOCmOip+xgJwEVTQj1EfiDDOkPmuyllDuTuEX+DDXUgapLAsBIfkg3sxCYyCEA8mQqZrrxPUGjcOQ2JS3WLkg==}
 
   /import-meta-resolve/2.2.2:
     resolution: {integrity: sha512-f8KcQ1D80V7RnqVm+/lirO9zkOxjGxhaTC1IPrBGd3MEfNgmNG67tSUO9gTi2F3Blr2Az6g1vocaxzkVnWl9MA==}
@@ -3482,6 +3487,15 @@ packages:
     dependencies:
       suf-log: 2.5.3
 
+  /sass/1.59.3:
+    resolution: {integrity: sha512-QCq98N3hX1jfTCoUAsF3eyGuXLsY7BCnCEg9qAact94Yc21npG2/mVOqoDvE0fCbWDqiM4WlcJQla0gWG2YlxQ==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      chokidar: 3.5.3
+      immutable: 4.3.0
+      source-map-js: 1.0.2
+
   /sax/1.2.4:
     resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
     dev: false
@@ -3918,7 +3932,7 @@ packages:
       unist-util-stringify-position: 3.0.3
       vfile-message: 3.1.4
 
-  /vite/4.1.4:
+  /vite/4.1.4_sass@1.59.3:
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3947,6 +3961,7 @@ packages:
       postcss: 8.4.21
       resolve: 1.22.1
       rollup: 3.19.1
+      sass: 1.59.3
     optionalDependencies:
       fsevents: 2.3.2
 
@@ -3958,7 +3973,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 4.1.4
+      vite: 4.1.4_sass@1.59.3
 
   /vscode-css-languageservice/6.2.4:
     resolution: {integrity: sha512-9UG0s3Ss8rbaaPZL1AkGzdjrGY8F+P+Ne9snsrvD9gxltDGhsn8C2dQpqQewHrMW37OvlqJoI8sUU2AWDb+qNw==}
