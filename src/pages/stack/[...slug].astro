@@ -1,10 +1,23 @@
 ---
-import i18n, { changeLanguage } from 'i18next'
-import Base from '@app/layouts/Base.astro'
+import Base from '@app/layouts/Articles.astro'
+import Contact from '@components/sections/Contact.astro'
+import SmallCard from '@components/cards/Small.astro'
+import CTABtn from '@components/buttons/CTA.astro'
+import { ArrowLeft } from 'iconoir-react'
+import { Image } from '@astrojs/image/components'
+import i18n, { changeLanguage, setDefaultNamespace, t } from 'i18next'
+import { localizePath } from 'astro-i18next'
 import { getArticles } from '@app/utils'
 
 changeLanguage('fr')
 
+setDefaultNamespace('stack')
+const content = {
+  title: t('title'),
+  contactDescription: t('home:contactDescription'),
+  contactCTA: t('home:contactCTA'),
+  more: t('more'),
+}
 export async function getStaticPaths() {
   const lang = i18n.language
   const stackArticles = await getArticles('stack', lang)
@@ -15,11 +28,51 @@ export async function getStaticPaths() {
     }
   })
 }
+const stacks = await getArticles('stack', i18n.language)
 const { entry } = Astro.props
 const { Content } = await entry.render()
 ---
 
 <Base title={entry.data.title} forceUseDefaultOgTitle>
-  <h1>{entry.data.title}</h1>
-  <Content />
+  <a
+    href={localizePath('/stack')}
+    class="text-grey-1 hover:text-white text-[14px] ml-[-4px] font-semibold flex items-center gap-[8px] hover:gap-[10px] pb-[24px] duration-300 cursor-pointer"
+  >
+    <ArrowLeft width={20} height={20} strokeWidth="1.2" className=" duration-300" />
+    {content.title}
+  </a>
+  <div class="flex items-center gap-[16px] pb-[40px]">
+    <Image
+      src={entry.data.icon}
+      width={56}
+      height={56}
+      format={entry.data.iconFormat}
+      alt={entry.data.iconAlt}
+    />
+    <h1 class="text-white font-semibold flex items-center h-[56px] text-[48px]">
+      {entry.data.title}
+    </h1>
+  </div>
+  <section class="text-grey-1 text-[16px] pt-[16px]">
+    <Content />
+  </section>
+  <CTABtn text={entry.data.CTA} url={entry.data.url} ext />
+  <section class="flex flex-col gap-[20px] py-[40px]">
+    <h2 class="font-semibold text-[20px] text-white">{content.more}</h2>
+    <div class="w-full grid grid-rows-2 grid-cols-2 gap-0">
+      {
+        stacks.map(stack => (
+          <SmallCard
+            title={stack.data.title}
+            description={stack.data.description}
+            icon={stack.data.icon}
+            iconFormat={stack.data.iconFormat}
+            iconAlt={stack.data.iconAlt}
+            url={'/stack/' + stack.slug}
+          />
+        ))
+      }
+    </div>
+  </section>
+  <Contact description={content.contactDescription} Btn={content.contactCTA} />
 </Base>

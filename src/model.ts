@@ -23,6 +23,7 @@ export const stackShema = z.object({
   tags: z.array(z.string()),
   heroImage: z.string(),
   heroImageAlt: z.string(),
+  CTA: z.string(),
   url: z.string(),
   publishDate: z.date(),
   editDate: z.date(),
