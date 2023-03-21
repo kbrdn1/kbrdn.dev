@@ -55,7 +55,9 @@ const { Content } = await entry.render()
   </div>
   <Image src={entry.data.heroImage} width={720} height={466} alt={entry.data.heroImageAlt} format={entry.data.heroFormat} class="w-full rounded-[6px]"/>
   <section class="text-grey-1 text-[16px] pt-[16px]">
-    <Content />
+    <div class="prose text-grey-1">
+      <Content />
+    </div>
   </section>
   <CTABtn text={entry.data.CTA} url={entry.data.url} ext />
   <section class="flex flex-col gap-[20px] py-[40px]">
