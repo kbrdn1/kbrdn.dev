@@ -22,7 +22,9 @@ export async function getArticles<T extends 'blog' | 'stack' | 'projects'>(
   lang: string,
 ) {
   let collectionEntries = await getCollection(collection)
-  return collectionEntries.filter((entry) => entry.id.includes(lang))
+  return collectionEntries.filter(entry =>
+    entry.id.includes(lang),
+  ) as CollectionEntry<T>[]
 }
 
 export function cleanSlug(slug: string): string {

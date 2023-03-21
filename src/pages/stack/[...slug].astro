@@ -1,0 +1,25 @@
+---
+import i18n, { changeLanguage } from 'i18next'
+import Base from '@app/layouts/Base.astro'
+import { getArticles } from '@app/utils'
+
+changeLanguage('fr')
+
+export async function getStaticPaths() {
+  const lang = i18n.language
+  const stackArticles = await getArticles('stack', lang)
+  return stackArticles.map(entry => {
+    return {
+      params: { slug: entry.slug },
+      props: { entry },
+    }
+  })
+}
+const { entry } = Astro.props
+const { Content } = await entry.render()
+---
+
+<Base title={entry.data.title} forceUseDefaultOgTitle>
+  <h1>{entry.data.title}</h1>
+  <Content />
+</Base>
