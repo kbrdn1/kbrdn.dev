@@ -8,7 +8,6 @@ import SmallCard from '@components/cards/Small.astro'
 changeLanguage('fr')
 const stacks = await getArticles('stack', i18next.language)
 
-
 setDefaultNamespace('stack')
 const content = {
   title: t('title'),
@@ -19,7 +18,7 @@ const content = {
 
 <Base forceUseDefaultOgTitle title={content.title}>
   <h1 class="text-[48px] font-semibold text-white">{content.title}</h1>
-  <section class="w-full grid grid-rows-0 grid-cols-0 md:grid-rows-2 md:grid-cols-2">
+  <section class="w-full grid grid-flow-row grid-cols-0 md:grid-cols-2">
     {
       stacks.map(stack => (
         <SmallCard
