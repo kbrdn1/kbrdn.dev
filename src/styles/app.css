@@ -29,3 +29,21 @@
     font-weight: bold;
     font-style: normal;
 }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-black-2 ;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-black-3 ;
+    @apply rounded-full ;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-grey-2 ;
+}
