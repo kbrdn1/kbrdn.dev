@@ -15,7 +15,7 @@ export interface Props {
 
 const { title, description, btn, btnUrl, type } = Astro.props as Props
 
-const stacks = await getArticles(type, i18next.language)
+const stacks = await getArticles(type, i18next.language, 3)
 ---
 
 <section class="md:px-[12px]">

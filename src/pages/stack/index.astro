@@ -8,6 +8,7 @@ import SmallCard from '@components/cards/Small.astro'
 changeLanguage('fr')
 const stacks = await getArticles('stack', i18next.language)
 
+
 setDefaultNamespace('stack')
 const content = {
   title: t('title'),

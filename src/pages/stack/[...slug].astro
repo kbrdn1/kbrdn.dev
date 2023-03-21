@@ -28,7 +28,7 @@ export async function getStaticPaths() {
     }
   })
 }
-const stacks = await getArticles('stack', i18n.language)
+const stacks = await getArticles('stack', i18n.language, 4);
 const { entry } = Astro.props
 const { Content } = await entry.render()
 ---

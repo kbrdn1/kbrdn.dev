@@ -20,21 +20,27 @@ export function getLang() {
 export async function getArticles<T extends 'blog' | 'stack' | 'projects'>(
   collection: T,
   lang: 'en' | 'fr',
+  limit?: number,
 ) {
   let collectionEntries = await getCollection(collection),
-    collectionByLang = collectionEntries.filter(entry => entry.id.startsWith(lang))
-  return collectionByLang.sort((a, b) => {
-    return new Date(b.data.editDate) - new Date(a.data.editDate)
-  }) as CollectionEntry<T>[]
+    sortedArticlesByLang = collectionEntries.filter(entry => entry.id.startsWith(lang))
+  if (limit) return sortedArticlesByLang.slice(0, limit)
+  else
+    return sortedArticlesByLang.sort((a, b) => {
+      return new Date(b.data.editDate) - new Date(a.data.editDate)
+    }) as CollectionEntry<T>[]
 }
 
 export async function getArticlesByPublishDate<T extends 'blog' | 'stack' | 'projects'>(
   collection: T,
   lang: 'en' | 'fr',
+  limit?: number,
 ) {
   let collectionEntries = await getCollection(collection),
-    collectionByLang = collectionEntries.filter(entry => entry.id.startsWith(lang))
-  return collectionByLang.sort((a, b) => {
-    return new Date(b.data.publishDate) - new Date(a.data.publishDate)
-  }) as CollectionEntry<T>[]
+    sortedArticlesByLang = collectionEntries.filter(entry => entry.id.startsWith(lang))
+  if (limit) return sortedArticlesByLang.slice(0, limit)
+  else
+    return sortedArticlesByLang.sort((a, b) => {
+      return new Date(b.data.publishDate) - new Date(a.data.publishDate)
+    }) as CollectionEntry<T>[]
 }
