@@ -15,7 +15,7 @@ export interface Props {
 const { title, span, description, hCTA, hCTAUrl, hBtn, hBtnUrl } = Astro.props as Props
 ---
 
-<header class="w-full text-white flex flex-col gap-[24px]">
+<header class="w-full text-white flex flex-col md:px-[12px] gap-[24px]">
   <h1 class="text-[40px] font-semibold leading-[44px]">
     {title}&nbsp;<span
       class="bg-clip-text text-transparent bg-gradient-to-r from-white to-accent font-[700]"

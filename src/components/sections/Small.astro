@@ -1,24 +1,43 @@
 ---
+import i18next from 'i18next'
+import { getArticles } from '@app/utils'
+
 import CTABtn from '@components/buttons/CTA.astro'
+import SmallCard from '@components/cards/Small.astro'
 
 export interface Props {
   title: string
   description: string
   btn: string
   btnUrl: string
+  type: 'stack' | 'blog'
 }
 
-const { title, description, btn, btnUrl } = Astro.props as Props
+const { title, description, btn, btnUrl, type } = Astro.props as Props
+
+const stacks = await getArticles(type, i18next.language, 3)
 ---
 
-<section class="px-[12px]">
+<section class="md:px-[12px]">
   <div class="p-[24px] border border-black-3 rounded-[6px] flex flex-col gap-[16px]">
     <div class="flex flex-col">
       <h3 class="font-semibold text-white text-[14px]">{title}</h3>
       <p class="text-grey-1 text-[14px]">{description}</p>
     </div>
-    <div></div>
-
+    <div class="w-full flex flex-col gap-0">
+      {
+        stacks.map(stack => (
+          <SmallCard
+            title={stack.data.title}
+            description={stack.data.description}
+            icon={stack.data.icon}
+            iconFormat={stack.data.iconFormat}
+            iconAlt={stack.data.iconAlt}
+            url={'/stack/' + stack.slug}
+          />
+        ))
+      }
+    </div>
     <CTABtn text={btn} url={btnUrl} full />
   </div>
 </section>

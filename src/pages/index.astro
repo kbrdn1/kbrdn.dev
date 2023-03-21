@@ -16,7 +16,7 @@ const content = {
   description: t('description'),
   hCTA: t('hCTA'),
   hBtn: t('hBtn'),
-  newResources: t('newResources'),
+  newProjects: t('newProjects'),
   blogDescription: t('blogDescription'),
   blogCTA: t('blogCTA'),
   contactDescription: t('contactDescription'),
@@ -37,16 +37,20 @@ const content = {
     hBtn={content.hBtn}
     hBtnUrl="mailto:kylianb1@icloud.com"
   />
-  <Section heading title={content.newResources} />
-  <SmallSection
+  <Section heading title={content.newProjects} />
+  <!-- <SmallSection
     title="Blog"
+    type="blog"
     description={content.blogDescription}
     btn={content.blogCTA}
     btnUrl="/blog"
-  />
-  <Contact description={content.contactDescription} Btn={content.contactCTA} />
+  /> -->
+  <section class="md:px-[12px] w-full">
+    <Contact description={content.contactDescription} Btn={content.contactCTA} />
+  </section>
   <SmallSection
     title={content.stack}
+    type="stack"
     description={content.stackDescription}
     btn={content.stackCTA}
     btnUrl="/stack"

@@ -1,0 +1,36 @@
+---
+import i18next, { changeLanguage, setDefaultNamespace, t } from 'i18next'
+import { getArticles } from '@app/utils'
+import Base from '@layouts/Base.astro'
+import Contact from '@components/sections/Contact.astro'
+import SmallCard from '@components/cards/Small.astro'
+
+changeLanguage('fr')
+const stacks = await getArticles('stack', i18next.language)
+
+setDefaultNamespace('stack')
+const content = {
+  title: t('title'),
+  contactDescription: t('home:contactDescription'),
+  contactCTA: t('home:contactCTA'),
+}
+---
+
+<Base forceUseDefaultOgTitle title={content.title}>
+  <h1 class="text-[48px] font-semibold text-white">{content.title}</h1>
+  <section class="w-full grid grid-flow-row grid-cols-0 md:grid-cols-2">
+    {
+      stacks.map(stack => (
+        <SmallCard
+          title={stack.data.title}
+          description={stack.data.description}
+          icon={stack.data.icon}
+          iconFormat={stack.data.iconFormat}
+          iconAlt={stack.data.iconAlt}
+          url={'/stack/' + stack.slug}
+        />
+      ))
+    }
+  </section>
+  <Contact description={content.contactDescription} Btn={content.contactCTA} />
+</Base>

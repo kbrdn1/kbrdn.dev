@@ -1,29 +1,46 @@
 import { z } from 'astro:content'
 
-export const footerSchema = z.object({
-  build: z.string(),
-  hosted: z.string(),
+export const blogShema = z.object({
+  title: z.string(),
+  description: z.string(),
+  tags: z.array(z.string()),
+  heroPicture: z.string(),
+  heroPictureAlt: z.string(),
+  heroImages: z.array(z.string()),
+  heroImagesFormat: z.array(z.string()),
+  heroImagesAlt: z.array(z.string()),
+  heroDescription: z.string(),
+  publishDate: z.date(),
+  editDate: z.date(),
 })
-export type footerSchema = z.infer<typeof footerSchema>
+export type blogShema = z.infer<typeof blogShema>
 
-export const navSchema = z.object({
-  me: z.object({
-    job: z.string(),
-    spec: z.string(),
-  }),
-  subtitle: z.object({
-    resources: z.string(),
-    social: z.string(),
-  }),
-  links: z.object({
-    explore: z.string(),
-    projects: z.string(),
-    blog: z.string(),
-    hire: z.string(),
-    skills: z.string(),
-    stack: z.string(),
-    now: z.string(),
-    cv: z.string(),
-  }),
+export const stackShema = z.object({
+  title: z.string(),
+  description: z.string(),
+  icon: z.string(),
+  iconFormat: z.string(),
+  iconAlt: z.string(),
+  heroImage: z.string(),
+  heroFormat: z.string(),
+  heroImageAlt: z.string(),
+  CTA: z.string(),
+  url: z.string(),
+  publishDate: z.date(),
+  editDate: z.date(),
 })
-export type navSchema = z.infer<typeof navSchema>
+export type stackShema = z.infer<typeof stackShema>
+
+export const projectsShema = z.object({
+  title: z.string(),
+  description: z.string(),
+  tags: z.array(z.string()),
+  heroImage: z.string(),
+  heroFormat: z.string(),
+  heroImageAlt: z.string(),
+  url: z.string(),
+  github: z.string(),
+  publishDate: z.date(),
+  editDate: z.date(),
+})
+export type projectsShema = z.infer<typeof projectsShema>
