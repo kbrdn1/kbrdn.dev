@@ -9,12 +9,13 @@ export interface Props {
   iconFormat: string
   iconAlt: string
   url: string
+  ext?: boolean
 }
 
-const { title, description, icon, iconAlt, iconFormat, url } = Astro.props as Props
+const { title, description, icon, iconAlt, iconFormat, url, ext } = Astro.props as Props
 ---
 
-<a href={localizePath(url)} class="p-[4px]">
+<a href={ext ? url : localizePath(url)} class="p-[4px]" target={ext ? '_blank' : '_self'}>
   <div
     class="flex items-center p-[8px] gap-[20px] rounded-[6px] hover:bg-black-2 transition-all"
   >
