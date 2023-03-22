@@ -1,3 +1,11 @@
 {
-  "title": "Now"
+  "title": "Now",
+  "htitle": "Now ⬇️",
+  "description": "What I'm doing now ?",
+  "job": "I am currently on a work-study program at",
+  "job2": "as a Full Stack developer.",
+  "school": "I am doing a BAC+3 Bachelor Full Stack Developer license at",
+  "learning": "I'm mainly learning ThreeJS, SwiftUI, Flutter and React Native.",
+  "CTA": "See my projects",
+  "url": "/projects"
 }
