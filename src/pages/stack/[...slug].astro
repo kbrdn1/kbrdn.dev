@@ -33,7 +33,13 @@ const stacks = await getArticles('stack', i18n.language, 4, entry.slug)
 const { Content } = await entry.render()
 ---
 
-<Base title={entry.data.title} forceUseDefaultOgTitle>
+<Base
+  title={entry.data.title}
+  ogImage={entry.data.ogImage}
+  ogImageAlt={entry.data.ogImageAlt}
+  ogDescription={entry.body}
+  forceUseDefaultOgTitle
+>
   <a
     href={localizePath('/stack')}
     class="text-grey-1 hover:text-white text-[14px] ml-[-4px] font-semibold flex items-center gap-[8px] hover:gap-[10px] pb-[24px] duration-300 cursor-pointer"
