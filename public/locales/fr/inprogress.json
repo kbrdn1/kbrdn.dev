@@ -1,3 +1,11 @@
 {
-  "title": "Maintenant"
+  "title": "Maintenant",
+  "htitle": "Maintenant ⬇️",
+  "description": "Qu'est-ce que je fais maintenant ?",
+  "job": "Je suis actullement en alternance chez",
+  "job2": "en tant que développeur Full Stack.",
+  "school": "Je fais une licence BAC+3 Bachelor Développeur Full Stack à",
+  "learning": "Je suis principalement en train d'apprendre ThreeJS, SwiftUI, Flutter et React Native.",
+  "CTA": "Voir les projets",
+  "url": "/projects"
 }
