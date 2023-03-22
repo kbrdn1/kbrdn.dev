@@ -30,8 +30,20 @@ const content = {
     <section class="flex flex-col gap-[24px] text-grey-1">
       <p class="text-[16px] text-white font-semibold">{content.description}</p>
       <ul class="list-disc flex flex-col pl-[20px] gap-[10px]">
-        <li>{content.job}&nbsp;<a class="text-white" href="https://virtual-immersion.io/" target="_blank">Virtual Immersion</a>&nbsp;{content.job2}</li>
-        <li>{content.school}&nbsp;<a class="text-white" href="https://www.metz-numeric-school.fr/fr" target="_blank">Metz Numeric School</a>.</li>
+        <li>
+          {content.job}&nbsp;<a
+            class="text-white"
+            href="https://virtual-immersion.io/"
+            target="_blank">Virtual Immersion</a
+          >&nbsp;{content.job2}
+        </li>
+        <li>
+          {content.school}&nbsp;<a
+            class="text-white"
+            href="https://www.metz-numeric-school.fr/fr"
+            target="_blank">Metz Numeric School</a
+          >.
+        </li>
         <li>{content.learning}</li>
       </ul>
       <CTABtn text={content.CTA} url={content.url} />
