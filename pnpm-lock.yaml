@@ -17,7 +17,7 @@ specifiers:
   i18next-fs-backend: ^2.1.1
   iconoir-react: ^6.4.0
   lint-staged: 13.2.0
-  prettier: 2.8.4
+  prettier: 2.8.6
   prettier-plugin-astro: 0.8.0
   react: ^18.0.0
   react-dom: ^18.0.0
@@ -47,7 +47,7 @@ devDependencies:
   astro-i18next: 1.0.0-beta.21_astro@2.1.4
   astro-seo: 0.7.1
   lint-staged: 13.2.0
-  prettier: 2.8.4
+  prettier: 2.8.6
   prettier-plugin-astro: 0.8.0
 
 packages:
@@ -93,7 +93,7 @@ packages:
     dependencies:
       '@vscode/emmet-helper': 2.8.6
       events: 3.3.0
-      prettier: 2.8.4
+      prettier: 2.8.6
       prettier-plugin-astro: 0.7.2
       source-map: 0.7.4
       vscode-css-languageservice: 6.2.4
@@ -3246,7 +3246,7 @@ packages:
     engines: {node: ^14.15.0 || >=16.0.0, pnpm: '>=7.14.0'}
     dependencies:
       '@astrojs/compiler': 0.31.4
-      prettier: 2.8.4
+      prettier: 2.8.6
       sass-formatter: 0.7.6
       synckit: 0.8.5
 
@@ -3255,13 +3255,13 @@ packages:
     engines: {node: ^14.15.0 || >=16.0.0, pnpm: '>=7.14.0'}
     dependencies:
       '@astrojs/compiler': 1.2.1
-      prettier: 2.8.4
+      prettier: 2.8.6
       sass-formatter: 0.7.6
       synckit: 0.8.5
     dev: true
 
-  /prettier/2.8.4:
-    resolution: {integrity: sha512-vIS4Rlc2FNh0BySk3Wkd6xmwxB0FpOndW5fisM5H8hsZSxU2VWVB5CWIkIjWvrHjIhxk2g3bfMKM87zNTrZddw==}
+  /prettier/2.8.6:
+    resolution: {integrity: sha512-mtuzdiBbHwPEgl7NxWlqOkithPyp4VN93V7VeHVWBF+ad3I5avc0RVDT4oImXQy9H/AqxA2NSQH8pSxHW6FYbQ==}
     engines: {node: '>=10.13.0'}
     hasBin: true
 
