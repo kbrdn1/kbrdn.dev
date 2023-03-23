@@ -1,18 +1,20 @@
 ---
+import { localizePath } from 'astro-i18next'
 import { SendMail } from 'iconoir-react'
 
 export interface Props {
   text: string
   url: string
-  icon: boolean
+  icon?: boolean
+  ext?: boolean
 }
 
-const { text, url, icon } = Astro.props as Props
+const { text, url, icon, ext } = Astro.props as Props
 ---
 
 <a
-  href={url}
-  class="flex items-center gap-[10px] hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
+  href={ext ? url : localizePath(url)}
+  class="flex items-center gap-[10px] text-white hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
 >
   {
     icon && (
