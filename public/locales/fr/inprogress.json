@@ -2,6 +2,8 @@
   "title": "Maintenant",
   "htitle": "Maintenant ⬇️",
   "description": "Qu'est-ce que je fais maintenant ?",
+  "ogImage": "https://kbrdn.dev/now/now-og.png",
+  "ogImageAlt": "Maintenant",
   "job": "Je suis actullement en alternance chez",
   "job2": "en tant que développeur Full Stack.",
   "school": "Je fais une licence BAC+3 Bachelor Développeur Full Stack à",

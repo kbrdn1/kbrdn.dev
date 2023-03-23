@@ -77,16 +77,16 @@ Last update: 2023-03-22
 - [ ] Design og images
 
   - [x] Home
-  - [ ] Stack
+  - [x] Stack
   - [x] each Stack
-  - [ ] Skills
+  - [x] Skills
   - [ ] Projects
   - [ ] each Projects
   - [ ] Blog
   - [ ] each Blog
   - [ ] Contact
   - [ ] About
-  - [ ] Now
+  - [x] Now
   - [ ] Resume
 
 - [ ] custom cursor
