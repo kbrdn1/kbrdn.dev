@@ -1,4 +1,8 @@
 {
-  "title": "Outils 🔧",
+  "title": "Outils",
+  "htitle": "Outils 🔧",
+  "description": "Voici une liste des outils que j'utilise pour développer mes projets.",
+  "ogImage": "https://kbrdn.dev/stack/stack-og.png",
+  "ogImageAlt": "Outils",
   "more": "Autres logiciel que j'utilise"
 }

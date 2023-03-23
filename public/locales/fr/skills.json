@@ -1,6 +1,9 @@
 {
   "title": "Compétences",
   "htitle": "Compétences ✨",
+  "description": "Voici une liste de mes compétences, que j'ai pu acquérir au cours de mes études et de mes expériences professionnelles.",
+  "ogImage": "https://kbrdn.dev/skills/skills-og.png",
+  "ogImageAlt": "Compétences",
   "skills": [
     {
       "name": "HTML",
