@@ -10,13 +10,21 @@ setDefaultNamespace('skills')
 const content = {
   title: t('title'),
   htitle: t('htitle'),
+  description: t('description'),
+  ogImage: t('ogImage'),
+  ogImageAlt: t('ogImageAlt'),
   skills: t('skills', { returnObjects: true }),
   contactDescription: t('home:contactDescription'),
   contactCTA: t('home:contactCTA'),
 }
 ---
 
-<Base forceUseDefaultOgTitle title={content.title}>
+<Base
+  title={content.title}
+  ogImage={content.ogImage}
+  ogImageAlt={content.ogImageAlt}
+  ogDescription={content.description}
+>
   <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
   <section class="w-full grid grid-flow-row grid-cols-0 md:grid-cols-2">
     {

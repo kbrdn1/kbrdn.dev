@@ -1,12 +1,32 @@
 ---
+import i18next from 'i18next'
+import { getArticles } from '@app/utils'
+
+import BigCard from '@components/cards/Big.astro'
 export interface Props {
-  heading?: boolean
   title: string
+  type: 'projects'
 }
 
-const { title } = Astro.props as Props
+const { title, type } = Astro.props as Props
+const articles = await getArticles(type, i18next.language, 2)
 ---
 
 <section class="md:px-[12px] w-full flex flex-col gap-[16px]">
   <h2 class="text-white text-[14px] font-semibold uppercase">{title}</h2>
+  <div class="w-full flex flex-col gap-[16px]">
+    {
+      articles.map(article => (
+        <BigCard
+          title={article.data.title}
+          description={article.data.description}
+          hero={article.data.heroImage}
+          heroFormat={article.data.heroFormat}
+          heroAlt={article.data.heroImageAlt}
+          url={`/${type}/${article.slug}`}
+          tags={article.data.tags}
+        />
+      ))
+    }
+  </div>
 </section>
