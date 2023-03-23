@@ -1,3 +1,8 @@
 {
-  "title": "Projects"
+  "title": "Projects",
+  "htitle": "Projects 📚",
+  "description": "Here is a list of projects that I have done or that I am doing.",
+  "ogimage": "https://kbrdn.dev/projects/projects-og.png",
+  "ogImageAlt": "Projects",
+  "more": "See other projects"
 }
