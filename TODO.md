@@ -41,9 +41,9 @@ Last update: 2023-03-22
 
 - [ ] Create the Home page
 
-- [ ] Create the Projects page
+- [x] Create the Projects page
 
-  - [ ] Create each articles Projects pages
+  - [x] Create each articles Projects pages
 
 - [ ] Create the Blog page
 
@@ -80,8 +80,8 @@ Last update: 2023-03-22
   - [x] Stack
   - [x] each Stack
   - [x] Skills
-  - [ ] Projects
-  - [ ] each Projects
+  - [x] Projects
+  - [x] each Projects
   - [ ] Blog
   - [ ] each Blog
   - [ ] Contact
