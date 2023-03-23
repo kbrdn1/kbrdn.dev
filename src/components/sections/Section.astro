@@ -23,7 +23,7 @@ const articles = await getArticles(type, i18next.language, 2)
           hero={article.data.heroImage}
           heroFormat={article.data.heroFormat}
           heroAlt={article.data.heroImageAlt}
-          url={article.slug}
+          url={`/${type}/${article.slug}`}
           tags={article.data.tags}
         />
       ))
