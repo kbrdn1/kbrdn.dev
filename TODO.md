@@ -66,7 +66,7 @@ Last update: 2023-03-22
 
 - [ ] Create the About page
 
-- [ ] Create the 404 page
+- [x] Create the 404 page
 
 - [x] Write the README
 

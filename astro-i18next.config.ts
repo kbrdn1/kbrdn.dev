@@ -15,6 +15,7 @@ export default {
     'stack',
     'cv',
     'seo',
+    '404',
   ],
   load: ['server'],
   i18nextClient: {
