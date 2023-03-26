@@ -22,6 +22,8 @@ const content = {
   now: t('now'),
   cv: t('cv'),
   languages: t('languages'),
+  new: t('new'),
+  inprogress: t('inprogress'),
 }
 
 import {
@@ -158,7 +160,7 @@ import { motion } from 'framer-motion'
           class={(currentPath.includes('projects')
             ? 'border border-grey-2 bg-black-3 text-white '
             : '') +
-            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
+            'relative flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Repository
             className="group-hover:rotate-[10deg] transition-all"
@@ -167,6 +169,12 @@ import { motion } from 'framer-motion'
             strokeWidth="1.2"
           />
           {content.projects}
+          <span
+            class={(currentPath.includes('projects') ? 'text-white border-white ' : 'text-grey-1 border-black-3 ') +
+              'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold'}
+          >
+            {content.new}
+          </span>
         </div>
       </a>
       <a href={localizePath('/blog')}>
@@ -174,7 +182,7 @@ import { motion } from 'framer-motion'
           class={(currentPath.includes('blog')
             ? 'border border-grey-2 bg-black-3 text-white '
             : '') +
-            'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
+            'relative flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Edit
             className="group-hover:rotate-[10deg] transition-all"
@@ -183,6 +191,12 @@ import { motion } from 'framer-motion'
             strokeWidth="1.2"
           />
           {content.blog}
+          <span
+            class={(currentPath.includes('blog') ? 'text-white border-white ' : 'text-grey-1 border-black-3 ') +
+              'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold'}
+          >
+            {content.inprogress}
+          </span>
         </div>
       </a>
       <a href={localizePath('/contact')}>
