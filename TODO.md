@@ -38,12 +38,12 @@ Last update: 2023-03-22
 
 - [x] Configure metadata SEO for artiles pages
 
-- [ ] Create the Home page
+- [x] Create the Home page
 
 - [x] Create the Projects page
   - [x] Create each articles Projects pages
 
-- [ ] Create the Blog page
+- [x] Create the Blog page
   - [ ] Create each articles Blog pages
 
 - [ ] Create the Contact page
@@ -56,11 +56,11 @@ Last update: 2023-03-22
   - [x] Create each articles Stack pages
 - [x] Create the Now page
 
-- [x] Create the Resume page
+- [ ] Create the Resume page
 
-- [x] Create the About page
+- [ ] Create the About page
 
-- [x] Create the 404 page
+- [ ] Create the 404 page
 
 - [x] Write the README
 
@@ -77,7 +77,7 @@ Last update: 2023-03-22
   - [x] Skills
   - [x] Projects
   - [x] each Projects
-  - [ ] Blog
+  - [x] Blog
   - [ ] each Blog
   - [ ] Contact
   - [ ] About
@@ -88,6 +88,6 @@ Last update: 2023-03-22
 
 - [x] custom scrollbar
 
-- [ ] remake cv in figma
+- [ ] remake CV in figma
 
-- [ ] add cv in pdf
+- [ ] add CV in pdf
