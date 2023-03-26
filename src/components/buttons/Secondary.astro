@@ -4,7 +4,7 @@ import { SendMail } from 'iconoir-react'
 
 export interface Props {
   text: string
-  url: string
+  url?: string
   icon?: boolean
   ext?: boolean
 }
@@ -12,19 +12,36 @@ export interface Props {
 const { text, url, icon, ext } = Astro.props as Props
 ---
 
-<a
-  href={ext ? url : localizePath(url)}
-  class="flex items-center gap-[10px] text-white hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
->
-  {
-    icon && (
-      <SendMail
-        width={20}
-        height={20}
-        strokeWidth="1.2"
-        className="group-hover:rotate-[-10deg] transition-all"
-      />
-    )
-  }
-  {text}
-</a>
+{
+  url ? (
+    <a
+      href={ext ? url : localizePath(url)}
+      class="flex items-center gap-[10px] text-white hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
+    >
+      {icon && (
+        <SendMail
+          width={20}
+          height={20}
+          strokeWidth="1.2"
+          className="group-hover:rotate-[-10deg] transition-all"
+        />
+      )}
+      {text}
+    </a>
+  ) : (
+    <a
+      id="no-link"
+      class="flex cursor-pointer items-center gap-[10px] text-white hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
+    >
+      {icon && (
+        <SendMail
+          width={20}
+          height={20}
+          strokeWidth="1.2"
+          className="group-hover:rotate-[-10deg] transition-all"
+        />
+      )}
+      {text}
+    </a>
+  )
+}
