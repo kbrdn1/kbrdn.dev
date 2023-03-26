@@ -23,7 +23,6 @@ Last update: 2023-03-22
 - [x] Configure i18n for translation
 
 - [x] Utils
-
   - [x] Articles limit
   - [x] Articles order by date
   - [x] Articles order by edit date
@@ -37,20 +36,17 @@ Last update: 2023-03-22
 
 - [x] Create Layouts for Articles pages
 
-- [ ] Configure metadata SEO for artiles pages
+- [x] Configure metadata SEO for artiles pages
 
 - [ ] Create the Home page
 
 - [x] Create the Projects page
-
   - [x] Create each articles Projects pages
 
 - [ ] Create the Blog page
-
   - [ ] Create each articles Blog pages
 
 - [ ] Create the Contact page
-
   - [ ] add Vercel dependencies (analytics, ssr)
   - [ ] add Mailer dependencies and configure
 
@@ -75,7 +71,6 @@ Last update: 2023-03-22
 - [x] add border on flags
 
 - [ ] Design og images
-
   - [x] Home
   - [x] Stack
   - [x] each Stack
