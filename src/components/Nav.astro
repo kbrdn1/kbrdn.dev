@@ -170,7 +170,9 @@ import { motion } from 'framer-motion'
           />
           {content.projects}
           <span
-            class={(currentPath.includes('projects') ? 'text-white border-white ' : 'text-grey-1 border-black-3 ') +
+            class={(currentPath.includes('projects')
+              ? 'text-white border-white '
+              : 'text-grey-1 border-black-3 ') +
               'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold'}
           >
             {content.new}
@@ -192,7 +194,9 @@ import { motion } from 'framer-motion'
           />
           {content.blog}
           <span
-            class={(currentPath.includes('blog') ? 'text-white border-white ' : 'text-grey-1 border-black-3 ') +
+            class={(currentPath.includes('blog')
+              ? 'text-white border-white '
+              : 'text-grey-1 border-black-3 ') +
               'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold'}
           >
             {content.inprogress}
