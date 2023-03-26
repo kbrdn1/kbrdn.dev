@@ -1,6 +1,7 @@
 # Status: 🔵 In progress
 
-Last update: 2023-03-22
+Version: beta-0.9.0
+Last update: 2023-03-27
 
 ## Main tasks
 
@@ -59,7 +60,9 @@ Last update: 2023-03-22
 - [x] Create the Skills page
 
 - [x] Create the Stack page
+
   - [x] Create each articles Stack pages
+
 - [x] Create the Now page
 
 - [ ] Create the Resume page
@@ -71,10 +74,6 @@ Last update: 2023-03-22
 - [x] Write the README
 
 ## Needs to be done
-
-- [ ] animation on pages
-
-- [x] add border on flags
 
 - [ ] Design og images
 
@@ -94,6 +93,14 @@ Last update: 2023-03-22
 - [ ] custom cursor
 
 - [x] custom scrollbar
+
+- [ ] animation on pages
+
+  - [ ] animation on cursor
+  - [ ] onload animation
+  - [ ] title home page animation
+  
+- [x] add border on flags
 
 - [ ] remake CV in figma
 
