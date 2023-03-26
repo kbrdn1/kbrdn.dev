@@ -2,6 +2,7 @@
 import { changeLanguage, setDefaultNamespace, t } from 'i18next'
 import Base from '@layouts/Base.astro'
 import CTABtn from '@components/buttons/CTA.astro'
+import Contact from '@components/sections/Contact.astro'
 
 changeLanguage('fr')
 
@@ -15,6 +16,8 @@ const content = {
   btn2 : t('btn2'),
   ogImage: t('ogImage'),
   ogImageAlt: t('ogImageAlt'),
+  contactDescription: t('home:contactDescription'),
+  contactCTA: t('home:contactCTA'),
 }
 ---
 
@@ -35,4 +38,5 @@ const content = {
       <CTABtn text={content.btn} url="/stack" />
     </div>
   </header>
+  <Contact description={content.contactDescription} Btn={content.contactCTA} />
 </Base>
