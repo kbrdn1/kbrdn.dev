@@ -1,3 +1,10 @@
 {
-  "title": "Blog"
+  "title": "Blog",
+  "htitle": "Blog 🎉",
+  "description": "Voici mon blog, où je partage mes expériences, mes découvertes et mes projets. J'écris également sur mon parcours en tant que développeur.",
+  "sorry": "Désolé 😕, il n'y a pas encore d'article pour le moment...",
+  "btn": "Voir les projets",
+  "btn2": "Voir les outils",
+  "ogImage": "https://kbrdn.dev/blog/blog-og.png",
+  "ogImageAlt": "Blog"
 }

@@ -15,7 +15,9 @@ export interface Props {
 
 const { title, description, tags, hero, heroAlt, heroFormat, url, ext } =
   Astro.props as Props
-var more = tags?.length - 2
+let items = []
+tags?.map(tag => items.push(tag))
+var more = items.length - 2
 ---
 
 <a
@@ -34,15 +36,17 @@ var more = tags?.length - 2
       format={heroFormat}
       class="rounded-[6px] sm:w-[200px] sm:h-[150px] mx-auto sm:mx-0"
     />
-    <div class="flex flex-col gap-[4px] text-[14px] justify-between">
+    <div
+      class="flex flex-col gap-[6px] text-[14px] max-w-[400px] mx-auto sm:mx-0 sm:w-full justify-between"
+    >
       <div class="flex flex-col gap-[4px]">
         <p class="text-white">{title}</p>
-        <p class="text-grey-1">{description}</p>
+        <p class="text-grey-1 flex">{description}</p>
       </div>
-      <div class="flex gap-[6px]">
+      <div class="flex gap-[6px] flex-wrap">
         {
-          tags
-            ?.splice(0, 2)
+          items
+            .splice(0, 2)
             .map(tag => (
               <p class="text-grey-1 w-fit h-fit border border-black-3 rounded-[6px] flex text-[10px] py-[4px] px-[12px]">
                 {tag}
