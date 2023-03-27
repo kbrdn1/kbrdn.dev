@@ -13,7 +13,7 @@ export default {
     'inprogress',
     'projects',
     'stack',
-    'cv',
+    'resume',
     'seo',
     '404',
   ],

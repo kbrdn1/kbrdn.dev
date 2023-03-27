@@ -1,7 +1,7 @@
 {
   "name": "kbrdn.dev",
   "type": "module",
-  "version": "0.9.1-beta",
+  "version": "0.10.2-beta",
   "scripts": {
     "precommit": "lint-staged",
     "dev": "astro dev",

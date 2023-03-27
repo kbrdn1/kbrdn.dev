@@ -14,4 +14,4 @@ This is my website/portfolio where I talk about myself and development !
 - Contact page
 ---
 _realease date: 03-27-2023
-version: 0.9.1-beta_
+version: 0.10.2-beta_

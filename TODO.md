@@ -1,6 +1,6 @@
 # Status: 🔵 In progress
 
-Version: 0.9.1-beta
+Version: 0.10.2-beta
 Last update: 2023-03-27
 
 ## Main tasks
