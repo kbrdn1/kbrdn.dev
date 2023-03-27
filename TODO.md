@@ -99,7 +99,7 @@ Last update: 2023-03-27
   - [ ] animation on cursor
   - [ ] onload animation
   - [ ] title home page animation
-  
+
 - [x] add border on flags
 
 - [x] remake resume in figma

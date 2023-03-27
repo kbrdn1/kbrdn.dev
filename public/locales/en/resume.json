@@ -37,7 +37,23 @@
     {
       "title": "CCI Longwy EESC — Web and Mobile Web Developer - BAC+2",
       "date": "oct 2020 - jun 2022",
-      "tags": ["HTML", "CSS", "PHP", "JavaScript", "SASS", "Angular", "JQuery", "Symfony", "XD", "Photoshop", "Ilustrator", "WAMP", "MySQL", "Bootstrap", "Git"],
+      "tags": [
+        "HTML",
+        "CSS",
+        "PHP",
+        "JavaScript",
+        "SASS",
+        "Angular",
+        "JQuery",
+        "Symfony",
+        "XD",
+        "Photoshop",
+        "Ilustrator",
+        "WAMP",
+        "MySQL",
+        "Bootstrap",
+        "Git"
+      ],
       "skills": [
         "Basics of programming and algorithms.",
         "Basic web languages.",
