@@ -102,6 +102,6 @@ Last update: 2023-03-27
   
 - [x] add border on flags
 
-- [ ] remake CV in figma
+- [x] remake resume in figma
 
-- [ ] add CV in pdf
+- [x] add resume in pdf
