@@ -65,7 +65,7 @@ Last update: 2023-03-27
 
 - [x] Create the Now page
 
-- [ ] Create the Resume page
+- [x] Create the Resume page
 
 - [ ] Create the About page
 

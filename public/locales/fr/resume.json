@@ -1,3 +1,89 @@
 {
-  "title": "CV"
+  "title": "Curriculum Vitae",
+  "htitle": "Curriculum Vitae 📃",
+  "description": "Voici mon CV, retraçant mon parcours.",
+  "hdescription": "Voici mon CV, retraçant mon parcours. Vous pouvez le télécharger en cliquant sur le bouton ci-dessous.",
+  "CTA": "Técharger mon CV",
+  "CTAUrl": "https://kbrdn.dev/resume/FR-all.pdf",
+  "Btn": "E-mail",
+  "BtnUrl": "mailto:kylianb1@icloud.com",
+  "ogImage": "https://kbrdn.dev/resume/resume-og.png",
+  "ogImageAlt": "Curriculum Vitae de Kylian Bardini",
+  "education": "Études",
+  "educationContent": [
+    {
+      "title": "Metz Numeric School — Développeur Full Stack - Licence",
+      "date": "oct 2022 - maintenant",
+      "tags": [
+        "Figma",
+        "Java",
+        "Symfony",
+        "React",
+        "C#",
+        "Flutter",
+        "MongoDB",
+        "TypeScript",
+        "Node",
+        "Git",
+        "Docker"
+      ],
+      "skills": [
+        "Connaissance approfondie de l’UI & Ux Design et utilisation de Figma (conception de maquette).",
+        "J'ai appris de nombreux frameworks et langages de programmation pour développer des applications Web App, mobiles et de bureau.",
+        "Architecture logicielle (Oignon, MVC, CRUD, Atomic...).",
+        "Gestion d'un projet en tant que chef de projet pendant 1 an pour l'obtention de mon diplôme."
+      ]
+    },
+    {
+      "title": "CCI Longwy EESC — Développeur Web et Web Mobile - BAC+2",
+      "date": "oct 2020 - juin 2022",
+      "tags": [
+        "HTML",
+        "CSS",
+        "PHP",
+        "JavaScript",
+        "SASS",
+        "Angular",
+        "JQuery",
+        "Symfony",
+        "XD",
+        "Photoshop",
+        "Ilustrator",
+        "WAMP",
+        "MySQL",
+        "Bootstrap",
+        "Git"
+      ],
+      "skills": [
+        "Bases de la programmation et algorithmie.",
+        "Langages Web de base.",
+        "Architecture logicielle (MVC, CRUD).",
+        "Notions UI & UX Design et utilisation de la suite Adobe (conception de maquette et charte graphique).",
+        "Stage de 4 semaines chez House & Garden, conception de leur site web avec Symfony."
+      ]
+    },
+    {
+      "title": "Lycée Jean Zay Jarny — STI2D Option SIN - BAC",
+      "date": "2018 - 2020"
+    }
+  ],
+  "experience": "Expériences",
+  "experienceContent": [
+    {
+      "title": "Virtual Immersion —  Développeur Full Stack en alternance",
+      "date": "nov 2022 - maintenant",
+      "tags": ["Symfony", "React", "Worpress", "MySQL", "TailwindCSS"],
+      "skills": [
+        "Construire une API pour la gestion de fichiers avec Symfony.",
+        "Implémentation  d’immersion en réalité mixte sur Wordpress.",
+        "Architecture logicielle (Oignon, MVC, CRUD, Atomic...).",
+        "Création de la navigation sur la carte d'un parc avec React.",
+        "Création d'une plateforme E-Learning pour l'industrie et les écoles avec des modules VR construits avec Symfony et React."
+      ]
+    },
+    {
+      "title": "EUROSTAMP — Opérateur de production",
+      "date": "oct 2020 - oct 2021"
+    }
+  ]
 }
