@@ -1,6 +1,6 @@
 # Status: 🔵 In progress
 
-Version: 0.9.1-beta
+Version: 0.10.3-beta
 Last update: 2023-03-27
 
 ## Main tasks
@@ -65,7 +65,7 @@ Last update: 2023-03-27
 
 - [x] Create the Now page
 
-- [ ] Create the Resume page
+- [x] Create the Resume page
 
 - [ ] Create the About page
 
@@ -99,9 +99,9 @@ Last update: 2023-03-27
   - [ ] animation on cursor
   - [ ] onload animation
   - [ ] title home page animation
-  
+
 - [x] add border on flags
 
-- [ ] remake CV in figma
+- [x] remake resume in figma
 
-- [ ] add CV in pdf
+- [x] add resume in pdf

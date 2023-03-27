@@ -3,6 +3,10 @@ import '@app/styles/app.css'
 import i18next, { t, setDefaultNamespace } from 'i18next'
 import { HeadHrefLangs } from 'astro-i18next/components'
 import { SEO } from 'astro-seo'
+
+import Nav from '@components/Nav.astro'
+import Footer from '@components/Footer.astro'
+
 setDefaultNamespace('seo')
 
 export interface Props {
@@ -30,9 +34,6 @@ const {
 } = Astro.props
 
 const lang = i18next.language
-
-import Nav from '@components/Nav.astro'
-import Footer from '@components/Footer.astro'
 ---
 
 <!DOCTYPE html>

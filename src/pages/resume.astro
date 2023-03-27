@@ -1,0 +1,153 @@
+---
+import { changeLanguage, setDefaultNamespace, t } from 'i18next'
+
+import Base from '@layouts/Base.astro'
+import CTABtn from '@components/buttons/CTA.astro'
+import SecondaryBtn from '@components/buttons/Secondary.astro'
+import Contact from '@components/sections/Contact.astro'
+import { Image } from '@astrojs/image/components'
+import { motion } from 'framer-motion'
+
+import { Calendar } from 'iconoir-react'
+
+changeLanguage('fr')
+
+setDefaultNamespace('resume')
+const content = {
+  title: t('title'),
+  htitle: t('htitle'),
+  description: t('description'),
+  hdescription: t('hdescription'),
+  CTA: t('CTA'),
+  CTAUrl: t('CTAUrl'),
+  Btn: t('Btn'),
+  BtnUrl: t('BtnUrl'),
+  ogImage: t('ogImage'),
+  ogImageAlt: t('ogImageAlt'),
+  education: t('education'),
+  educationContent: t('educationContent', { returnObjects: true }),
+  experience: t('experience'),
+  experienceContent: t('experienceContent', { returnObjects: true }),
+  job: t('nav:job'),
+  spec: t('nav:spec'),
+  contactDescription: t('home:contactDescription'),
+  contactCTA: t('home:contactCTA'),
+}
+---
+
+<Base
+  forceUseDefaultOgTitle
+  title={content.title}
+  description={content.description}
+  ogImage={content.ogImage}
+  ogImageAlt={content.ogImageAlt}
+>
+  <header class="w-full text-white flex flex-col md:px-[12px] gap-[24px]">
+    <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
+    <p class="text-[16px]">{content.hdescription}</p>
+    <div class="flex gap-[16px]">
+      <CTABtn text={content.CTA} url={content.CTAUrl} ext />
+      <SecondaryBtn text={content.Btn} url={content.BtnUrl} icon ext />
+    </div>
+  </header>
+
+  <section class="flex flex-col text-grey-1 gap-[24px]">
+    <div class="flex items-center gap-[70px]">
+      <Image
+        src="/me.jpg"
+        width={145}
+        height={145}
+        format={'jpeg'}
+        alt="profile-picture"
+        class="rounded-full border border-black-3"
+      />
+      <div class="text-white font-semibold">
+        <h2 class="text-[40px]">Kylian Bardini</h2>
+        <div class="text-grey-1 text-[24]">
+          <div class="w-full h-[26px] flex flex-col overflow-hidden">
+            <motion.div
+              client:load
+              className="flex flex-col gap-[2px]"
+              animate={{ y: -22 }}
+              transition={{
+                from: 0,
+                duration: 0.7,
+                type: 'spring',
+                repeat: 999999,
+                repeatType: 'mirror',
+                ease: 'easeInOut',
+                repeatDelay: 8,
+              }}
+            >
+              <span>{content.job}</span>
+              <span>{content.spec}</span>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h3
+      class="text-[24px] font-semibold text-white w-full border-b border-b-grey-3 border-dashed pb-[6px]"
+    >
+      {content.education}
+    </h3>
+    <div class="flex flex-col gap-[48px]">
+      {
+        content.educationContent.map(item => (
+          <div class="flex flex-col gap-[10px]">
+            <h3 class="text-[20px] text-white">{item.title}</h3>
+            <div class="flex gap-[4px]">
+              <Calendar strokeWidth="1.2" className="text-accent" />
+              <p class="text-[16px] font-semibold">{item.date}</p>
+            </div>
+            <div class="flex gap-[6px] flex-wrap">
+              {item.tags?.map(tag => (
+                <p class="text-grey-1 w-fit h-fit border border-black-3 rounded-[6px] flex text-[10px] py-[4px] px-[12px]">
+                  {tag}
+                </p>
+              ))}
+            </div>
+            <ul class="list-disc flex flex-col list-inside gap-[10px] mt-[10px]">
+              {item.skills?.map(skill => (
+                <li>{skill}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+  <section class="flex flex-col text-grey-1 gap-[24px]">
+    <h3
+      class="text-[24px] font-semibold text-white w-full border-b border-b-grey-3 border-dashed pb-[6px]"
+    >
+      {content.experience}
+    </h3>
+    <div class="flex flex-col gap-[32px]">
+      {
+        content.experienceContent.map(item => (
+          <div class="flex flex-col gap-[10px]">
+            <h3 class="text-[20px] text-white">{item.title}</h3>
+            <div class="flex gap-[4px]">
+              <Calendar strokeWidth="1.2" className="text-accent" />
+              <p class="text-[16px] font-semibold">{item.date}</p>
+            </div>
+            <div class="flex gap-[6px] flex-wrap">
+              {item.tags?.map(tag => (
+                <p class="text-grey-1 w-fit h-fit border border-black-3 rounded-[6px] flex text-[10px] py-[4px] px-[12px]">
+                  {tag}
+                </p>
+              ))}
+            </div>
+            <ul class="list-disc flex flex-col list-inside gap-[10px] mt-[10px]">
+              {item.skills?.map(skill => (
+                <li>{skill}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+  <Contact description={content.contactDescription} Btn={content.contactCTA} />
+</Base>
