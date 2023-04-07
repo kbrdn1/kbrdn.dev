@@ -22,7 +22,7 @@
     "@astrojs/tailwind": "^3.1.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "astro": "^2.1.4",
+    "astro": "^2.2.0",
     "framer-motion": "^10.3.2",
     "i18next": "^22.4.12",
     "i18next-fs-backend": "^2.1.1",
@@ -36,7 +36,7 @@
     "@tailwindcss/typography": "^0.5.9",
     "astro-i18next": "1.0.0-beta.21",
     "astro-seo": "^0.7.1",
-    "lint-staged": "13.2.0",
+    "lint-staged": "13.2.1",
     "prettier": "2.8.7",
     "prettier-plugin-astro": "0.8.0"
   },

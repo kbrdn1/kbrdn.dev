@@ -59,19 +59,11 @@ main {
 
 @media (min-width: 1920px) {
     html {
-        @apply bg-black-1;
-        @apply h-full;
         background-image: url('/dots.svg');
         background-repeat: repeat-x;
         background-position: bottom;
+        background-position-x: -15px;
+        background-attachment: fixed;
         background-size: 1920px;
-    }
-
-    body {
-        @apply mx-auto;
-        @apply w-[1920px];
-        @apply h-full;
-        @apply border-r;
-        @apply border-r-black-3;
     }
 }
