@@ -24,6 +24,12 @@
       "url": "https://www.typescriptlang.org/"
     },
     {
+      "name": "Vue",
+      "type": "Front-end",
+      "icon": "/skills/vue.svg",
+      "url": "https://vuejs.org/"
+    },
+    {
       "name": "React",
       "type": "Front-end",
       "icon": "/skills/react.svg",
