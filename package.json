@@ -1,7 +1,7 @@
 {
   "name": "kbrdn.dev",
   "type": "module",
-  "version": "0.10.3-beta",
+  "version": "1.0.0",
   "scripts": {
     "precommit": "lint-staged",
     "dev": "astro dev",
@@ -22,7 +22,7 @@
     "@astrojs/tailwind": "^3.1.1",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "astro": "^2.2.0",
+    "astro": "^2.2.1",
     "framer-motion": "^10.3.2",
     "i18next": "^22.4.12",
     "i18next-fs-backend": "^2.1.1",

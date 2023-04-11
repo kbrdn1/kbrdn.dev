@@ -2,11 +2,14 @@
 import { Image } from '@astrojs/image/components'
 import icon from '@assets/contact.png'
 import CTABtn from '@components/buttons/CTA.astro'
+import { t } from 'i18next'
 
 export interface Props {
   description: string
   Btn: string
 }
+
+const email = t('contact:email')
 
 const { description, Btn } = Astro.props as Props
 ---
@@ -29,7 +32,7 @@ const { description, Btn } = Astro.props as Props
         type="email"
         name="email"
         id="email"
-        placeholder="your@email.com"
+        placeholder={email}
         class="px-[16px] py-[12px] text-[14px] rounded-[6px] bg-black-2 hover:border-grey-2 border border-black-3 text-grey-1 placeholder:text-grey-1 focus:text-white focus:border-grey-1 w-full"
       />
       <CTABtn text={Btn} url="/contact" />

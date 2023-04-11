@@ -4,7 +4,6 @@ import react from '@astrojs/react'
 import mdx from '@astrojs/mdx'
 import sitemap from '@astrojs/sitemap'
 import astroI18next from 'astro-i18next'
-
 import image from '@astrojs/image'
 
 // https://astro.build/config

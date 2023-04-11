@@ -1,4 +1,4 @@
-# First realease (Beta-preview)
+# Official Realease
 
 This is my website/portfolio where I talk about myself and development !
 [https://kbrdn.dev](url)
@@ -7,18 +7,19 @@ This is my website/portfolio where I talk about myself and development !
 
 - Home
 - Projects
+- Contact page
 - Skills
 - Stack
 - Now
 - Socials Links
+- Resume page
 
 ## Work in progress:
 
-- Resume page
+- Blog page
 - About page
-- Contact page
 
 ---
 
-_realease date: 03-27-2023
-version: 0.10.3-beta_
+_realease date: 04-11-2023
+version: 1.0.0_
