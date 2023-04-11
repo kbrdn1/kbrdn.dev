@@ -1,7 +1,7 @@
 {
   "name": "kbrdn.dev",
   "type": "module",
-  "version": "0.10.3-beta",
+  "version": "1.0.0",
   "scripts": {
     "precommit": "lint-staged",
     "dev": "astro dev",
@@ -20,7 +20,6 @@
     "@astrojs/react": "^2.1.0",
     "@astrojs/sitemap": "^1.2.1",
     "@astrojs/tailwind": "^3.1.1",
-    "@astrojs/vercel": "^3.2.3",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
     "astro": "^2.2.1",

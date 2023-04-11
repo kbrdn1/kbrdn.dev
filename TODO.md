@@ -1,7 +1,7 @@
 # Status: 🔵 In progress
 
-Version: 0.10.3-beta
-Last update: 2023-03-27
+Version: 1.0.0
+Last update: 2023-04-11
 
 ## Main tasks
 
@@ -52,7 +52,7 @@ Last update: 2023-03-27
 
   - [ ] Create each articles Blog pages
 
-- [ ] Create the Contact page
+- [x] Create the Contact page
 
   - [ ] add Vercel dependencies (analytics, ssr)
   - [ ] add Mailer dependencies and configure
@@ -88,7 +88,7 @@ Last update: 2023-03-27
   - [ ] Contact
   - [ ] About
   - [x] Now
-  - [ ] Resume
+  - [x] Resume
 
 - [ ] custom cursor
 

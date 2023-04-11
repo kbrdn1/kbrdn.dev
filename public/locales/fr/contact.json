@@ -1,3 +1,18 @@
 {
-  "title": "Contact"
+  "title": "Contact",
+  "htitle": "Contact 🙋🏽",
+  "description": "Vous chechez un développeur ? Vous avez un projet ? Vous avez une question ? N'hésitez pas à me contacter !",
+  "hdescription": "Vous chechez un développeur ? Vous avez un projet ? Vous avez une question ? N'hésitez pas à me contacter !",
+  "ogImage": "https://kbrdn.dev/contact/contact-og.png",
+  "ogImageAlt": "Contact",
+  "ftitle": "Envoyer un message",
+  "CTA": "Voir mon CV",
+  "CTAUrl": "/resume",
+  "Btn": "E-mail",
+  "BtnUrl": "mailto:kylianb1@icloud.com",
+  "name": "Votre nom",
+  "email": "votre@email.com",
+  "subject": "Objet",
+  "message": "Votre message",
+  "submit": "Envoyer maintenant"
 }
