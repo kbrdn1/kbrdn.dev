@@ -22,4 +22,4 @@ This is my website/portfolio where I talk about myself and development !
 ---
 
 _realease date: 04-11-2023
-version: 1.1.0_
+version: 1.1.2_
