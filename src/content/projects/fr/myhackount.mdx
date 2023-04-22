@@ -23,3 +23,75 @@ editDate: 2023-03-22
 ---
 
 Ce projet est un réseau social pour les développeurs. Il s'agit d'une application MERN qui comprend l'authentification, profils, publications et forums.
+
+## Technologies utilisées:
+
+### Backend:
+
+- NodeJS
+- MongoDB
+- Express
+- JWT
+
+### Frontend:
+
+- ReactJS
+- SASS
+- Redux
+
+## Installation
+
+### Backend:
+
+#### Variables d'environnement
+
+```sh
+# ./config/.env
+PORT=     # enter the API port (by default is 5000)
+CLIENT_URL=http://localhost:3000
+DB_USER_PASS=<username>:<password>
+TOKEN_SECRET=     # enter a random secret token (exemple: "63e45d11c84d424")
+```
+
+#### Connexion à la base de données
+
+```javascript
+// ./config/db.js
+/*
+add your path URL to connect at your Mongo DataBase
+for exemple :
+*/
+'mongodb+srv://' + process.env.DB_USER_PASS + '@cluster0.t023j84.mongodb.net/{dbname}'
+// or
+;('mongodb://localhost:27017/{dbname}')
+```
+
+### Frontend
+
+#### Variables d'environnement
+
+```sh
+# ./client/.env
+REACT_APP_API_URL=http://localhost:<API port>
+```
+
+Aller dans le dosier `data` et ajouter `post.json` et `users.json` a votre base de données MongoDB.
+
+## Lancer l'application
+
+### Backend
+
+```sh
+# ./(root_dir)
+npm i
+npm start
+```
+
+### Frontend
+
+```sh
+cd client
+# ./client
+npm i
+npm start
+```
