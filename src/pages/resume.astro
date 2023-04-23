@@ -44,8 +44,8 @@ const content = {
     <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
     <p class="text-[16px]">{content.hdescription}</p>
     <div class="flex gap-[16px]">
-      <CTABtn text={content.CTA} url={content.CTAUrl} ext />
-      <SecondaryBtn text={content.Btn} url={content.BtnUrl} icon ext />
+      <CTABtn url={content.CTAUrl} ext>{content.CTA}</CTABtn>
+      <SecondaryBtn url={content.BtnUrl} icon ext>{content.Btn}</SecondaryBtn>
     </div>
   </header>
 

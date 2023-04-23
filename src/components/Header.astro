@@ -24,7 +24,7 @@ const { title, span, description, hCTA, hCTAUrl, hBtn, hBtnUrl } = Astro.props a
   </h1>
   <p class="text-[16px]">{description}</p>
   <div class="flex gap-[16px] pt-[6px]">
-    <CTABtn text={hCTA} url={hCTAUrl} />
-    <SecondaryBtn text={hBtn} url={hBtnUrl} icon ext />
+    <CTABtn url={hCTAUrl}>{hCTA}</CTABtn>
+    <SecondaryBtn url={hBtnUrl} icon ext>{hBtn}</SecondaryBtn>
   </div>
 </header>

@@ -78,8 +78,20 @@ const { Content } = await entry.render()
     </div>
   </section>
   <div class="flex gap-[16px]">
-    {entry.data.url && <CTABtn text={content.CTA} url={entry.data.url} ext />}
-    {entry.data.github && <BtnSecondary text="GitHub" url={entry.data.github} ext />}
+    {
+      entry.data.url && (
+        <CTABtn url={entry.data.url} ext>
+          {content.CTA}
+        </CTABtn>
+      )
+    }
+    {
+      entry.data.github && (
+        <BtnSecondary url={entry.data.github} ext>
+          Github
+        </BtnSecondary>
+      )
+    }
   </div>
   <section class="flex flex-col gap-[20px] py-[40px]">
     <h2 class="font-semibold text-[20px] text-white">{content.more}</h2>
