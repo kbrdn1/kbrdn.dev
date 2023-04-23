@@ -22,8 +22,8 @@ const content = {
   <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
   <p class="text-[16px] text-grey-1">{content.text}</p>
   <div class="flex gap-[16px]">
-    <BtnCTA text={content.home} url={'/'} />
-    <BtnSecondary text={content.back} />
+    <BtnCTA url={'/'}>{content.home}</BtnCTA>
+    <BtnSecondary>{content.back}</BtnSecondary>
   </div>
   <script>
     const back = document.getElementById('no-link')

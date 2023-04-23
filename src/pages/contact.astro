@@ -30,8 +30,8 @@ const content = {
     <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
     <p class="text-[16px]">{content.hdescription}</p>
     <div class="flex gap-[16px]">
-      <CTABtn text={content.CTA} url={content.CTAUrl} ext />
-      <SecondaryBtn text={content.Btn} url={content.BtnUrl} icon ext />
+      <CTABtn url={content.CTAUrl} ext>{content.CTA}</CTABtn>
+      <SecondaryBtn url={content.BtnUrl} icon ext>{content.Btn}</SecondaryBtn>
     </div>
   </header>
   <form
@@ -42,7 +42,7 @@ const content = {
     <h2 class="font-semibold text-[24px] text-white mb-[12px]">{content.ftitle}</h2>
     <input type="hidden" name="_next" value="https://kbrdn.dev" />
     <input type="hidden" name="_captcha" value="true" />
-    <div class="flex gap-[14px]">
+    <div class="flex flex-col md:flex-row gap-[14px]">
       <input
         type="text"
         name="name"

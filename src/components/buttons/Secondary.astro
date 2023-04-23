@@ -3,13 +3,12 @@ import { localizePath } from 'astro-i18next'
 import { SendMail } from 'iconoir-react'
 
 export interface Props {
-  text: string
   url?: string
   icon?: boolean
   ext?: boolean
 }
 
-const { text, url, icon, ext } = Astro.props as Props
+const { url, icon, ext } = Astro.props as Props
 ---
 
 {
@@ -26,7 +25,7 @@ const { text, url, icon, ext } = Astro.props as Props
           className="group-hover:rotate-[-10deg] transition-all"
         />
       )}
-      {text}
+      <slot />
     </a>
   ) : (
     <a
@@ -41,7 +40,7 @@ const { text, url, icon, ext } = Astro.props as Props
           className="group-hover:rotate-[-10deg] transition-all"
         />
       )}
-      {text}
+      <slot />
     </a>
   )
 }

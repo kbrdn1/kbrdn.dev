@@ -71,7 +71,7 @@ const { Content } = await entry.render()
       <Content />
     </div>
   </section>
-  <CTABtn text={entry.data.CTA} url={entry.data.url} ext />
+  <CTABtn url={entry.data.url} ext>{entry.data.CTA}</CTABtn>
   <section class="flex flex-col gap-[20px] py-[40px]">
     <h2 class="font-semibold text-[20px] text-white">{content.more}</h2>
     <div class="w-full grid grid-flow-row grid-cols-0 md:grid-cols-2">
