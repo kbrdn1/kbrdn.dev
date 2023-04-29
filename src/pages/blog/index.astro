@@ -34,8 +34,8 @@ const content = {
     <p class="text-[16px]">{content.description}</p>
     <p class="text-[16px]">{content.sorry}</p>
     <div class="flex gap-[16px] pt-[6px]">
-      <CTABtn text={content.btn} url="/projects" />
-      <CTABtn text={content.btn2} url="/stack" />
+      <CTABtn url="/projects">{content.btn}</CTABtn>
+      <CTABtn url="/stack">{content.btn2}</CTABtn>
     </div>
   </header>
   <Contact description={content.contactDescription} Btn={content.contactCTA} />
