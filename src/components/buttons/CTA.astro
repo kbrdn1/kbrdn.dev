@@ -14,7 +14,7 @@ const { url, full, ext } = Astro.props as Props
   href={ext ? url : localizePath(url)}
   target={ext ? '_blank' : '_self'}
   class={(full ? 'w-full ' : 'w-fit ') +
-    'flex justify-center items-center font-semibold hover:border-grey-2 bg-black-2 border border-black-3 rounded-[6px] text-[14px] text-white px-[24px] py-[12px] transition-all'}
+    'flex justify-center items-center font-semibold hover:border-grey-2 bg-black-2 border border-black-3 rounded-[6px] text-[14px] text-white hover:shadow-holo px-[24px] py-[12px] transition-all'}
 >
   <slot />
 </a>

@@ -147,7 +147,7 @@ import { motion } from 'framer-motion'
             'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Compass
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -163,7 +163,7 @@ import { motion } from 'framer-motion'
             'relative flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Repository
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -179,7 +179,7 @@ import { motion } from 'framer-motion'
             'relative flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Edit
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -189,7 +189,7 @@ import { motion } from 'framer-motion'
             class={(currentPath.includes('blog')
               ? 'text-white border-white bg-black-3 '
               : 'text-grey-1 border-black-3 bg-black-2 ') +
-              'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] group-hover:border-white group-hover:text-white uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold transition-all'}
+              'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] group-hover:border-accent group-hover:text-white uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold transition-all'}
           >
             {content.inprogress}
           </span>
@@ -203,20 +203,12 @@ import { motion } from 'framer-motion'
             'flex relative gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <BrainElectricity
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
           />
           {content.hire}
-          <span
-            class={(currentPath.includes('contact')
-              ? 'text-white border-white bg-black-3 '
-              : 'text-grey-1 border-black-3 bg-black-2 ') +
-              'absolute top-1/2 -translate-y-1/2 right-2 text-[8px] group-hover:hidden group-hover:border-white group-hover:text-white uppercase px-[6px] py-[3px] border rounded-[6px] font-semibold transition-all'}
-          >
-            {content.new}
-          </span>
         </div>
       </a>
     </div>
@@ -234,7 +226,7 @@ import { motion } from 'framer-motion'
             'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <LeaderboardStar
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -250,7 +242,7 @@ import { motion } from 'framer-motion'
             'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <Wrench
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -266,7 +258,7 @@ import { motion } from 'framer-motion'
             'flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <AppleImac2021Side
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -284,7 +276,7 @@ import { motion } from 'framer-motion'
           class="flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"
         >
           <GitHub
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -297,7 +289,7 @@ import { motion } from 'framer-motion'
           class="flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"
         >
           <Twitter
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -310,7 +302,7 @@ import { motion } from 'framer-motion'
           class="flex gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group"
         >
           <LinkedIn
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -326,7 +318,7 @@ import { motion } from 'framer-motion'
             'flex relative gap-[10px] items-center w-full rounded-[6px] px-[12px] py-[8px] hover:text-white duration-150 ease-out group'}
         >
           <JournalPage
-            className="group-hover:rotate-[10deg] transition-all"
+            className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
             width={20}
             height={20}
             strokeWidth="1.2"
@@ -345,7 +337,7 @@ import { motion } from 'framer-motion'
     >
       <div class="flex gap-[10px] items-center">
         <Translate
-          className="group-hover:rotate-[10deg] transition-all"
+          className="group-hover:rotate-[10deg] transition-all group-hover:text-accent"
           width={20}
           height={20}
           strokeWidth="1.2"
