@@ -19,11 +19,19 @@ module.exports = {
           3: '#2B2B2B',
         },
         accent: '#FFAA00',
+        'accent-dark': '#887700',
+      },
+      height: {
+        'items-sm': '62px',
+        'items-md': '174px',
       },
       screens: {
         '2xl': '1440px',
         '3xl': '1920px',
       },
+      boxShadow: {
+        holo: '0 0 25px rgba(255, 200, 0, 0.15)'
+      }
     },
   },
   plugins: [require('@tailwindcss/typography')],

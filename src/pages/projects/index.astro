@@ -4,6 +4,7 @@ import { getArticles } from '@app/utils'
 import Base from '@layouts/Base.astro'
 import Contact from '@components/sections/Contact.astro'
 import BigCard from '@components/cards/Big.astro'
+import { motion } from 'framer-motion'
 
 changeLanguage('fr')
 
@@ -29,16 +30,25 @@ const content = {
   <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
   <section class="w-full flex flex-col gap-[16px]">
     {
-      projects.map(project => (
-        <BigCard
-          title={project.data.title}
-          description={project.data.description}
-          hero={project.data.heroImage}
-          heroFormat={project.data.heroFormat}
-          heroAlt={project.data.heroImageAlt}
-          url={'/projects/' + project.slug}
-          tags={project.data.tags}
-        />
+      projects.map((project, index) => (
+        <motion.div
+          client:load
+          className="sm:h-items-md flex items-center w-full"
+          key={project.data.title}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.25 }}
+        >
+          <BigCard
+            title={project.data.title}
+            description={project.data.description}
+            hero={project.data.heroImage}
+            heroFormat={project.data.heroFormat}
+            heroAlt={project.data.heroImageAlt}
+            url={'/projects/' + project.slug}
+            tags={project.data.tags}
+          />
+        </motion.div>
       ))
     }
   </section>
