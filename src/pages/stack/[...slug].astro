@@ -8,6 +8,7 @@ import { Image } from '@astrojs/image/components'
 import i18n, { changeLanguage, setDefaultNamespace, t } from 'i18next'
 import { localizePath } from 'astro-i18next'
 import { getArticles } from '@app/utils'
+import { motion } from 'framer-motion'
 
 changeLanguage('fr')
 
@@ -39,13 +40,17 @@ const { Content } = await entry.render()
   ogImageAlt={entry.data.ogImageAlt}
   ogDescription={entry.body}
 >
-  <a
+  <motion.a
+    client:load
     href={localizePath('/stack')}
-    class="text-grey-1 hover:text-white text-[14px] ml-[-4px] font-semibold flex items-center gap-[8px] hover:gap-[10px] pb-[24px] duration-300 cursor-pointer"
+    className="text-grey-1 group hover:text-white text-[14px] ml-[-4px] font-semibold flex items-center gap-[8px] hover:gap-[10px] pb-[24px] duration-300 cursor-pointer"
+    initial={{ opacity: 0, x: 30 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay: 0.2, duration: 0.7, ease: 'easeOut' }}
   >
-    <ArrowLeft width={20} height={20} strokeWidth="1.2" className=" duration-300" />
+    <ArrowLeft width={20} height={20} strokeWidth="1.2" className="group-hover:text-accent duration-300" />
     {content.title}
-  </a>
+  </motion.a>
   <div class="flex items-center gap-[16px] pb-[40px]">
     <Image
       src={entry.data.icon}

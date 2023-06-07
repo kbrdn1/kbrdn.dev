@@ -3,6 +3,7 @@ import '@app/styles/app.css'
 import i18next, { t, setDefaultNamespace } from 'i18next'
 import { HeadHrefLangs } from 'astro-i18next/components'
 import { SEO } from 'astro-seo'
+import { easeOut, motion } from 'framer-motion'
 
 import Nav from '@components/Nav.astro'
 import Footer from '@components/Footer.astro'
@@ -93,9 +94,15 @@ const lang = i18next.language
     <main
       class="xl:ml-[244px] md:pt-[150px] pt-[120px] lg:pt-[120px] px-[24px] pb-[64px] flex flex-col md:items-center justify-center 3xl:border-r 3xl:border-black-3 bg-black-1"
     >
-      <div class="md:w-[768px] xl:px-[36px] flex flex-col gap-[64px]">
+      <motion.div
+        client:load
+        className="md:w-[768px] xl:px-[36px] flex flex-col gap-[64px]"
+        initial={{ opacity: 0, x: 30 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      >
         <slot />
-      </div>
+      </motion.div>
     </main>
     <Footer />
   </body>
