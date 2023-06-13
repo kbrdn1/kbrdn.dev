@@ -15,7 +15,7 @@ const { url, icon, ext } = Astro.props as Props
   url ? (
     <a
       href={ext ? url : localizePath(url)}
-      class="flex items-center gap-[10px] text-white hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all"
+      class="flex items-center gap-[10px] text-white hover:border-grey-2 border border-black-3 rounded-[6px] text-[14px] px-[24px] py-[12px] group transition-all hover:shadow-holo"
     >
       {icon && (
         <SendMail

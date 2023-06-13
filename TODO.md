@@ -1,7 +1,7 @@
 # Status: 🔵 In progress
 
-Version: 1.1.6\_
-Last update: 2023-04-23
+Version: 1.3.1\_
+Last update: 2023-06-13
 
 ## Main tasks
 
@@ -85,7 +85,7 @@ Last update: 2023-04-23
   - [x] each Projects
   - [x] Blog
   - [ ] each Blog
-  - [ ] Contact
+  - [x] Contact
   - [ ] About
   - [x] Now
   - [x] Resume
@@ -97,7 +97,7 @@ Last update: 2023-04-23
 - [ ] animation on pages
 
   - [ ] animation on cursor
-  - [ ] onload animation
+  - [x] onload animation
   - [ ] title home page animation
 
 - [x] add border on flags
