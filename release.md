@@ -21,5 +21,5 @@ This is my website/portfolio where I talk about myself and development !
 
 ---
 
-_realease date: 06-08-2023
-version: 1.2.0_
+_realease date: 06-13-2023
+version: 1.3.1_

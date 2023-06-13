@@ -1,7 +1,7 @@
 # Status: 🔵 In progress
 
-Version: 1.2.0\_
-Last update: 2023-06-08
+Version: 1.3.1\_
+Last update: 2023-06-13
 
 ## Main tasks
 
