@@ -30,8 +30,8 @@ module.exports = {
         '3xl': '1920px',
       },
       boxShadow: {
-        holo: '0 0 25px rgba(255, 200, 0, 0.15)'
-      }
+        holo: '0 0 25px rgba(255, 200, 0, 0.15)',
+      },
     },
   },
   plugins: [require('@tailwindcss/typography')],

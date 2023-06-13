@@ -27,7 +27,9 @@ const content = {
   ogDescription={content.description}
 >
   <h1 class="text-[48px] font-semibold text-white">{content.htitle}</h1>
-  <section class="w-full grid grid-flow-row grid-cols-0 md:grid-cols-2 gap-1 sm:gap-[6px]">
+  <section
+    class="w-full grid grid-flow-row grid-cols-0 md:grid-cols-2 gap-1 sm:gap-[6px]"
+  >
     {
       content.skills.map((item, index) => (
         <motion.div

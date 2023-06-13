@@ -48,7 +48,12 @@ const { Content } = await entry.render()
     animate={{ opacity: 1, x: 0 }}
     transition={{ delay: 0.2, duration: 0.7, ease: 'easeOut' }}
   >
-    <ArrowLeft width={20} height={20} strokeWidth="1.2" className="group-hover:text-accent duration-300" />
+    <ArrowLeft
+      width={20}
+      height={20}
+      strokeWidth="1.2"
+      className="group-hover:text-accent duration-300"
+    />
     {content.title}
   </motion.a>
   <div class="flex items-center gap-[16px] pb-[40px]">
