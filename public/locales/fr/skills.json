@@ -42,6 +42,12 @@
       "url": "https://astro.build/"
     },
     {
+      "name": "Angular",
+      "type": "Front-end",
+      "icon": "/skills/angular.svg",
+      "url": "https://angular.io/"
+    },
+    {
       "name": "Node.js",
       "type": "Back-end",
       "icon": "/skills/nodejs.svg",
