@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@astrojs/image':
     specifier: ^0.16.1
@@ -58,8 +62,8 @@ devDependencies:
     specifier: 1.0.0-beta.21
     version: 1.0.0-beta.21(astro@2.2.1)
   astro-seo:
-    specifier: ^0.7.1
-    version: 0.7.1
+    specifier: ^0.8.0
+    version: 0.8.0
   lint-staged:
     specifier: 13.2.2
     version: 13.2.2
@@ -480,6 +484,7 @@ packages:
 
   /@emotion/memoize@0.7.4:
     resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -1068,8 +1073,8 @@ packages:
       - encoding
     dev: true
 
-  /astro-seo@0.7.1:
-    resolution: {integrity: sha512-8Yo1nQrl2iB5zj+VUAHrvGIck8bZ4WAmXQgJOeF9FuAZGQD5qK6DtSZaRbpBXsFfZYHA6tE8pjs3btHhLbC1zQ==}
+  /astro-seo@0.8.0:
+    resolution: {integrity: sha512-7gq6lhibCM8FuzZIJlbLLWP5EJ9KL2/4XqeFrAg9O6ZK2xMFxJ5ubKf+a0VJwwTu8W8Xr421CmpiXu6Hq7n/7Q==}
     dev: true
 
   /astro@2.2.1(sass@1.59.3):
