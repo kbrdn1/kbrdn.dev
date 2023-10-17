@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@astrojs/image':
     specifier: ^0.16.1
@@ -11,8 +15,8 @@ dependencies:
     specifier: ^2.1.0
     version: 2.1.0(@types/react-dom@18.0.11)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
   '@astrojs/sitemap':
-    specifier: ^1.2.1
-    version: 1.2.1
+    specifier: ^3.0.0
+    version: 3.0.1
   '@astrojs/tailwind':
     specifier: ^3.1.1
     version: 3.1.1(astro@2.2.1)(tailwindcss@3.2.7)
@@ -202,11 +206,11 @@ packages:
       - supports-color
     dev: false
 
-  /@astrojs/sitemap@1.2.1:
-    resolution: {integrity: sha512-nlKP1qc1ENZ61w+ep5RdsObjYWso4QdLGC5WyzssnKkgVDijHT61s/tHFfBWHhxqdjcw4x1V1um/eSQZPDTR3Q==}
+  /@astrojs/sitemap@3.0.1:
+    resolution: {integrity: sha512-ErCthOQF0Yt6KkvaS+v/7CM6TxztOPHJjla4cbM3fBAFsDQbCS3tvoWSMqPJtmTFiy7veQ1eC5gH58FhPe85zg==}
     dependencies:
       sitemap: 7.1.1
-      zod: 3.21.4
+      zod: 3.21.1
     dev: false
 
   /@astrojs/tailwind@3.1.1(astro@2.2.1)(tailwindcss@3.2.7):
@@ -480,6 +484,7 @@ packages:
 
   /@emotion/memoize@0.7.4:
     resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -4147,6 +4152,10 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  /zod@3.21.1:
+    resolution: {integrity: sha512-+dTu2m6gmCbO9Ahm4ZBDapx2O6ZY9QSPXst2WXjcznPMwf2YNpn3RevLx4KkZp1OPW/ouFcoBtBzFz/LeY69oA==}
+    dev: false
 
   /zod@3.21.4:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
