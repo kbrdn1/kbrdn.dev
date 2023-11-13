@@ -1,12 +1,16 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@astrojs/image':
     specifier: ^0.16.1
     version: 0.16.1(astro@2.2.1)
   '@astrojs/mdx':
-    specifier: ^0.18.1
-    version: 0.18.1(astro@2.2.1)(rollup@3.19.1)
+    specifier: ^0.19.0
+    version: 0.19.0(astro@2.2.1)(rollup@3.19.1)
   '@astrojs/react':
     specifier: ^2.1.0
     version: 2.1.0(@types/react-dom@18.0.11)(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)
@@ -150,8 +154,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@astrojs/mdx@0.18.1(astro@2.2.1)(rollup@3.19.1):
-    resolution: {integrity: sha512-C5pdzAMyigZxbOOtbsmC4RsDOTTTtIbSJkk4FLD5aTfQ9//d/rEep5S9cFFeIARrHkjPiDP374WYm0RZqtN9ig==}
+  /@astrojs/mdx@0.19.0(astro@2.2.1)(rollup@3.19.1):
+    resolution: {integrity: sha512-McFpMV+npinIEKnY5t9hsdzLd76g78GgIRUPxem2OeXPNB8xr2pNS28GeU0+6Pn5STnB+sgcyyeqXLgzauOlMQ==}
     engines: {node: '>=16.12.0'}
     dependencies:
       '@astrojs/markdown-remark': 2.1.4(astro@2.2.1)
@@ -169,6 +173,7 @@ packages:
       remark-gfm: 3.0.1
       remark-smartypants: 2.0.0
       shiki: 0.11.1
+      source-map: 0.7.4
       unist-util-visit: 4.1.2
       vfile: 5.3.7
     transitivePeerDependencies:
