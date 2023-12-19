@@ -1,46 +1,42 @@
 {
-  "name": "kbrdn.dev",
+  "name": "kbrdn.dev_v2.0.0",
   "type": "module",
-  "version": "1.3.1",
+  "version": "2.0.0",
   "scripts": {
-    "precommit": "lint-staged",
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "pnpm generate && astro build",
-    "build-local": "pnpm clean && pnpm generate && astro build",
+    "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "lint": "prettier \"./**/*.{md,mdx,json,js,mjs,cjs,ts,astro,html}\" --write",
-    "generate": "astro-i18next generate && pnpm lint",
-    "clean": "rmdir /s /q src\\pages\\en && rmdir /s /q dist"
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json}\"",
+    "format:watch": "prettier --write \"src/**/*.{ts,tsx}\" --plugin=prettier-plugin-astro --watch --ignore-unknown",
+    "prepare": "husky install"
   },
   "dependencies": {
-    "@astrojs/image": "^0.16.1",
-    "@astrojs/mdx": "^0.18.1",
-    "@astrojs/react": "^2.1.0",
-    "@astrojs/sitemap": "^1.2.1",
-    "@astrojs/tailwind": "^3.1.1",
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
-    "astro": "^2.2.1",
-    "framer-motion": "^10.3.2",
-    "i18next": "^22.4.12",
-    "i18next-fs-backend": "^2.1.1",
-    "iconoir-react": "^6.4.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "sass": "^1.59.3",
-    "tailwindcss": "^3.0.24"
+    "@astrojs/check": "^0.3.2",
+    "@astrojs/mdx": "^2.0.1",
+    "@astrojs/sitemap": "^3.0.3",
+    "@astrojs/tailwind": "^5.0.3",
+    "@astrojs/vercel": "^6.0.2",
+    "@astrojs/vue": "^4.0.3",
+    "@iconoir/vue": "^7.1.0",
+    "astro": "^4.0.4",
+    "git-format-staged": "^3.0.0",
+    "prettier-plugin-astro": "^0.12.2",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.3",
+    "vue": "^3.3.11"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.9",
-    "astro-i18next": "1.0.0-beta.21",
-    "astro-seo": "^0.7.1",
-    "lint-staged": "13.2.2",
-    "prettier": "2.8.8",
-    "prettier-plugin-astro": "0.8.0"
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1"
   },
   "lint-staged": {
-    "**/*.{md,mdx,json,js,mjs,cjs,ts,astro,html}": "prettier --write --config .prettierrc"
+    "*.{ts,tsx,vue,astro}": [
+      "eslint --cache --fix",
+      "prettier --write \"src/**/*.{ts,tsx,vue,astro}\""
+    ],
+    "*.{js,jsx,ts,tsx,vue,astro,json}": "prettier --write"
   }
 }
