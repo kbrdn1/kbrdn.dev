@@ -19,9 +19,9 @@
 
 **Purpose**: Bug fixes and project verification before deployment work
 
-- [ ] T001 Fix content collection path bug in content.config.ts (change `blog/` to `blogs/` on line 35)
-- [ ] T002 [P] Verify all 6 content collections have content files in app/content/
-- [ ] T003 [P] Create .github/workflows/ directory structure
+- [x] T001 Fix content collection path bug in content.config.ts (change `blog/` to `blogs/` on line 35)
+- [x] T002 [P] Verify all 6 content collections have content files in app/content/
+- [x] T003 [P] Create .github/workflows/ directory structure
 
 **Checkpoint**: Content collections working, GitHub workflows directory ready
 
@@ -33,11 +33,11 @@
 
 **⚠️ CRITICAL**: US2 (Developer Deployment) and US3 (Visitor Experience) cannot proceed without this phase
 
-- [ ] T004 Create Dockerfile with multi-stage build (deps → builder → runner) at repository root
-- [ ] T005 [P] Create .dockerignore with exclusions for node_modules, .nuxt, .output, .git, docs/
-- [ ] T006 [P] Create docker-compose.yml for local development testing at repository root
-- [ ] T007 Test Docker build locally with `docker build -t kbrdn-dev .`
-- [ ] T008 Test Docker run locally with `docker run -p 3000:3000 kbrdn-dev`
+- [x] T004 Create Dockerfile with multi-stage build (deps → builder → runner) at repository root
+- [x] T005 [P] Create .dockerignore with exclusions for node_modules, .nuxt, .output, .git, docs/
+- [x] T006 [P] Create docker-compose.yml for local development testing at repository root
+- [x] T007 Test Docker build locally with `docker build -t kbrdn-dev .`
+- [x] T008 Test Docker run locally with `docker run -p 3000:3000 kbrdn-dev`
 
 **Checkpoint**: Docker builds and runs successfully locally. Foundation ready for deployment stories.
 
@@ -51,14 +51,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Update nuxt.config.ts with Studio configuration (content.studio.enabled, gitInfo)
-- [ ] T010 [US1] Add runtimeConfig for studioToken in nuxt.config.ts
-- [ ] T011 [US1] Create .studio/ directory at repository root
-- [ ] T012 [US1] Create .studio/config.json with collection definitions (blog, projects, experiences, skills, stacks)
-- [ ] T013 [US1] Create .github/workflows/studio-sync.yml for content change detection
-- [ ] T014 [P] [US1] Create app/components/content/Alert.vue MDC component
-- [ ] T015 [P] [US1] Create app/components/content/Callout.vue MDC component
-- [ ] T016 [P] [US1] Create app/components/content/CodeGroup.vue MDC component
+- [x] T009 [US1] Update nuxt.config.ts with Studio configuration (content.studio.enabled, gitInfo)
+- [x] T010 [US1] Add runtimeConfig for studioToken in nuxt.config.ts
+- [x] T011 [US1] Create .studio/ directory at repository root
+- [x] T012 [US1] Create .studio/config.json with collection definitions (blog, projects, experiences, skills, stacks)
+- [x] T013 [US1] Create .github/workflows/studio-sync.yml for content change detection
+- [x] T014 [P] [US1] Create app/components/content/Alert.vue MDC component
+- [x] T015 [P] [US1] Create app/components/content/Callout.vue MDC component
+- [x] T016 [P] [US1] Create app/components/content/CodeGroup.vue MDC component
 
 **Checkpoint**: Nuxt Studio integration complete. Content sync workflow ready. User Story 1 independently testable.
 
@@ -72,12 +72,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Create .github/workflows/deploy.yml with build job (checkout, Bun setup, install, build)
-- [ ] T018 [US2] Add deploy job to deploy.yml with Dokploy webhook trigger
-- [ ] T019 [US2] Add caching configuration to deploy.yml for Bun dependencies
-- [ ] T020 [US2] Add workflow_dispatch trigger to deploy.yml for manual deployments
-- [ ] T021 [US2] Add error handling and notifications to deploy.yml
-- [ ] T022 [US2] Document required GitHub secrets in README or DEPLOYMENT.md
+- [x] T017 [US2] Create .github/workflows/deploy.yml with build job (checkout, Bun setup, install, build)
+- [x] T018 [US2] Add deploy job to deploy.yml with Dokploy webhook trigger
+- [x] T019 [US2] Add caching configuration to deploy.yml for Bun dependencies
+- [x] T020 [US2] Add workflow_dispatch trigger to deploy.yml for manual deployments
+- [x] T021 [US2] Add error handling and notifications to deploy.yml
+- [x] T022 [US2] Document required GitHub secrets in README or DEPLOYMENT.md
 
 **Checkpoint**: CI/CD pipeline complete. Push-to-deploy workflow functional. User Story 2 independently testable.
 
@@ -91,11 +91,11 @@
 
 ### Implementation for User Story 3
 
-- [ ] T023 [US3] Add HEALTHCHECK instruction to Dockerfile with wget spider check
-- [ ] T024 [US3] Configure health check timing (interval=30s, timeout=10s, retries=3, start_period=40s)
-- [ ] T025 [US3] Add production environment variables to docker-compose.yml for local testing
-- [ ] T026 [US3] Document DNS configuration requirements (A records for @ and www to 72.60.212.44)
-- [ ] T027 [US3] Document Dokploy SSL configuration steps in quickstart.md or README
+- [x] T023 [US3] Add HEALTHCHECK instruction to Dockerfile with wget spider check
+- [x] T024 [US3] Configure health check timing (interval=30s, timeout=10s, retries=3, start_period=40s)
+- [x] T025 [US3] Add production environment variables to docker-compose.yml for local testing
+- [x] T026 [US3] Document DNS configuration requirements (A records for @ and www to 72.60.212.44)
+- [x] T027 [US3] Document Dokploy SSL configuration steps in quickstart.md or README
 
 **Checkpoint**: Health checks configured. SSL/DNS documentation complete. User Story 3 independently testable.
 
@@ -105,10 +105,10 @@
 
 **Purpose**: Final validation and documentation updates
 
-- [ ] T028 [P] Run complete quickstart.md verification checklist
-- [ ] T029 [P] Verify all success criteria from spec.md can be measured
-- [ ] T030 Update CLAUDE.md with deployment-related context if needed
-- [ ] T031 Create initial deployment commit and push to master
+- [x] T028 [P] Run complete quickstart.md verification checklist
+- [x] T029 [P] Verify all success criteria from spec.md can be measured
+- [x] T030 Update CLAUDE.md with deployment-related context if needed
+- [x] T031 Create initial deployment commit and push to master
 
 ---
 

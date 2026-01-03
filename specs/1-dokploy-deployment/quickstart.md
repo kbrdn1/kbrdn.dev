@@ -150,14 +150,53 @@ jobs:
 
 ### 8. DNS: Configure Records (variable time)
 
-Add at your domain registrar:
+Configure DNS records at your domain registrar (e.g., Cloudflare, Namecheap, GoDaddy):
 
-| Type | Name | Value |
-|------|------|-------|
-| A | @ | 72.60.212.44 |
-| A | www | 72.60.212.44 |
+| Type | Name | Value | TTL | Purpose |
+|------|------|-------|-----|---------|
+| A | @ | 72.60.212.44 | 300 | Root domain (kbrdn.dev) |
+| A | www | 72.60.212.44 | 300 | WWW subdomain |
+| CNAME | dokploy | kbrdn.dev | 300 | Dokploy dashboard (optional) |
 
-### 9. Deploy! (2 min)
+**Important DNS Notes:**
+- TTL of 300 (5 minutes) allows faster propagation during setup
+- After verified working, increase TTL to 3600 (1 hour) for caching
+- DNS propagation can take 5 minutes to 48 hours depending on registrar
+- Use `dig kbrdn.dev` or [dnschecker.org](https://dnschecker.org) to verify
+
+**If using Cloudflare:**
+- Set proxy status to "DNS only" (gray cloud) initially for SSL setup
+- After Dokploy SSL is configured, you can enable orange cloud proxy
+
+### 9. SSL: Configure Let's Encrypt (5 min)
+
+In Dokploy dashboard, configure SSL:
+
+1. **Navigate to Application → Domains**
+2. **Add domain**: `kbrdn.dev`
+3. **Enable SSL**:
+   - Certificate type: Let's Encrypt
+   - Auto-renew: Enabled (default)
+4. **Add www redirect** (optional):
+   - Add domain: `www.kbrdn.dev`
+   - Enable redirect to main domain
+
+**SSL Verification:**
+```bash
+# Check certificate from command line
+curl -vI https://kbrdn.dev 2>&1 | grep -A 6 "Server certificate"
+
+# Or use online checker
+# https://www.ssllabs.com/ssltest/analyze.html?d=kbrdn.dev
+```
+
+**Troubleshooting SSL:**
+- Ensure DNS is pointing to VPS before enabling SSL
+- Let's Encrypt rate limits: 5 certificates per domain per week
+- Check Dokploy logs: `docker logs dokploy`
+- Verify port 80 is accessible for ACME challenge
+
+### 10. Deploy! (2 min)
 
 ```bash
 git add .
