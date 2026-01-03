@@ -32,7 +32,7 @@ export default defineContentConfig({
     blog: defineCollection({
       type: 'page',
       source: {
-        include: 'blog/**/*.{md,mdx}',
+        include: 'blogs/**/*.{md,mdx}',
         cwd: contentDir
       },
       schema: z.object({
