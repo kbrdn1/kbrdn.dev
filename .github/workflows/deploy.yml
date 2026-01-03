@@ -71,7 +71,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
 
       - name: Verify build output
         run: |

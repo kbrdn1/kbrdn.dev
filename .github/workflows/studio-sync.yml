@@ -6,7 +6,6 @@ on:
       - master
     paths:
       - 'app/content/**'
-      - '.studio/**'
 
   # Allow manual trigger
   workflow_dispatch:
@@ -26,7 +25,7 @@ jobs:
         id: content-check
         run: |
           # Get changed files in content directory
-          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'app/content/' '.studio/' 2>/dev/null || echo "")
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'app/content/' 2>/dev/null || echo "")
 
           if [ -n "$CHANGED" ]; then
             echo "content_changed=true" >> $GITHUB_OUTPUT
@@ -37,27 +36,13 @@ jobs:
             echo "No content changes detected"
           fi
 
-      - name: Notify Nuxt Studio
-        if: steps.content-check.outputs.content_changed == 'true'
-        env:
-          NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
-        run: |
-          if [ -n "$NUXT_STUDIO_TOKEN" ]; then
-            echo "Notifying Nuxt Studio of content changes..."
-            # Nuxt Studio automatically syncs via Git integration
-            # This step logs the sync event for monitoring
-            echo "Content sync triggered at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-          else
-            echo "NUXT_STUDIO_TOKEN not configured - skipping Studio notification"
-          fi
-
       - name: Trigger deployment
         if: steps.content-check.outputs.content_changed == 'true'
         env:
           DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
         run: |
           if [ -n "$DOKPLOY_WEBHOOK_URL" ]; then
-            echo "Triggering Dokploy deployment..."
+            echo "Triggering Dokploy deployment for content changes..."
             curl -X POST "$DOKPLOY_WEBHOOK_URL" \
               -H "Content-Type: application/json" \
               --fail --silent --show-error \

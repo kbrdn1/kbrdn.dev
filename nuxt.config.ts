@@ -64,23 +64,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     githubToken: process.env.GITHUB_TOKEN || "",
     resendApiKey: process.env.RESEND_API_KEY || "",
-    studioToken: process.env.NUXT_STUDIO_TOKEN || "",
   },
 
-  // Content configuration with Studio integration
+  // Content configuration
   content: {
     sources: {
       content: {
         driver: "fs",
         base: "./app/content",
-      },
-    },
-    studio: {
-      enabled: true,
-      gitInfo: {
-        name: "kbrdn.dev-v2",
-        owner: "kbrdn1",
-        url: "https://github.com/kbrdn1/kbrdn.dev-v2",
       },
     },
   },

@@ -8,10 +8,9 @@ Navigate to **Repository Settings → Secrets and variables → Actions** to con
 
 | Secret | Purpose | Required For | Example Format |
 |--------|---------|--------------|----------------|
-| `DOKPLOY_WEBHOOK_URL` | Triggers Dokploy deployment | deploy.yml | `https://dokploy.example.com/api/deploy/webhook/xxx` |
+| `DOKPLOY_WEBHOOK_URL` | Triggers Dokploy deployment | deploy.yml, studio-sync.yml | `https://dokploy.example.com/api/deploy/webhook/xxx` |
 | `GH_TOKEN` | GitHub API access (contributions chart) | Build process | `ghp_xxxxxxxxxxxxxxxxxxxx` |
 | `RESEND_API_KEY` | Contact form email sending | Build process | `re_xxxxxxxxxxxxxxxxxxxx` |
-| `NUXT_STUDIO_TOKEN` | Nuxt Studio API authentication | studio-sync.yml | `nstudio_xxxxxxxxxxxxxxxxxxxx` |
 
 ## How to Obtain Each Secret
 
@@ -35,14 +34,6 @@ Navigate to **Repository Settings → Secrets and variables → Actions** to con
 3. Create a new API key
 4. Copy the key (starts with `re_`)
 
-### NUXT_STUDIO_TOKEN
-
-1. Access [Nuxt Studio](https://nuxt.studio)
-2. Connect your repository
-3. Navigate to project settings
-4. Generate an API token
-5. Copy the token (starts with `nstudio_`)
-
 ## Workflow Usage
 
 ### deploy.yml (Main Deployment)
@@ -51,7 +42,6 @@ Navigate to **Repository Settings → Secrets and variables → Actions** to con
 env:
   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
   RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-  NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
   DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
 ```
 
@@ -59,7 +49,6 @@ env:
 
 ```yaml
 env:
-  NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
   DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
 ```
 
@@ -70,7 +59,6 @@ For local development, create a `.env` file (not committed to git):
 ```bash
 GITHUB_TOKEN=ghp_your_token_here
 RESEND_API_KEY=re_your_key_here
-NUXT_STUDIO_TOKEN=nstudio_your_token_here
 ```
 
 ## Troubleshooting
