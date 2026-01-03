@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@nuxt/image",
     "@nuxtjs/i18n",
+    "nuxt-studio",
   ],
 
   // i18n configuration
@@ -66,7 +67,7 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || "",
   },
 
-  // Content configuration with Studio Preview API
+  // Content configuration with Preview API enabled
   content: {
     sources: {
       content: {
@@ -77,5 +78,10 @@ export default defineNuxtConfig({
     preview: {
       api: "https://api.nuxt.studio",
     },
+  },
+
+  // Nuxt Studio self-hosted configuration
+  studio: {
+    enabled: true,
   },
 });
