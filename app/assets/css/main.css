@@ -1,0 +1,331 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Scan content directory for Tailwind classes in markdown */
+@source "../../../app/content/**/*.{md,mdx}";
+
+/* ═══════════════════════════════════════════════════
+   Monaspace Fonts - Variable Web Fonts
+   ═══════════════════════════════════════════════════ */
+
+/* Monaspace Krypton - Mechanical/industrial for general mono */
+@font-face {
+  font-family: "Monaspace Krypton";
+  src: url("/fonts/monaspace/MonaspaceKrypton.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Monaspace Neon - Clean, modern for code */
+@font-face {
+  font-family: "Monaspace Neon";
+  src: url("/fonts/monaspace/MonaspaceNeon.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Monaspace Radon - Handwriting style for comments */
+@font-face {
+  font-family: "Monaspace Radon";
+  src: url("/fonts/monaspace/MonaspaceRadon.woff2") format("woff2-variations");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme static {
+  /* Typography */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "Monaspace Krypton", "JetBrains Mono", "Courier New", monospace;
+  --font-code: "Monaspace Neon", "Monaspace Krypton", monospace;
+  --font-comment: "Monaspace Radon", "Caveat", cursive;
+
+  /* ═══════════════════════════════════════════════════
+     Dark Mode Colors - Claude Dark (Pure)
+     ═══════════════════════════════════════════════════ */
+  --color-neutral-950: #1a1a1a;
+  --color-neutral-900: #242424;
+  --color-neutral-800: #2a2a2a;
+  --color-neutral-700: #3a3a3a;
+  --color-neutral-600: #555555;
+  --color-neutral-500: #666666;
+  --color-neutral-400: #999999;
+  --color-neutral-300: #b0b0b0;
+  --color-neutral-200: #d0d0d0;
+  --color-neutral-100: #e0e0e0;
+  --color-neutral-50: #f5f5f5;
+
+  /* Primary - Claude Orange */
+  --color-primary-950: #3d1f10;
+  --color-primary-900: #5c2f18;
+  --color-primary-800: #8b3d24;
+  --color-primary-700: #a64d2e;
+  --color-primary-600: #c15f3c;
+  --color-primary-500: #d4825d;
+  --color-primary-400: #e8a573;
+  --color-primary-300: #f4c895;
+  --color-primary-200: #f8ddb8;
+  --color-primary-100: #fcf0e0;
+  --color-primary-50: #fef8f3;
+
+  /* Semantic colors */
+  --color-red-500: #ff7a7a;
+  --color-red-600: #e06060;
+  --color-green-500: #86e89a;
+  --color-green-600: #6bc97f;
+  --color-yellow-500: #ffdf61;
+  --color-yellow-600: #e6c654;
+  --color-blue-500: #7ab8ff;
+  --color-blue-600: #5aa0e6;
+  --color-purple-500: #c79bff;
+  --color-purple-600: #a87ee0;
+  --color-cyan-500: #8abfb8;
+  --color-cyan-600: #6fa39c;
+}
+
+:root {
+  /* Sharp corners */
+  --ui-radius: 0;
+}
+
+/* ═══════════════════════════════════════════════════
+   Light Mode
+   ═══════════════════════════════════════════════════ */
+.light {
+  --ui-primary: var(--color-primary-600);
+  --ui-secondary: var(--color-blue-600);
+  --ui-success: var(--color-green-600);
+  --ui-info: var(--color-cyan-600);
+  --ui-warning: var(--color-yellow-600);
+  --ui-error: var(--color-red-600);
+
+  --ui-bg: var(--color-neutral-50);
+  --ui-bg-muted: var(--color-neutral-100);
+  --ui-bg-elevated: var(--color-neutral-200);
+  --ui-bg-accented: var(--color-neutral-300);
+  --ui-bg-inverted: var(--color-neutral-950);
+
+  --ui-text: var(--color-neutral-950);
+  --ui-text-highlighted: var(--color-neutral-950);
+  --ui-text-muted: var(--color-neutral-700);
+  --ui-text-dimmed: var(--color-neutral-600);
+  --ui-text-toned: var(--color-neutral-500);
+  --ui-text-inverted: var(--color-neutral-50);
+
+  --ui-border: var(--color-neutral-200);
+  --ui-border-muted: var(--color-neutral-300);
+  --ui-border-accented: var(--color-neutral-400);
+  --ui-border-inverted: var(--color-neutral-950);
+}
+
+/* ═══════════════════════════════════════════════════
+   Dark Mode - Claude Dark (Pure)
+   ═══════════════════════════════════════════════════ */
+.dark {
+  --ui-primary: var(--color-primary-500);
+  --ui-secondary: var(--color-blue-500);
+  --ui-success: var(--color-green-500);
+  --ui-info: var(--color-cyan-500);
+  --ui-warning: var(--color-yellow-500);
+  --ui-error: var(--color-red-500);
+
+  --ui-bg: var(--color-neutral-950);
+  --ui-bg-muted: var(--color-neutral-950);
+  --ui-bg-elevated: var(--color-neutral-900);
+  --ui-bg-accented: var(--color-neutral-800);
+  --ui-bg-inverted: var(--color-neutral-100);
+
+  --ui-text: var(--color-neutral-100);
+  --ui-text-highlighted: var(--color-neutral-100);
+  --ui-text-muted: var(--color-neutral-400);
+  --ui-text-dimmed: var(--color-neutral-500);
+  --ui-text-toned: var(--color-neutral-600);
+  --ui-text-inverted: var(--color-neutral-950);
+
+  --ui-border: var(--color-neutral-900);
+  --ui-border-muted: var(--color-neutral-800);
+  --ui-border-accented: var(--color-neutral-700);
+  --ui-border-inverted: var(--color-neutral-100);
+}
+
+/* ═══════════════════════════════════════════════════
+   Utilities
+   ═══════════════════════════════════════════════════ */
+
+.dotted-background {
+  background-image: radial-gradient(
+    circle,
+    var(--ui-border) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+
+/* Custom dashed border with longer/wider dashes */
+.card-dashed-border {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      270deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    );
+  background-size:
+    2px 100%,
+    100% 2px,
+    2px 100%,
+    100% 2px;
+  background-position:
+    0 0,
+    0 0,
+    100% 0,
+    0 100%;
+  background-repeat: no-repeat;
+}
+
+/* Vertical dashed border for side borders */
+.border-dashed-vertical {
+  background-image: repeating-linear-gradient(
+    180deg,
+    var(--color-neutral-700),
+    var(--color-neutral-700) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+  background-size: 1px 100%;
+  background-repeat: no-repeat;
+}
+
+/* Horizontal dashed border at bottom */
+.border-dashed-horizontal {
+  position: relative;
+}
+
+.border-dashed-horizontal::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-neutral-700) 0,
+    var(--color-neutral-700) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+.border-dashed-horizontal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-neutral-700) 0,
+    var(--color-neutral-700) 12px,
+    transparent 12px,
+    transparent 20px
+  );
+}
+
+* {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* ═══════════════════════════════════════════════════
+   Reduced Motion Support
+   ═══════════════════════════════════════════════════ */
+
+/* Disable all animations and transitions for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utility classes for motion-sensitive content */
+.motion-safe {
+  /* Only animate when motion is safe */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Keep essential hover states even with reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hover\:scale-105:hover,
+  .hover\:scale-125:hover,
+  .hover\:-translate-y-0\.5:hover {
+    transform: none !important;
+  }
+
+  /* Maintain color changes for hover feedback */
+  .hover\:text-primary-500:hover,
+  .hover\:border-primary-500\/30:hover,
+  .hover\:bg-primary-500\/10:hover {
+    /* Colors still apply - these provide essential feedback */
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   Performance Optimizations
+   ═══════════════════════════════════════════════════ */
+
+/* GPU acceleration for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize paint for skeleton animations */
+.skeleton-shimmer {
+  will-change: background-position;
+}
+
+/* Remove will-change after animations complete to free GPU memory */
+.animation-complete {
+  will-change: auto;
+}
