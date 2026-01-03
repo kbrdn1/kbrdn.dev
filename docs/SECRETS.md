@@ -12,6 +12,32 @@ Navigate to **Repository Settings → Secrets and variables → Actions** to con
 | `GH_TOKEN` | GitHub API access (contributions chart) | Build process | `ghp_xxxxxxxxxxxxxxxxxxxx` |
 | `RESEND_API_KEY` | Contact form email sending | Build process | `re_xxxxxxxxxxxxxxxxxxxx` |
 
+## Nuxt Studio Integration
+
+Nuxt Studio is integrated via the Preview API built into `@nuxt/content` v3. No separate module or token is required.
+
+### How It Works
+
+1. The Preview API is configured in `nuxt.config.ts`:
+   ```ts
+   content: {
+     preview: {
+       api: "https://api.nuxt.studio"
+     }
+   }
+   ```
+
+2. Connect your repository at [nuxt.studio](https://nuxt.studio)
+3. Edit content visually in the Studio interface
+4. Changes are committed to your repository via Git
+
+### Features
+
+- Visual Markdown/MDX editing
+- Form-based YAML/JSON editing
+- Real-time preview
+- Git-based publishing
+
 ## How to Obtain Each Secret
 
 ### DOKPLOY_WEBHOOK_URL

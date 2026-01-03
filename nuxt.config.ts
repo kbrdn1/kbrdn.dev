@@ -66,13 +66,16 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || "",
   },
 
-  // Content configuration
+  // Content configuration with Studio Preview API
   content: {
     sources: {
       content: {
         driver: "fs",
         base: "./app/content",
       },
+    },
+    preview: {
+      api: "https://api.nuxt.studio",
     },
   },
 });
