@@ -1,0 +1,84 @@
+[
+  {
+    "label": "dev",
+    "command": "bun run dev",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "tags": ["dev"]
+  },
+  {
+    "label": "build",
+    "command": "bun run build",
+    "reveal": "always",
+    "tags": ["build"]
+  },
+  {
+    "label": "preview",
+    "command": "bun run preview",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+    "reveal": "always",
+    "tags": ["build"]
+  },
+  {
+    "label": "generate",
+    "command": "bun run generate",
+    "reveal": "always",
+    "tags": ["build"]
+  },
+  {
+    "label": "install",
+    "command": "bun install",
+    "reveal": "always",
+    "tags": ["setup"]
+  },
+  {
+    "label": "typecheck",
+    "command": "bun run typecheck",
+    "reveal": "always",
+    "tags": ["quality"]
+  },
+  {
+    "label": "lint",
+    "command": "bunx eslint .",
+    "reveal": "always",
+    "tags": ["quality"]
+  },
+  {
+    "label": "fmt",
+    "command": "bunx eslint . --fix",
+    "reveal": "always",
+    "tags": ["quality"]
+  },
+  {
+    "label": "clean",
+    "command": "rm -rf .nuxt .output node_modules/.cache node_modules/.vite",
+    "reveal": "always",
+    "tags": ["build"]
+  },
+  {
+    "label": "git: status",
+    "command": "git status",
+    "reveal": "always",
+    "tags": ["git"]
+  },
+  {
+    "label": "git: push",
+    "command": "git push origin HEAD",
+    "reveal": "always",
+    "tags": ["git"]
+  },
+  {
+    "label": "git: pull",
+    "command": "git pull origin HEAD",
+    "reveal": "always",
+    "tags": ["git"]
+  },
+  {
+    "label": "labels",
+    "command": "make labels",
+    "reveal": "always",
+    "tags": ["github"]
+  }
+]
