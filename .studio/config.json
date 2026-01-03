@@ -1,0 +1,71 @@
+{
+  "$schema": "https://nuxt.studio/schema/config.json",
+  "name": "kbrdn.dev",
+  "description": "Kylian Bardini - Portfolio & Blog",
+  "contentPath": "app/content",
+  "collections": {
+    "blogs": {
+      "path": "blogs",
+      "label": "Blog Posts",
+      "schema": {
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string" },
+        "publishedAt": { "type": "date" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "projects": {
+      "path": "projects",
+      "label": "Projects",
+      "schema": {
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string", "required": true },
+        "image": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "github": { "type": "string" },
+        "live": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "date": { "type": "date" }
+      }
+    },
+    "experiences": {
+      "path": "experiences",
+      "label": "Work Experiences",
+      "schema": {
+        "title": { "type": "string", "required": true },
+        "company": { "type": "string", "required": true },
+        "location": { "type": "string" },
+        "type": { "type": "string", "enum": ["full-time", "part-time", "freelance", "internship", "contract"] },
+        "startDate": { "type": "date", "required": true },
+        "endDate": { "type": "date" },
+        "current": { "type": "boolean" },
+        "description": { "type": "string", "required": true },
+        "technologies": { "type": "array", "items": { "type": "string" } },
+        "logo": { "type": "string" }
+      }
+    },
+    "skills": {
+      "path": "skills",
+      "label": "Skills",
+      "schema": {
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "level": { "type": "string" }
+      }
+    },
+    "stacks": {
+      "path": "stacks",
+      "label": "Tech Stacks",
+      "schema": {
+        "title": { "type": "string", "required": true },
+        "description": { "type": "string" },
+        "category": { "type": "string" }
+      }
+    }
+  },
+  "media": {
+    "driver": "fs",
+    "path": "public"
+  }
+}
