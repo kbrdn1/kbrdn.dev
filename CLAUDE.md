@@ -97,3 +97,10 @@ The project uses Nuxt Content v3's collection-based API (not the legacy document
 
 ### Auto-imports
 Nuxt auto-imports components from `app/components/` and composables from `app/composables/`. No manual imports needed for these.
+
+## Active Technologies
+- TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker (feat/#1-dokploy-deployment)
+- File-based content (Markdown/MDX) via @nuxt/content, no database (feat/#1-dokploy-deployment)
+
+## Recent Changes
+- feat/#1-dokploy-deployment: Added TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker
