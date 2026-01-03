@@ -1,10 +1,9 @@
 # kbrdn.dev - Portfolio v2
 
-Modern portfolio website built with Nuxt 4, Nuxt UI, and Catppuccin Mocha theme.
+Modern portfolio website built with Nuxt 4 and Nuxt UI.
 
 ## ✨ Features
 
-- 🎨 **Catppuccin Mocha Theme** - Beautiful dark theme with pastel colors
 - ⚡ **Nuxt 4** - Latest version with optimal performance
 - 🎯 **Sharp Corners** - Distinctive square design elements
 - 📱 **Fully Responsive** - Works seamlessly on all devices
@@ -25,7 +24,6 @@ Modern portfolio website built with Nuxt 4, Nuxt UI, and Catppuccin Mocha theme.
 
 - [Nuxt UI](https://ui.nuxt.com) - Component library
 - [Tailwind CSS v4](https://tailwindcss.com) - Utility-first CSS
-- [Catppuccin](https://catppuccin.com) - Pastel color scheme
 
 ### Content & Tools
 
@@ -146,7 +144,7 @@ Your article content goes here...
 
 ### Theme Colors
 
-Edit `app/assets/css/main.css` to customize the Catppuccin theme:
+Edit `app/assets/css/main.css` to customize the theme:
 
 ```css
 :root {
@@ -232,7 +230,6 @@ MIT License - feel free to use this template for your own portfolio!
 ## 🙏 Acknowledgments
 
 - [Nuxt Team](https://nuxt.com) for the amazing framework
-- [Catppuccin](https://catppuccin.com) for the beautiful color scheme
 - [Nuxt UI](https://ui.nuxt.com) for the component library
 - [Inter Font](https://rsms.me/inter/) for the typography
 
@@ -244,4 +241,4 @@ MIT License - feel free to use this template for your own portfolio!
 
 ---
 
-Built with ❤️ using Nuxt & Catppuccin
+Built with ❤️ using Nuxt

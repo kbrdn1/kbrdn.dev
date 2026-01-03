@@ -1,6 +1,6 @@
 export default defineAppConfig({
   ui: {
-    // Color aliases for Catppuccin Mocha theme
+    // Color aliases
     colors: {
       primary: 'ctp-mauve',
       secondary: 'ctp-blue',
