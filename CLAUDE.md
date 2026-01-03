@@ -47,10 +47,10 @@ bunx eslint .
 
 ### Content Management
 Content is managed through `@nuxt/content` with a collection-based approach defined in `content.config.ts`:
-- **Collection Type**: `page`
-- **Source Pattern**: `**/*.md` (all markdown files)
-- Content files are stored in `app/content/`
-- Pages query content using `queryCollection('content')`
+- **Collections**: pages, blog, projects, skills, stacks, experiences (6 total)
+- **Source Pattern**: Collection-specific patterns in `app/content/`
+- **Nuxt Studio**: Integrated for visual content editing (see `.studio/config.json`)
+- **MDC Components**: Alert, Callout, CodeGroup available in `app/components/content/`
 
 ### Directory Structure
 ```
@@ -98,9 +98,52 @@ The project uses Nuxt Content v3's collection-based API (not the legacy document
 ### Auto-imports
 Nuxt auto-imports components from `app/components/` and composables from `app/composables/`. No manual imports needed for these.
 
-## Active Technologies
-- TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker (feat/#1-dokploy-deployment)
-- File-based content (Markdown/MDX) via @nuxt/content, no database (feat/#1-dokploy-deployment)
+## Deployment
 
-## Recent Changes
-- feat/#1-dokploy-deployment: Added TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker
+### Docker
+The project uses a multi-stage Docker build optimized for Bun + Nuxt 4:
+```bash
+# Build image
+docker build -t kbrdn-dev .
+
+# Run locally
+docker run -p 3000:3000 kbrdn-dev
+
+# Or use docker-compose
+docker-compose up
+```
+
+**Key files**:
+- `Dockerfile` - Multi-stage build (deps → builder → runner) with health check
+- `.dockerignore` - Excludes node_modules, .nuxt, .output, .git, docs/
+- `docker-compose.yml` - Local development with environment variables
+
+### CI/CD Workflows
+Located in `.github/workflows/`:
+
+**deploy.yml** - Main deployment pipeline:
+- Triggers on push to master (ignores docs/specs changes)
+- Build job: Bun install, lint, typecheck, build
+- Deploy job: Triggers Dokploy webhook with retry logic
+- Notify job: Creates GitHub step summary
+
+**studio-sync.yml** - Content sync:
+- Triggers on content file changes in `app/content/`
+- Triggers Dokploy redeployment for content updates
+
+### Production Deployment
+- **Platform**: Dokploy on VPS (72.60.212.44)
+- **Domain**: kbrdn.dev with Let's Encrypt SSL
+- **Health Check**: `wget --spider http://localhost:3000` every 30s
+
+### Required Secrets
+See `docs/SECRETS.md` for configuration:
+- `DOKPLOY_WEBHOOK_URL` - Deployment trigger
+- `GH_TOKEN` - GitHub API access
+- `RESEND_API_KEY` - Email sending
+- `NUXT_STUDIO_TOKEN` - Nuxt Studio API
+
+## Active Technologies
+- TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker
+- File-based content (Markdown/MDX) via @nuxt/content, no database
+- Dokploy for container orchestration, GitHub Actions for CI/CD
