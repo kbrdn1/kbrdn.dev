@@ -12,24 +12,54 @@ Navigate to **Repository Settings → Secrets and variables → Actions** to con
 | `GH_TOKEN` | GitHub API access (contributions chart) | Build process | `ghp_xxxxxxxxxxxxxxxxxxxx` |
 | `RESEND_API_KEY` | Contact form email sending | Build process | `re_xxxxxxxxxxxxxxxxxxxx` |
 
-## Nuxt Studio Integration
+## Nuxt Studio Integration (Self-Hosted)
 
-Nuxt Studio is integrated via the Preview API built into `@nuxt/content` v3. No separate module or token is required.
+Nuxt Studio is now a **free, open-source, self-hosted** module. The hosted platform (nuxt.studio) is being sunset.
+
+### Required Secrets for Studio
+
+| Secret | Purpose | Required For | Example Format |
+|--------|---------|--------------|----------------|
+| `STUDIO_GITHUB_CLIENT_ID` | GitHub OAuth App ID | Studio authentication | `Iv1.xxxxxxxxxx` |
+| `STUDIO_GITHUB_CLIENT_SECRET` | GitHub OAuth App Secret | Studio authentication | `xxxxxxxxxxxxxxxxxxxxxxx` |
+
+### GitHub OAuth App Setup
+
+1. Go to GitHub **Settings → Developer settings → OAuth Apps**
+2. Click **New OAuth App**
+3. Fill in the details:
+   - **Application name**: `kbrdn.dev Studio`
+   - **Homepage URL**: `https://kbrdn.dev`
+   - **Authorization callback URL**: `https://kbrdn.dev/_studio/auth/callback`
+4. Copy the Client ID and generate a Client Secret
+5. Add both to your deployment environment variables
 
 ### How It Works
 
-1. The Preview API is configured in `nuxt.config.ts`:
+1. The `nuxt-studio` module is configured in `nuxt.config.ts`:
    ```ts
+   // Required: Preview API enables #content/preview alias
    content: {
      preview: {
-       api: "https://api.nuxt.studio"
-     }
+       api: "https://api.nuxt.studio",
+     },
+   },
+
+   // Self-hosted configuration
+   studio: {
+     repository: {
+       provider: "github",
+       owner: "kbrdn1",
+       repo: "kbrdn.dev",
+       branch: "master",
+     },
    }
    ```
 
-2. Connect your repository at [nuxt.studio](https://nuxt.studio)
-3. Edit content visually in the Studio interface
-4. Changes are committed to your repository via Git
+2. Access the Studio at `https://kbrdn.dev/_studio`
+3. Authenticate via GitHub OAuth
+4. Edit content visually in the self-hosted interface
+5. Changes are committed directly to your repository
 
 ### Features
 
@@ -37,6 +67,7 @@ Nuxt Studio is integrated via the Preview API built into `@nuxt/content` v3. No 
 - Form-based YAML/JSON editing
 - Real-time preview
 - Git-based publishing
+- Fully self-hosted (no external dependencies)
 
 ## How to Obtain Each Secret
 

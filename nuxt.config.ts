@@ -67,7 +67,7 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || "",
   },
 
-  // Content configuration with Preview API enabled
+  // Content configuration with Preview API (required for nuxt-studio)
   content: {
     sources: {
       content: {
@@ -81,7 +81,16 @@ export default defineNuxtConfig({
   },
 
   // Nuxt Studio self-hosted configuration
+  // Access via /_studio route in production
   studio: {
-    enabled: true,
+    repository: {
+      provider: "github",
+      owner: "kbrdn1",
+      repo: "kbrdn.dev",
+      branch: "master",
+    },
+    i18n: {
+      defaultLocale: "en",
+    },
   },
 });
