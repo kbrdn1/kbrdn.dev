@@ -104,47 +104,43 @@ kbrdn.dev-v2/
 
 ## 📝 Adding Content
 
-### Adding a New Project
+### Adding a New Blog Post
 
-1. Create a new markdown file in `app/content/projects/`:
+1. Create a new markdown file in `app/content/blogs/`:
 
 ```bash
-touch app/content/projects/my-project.md
+touch app/content/blogs/my-article.md
 ```
 
 2. Add frontmatter and content:
 
 ```markdown
 ---
-title: My Awesome Project
-description: A brief description of the project
-slug: my-project
-image: /images/projects/my-project.png
+title: My Awesome Article
+description: A brief description of the article
+slug: my-article
+image: /images/blogs/my-article.png
 tags: [Vue, TypeScript, Nuxt]
-github: https://github.com/username/repo
-live: https://project-url.com
 featured: true
-date: 2025-01-15
+publishedAt: 2025-01-15
 ---
 
-## Project Overview
+## Introduction
 
-Your project description goes here...
+Your article content goes here...
 ```
 
-3. The project will automatically appear on your site!
+3. The blog post will automatically appear on your site!
 
 ### Content Fields
 
-- `title` - Project name
+- `title` - Article title
 - `description` - Short description (used in cards)
 - `slug` - URL-friendly identifier
-- `image` - Project screenshot/preview image
-- `tags` - Technologies used (array)
-- `github` - GitHub repository URL (optional)
-- `live` - Live demo URL (optional)
-- `featured` - Show on homepage (boolean)
-- `date` - Project completion date
+- `image` - Cover image (optional)
+- `tags` - Topics/categories (array)
+- `featured` - Highlight on homepage (boolean)
+- `publishedAt` - Publication date
 
 ## 🎨 Customization
 

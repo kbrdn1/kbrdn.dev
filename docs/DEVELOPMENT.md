@@ -75,7 +75,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 1. Create markdown file in `app/content/`:
    ```bash
-   touch app/content/blog/my-post.md
+   touch app/content/blogs/my-post.md
    ```
 
 2. Add frontmatter:
