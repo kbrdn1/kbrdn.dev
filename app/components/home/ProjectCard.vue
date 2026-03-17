@@ -33,12 +33,10 @@ const props = withDefaults(defineProps<Props>(), {
   language: ''
 })
 
-// Calculate total for tech stack bar
 const techStackTotal = computed(() =>
   props.techStack.reduce((sum, tech) => sum + tech.percentage, 0)
 )
 
-// Primary language from tech stack
 const primaryLanguage = computed(() => {
   if (props.language) return props.language
   if (props.techStack.length) return props.techStack[0].name
@@ -49,130 +47,121 @@ const primaryLanguage = computed(() => {
 <template>
   <div
     :class="cn(
-      'group relative p-6',
-      'bg-white/50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800',
-      'hover:border-primary-500/50 hover:shadow-sm transition-all duration-200'
+      'group relative overflow-hidden',
+      'border border-neutral-200 dark:border-neutral-800',
+      'hover:border-primary-500/40 transition-all duration-300',
     )"
   >
-    <div class="flex flex-col lg:flex-row lg:gap-8">
-      <!-- Left: Project info -->
-      <div class="flex-1 min-w-0 space-y-4">
-        <!-- Category label -->
-        <span
-          v-if="primaryLanguage"
-          class="inline-block text-[11px] font-mono uppercase tracking-widest text-primary-500"
-        >
-          {{ primaryLanguage }}
-        </span>
+    <!-- Tech stack bar as top accent -->
+    <div v-if="techStack.length" class="h-1 flex">
+      <div
+        v-for="tech in techStack"
+        :key="tech.name"
+        :style="{
+          width: `${(tech.percentage / techStackTotal) * 100}%`,
+          backgroundColor: tech.color,
+        }"
+      />
+    </div>
 
-        <!-- Title -->
-        <h3 class="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-          {{ name }}
-        </h3>
+    <div class="p-5">
+      <!-- Header: language + actions -->
+      <div class="flex items-start justify-between gap-4 mb-3">
+        <div class="min-w-0">
+          <!-- Language badge -->
+          <span
+            v-if="primaryLanguage"
+            class="inline-block text-[10px] font-mono font-bold uppercase tracking-widest text-primary-500 mb-1"
+          >
+            {{ primaryLanguage }}
+          </span>
+          <!-- Title -->
+          <h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-primary-500 transition-colors">
+            {{ name }}
+          </h3>
+        </div>
 
-        <!-- Description -->
-        <p class="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
-          {{ description }}
-        </p>
+        <!-- Actions -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <a
+            v-if="githubUrl"
+            :href="githubUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            :class="cn(
+              'flex items-center justify-center w-8 h-8',
+              'border border-neutral-200 dark:border-neutral-800',
+              'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
+              'transition-all',
+            )"
+            :title="t('projects.viewProject')"
+          >
+            <UIcon name="i-simple-icons-github" class="w-4 h-4" />
+          </a>
+          <a
+            v-if="demoUrl"
+            :href="demoUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            :class="cn(
+              'flex items-center justify-center w-8 h-8',
+              'border border-primary-500/30',
+              'text-primary-500 hover:bg-primary-500/10 hover:border-primary-500/50',
+              'transition-all',
+            )"
+            :title="t('projects.demo')"
+          >
+            <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed mb-4">
+        {{ description }}
+      </p>
+
+      <!-- Stats + Tags row -->
+      <div class="flex items-center justify-between gap-4">
+        <!-- Stats -->
+        <div v-if="stats.length" class="flex items-baseline gap-4">
+          <div v-for="stat in stats" :key="stat.label" class="flex items-baseline gap-1.5">
+            <span class="text-[10px] text-neutral-500 uppercase tracking-wider font-mono">
+              {{ stat.label }}
+            </span>
+            <span class="text-sm font-bold text-neutral-900 dark:text-neutral-100 font-mono">
+              {{ stat.value }}
+            </span>
+          </div>
+        </div>
 
         <!-- Tags -->
-        <div v-if="tags.length" class="flex flex-wrap gap-2">
+        <div v-if="tags.length" class="flex flex-wrap gap-1.5 justify-end">
           <span
             v-for="tag in tags"
             :key="tag"
             :class="cn(
-              'px-3 py-1 text-xs font-mono uppercase tracking-wider whitespace-nowrap',
-              'border border-neutral-300 dark:border-neutral-700',
-              'text-neutral-600 dark:text-neutral-400',
+              'px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider',
+              'border border-neutral-200 dark:border-neutral-800',
+              'text-neutral-500',
               'hover:bg-primary-500/10 hover:border-primary-500/30 hover:text-primary-500',
-              'transition-colors duration-150 cursor-default'
+              'transition-colors cursor-default',
             )"
           >
             {{ tag }}
           </span>
         </div>
-
-        <!-- Stats -->
-        <div v-if="stats.length" class="flex items-baseline gap-6">
-          <div v-for="stat in stats" :key="stat.label" class="flex items-baseline gap-2">
-            <span class="text-xs text-neutral-500 uppercase tracking-wider font-mono">
-              {{ stat.label }}
-            </span>
-            <span class="text-lg font-bold text-neutral-900 dark:text-neutral-100 font-mono">
-              {{ stat.value }}
-            </span>
-            <span
-              v-if="stat.trend"
-              :class="cn(
-                'text-xs font-mono',
-                stat.trend > 0 ? 'text-primary-500' : 'text-red-500'
-              )"
-            >
-              {{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}%
-            </span>
-          </div>
-        </div>
       </div>
 
-      <!-- Right: Tech stack + actions -->
-      <div class="flex flex-col justify-between gap-4 mt-6 lg:mt-0 lg:w-72 flex-shrink-0">
-        <!-- Tech Stack Bar -->
-        <div v-if="techStack.length" class="space-y-2">
-          <!-- Bar -->
-          <div class="h-2 flex overflow-hidden">
-            <div
-              v-for="tech in techStack"
-              :key="tech.name"
-              :style="{
-                width: `${(tech.percentage / techStackTotal) * 100}%`,
-                backgroundColor: tech.color
-              }"
-            />
-          </div>
-
-          <!-- Legend -->
-          <div class="flex flex-wrap gap-x-3 gap-y-1">
-            <div
-              v-for="tech in techStack"
-              :key="tech.name"
-              class="flex items-center gap-1.5 text-xs group/tech cursor-default"
-            >
-              <span
-                class="w-2 h-2 flex-shrink-0"
-                :style="{ backgroundColor: tech.color }"
-              />
-              <span class="text-neutral-500 uppercase tracking-wider text-[11px]">{{ tech.name }}</span>
-              <span class="text-neutral-600 dark:text-neutral-400 font-mono text-[11px]">{{ tech.percentage }}%</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex items-center gap-2">
-          <UButton
-            v-if="githubUrl"
-            :to="githubUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outline"
-            color="neutral"
-            size="sm"
-            icon="i-simple-icons-github"
-            :label="t('projects.viewProject')"
-            class="font-mono uppercase tracking-wider text-[11px] transition-transform duration-200 hover:scale-105 active:scale-95"
-          />
-          <UButton
-            v-if="demoUrl"
-            :to="demoUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outline"
-            color="primary"
-            size="sm"
-            icon="i-heroicons-arrow-top-right-on-square"
-            :label="t('projects.demo')"
-            class="font-mono uppercase tracking-wider text-[11px] transition-transform duration-200 hover:scale-105 active:scale-95"
-          />
+      <!-- Tech legend -->
+      <div v-if="techStack.length" class="flex flex-wrap gap-x-3 gap-y-1 mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-800/50">
+        <div
+          v-for="tech in techStack"
+          :key="tech.name"
+          class="flex items-center gap-1 text-[10px]"
+        >
+          <span class="w-1.5 h-1.5 shrink-0" :style="{ backgroundColor: tech.color }" />
+          <span class="text-neutral-400 font-mono">{{ tech.name }} {{ tech.percentage }}%</span>
         </div>
       </div>
     </div>
