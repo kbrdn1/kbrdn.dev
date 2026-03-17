@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     "@nuxt/fonts",
     "@nuxt/image",
     "@nuxtjs/i18n",
-    "nuxt-studio",
+    "nuxt-component-meta",
+    // "nuxt-studio", // Désactivé: incompatible avec @nuxt/content v3.7.1 (alpha)
   ],
 
   // i18n configuration
@@ -67,30 +68,6 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || "",
   },
 
-  // Content configuration with Preview API (required for nuxt-studio)
-  content: {
-    sources: {
-      content: {
-        driver: "fs",
-        base: "./app/content",
-      },
-    },
-    preview: {
-      api: "https://api.nuxt.studio",
-    },
-  },
-
-  // Nuxt Studio self-hosted configuration
-  // Access via /_studio route in production
-  studio: {
-    repository: {
-      provider: "github",
-      owner: "kbrdn1",
-      repo: "kbrdn.dev",
-      branch: "master",
-    },
-    i18n: {
-      defaultLocale: "en",
-    },
-  },
+  // Content configuration (collections defined in content.config.ts)
+  content: {},
 });
