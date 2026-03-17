@@ -87,7 +87,7 @@ const isMobileMenuOpen = ref(false);
             )
           "
         >
-          <span class="text-white dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+          <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
         </NuxtLink>
 
         <!-- Desktop Navigation -->
@@ -153,7 +153,7 @@ const isMobileMenuOpen = ref(false);
           to="/"
           class="font-mono font-bold text-sm tracking-tight"
         >
-          <span class="text-white dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+          <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
         </NuxtLink>
         <div class="flex items-center gap-1">
           <UiLanguageSwitcher />
