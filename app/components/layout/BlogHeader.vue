@@ -4,6 +4,17 @@ import { useI18n } from "#imports";
 const { t } = useI18n();
 const route = useRoute();
 
+const showBrandMenu = ref(false);
+
+onMounted(() => {
+  document.addEventListener('click', (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('.group\\/brand')) {
+      showBrandMenu.value = false;
+    }
+  });
+});
+
 const navLinks = computed(() => [
   { to: "/blog", label: t("blogNav.articles") },
 ]);
@@ -30,19 +41,41 @@ const isMobileMenuOpen = ref(false);
     <div class="mx-auto" style="max-width: 80rem;">
       <!-- Desktop header -->
       <div class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800">
-        <!-- Brand -->
-        <NuxtLink
-          to="/blog"
-          :class="
-            cn(
-              'flex items-center px-6 font-mono font-bold text-sm tracking-tight transition-colors',
-              'hover:opacity-80',
-              'border-r border-neutral-200 dark:border-neutral-700',
-            )
-          "
+        <!-- Brand with dropdown -->
+        <div
+          class="relative border-r border-neutral-200 dark:border-neutral-700 group/brand"
+          @mouseenter="showBrandMenu = true"
+          @mouseleave="showBrandMenu = false"
         >
-          <span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
-        </NuxtLink>
+          <button
+            class="flex items-center px-6 h-full font-mono font-bold text-sm tracking-tight transition-colors"
+            @click="showBrandMenu = !showBrandMenu"
+          >
+            <span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+          </button>
+
+          <Transition
+            enter-active-class="transition-all duration-150 ease-out"
+            enter-from-class="opacity-0 scale-95 -translate-y-1"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            leave-active-class="transition-all duration-100 ease-in"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-95"
+          >
+            <div
+              v-if="showBrandMenu"
+              class="absolute left-0 top-full z-50 mt-px min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
+            >
+              <NuxtLink
+                to="/"
+                class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                @click="showBrandMenu = false"
+              >
+                <span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span></span>
+              </NuxtLink>
+            </div>
+          </Transition>
+        </div>
 
         <!-- Desktop Navigation -->
         <nav
@@ -103,12 +136,35 @@ const isMobileMenuOpen = ref(false);
 
       <!-- Mobile header -->
       <div class="flex md:hidden items-center justify-between h-14 px-4">
-        <NuxtLink
-          to="/blog"
-          class="font-mono font-bold text-sm tracking-tight"
-        >
-          <span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
-        </NuxtLink>
+        <div class="relative group/brand-mobile">
+          <button
+            class="font-mono font-bold text-sm tracking-tight"
+            @click="showBrandMenu = !showBrandMenu"
+          >
+            <span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+          </button>
+          <Transition
+            enter-active-class="transition-all duration-150 ease-out"
+            enter-from-class="opacity-0 scale-95 -translate-y-1"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            leave-active-class="transition-all duration-100 ease-in"
+            leave-from-class="opacity-100 scale-100"
+            leave-to-class="opacity-0 scale-95"
+          >
+            <div
+              v-if="showBrandMenu"
+              class="absolute left-0 top-full z-50 mt-2 min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
+            >
+              <NuxtLink
+                to="/"
+                class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                @click="showBrandMenu = false"
+              >
+                <span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span></span>
+              </NuxtLink>
+            </div>
+          </Transition>
+        </div>
         <div class="flex items-center gap-1">
           <UiLanguageSwitcher />
           <UiThemeToggle />
