@@ -32,6 +32,28 @@ const EXPANDED_MONTHS = 12
 // Month labels for annual view
 const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+// Calculate month positions based on actual week data
+function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
+  const positions: { label: string; offset: number }[] = []
+  let lastMonth = -1
+
+  weeks.forEach((week, weekIndex) => {
+    const firstDay = week.contributionDays[0]
+    if (!firstDay) return
+    const date = new Date(firstDay.date)
+    const month = date.getMonth()
+    if (month !== lastMonth) {
+      positions.push({
+        label: monthLabels[month],
+        offset: weekIndex,
+      })
+      lastMonth = month
+    }
+  })
+
+  return positions
+}
+
 // Group contributions by month for monthly view (last 12 months)
 const monthlyData = computed(() => {
   if (!contributions.value?.years) return []
@@ -261,11 +283,22 @@ function hideTooltip() {
       </div>
 
       <!-- Annual View - All years -->
-      <div v-if="activeTab === 'annual'" class="space-y-6">
+      <TransitionGroup
+        v-if="activeTab === 'annual'"
+        tag="div"
+        class="space-y-6"
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 translate-y-4"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
         <div
-          v-for="yearData in visibleYears"
+          v-for="(yearData, index) in visibleYears"
           :key="yearData.year"
           class="space-y-2"
+          :style="{ transitionDelay: `${index * 100}ms` }"
         >
           <!-- Year header -->
           <div class="flex items-center justify-between">
@@ -280,15 +313,15 @@ function hideTooltip() {
           <!-- Contribution grid with month labels -->
           <div class="overflow-x-auto">
             <div class="min-w-max">
-              <!-- Month labels - inside scrollable container -->
-              <div class="flex text-xs text-neutral-500 mb-1">
+              <!-- Month labels - positioned by actual week offset -->
+              <div class="relative text-xs text-neutral-500 mb-1 h-4">
                 <span
-                  v-for="(month, index) in monthLabels"
-                  :key="month"
-                  :style="{ width: `${100 / 12}%`, minWidth: `${(yearData.weeks.length * 15) / 12}px` }"
-                  :class="index === 0 ? 'text-left' : 'text-center'"
+                  v-for="pos in getMonthPositions(yearData.weeks)"
+                  :key="`${yearData.year}-${pos.label}`"
+                  class="absolute"
+                  :style="{ left: `${pos.offset * (12 + 3)}px` }"
                 >
-                  {{ month }}
+                  {{ pos.label }}
                 </span>
               </div>
 
@@ -315,14 +348,25 @@ function hideTooltip() {
             </div>
           </div>
         </div>
-      </div>
+      </TransitionGroup>
 
       <!-- Monthly View - Last 12 months -->
-      <div v-else class="space-y-4">
+      <TransitionGroup
+        v-else
+        tag="div"
+        class="space-y-4"
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 translate-y-4"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
         <div
-          v-for="month in visibleMonths"
+          v-for="(month, index) in visibleMonths"
           :key="`${month.year}-${month.name}`"
           class="space-y-2"
+          :style="{ transitionDelay: `${index * 75}ms` }"
         >
           <!-- Month header -->
           <div class="flex items-center justify-between">
@@ -350,7 +394,7 @@ function hideTooltip() {
             />
           </div>
         </div>
-      </div>
+      </TransitionGroup>
 
       <!-- Show more/less button -->
       <button
@@ -359,8 +403,9 @@ function hideTooltip() {
         @click="isExpanded = !isExpanded"
       >
         <UIcon
-          :name="isExpanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+          name="i-heroicons-chevron-down"
           class="w-4 h-4"
+          :style="{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 300ms ease !important' }"
         />
         {{ isExpanded ? t('common.showLess') : t('common.showMore') }}
       </button>

@@ -4,5 +4,5 @@
 </script>
 
 <template>
-  <div class="fixed inset-0 -z-10 dotted-background bg-neutral-50 dark:bg-neutral-950" />
+  <div class="fixed inset-0 -z-10 dotted-background bg-[#f0eeeb] dark:bg-neutral-950" />
 </template>
