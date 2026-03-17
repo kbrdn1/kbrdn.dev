@@ -27,12 +27,6 @@ withDefaults(defineProps<Props>(), {
       url: "https://linkedin.com/in/kylian-bardini-aa0528234/",
       label: "LinkedIn",
     },
-    { platform: "medium", url: "https://medium.com/@kbrdn1", label: "Medium" },
-    {
-      platform: "behance",
-      url: "https://behance.net/kbrdn1",
-      label: "Behance",
-    },
   ],
 });
 

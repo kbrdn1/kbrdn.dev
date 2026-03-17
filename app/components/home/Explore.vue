@@ -23,6 +23,16 @@ const slides = computed<Slide[]>(() => [
     cta: { label: 'LazyCurl', href: 'https://github.com/kbrdn1/LazyCurl', icon: 'i-simple-icons-github' },
   },
   {
+    title: t('explore.slides.blog.title'),
+    description: t('explore.slides.blog.description'),
+    cta: { label: t('explore.slides.blog.cta'), href: '/blog', icon: 'i-heroicons-document-text' },
+  },
+  {
+    title: t('explore.slides.sponsor.title'),
+    description: t('explore.slides.sponsor.description'),
+    cta: { label: t('explore.slides.sponsor.cta'), href: 'https://github.com/sponsors/kbrdn1', icon: 'i-heroicons-heart' },
+  },
+  {
     title: t('explore.slides.motto.title'),
     description: t('explore.slides.motto.description'),
   },
@@ -87,7 +97,7 @@ function goToSlide(index: number) {
         >
           <!-- Label -->
           <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-primary-400 drop-shadow-sm">
-            {{ currentSlide === 0 ? '✦ Collaboration' : currentSlide === 1 ? '⚡ Projects' : '◈ Philosophy' }}
+            {{ [t('explore.labels.collab'), t('explore.labels.crafting'), t('explore.labels.blog'), t('explore.labels.sponsor'), t('explore.labels.motto')][currentSlide] }}
           </span>
 
           <!-- Title -->

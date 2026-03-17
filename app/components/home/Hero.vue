@@ -121,6 +121,16 @@ onUnmounted(() => {
           >
             {{ t('hero.viewOnGithub') }}
           </UButton>
+          <UButton
+            to="/blog"
+            color="neutral"
+            variant="outline"
+            size="md"
+            icon="i-heroicons-document-text"
+            class="text-sky-400! border-sky-400/50! hover:bg-sky-400/10! hover:border-sky-400!"
+          >
+            {{ t('hero.readBlog') }}
+          </UButton>
         </div>
       </div>
 

@@ -13,6 +13,22 @@ const { data: page } = await useAsyncData("home", () =>
   queryCollection("pages").path("/").first(),
 );
 
+// Fetch latest blog posts (5 most recent)
+const { data: latestPosts } = await useAsyncData("latest-posts", () =>
+  queryCollection("blog").order("publishedAt", "DESC").limit(5).all(),
+);
+
+const { locale } = useI18n();
+
+function formatBlogDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString(locale.value === "fr" ? "fr-FR" : "en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 // SEO metadata
 useSeoMeta({
   title: page.value?.title
@@ -35,11 +51,9 @@ const defaultSocials = [
   { platform: "twitter", url: "https://twitter.com/kbrdn1", label: "Twitter" },
   {
     platform: "linkedin",
-    url: "https://linkedin.com/in/kbrdn1",
+    url: "https://linkedin.com/in/kylian-bardini-aa0528234",
     label: "LinkedIn",
   },
-  { platform: "medium", url: "https://medium.com/@kbrdn1", label: "Medium" },
-  { platform: "behance", url: "https://behance.net/kbrdn1", label: "Behance" },
 ];
 
 // Default content if not found
@@ -55,12 +69,6 @@ const content = computed(() => {
           : null,
         socials.linkedin
           ? { platform: "linkedin", url: socials.linkedin, label: "LinkedIn" }
-          : null,
-        socials.medium
-          ? { platform: "medium", url: socials.medium, label: "Medium" }
-          : null,
-        socials.behance
-          ? { platform: "behance", url: socials.behance, label: "Behance" }
           : null,
       ].filter(Boolean)
     : defaultSocials;
@@ -81,8 +89,8 @@ const content = computed(() => {
     calendarLink: page.value?.calendarLink || "https://cal.com",
     githubUrl: socials?.github || "https://github.com/kbrdn1",
     bio: page.value?.bio || [
-      "Hey, I'm Kylian, a full stack developer who loves building clean, modern websites and apps where design, functionality, and even the smallest details matter, with a focus on making products that are both practical and visually satisfying.",
-      "Currently focused on building solid, scalable architectures. I enjoy exploring new languages and tools — from Rust to cloud infrastructure — always looking for the right solution, not just the trendy one.",
+      t('bio.paragraph1'),
+      t('bio.paragraph2'),
     ],
     socials: socialLinks,
   };
@@ -138,6 +146,42 @@ const content = computed(() => {
         >
           <HomeSectionLabel :label="t('sections.connect')" />
           <HomeSocials :links="content.socials" />
+        </UiAnimatedSection>
+
+        <!-- Latest Blog Posts -->
+        <UiAnimatedSection
+          as="section"
+          animation="fadeInUp"
+          :delay="200"
+          :duration="500"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <HomeSectionLabel :label="t('sections.blog')" />
+            <NuxtLink
+              to="/blog"
+              class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-primary-500 transition-colors"
+            >
+              {{ t('blog.viewAll') }} →
+            </NuxtLink>
+          </div>
+          <div v-if="latestPosts?.length" class="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <NuxtLink
+              v-for="post in latestPosts"
+              :key="post.path"
+              :to="post.path.replace('/blogs/', '/blog/')"
+              class="flex items-center gap-6 py-3 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3"
+            >
+              <span
+                v-if="post.publishedAt"
+                class="shrink-0 w-28 text-xs font-mono text-neutral-500"
+              >
+                {{ formatBlogDate(post.publishedAt) }}
+              </span>
+              <span class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate">
+                {{ post.title }}
+              </span>
+            </NuxtLink>
+          </div>
         </UiAnimatedSection>
       </main>
 
@@ -204,32 +248,30 @@ const content = computed(() => {
         </UiAnimatedSection>
       </section>
 
-      <!-- Experience -->
-      <div class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
-        <UiAnimatedSection
-          id="experience"
-          as="section"
-          animation="fadeInUp"
-          :delay="0"
-          :duration="500"
-        >
-          <HomeSectionLabel :label="t('sections.experience')" />
-          <HomeExperiences />
-        </UiAnimatedSection>
-      </div>
+      <!-- Parcours (Experience + Education) - Full width -->
+      <section id="experience" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+        <span class="corner-bottom-left" />
+        <span class="corner-bottom-right" />
+        <UiAnimatedSection :delay="0" :duration="500">
+          <div class="max-w-5xl mx-auto min-md:px-6 space-y-8">
+            <HomeSectionLabel :label="t('sections.parcours')" />
 
-      <!-- Education -->
-      <div id="education" class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
-        <UiAnimatedSection
-          as="section"
-          animation="fadeInUp"
-          :delay="0"
-          :duration="500"
-        >
-          <HomeSectionLabel :label="t('sections.education')" />
-          <HomeStudies />
+            <div>
+              <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+                {{ t('sections.experience') }}
+              </span>
+              <HomeExperiences />
+            </div>
+
+            <div id="education">
+              <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+                {{ t('sections.education') }}
+              </span>
+              <HomeStudies />
+            </div>
+          </div>
         </UiAnimatedSection>
-      </div>
+      </section>
 
       <!-- Explore Section -->
       <HomeExplore />
