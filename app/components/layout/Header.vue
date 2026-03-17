@@ -8,8 +8,7 @@ const navLinks = computed(() => [
   { href: "#about", label: t("sections.about") },
   { href: "#skills", label: t("sections.skills") },
   { href: "#projects", label: t("sections.projects") },
-  { href: "#experience", label: t("sections.experience") },
-  { href: "#education", label: t("sections.education") },
+  { href: "#experience", label: t("sections.parcours") },
 ]);
 
 const activeSection = ref("");
@@ -88,7 +87,7 @@ const isMobileMenuOpen = ref(false);
             )
           "
         >
-          @kbrdn1
+          <span class="text-white dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
         </NuxtLink>
 
         <!-- Desktop Navigation -->
@@ -114,10 +113,31 @@ const isMobileMenuOpen = ref(false);
           >
             {{ link.label }}
           </a>
+
+          <!-- Blog link -->
+          <NuxtLink
+            to="/blog"
+            :class="cn(
+              'flex-1 px-6 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
+              'border-r border-neutral-200 dark:border-neutral-700',
+              'text-neutral-500 dark:text-neutral-400 hover:text-sky-400 hover:bg-sky-400/5',
+            )"
+          >
+            {{ t('sections.blog') }}
+            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" />
+          </NuxtLink>
         </nav>
 
         <!-- Right side: controls -->
         <div class="flex items-stretch">
+          <a
+            href="https://github.com/sponsors/kbrdn1"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-pink-500 hover:bg-pink-500/5 transition-all"
+          >
+            <UIcon name="i-heroicons-heart" class="w-4 h-4" />
+          </a>
           <div class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-all cursor-pointer">
             <UiLanguageSwitcher />
           </div>
@@ -131,9 +151,9 @@ const isMobileMenuOpen = ref(false);
       <div class="flex md:hidden items-center justify-between h-14 px-4">
         <NuxtLink
           to="/"
-          class="font-mono font-bold text-sm tracking-tight text-primary-500"
+          class="font-mono font-bold text-sm tracking-tight"
         >
-          @kbrdn1
+          <span class="text-white dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
         </NuxtLink>
         <div class="flex items-center gap-1">
           <UiLanguageSwitcher />
@@ -202,6 +222,15 @@ const isMobileMenuOpen = ref(false);
           >
             {{ link.label }}
           </a>
+          <!-- Blog link mobile -->
+          <NuxtLink
+            to="/blog"
+            class="flex items-center gap-1.5 px-3 py-2 text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 hover:text-sky-400 hover:bg-sky-400/5 transition-colors"
+            @click="isMobileMenuOpen = false"
+          >
+            {{ t('sections.blog') }}
+            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" />
+          </NuxtLink>
         </nav>
       </Transition>
     </div>

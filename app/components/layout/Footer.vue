@@ -2,15 +2,23 @@
 import { useI18n } from "#imports";
 
 const { t } = useI18n();
-
-// Navigation links (matching header)
-const navLinks = computed(() => [
-  { href: "#about", label: t("sections.about") },
-  { href: "#skills", label: t("sections.skills") },
-  { href: "#projects", label: t("sections.projects") },
-  { href: "#experience", label: t("sections.experience") },
-  { href: "#education", label: t("sections.education") },
+// Categorized navigation links
+const portfolioLinks = computed(() => [
+  { href: "/#about", label: t("footer.nav.about") },
+  { href: "/#skills", label: t("footer.nav.skills") },
+  { href: "/#projects", label: t("footer.nav.projects") },
+  { href: "/#experience", label: t("footer.nav.experience") },
+  { href: "/#education", label: t("footer.nav.education") },
 ]);
+
+const blogLinks = computed(() => [
+  { href: "/blog", label: t("footer.nav.articles") },
+]);
+
+const otherLinks = [
+  { href: "https://github.com/sponsors/kbrdn1", label: "Sponsor", icon: "i-heroicons-heart", external: true },
+  { href: "mailto:hello@kbrdn.dev", label: "hello@kbrdn.dev", icon: "i-heroicons-envelope", external: false },
+];
 
 const socialLinks = [
   {
@@ -19,7 +27,7 @@ const socialLinks = [
     label: "GitHub",
   },
   {
-    href: "https://linkedin.com/in/kbrdn1",
+    href: "https://linkedin.com/in/kylian-bardini-aa0528234",
     icon: "i-simple-icons-linkedin",
     label: "LinkedIn",
   },
@@ -69,14 +77,15 @@ const currentYear = new Date().getFullYear();
 </script>
 
 <template>
-  <footer
-    class="w-full bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm border-t border-neutral-200 dark:border-neutral-800"
-  >
-    <div class="mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800" style="max-width: 80rem;">
+  <footer class="w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-100/10 dark:bg-neutral-950/10 backdrop-blur-sm">
+    <div
+      class="mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40"
+      style="max-width: 80rem;"
+    >
       <!-- Three-column grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:divide-x md:divide-neutral-200 dark:md:divide-neutral-800">
         <!-- Left Column: Contact Form -->
-        <div class="space-y-5 md:col-span-1">
+        <div class="space-y-5 md:col-span-1 md:pr-12">
           <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
             {{ t("footer.contact.title") }}
           </h3>
@@ -213,16 +222,16 @@ const currentYear = new Date().getFullYear();
           </form>
         </div>
 
-        <!-- Center Column: Navigation & Socials -->
-        <div class="space-y-8 md:col-span-1">
-          <!-- Navigation Links -->
+        <!-- Center Column: Categorized Links -->
+        <div class="grid grid-cols-2 gap-8 md:col-span-1 md:pl-12">
+          <!-- Portfolio -->
           <div class="space-y-3">
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t("footer.navigation.title") }}
+              {{ t("blogNav.portfolio") }}
             </h3>
             <nav class="flex flex-col space-y-2">
               <a
-                v-for="link in navLinks"
+                v-for="link in portfolioLinks"
                 :key="link.href"
                 :href="link.href"
                 class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
@@ -232,7 +241,24 @@ const currentYear = new Date().getFullYear();
             </nav>
           </div>
 
-          <!-- Social Links -->
+          <!-- Blog -->
+          <div class="space-y-3">
+            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+              {{ t("sections.blog") }}
+            </h3>
+            <nav class="flex flex-col space-y-2">
+              <a
+                v-for="link in blogLinks"
+                :key="link.href"
+                :href="link.href"
+                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
+              >
+                {{ link.label }}
+              </a>
+            </nav>
+          </div>
+
+          <!-- Socials -->
           <div class="space-y-3">
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("footer.links.title") }}
@@ -251,10 +277,30 @@ const currentYear = new Date().getFullYear();
               </a>
             </nav>
           </div>
+
+          <!-- Other -->
+          <div class="space-y-3">
+            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+              {{ t("footer.links.other") }}
+            </h3>
+            <nav class="flex flex-col space-y-2">
+              <a
+                v-for="link in otherLinks"
+                :key="link.href"
+                :href="link.href"
+                :target="link.external ? '_blank' : undefined"
+                :rel="link.external ? 'noopener noreferrer' : undefined"
+                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
+              >
+                <UIcon :name="link.icon" class="w-4 h-4" />
+                {{ link.label }}
+              </a>
+            </nav>
+          </div>
         </div>
 
         <!-- Right Column: Info -->
-        <div class="space-y-8 md:col-span-1">
+        <div class="space-y-8 md:col-span-1 md:pl-12">
           <!-- Location -->
           <div class="space-y-2">
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
@@ -288,7 +334,7 @@ const currentYear = new Date().getFullYear();
           <!-- Email -->
           <div class="space-y-2">
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              Email
+              {{ t("footer.email.title") }}
             </h3>
             <a
               href="mailto:hello@kbrdn.dev"
