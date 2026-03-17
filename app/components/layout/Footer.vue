@@ -93,6 +93,7 @@ const currentYear = new Date().getFullYear();
             {{ t("footer.contact.description") }}
           </p>
 
+          <ClientOnly>
           <form class="space-y-4" @submit.prevent="handleSubmit">
             <!-- Name -->
             <div class="space-y-1.5">
@@ -220,6 +221,7 @@ const currentYear = new Date().getFullYear();
               {{ t("footer.contact.error") }}
             </p>
           </form>
+          </ClientOnly>
         </div>
 
         <!-- Center Column: Categorized Links -->

@@ -164,7 +164,7 @@ function postUrl(post: { path: string }): string {
       </section>
 
       <!-- Tag filter bar + Posts -->
-      <div ref="blogListRef" />
+      <div ref="blogListRef" class="scroll-mt-20" />
       <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
         <!-- Tag filters + View toggle -->
         <UiAnimatedSection

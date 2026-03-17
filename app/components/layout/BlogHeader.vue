@@ -73,7 +73,7 @@ const isMobileMenuOpen = ref(false);
               cn(
                 'flex-1 px-6 flex items-center justify-center gap-2 text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
                 'border-r border-neutral-200 dark:border-neutral-700',
-                'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50',
+                'text-neutral-500 dark:text-neutral-400 hover:text-primary-500 hover:bg-primary-500/5',
               )
             "
           >
@@ -176,7 +176,7 @@ const isMobileMenuOpen = ref(false);
             :class="
               cn(
                 'flex items-center gap-2 px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
-                'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50',
+                'text-neutral-500 dark:text-neutral-400 hover:text-primary-500 hover:bg-primary-500/5',
               )
             "
             @click="isMobileMenuOpen = false"

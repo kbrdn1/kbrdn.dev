@@ -157,10 +157,12 @@ const content = computed(() => {
           :duration="500"
         >
           <div class="flex items-center justify-between mb-3">
-            <HomeSectionLabel :label="t('sections.blog')" />
+            <span class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
+              {{ t('sections.blog') }}
+            </span>
             <NuxtLink
               to="/blog"
-              class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-primary-500 transition-colors"
+              class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-sky-400 transition-colors"
             >
               {{ t('blog.viewAll') }} →
             </NuxtLink>
