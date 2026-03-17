@@ -3,7 +3,20 @@ import { useI18n } from '#imports'
 
 const { t } = useI18n()
 
-const { data: track } = await useFetch('/api/music')
+interface Track {
+  title: string
+  artist: string
+  album: string
+  cover: string
+  preview: string
+  link: string
+}
+
+const { data: tracks } = await useFetch<Track[]>('/api/music')
+
+const currentIndex = ref(0)
+const isTransitioning = ref(false)
+const track = computed(() => tracks.value?.[currentIndex.value] || null)
 
 const audio = ref<HTMLAudioElement | null>(null)
 const isPlaying = ref(false)
@@ -33,7 +46,45 @@ function onTimeUpdate() {
 function onAudioEnded() {
   isPlaying.value = false
   currentTime.value = 0
+  nextTrack()
 }
+
+function nextTrack() {
+  if (!tracks.value?.length) return
+  if (audio.value) { audio.value.pause(); isPlaying.value = false }
+  isTransitioning.value = true
+  setTimeout(() => {
+    currentIndex.value = (currentIndex.value + 1) % tracks.value!.length
+    currentTime.value = 0
+    isTransitioning.value = false
+  }, 300)
+}
+
+function prevTrack() {
+  if (!tracks.value?.length) return
+  if (audio.value) { audio.value.pause(); isPlaying.value = false }
+  isTransitioning.value = true
+  setTimeout(() => {
+    currentIndex.value = (currentIndex.value - 1 + tracks.value!.length) % tracks.value!.length
+    currentTime.value = 0
+    isTransitioning.value = false
+  }, 300)
+}
+
+// Auto-rotate every 45s when not playing
+let rotateInterval: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  rotateInterval = setInterval(() => {
+    if (!isPlaying.value) nextTrack()
+  }, 45000)
+})
+
+onUnmounted(() => {
+  if (rotateInterval) clearInterval(rotateInterval)
+})
+
+const isSeeking = ref(false)
 
 function seekTo(e: MouseEvent) {
   e.preventDefault()
@@ -41,8 +92,29 @@ function seekTo(e: MouseEvent) {
   if (!audio.value) return
   const bar = e.currentTarget as HTMLElement
   const rect = bar.getBoundingClientRect()
-  const ratio = (e.clientX - rect.left) / rect.width
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
   audio.value.currentTime = ratio * duration.value
+}
+
+function startSeek(e: MouseEvent) {
+  isSeeking.value = true
+  seekTo(e)
+  const onMove = (ev: MouseEvent) => {
+    if (!audio.value) return
+    const bar = document.querySelector('.progress-bar') as HTMLElement
+    if (!bar) return
+    const rect = bar.getBoundingClientRect()
+    const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width))
+    audio.value.currentTime = ratio * duration.value
+    currentTime.value = ratio * duration.value
+  }
+  const onUp = () => {
+    isSeeking.value = false
+    window.removeEventListener('mousemove', onMove)
+    window.removeEventListener('mouseup', onUp)
+  }
+  window.addEventListener('mousemove', onMove)
+  window.addEventListener('mouseup', onUp)
 }
 
 const progress = computed(() => {
@@ -58,7 +130,7 @@ function formatTime(seconds: number): string {
 </script>
 
 <template>
-  <div v-if="track" class="mt-6">
+  <div v-if="tracks?.length" class="mt-6">
     <span class="block text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3">
       {{ t('music.listeningTo') }}
     </span>
@@ -71,12 +143,17 @@ function formatTime(seconds: number): string {
         'hover:border-primary-500/50 transition-all',
       )"
     >
-      <div class="flex items-center gap-4 p-3">
+      <div
+        class="flex items-center gap-4 p-3"
+        :class="{ 'opacity-0 translate-x-2': isTransitioning, 'opacity-100 translate-x-0': !isTransitioning }"
+        :style="{ transition: 'opacity 0.3s ease, transform 0.3s ease' }"
+      >
         <!-- Album art -->
         <div class="relative shrink-0 group/cover">
           <img
+            v-if="track"
             :src="track.cover"
-            :alt="track.album"
+            :alt="track?.album"
             width="56"
             height="56"
             class="object-cover"
@@ -124,25 +201,42 @@ function formatTime(seconds: number): string {
               </span>
             </div>
 
-            <!-- Play button -->
-            <button
-              type="button"
-              :class="cn(
-                'shrink-0 flex items-center justify-center w-8 h-8',
-                'text-white bg-primary-500 hover:bg-primary-400',
-                'transition-all',
-                isPlaying ? 'bg-primary-400' : '',
-              )"
-              :aria-label="isPlaying ? 'Pause' : 'Play'"
-              @click="togglePlay"
-            >
-              <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ml-0.5">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-              </svg>
-            </button>
+            <!-- Controls: prev / play / next -->
+            <div class="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                aria-label="Previous"
+                @click.prevent.stop="prevTrack"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
+              </button>
+              <button
+                type="button"
+                :class="cn(
+                  'flex items-center justify-center w-8 h-8',
+                  'text-white bg-primary-500 hover:bg-primary-400',
+                  'transition-all',
+                )"
+                :aria-label="isPlaying ? 'Pause' : 'Play'"
+                @click="togglePlay"
+              >
+                <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ml-0.5">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+                aria-label="Next"
+                @click.prevent.stop="nextTrack"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
+              </button>
+            </div>
           </div>
 
           <!-- Progress bar -->
@@ -151,14 +245,22 @@ function formatTime(seconds: number): string {
               {{ formatTime(currentTime) }}
             </span>
             <div
-              class="flex-1 h-1 bg-neutral-200 dark:bg-neutral-800 cursor-pointer group/bar"
-              @click="seekTo"
+              class="progress-bar flex-1 h-1 bg-neutral-200 dark:bg-neutral-800 cursor-pointer group/bar relative"
+              :class="{ 'h-1.5': isSeeking }"
+              style="transition: height 0.15s ease;"
+              @mousedown="startSeek"
             >
               <div
                 class="h-full bg-primary-500 relative"
-                :style="{ width: `${progress}%`, transition: 'width 0.1s linear' }"
+                :style="{ width: `${progress}%`, transition: isSeeking ? 'none' : 'width 1s linear' }"
               >
-                <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-primary-500 border-2 border-white dark:border-neutral-900 rounded-full opacity-0 group-hover/bar:opacity-100 transition-opacity" />
+                <div
+                  :class="cn(
+                    'absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary-500 border-2 border-white dark:border-neutral-900 rounded-full',
+                    'transition-transform duration-150',
+                    isSeeking ? 'scale-125 opacity-100' : 'scale-0 group-hover/bar:scale-100 opacity-0 group-hover/bar:opacity-100',
+                  )"
+                />
               </div>
             </div>
             <span class="text-[10px] font-mono text-neutral-400 w-7">
