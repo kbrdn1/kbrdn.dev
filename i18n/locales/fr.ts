@@ -22,6 +22,39 @@ export default {
     defaultTitle: "1/3 Design Engineer",
     viewCount: "vues",
     sponsor: "Sponsoriser",
+    availableForHire: "En contrat chez Jewely x Flippad",
+    bookCall: "Prendre rendez-vous",
+    viewOnGithub: "Voir sur GitHub",
+  },
+
+  // Section Labels
+  sections: {
+    about: "A PROPOS",
+    projects: "PROJETS",
+    skills: "STACK & COMPÉTENCES",
+    experience: "EXPERIENCE",
+    education: "FORMATION",
+    activity: "ACTIVITE",
+    connect: "CONTACT",
+  },
+
+  // Explore Section
+  explore: {
+    slides: {
+      collab: {
+        title: "Construisons quelque chose ensemble",
+        description: "Je suis toujours ouvert aux projets intéressants et aux collaborations. Que ce soit une app web, une API, ou un produit full-stack — parlons-en.",
+        cta: "Me contacter",
+      },
+      crafting: {
+        title: "En cours de création...",
+        description: "LazyCurl — un client HTTP TUI moderne construit en Go. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
+      },
+      motto: {
+        title: "\"Le bon outil, pas celui à la mode.\"",
+        description: "Je crois en l'ingénierie pragmatique. Choisir la stack adaptée au problème, écrire du code durable, et livrer des choses qui comptent.",
+      },
+    },
   },
 
   // Bio Section
@@ -78,10 +111,20 @@ export default {
     fr: "Français",
   },
 
+  // Skills Section
+  skills: {
+    featured: "STACK & COMPÉTENCES",
+    title: "Outils avec lesquels je travaille",
+    ariaLabel: "Catégories de compétences",
+  },
+
   // Projects Section
   projects: {
     title: "Projets en vedette",
-    viewAll: "Voir tous les projets",
+    featured: "PROJETS EN VEDETTE",
+    viewAll: "Voir tout sur GitHub",
+    viewProject: "Voir le projet",
+    demo: "Démo",
     stats: {
       stars: "Étoiles",
       forks: "Forks",
@@ -176,13 +219,16 @@ export default {
     links: {
       title: "Me Suivre",
     },
+    navigation: {
+      title: "Navigation",
+    },
     location: {
       title: "Localisation",
       city: "Nancy, France",
     },
     availability: {
       title: "Disponibilité",
-      status: "En contrat chez Flippad x Jewely",
+      status: "En contrat chez Jewely x Flippad",
     },
     copyright: "Tous droits réservés.",
   },

@@ -21,6 +21,39 @@ export default {
     defaultTitle: "1/3 Design Engineer",
     viewCount: "views",
     sponsor: "Sponsor",
+    availableForHire: "In contract at Jewely x Flippad",
+    bookCall: "Book a Call",
+    viewOnGithub: "View on GitHub",
+  },
+
+  // Section Labels
+  sections: {
+    about: "ABOUT",
+    projects: "PROJECTS",
+    skills: "STACK & SKILLS",
+    experience: "EXPERIENCE",
+    education: "EDUCATION",
+    activity: "ACTIVITY",
+    connect: "CONNECT",
+  },
+
+  // Explore Section
+  explore: {
+    slides: {
+      collab: {
+        title: "Let's build something together",
+        description: "I'm always open to interesting projects and collaborations. Whether it's a web app, an API, or a full-stack product — let's talk.",
+        cta: "Get in touch",
+      },
+      crafting: {
+        title: "Currently crafting...",
+        description: "LazyCurl — a modern TUI HTTP client built in Go. Also working on this portfolio, cloud architecture experiments, and diving deeper into Rust.",
+      },
+      motto: {
+        title: "\"The right tool, not the trendy one.\"",
+        description: "I believe in pragmatic engineering. Pick the stack that fits the problem, write code that lasts, and ship things that matter.",
+      },
+    },
   },
 
   // Bio Section
@@ -77,10 +110,20 @@ export default {
     fr: "French",
   },
 
+  // Skills Section
+  skills: {
+    featured: "STACK & SKILLS",
+    title: "Tools I work with",
+    ariaLabel: "Skills categories",
+  },
+
   // Projects Section
   projects: {
     title: "Featured Projects",
-    viewAll: "View all projects",
+    featured: "FEATURED PROJECTS",
+    viewAll: "View all on GitHub",
+    viewProject: "View Project",
+    demo: "Demo",
     stats: {
       stars: "Stars",
       forks: "Forks",
@@ -174,13 +217,16 @@ export default {
     links: {
       title: "Connect",
     },
+    navigation: {
+      title: "Navigation",
+    },
     location: {
       title: "Location",
       city: "Nancy, France",
     },
     availability: {
       title: "Availability",
-      status: "In contract at Flippad x Jewely",
+      status: "In contract at Jewely x Flippad",
     },
     copyright: "All rights reserved.",
   },
