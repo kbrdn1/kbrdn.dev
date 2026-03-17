@@ -318,6 +318,28 @@
   75% { height: 20%; }
 }
 
+/* Carousel slide transitions */
+.carousel-visible {
+  opacity: 1;
+  transform: translateX(0);
+  filter: blur(0);
+  transition: opacity 0.5s ease, transform 0.5s ease, filter 0.5s ease !important;
+}
+
+.carousel-hidden-left {
+  opacity: 0;
+  transform: translateX(30px);
+  filter: blur(4px);
+  transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease !important;
+}
+
+.carousel-hidden-right {
+  opacity: 0;
+  transform: translateX(-30px);
+  filter: blur(4px);
+  transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease !important;
+}
+
 /* Blog list items stagger animation */
 .blog-item-enter {
   transition: opacity 0.4s ease, transform 0.4s ease !important;

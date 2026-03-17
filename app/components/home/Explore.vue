@@ -40,11 +40,13 @@ const slides = computed<Slide[]>(() => [
 
 const currentSlide = ref(0)
 const isTransitioning = ref(false)
+const slideDirection = ref<'left' | 'right'>('left')
 
 let interval: ReturnType<typeof setInterval> | undefined
 
 onMounted(() => {
   interval = setInterval(() => {
+    slideDirection.value = 'left'
     isTransitioning.value = true
     setTimeout(() => {
       currentSlide.value = (currentSlide.value + 1) % slides.value.length
@@ -59,6 +61,7 @@ onUnmounted(() => {
 
 function goToSlide(index: number) {
   if (index === currentSlide.value) return
+  slideDirection.value = index > currentSlide.value ? 'left' : 'right'
   isTransitioning.value = true
   setTimeout(() => {
     currentSlide.value = index
@@ -90,10 +93,11 @@ function goToSlide(index: number) {
       <div class="max-w-5xl mx-auto min-md:px-6 flex flex-col items-center text-center">
         <!-- Rotating content -->
         <div
-          class="transition-all duration-500 ease-out h-[160px] sm:h-[140px] flex flex-col items-center justify-center gap-5 w-full"
+          class="h-[160px] sm:h-[140px] flex flex-col items-center justify-center gap-5 w-full"
           :class="{
-            'opacity-0 scale-95 blur-sm translate-y-6': isTransitioning,
-            'opacity-100 scale-100 blur-0 translate-y-0': !isTransitioning,
+            'carousel-hidden-left': isTransitioning && slideDirection === 'left',
+            'carousel-hidden-right': isTransitioning && slideDirection === 'right',
+            'carousel-visible': !isTransitioning,
           }"
         >
           <!-- Label -->
