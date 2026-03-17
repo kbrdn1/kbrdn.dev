@@ -131,7 +131,9 @@ function postUrl(post: { path: string }): string {
         <span class="corner-bottom-right" />
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
           <div class="max-w-5xl mx-auto min-md:px-6">
-            <HomeSectionLabel :label="t('sections.blog')" />
+            <span class="block text-[11px] font-mono uppercase tracking-widest text-sky-400 mb-1">
+              {{ t('sections.blog') }}
+            </span>
             <h1 class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2">
               {{ t('blog.title') }}
             </h1>
