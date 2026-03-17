@@ -4,6 +4,11 @@ const playlist = [
   'maes arsenal',
   'shiro sagisu number one',
   'd-tecnolife uverworld',
+  'timal story',
+  'zamdane magicien',
+  'official hige dandism same blue',
+  'shiro sagisu treachery',
+  'maes le moine',
 ]
 
 export default defineEventHandler(async () => {

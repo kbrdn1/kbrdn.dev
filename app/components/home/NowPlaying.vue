@@ -44,13 +44,23 @@ function onTimeUpdate() {
 }
 
 function onAudioEnded() {
+  shouldAutoPlay.value = true
   isPlaying.value = false
   currentTime.value = 0
-  nextTrack()
+  if (!tracks.value?.length) return
+  isTransitioning.value = true
+  setTimeout(() => {
+    currentIndex.value = (currentIndex.value + 1) % tracks.value!.length
+    currentTime.value = 0
+    isTransitioning.value = false
+  }, 300)
 }
+
+const shouldAutoPlay = ref(false)
 
 function nextTrack() {
   if (!tracks.value?.length) return
+  shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
   isTransitioning.value = true
   setTimeout(() => {
@@ -62,6 +72,7 @@ function nextTrack() {
 
 function prevTrack() {
   if (!tracks.value?.length) return
+  shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
   isTransitioning.value = true
   setTimeout(() => {
@@ -69,6 +80,26 @@ function prevTrack() {
     currentTime.value = 0
     isTransitioning.value = false
   }, 300)
+}
+
+function goToTrack(index: number) {
+  if (index === currentIndex.value) return
+  shouldAutoPlay.value = isPlaying.value
+  if (audio.value) { audio.value.pause(); isPlaying.value = false }
+  isTransitioning.value = true
+  setTimeout(() => {
+    currentIndex.value = index
+    currentTime.value = 0
+    isTransitioning.value = false
+  }, 300)
+}
+
+function onCanPlay() {
+  if (shouldAutoPlay.value && audio.value) {
+    audio.value.play()
+    isPlaying.value = true
+    shouldAutoPlay.value = false
+  }
 }
 
 // Auto-rotate every 45s when not playing
@@ -270,14 +301,35 @@ function formatTime(seconds: number): string {
         </div>
       </div>
 
+      <!-- Track indicators -->
+      <div v-if="tracks.length > 1" class="flex items-center justify-center gap-2 px-3 pb-3">
+        <button
+          v-for="(_, index) in tracks"
+          :key="index"
+          :class="cn(
+            'h-0.5 cursor-pointer',
+            currentIndex === index
+              ? 'bg-primary-500'
+              : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500',
+          )"
+          :style="{
+            width: currentIndex === index ? '24px' : '12px',
+            transition: 'width 300ms ease, background-color 300ms ease',
+          }"
+          @click.prevent.stop="goToTrack(index)"
+        />
+      </div>
+
       <audio
-        v-if="track.preview"
+        v-if="track?.preview"
+        :key="track.preview"
         ref="audio"
         :src="track.preview"
-        preload="none"
+        preload="auto"
         @timeupdate="onTimeUpdate"
         @ended="onAudioEnded"
         @loadedmetadata="onTimeUpdate"
+        @canplay="onCanPlay"
       />
     </div>
   </div>
