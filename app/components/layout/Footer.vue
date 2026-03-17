@@ -83,9 +83,9 @@ const currentYear = new Date().getFullYear();
       style="max-width: 80rem;"
     >
       <!-- Three-column grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:divide-x md:divide-neutral-200 dark:md:divide-neutral-800">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
         <!-- Left Column: Contact Form -->
-        <div class="space-y-5 md:col-span-1 md:pr-12">
+        <div class="space-y-5 md:col-span-1 md:pr-12 md:border-r md:border-neutral-200 dark:md:border-neutral-800">
           <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
             {{ t("footer.contact.title") }}
           </h3>
@@ -223,7 +223,7 @@ const currentYear = new Date().getFullYear();
         </div>
 
         <!-- Center Column: Categorized Links -->
-        <div class="grid grid-cols-2 gap-8 md:col-span-1 md:pl-12">
+        <div class="grid grid-cols-2 gap-6 md:col-span-1">
           <!-- Portfolio -->
           <div class="space-y-3">
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
@@ -300,7 +300,7 @@ const currentYear = new Date().getFullYear();
         </div>
 
         <!-- Right Column: Info -->
-        <div class="space-y-8 md:col-span-1 md:pl-12">
+        <div class="space-y-6 md:col-span-1">
           <!-- Location -->
           <div class="space-y-2">
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
