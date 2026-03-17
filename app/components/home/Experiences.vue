@@ -19,8 +19,8 @@ const experiences: Experience[] = [
   {
     id: 'flippad',
     key: 'flippad',
-    company: 'Flippad x Jewely',
-    logo: '/images/logos/flippad.jpg',
+    company: 'Jewely x Flippad',
+    logo: '/images/logos/jewely-x-flippad.png',
     startDate: '2023-10',
     endDate: null,
     current: true,
@@ -69,41 +69,39 @@ function getInitials(name: string): string {
 </script>
 
 <template>
-  <div class="space-y-3">
-    <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">{{ t('experiences.title') }}</h2>
-
-    <!-- Horizontal Accordions with Stagger Animation -->
-    <UiStaggerContainer :stagger-delay="100" :base-delay="0" class="space-y-2">
+  <div>
+    <!-- Accordions with Stagger Animation -->
+    <UiStaggerContainer :stagger-delay="100" :base-delay="0" class="space-y-4">
       <UiStaggerItem
         v-for="(exp, index) in experiences"
         :key="exp.id"
         :index="index"
-        class="border border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 overflow-hidden"
+        class="border border-neutral-200 dark:border-neutral-800 overflow-hidden transition-colors duration-200 hover:bg-neutral-50 dark:hover:bg-neutral-900/50"
       >
         <!-- Accordion Header -->
         <button
           :class="cn(
-            'group/header w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-200',
+            'group/header w-full flex items-center gap-4 p-5 text-left transition-all duration-300',
             expandedId === exp.id
-              ? 'bg-primary-500/5 border-b border-neutral-200 dark:border-neutral-800'
-              : 'hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 hover:border-l-2 hover:border-l-primary-500/50 hover:pl-[14px]'
+              ? 'bg-primary-500/5 border-b border-primary-500/20'
+              : ''
           )"
           @click="toggleExpand(exp.id)"
         >
           <!-- Logo -->
-          <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center">
+          <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center">
             <NuxtImg
               v-if="!logoError[exp.id]"
               :src="exp.logo"
               :alt="exp.company"
-              width="32"
-              height="32"
-              class="w-8 h-8 object-contain"
+              width="40"
+              height="40"
+              class="w-10 h-10 object-contain"
               @error="logoError[exp.id] = true"
             />
             <span
               v-else
-              class="w-8 h-8 flex items-center justify-center text-xs font-bold bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300"
+              class="w-10 h-10 flex items-center justify-center text-sm font-bold bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300"
             >
               {{ getInitials(exp.company) }}
             </span>
@@ -111,56 +109,59 @@ function getInitials(name: string): string {
 
           <!-- Company & Role -->
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="font-medium text-neutral-900 dark:text-neutral-100">{{ exp.company }}</span>
+            <div class="flex items-center gap-2.5">
+              <span class="text-lg font-medium text-neutral-900 dark:text-neutral-100">{{ exp.company }}</span>
               <span
                 v-if="exp.current"
-                class="px-1.5 py-0.5 text-[10px] font-medium bg-primary-500/20 text-primary-500"
+                class="px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider border border-primary-500/30 text-primary-500"
               >
                 {{ t('experiences.current') }}
               </span>
             </div>
-            <p class="text-xs text-neutral-500 truncate">
+            <p class="text-sm text-neutral-400 truncate">
               {{ getExperienceContent(exp).role }}
             </p>
           </div>
 
           <!-- Date & Chevron -->
-          <div class="flex items-center gap-2 text-xs text-neutral-500">
-            <span class="hidden sm:inline">
+          <div class="flex items-center gap-3">
+            <span class="hidden sm:inline font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ formatDate(exp.startDate) }} - {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
             </span>
-            <UIcon
-              :name="expandedId === exp.id ? 'i-heroicons-chevron-up-20-solid' : 'i-heroicons-chevron-down-20-solid'"
-              class="w-4 h-4 text-neutral-400 group-hover/header:text-primary-500 transition-colors"
-            />
+            <div class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500">
+              <span class="absolute inset-0 flex items-center justify-center">
+                <span class="block w-3 h-0.5 bg-current" />
+              </span>
+              <span
+                class="absolute inset-0 flex items-center justify-center accordion-icon-bar"
+                :class="expandedId === exp.id ? 'is-expanded' : 'is-collapsed'"
+              >
+                <span class="block w-3 h-0.5 bg-current" />
+              </span>
+            </div>
           </div>
         </button>
 
         <!-- Accordion Content -->
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          leave-active-class="transition-all duration-150 ease-in"
-          enter-from-class="opacity-0 max-h-0"
-          enter-to-class="opacity-100 max-h-[500px]"
-          leave-from-class="opacity-100 max-h-[500px]"
-          leave-to-class="opacity-0 max-h-0"
+        <div
+          class="accordion-wrapper"
+          :class="{ 'is-open': expandedId === exp.id }"
         >
-          <div v-if="expandedId === exp.id" class="overflow-hidden">
-            <div class="p-4 space-y-3">
+          <div class="accordion-inner">
+            <div class="p-5 pt-4 space-y-4 bg-primary-500/5">
               <!-- Type & Date (mobile) -->
-              <p class="text-xs text-neutral-500 sm:hidden">
+              <p class="font-mono text-xs uppercase tracking-wider text-neutral-500 sm:hidden">
                 {{ getExperienceContent(exp).type }} · {{ formatDate(exp.startDate) }} - {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
               </p>
 
               <!-- Technologies -->
-              <div class="flex flex-wrap gap-1">
+              <div class="flex flex-wrap gap-2">
                 <span
                   v-for="tech in exp.technologies"
                   :key="tech"
                   :class="cn(
-                    'px-1.5 py-0.5 text-[10px] font-mono',
-                    'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-700',
+                    'px-2.5 py-1 text-xs font-mono',
+                    'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border border-neutral-300 dark:border-neutral-700',
                     'hover:bg-primary-500/10 hover:text-primary-400 hover:border-primary-500/30',
                     'transition-colors duration-150 cursor-default'
                   )"
@@ -170,19 +171,19 @@ function getInitials(name: string): string {
               </div>
 
               <!-- Tasks -->
-              <ul class="space-y-1.5 text-sm">
+              <ul class="space-y-2.5">
                 <li
-                  v-for="(task, index) in getExperienceContent(exp).tasks"
-                  :key="index"
-                  class="flex gap-2 text-neutral-600 dark:text-neutral-400"
+                  v-for="(task, taskIndex) in getExperienceContent(exp).tasks"
+                  :key="taskIndex"
+                  class="flex items-start gap-2.5 text-neutral-600 dark:text-neutral-400"
                 >
-                  <span class="text-primary-500 flex-shrink-0">›</span>
-                  <span class="leading-snug">{{ task }}</span>
+                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                  <span class="text-sm leading-relaxed">{{ task }}</span>
                 </li>
               </ul>
             </div>
           </div>
-        </Transition>
+        </div>
       </UiStaggerItem>
     </UiStaggerContainer>
   </div>
