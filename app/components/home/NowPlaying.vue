@@ -176,8 +176,8 @@ function formatTime(seconds: number): string {
     >
       <div
         class="flex items-center gap-4 p-3"
-        :class="{ 'opacity-0 translate-x-2': isTransitioning, 'opacity-100 translate-x-0': !isTransitioning }"
-        :style="{ transition: 'opacity 0.3s ease, transform 0.3s ease' }"
+        :class="{ 'opacity-0 translate-x-6': isTransitioning, 'opacity-100 translate-x-0': !isTransitioning }"
+        :style="{ transition: 'opacity 0.4s ease, transform 0.4s ease' }"
       >
         <!-- Album art -->
         <div class="relative shrink-0 group/cover">

@@ -91,7 +91,7 @@ function goToSlide(index: number) {
         <div
           class="transition-all duration-500 ease-out h-[160px] sm:h-[140px] flex flex-col items-center justify-center gap-5 w-full"
           :class="{
-            'opacity-0 scale-95 blur-sm translate-y-2': isTransitioning,
+            'opacity-0 scale-95 blur-sm translate-y-6': isTransitioning,
             'opacity-100 scale-100 blur-0 translate-y-0': !isTransitioning,
           }"
         >

@@ -92,7 +92,7 @@ onUnmounted(() => {
         <p
           class="text-lg sm:text-xl text-primary-500 font-mono transition-all duration-300 mb-6"
           :class="{
-            'opacity-0 translate-y-1': isTransitioning,
+            'opacity-0 translate-y-4': isTransitioning,
             'opacity-100 translate-y-0': !isTransitioning,
           }"
         >
