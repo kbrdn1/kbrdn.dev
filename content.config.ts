@@ -40,6 +40,7 @@ export default defineContentConfig({
         description: z.string().optional(),
         publishedAt: z.string().optional(),
         tags: z.array(z.string()).optional(),
+        banner: z.boolean().optional(),
       }),
     }),
     projects: defineCollection({
