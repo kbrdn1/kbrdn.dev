@@ -82,7 +82,8 @@ function goToSlide(index: number) {
       </template>
     </ClientOnly>
     <!-- Fade edges -->
-    <div class="absolute inset-0 bg-radial-[ellipse_at_center] from-transparent via-transparent to-[#f0eeeb]/60 dark:to-neutral-950" />
+    <div class="absolute inset-0 bg-radial-[ellipse_at_center] from-transparent via-transparent/30 to-neutral-950/50" />
+    <div class="absolute inset-0 bg-gradient-to-r from-neutral-950/50 via-transparent to-neutral-950/50" />
 
     <!-- Content -->
     <div class="relative z-10 py-20 sm:py-28 px-6">
