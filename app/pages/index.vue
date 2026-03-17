@@ -136,6 +136,7 @@ const content = computed(() => {
         >
           <HomeSectionLabel :label="t('sections.about')" />
           <HomeBio :paragraphs="content.bio" />
+          <HomeNowPlaying />
         </UiAnimatedSection>
 
         <UiAnimatedSection

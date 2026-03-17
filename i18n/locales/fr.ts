@@ -82,6 +82,11 @@ export default {
     },
   },
 
+  // Music Section
+  music: {
+    listeningTo: "J'écoute",
+  },
+
   // Bio Section
   bio: {
     defaultParagraphs: [
