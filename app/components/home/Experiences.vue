@@ -31,7 +31,7 @@ const experiences: Experience[] = [
     id: 'virtual-immersion',
     key: 'virtualImmersion',
     company: 'Virtual Immersion',
-    logo: '/images/logos/virtual-immersion.jpeg',
+    logo: '/images/logos/virtual-immersion.png',
     startDate: '2022-11',
     endDate: '2023-09',
     current: false,
