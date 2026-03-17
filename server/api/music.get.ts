@@ -7,7 +7,7 @@ const playlist = [
   'timal story',
   'zamdane magicien',
   'official hige dandism same blue',
-  'shiro sagisu treachery',
+  'shiro sagisu treachery treacherously',
   'maes le moine',
 ]
 
