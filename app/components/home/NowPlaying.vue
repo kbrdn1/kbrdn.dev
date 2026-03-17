@@ -44,6 +44,7 @@ function onTimeUpdate() {
 }
 
 function onAudioEnded() {
+  slideDirection.value = 'left'
   shouldAutoPlay.value = true
   isPlaying.value = false
   currentTime.value = 0
@@ -57,8 +58,10 @@ function onAudioEnded() {
 }
 
 const shouldAutoPlay = ref(false)
+const slideDirection = ref<'left' | 'right'>('left')
 
 function nextTrack() {
+  slideDirection.value = 'left'
   if (!tracks.value?.length) return
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
@@ -71,6 +74,7 @@ function nextTrack() {
 }
 
 function prevTrack() {
+  slideDirection.value = 'right'
   if (!tracks.value?.length) return
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
@@ -84,6 +88,7 @@ function prevTrack() {
 
 function goToTrack(index: number) {
   if (index === currentIndex.value) return
+  slideDirection.value = index > currentIndex.value ? 'left' : 'right'
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
   isTransitioning.value = true
@@ -176,8 +181,11 @@ function formatTime(seconds: number): string {
     >
       <div
         class="flex items-center gap-4 p-3"
-        :class="{ 'opacity-0 translate-x-6': isTransitioning, 'opacity-100 translate-x-0': !isTransitioning }"
-        :style="{ transition: 'opacity 0.4s ease, transform 0.4s ease' }"
+        :class="{
+          'player-hidden-left': isTransitioning && slideDirection === 'left',
+          'player-hidden-right': isTransitioning && slideDirection === 'right',
+          'player-visible': !isTransitioning,
+        }"
       >
         <!-- Album art -->
         <div class="relative shrink-0 group/cover">
@@ -334,19 +342,3 @@ function formatTime(seconds: number): string {
     </div>
   </div>
 </template>
-
-<style scoped>
-@keyframes eq1 {
-  0%, 100% { height: 30%; }
-  50% { height: 100%; }
-}
-@keyframes eq2 {
-  0%, 100% { height: 100%; }
-  50% { height: 30%; }
-}
-@keyframes eq3 {
-  0%, 100% { height: 60%; }
-  25% { height: 100%; }
-  75% { height: 20%; }
-}
-</style>

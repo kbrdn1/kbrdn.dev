@@ -28,6 +28,14 @@ onMounted(() => {
   }
 })
 const showViewDropdown = ref(false)
+const blogListRef = ref<HTMLElement | null>(null)
+
+function goToPage(page: number) {
+  blogListRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  setTimeout(() => {
+    currentPage.value = page
+  }, 300)
+}
 
 // Extract all unique tags from posts
 const allTags = computed(() => {
@@ -154,6 +162,7 @@ function postUrl(post: { path: string }): string {
       </section>
 
       <!-- Tag filter bar + Posts -->
+      <div ref="blogListRef" />
       <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
         <!-- Tag filters + View toggle -->
         <UiAnimatedSection
@@ -264,12 +273,23 @@ function postUrl(post: { path: string }): string {
         <UiAnimatedSection animation="fadeInUp" :delay="150" :duration="500">
 
           <!-- List view (oxc.rs style) -->
-          <div v-if="viewMode === 'list' && paginatedPosts.length > 0" class="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <TransitionGroup
+            v-if="viewMode === 'list' && paginatedPosts.length > 0"
+            tag="div"
+            class="divide-y divide-neutral-200 dark:divide-neutral-800"
+            enter-active-class="blog-item-enter"
+            leave-active-class="blog-item-leave"
+            enter-from-class="blog-item-from"
+            enter-to-class="blog-item-to"
+            leave-from-class="blog-item-to"
+            leave-to-class="blog-item-from"
+          >
             <NuxtLink
-              v-for="post in paginatedPosts"
+              v-for="(post, index) in paginatedPosts"
               :key="post.path"
               :to="postUrl(post)"
               class="relative flex items-center gap-6 py-6 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3 overflow-hidden"
+              :style="{ transitionDelay: `${index * 50}ms` }"
             >
               <!-- Thumbnail fade (if banner) -->
               <ClientOnly v-if="post.banner">
@@ -309,18 +329,29 @@ function postUrl(post: { path: string }): string {
                 </span>
               </div>
             </NuxtLink>
-          </div>
+          </TransitionGroup>
 
           <!-- Cards view -->
-          <div v-else-if="viewMode === 'cards' && paginatedPosts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <TransitionGroup
+            v-else-if="viewMode === 'cards' && paginatedPosts.length > 0"
+            tag="div"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            enter-active-class="blog-item-enter"
+            leave-active-class="blog-item-leave"
+            enter-from-class="blog-item-from"
+            enter-to-class="blog-item-to"
+            leave-from-class="blog-item-to"
+            leave-to-class="blog-item-from"
+          >
             <NuxtLink
-              v-for="post in paginatedPosts"
+              v-for="(post, index) in paginatedPosts"
               :key="post.path"
               :to="postUrl(post)"
               :class="cn(
                 'relative block p-5 border border-neutral-200 dark:border-neutral-800 overflow-hidden',
                 'hover:border-primary-500/50 transition-all group',
               )"
+              :style="{ transitionDelay: `${index * 60}ms` }"
             >
               <!-- Thumbnail -->
               <ClientOnly v-if="post.banner">
@@ -353,13 +384,24 @@ function postUrl(post: { path: string }): string {
                 </div>
               </div>
             </NuxtLink>
-          </div>
+          </TransitionGroup>
 
           <!-- Compact view -->
-          <div v-else-if="viewMode === 'compact' && paginatedPosts.length > 0" class="space-y-1">
+          <TransitionGroup
+            v-else-if="viewMode === 'compact' && paginatedPosts.length > 0"
+            tag="div"
+            class="space-y-1"
+            enter-active-class="blog-item-enter"
+            leave-active-class="blog-item-leave"
+            enter-from-class="blog-item-from"
+            enter-to-class="blog-item-to"
+            leave-from-class="blog-item-to"
+            leave-to-class="blog-item-from"
+          >
             <NuxtLink
-              v-for="post in paginatedPosts"
+              v-for="(post, index) in paginatedPosts"
               :key="post.path"
+              :style="{ transitionDelay: `${index * 40}ms` }"
               :to="postUrl(post)"
               class="flex items-center gap-4 py-2 px-2 -mx-2 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
             >
@@ -370,7 +412,7 @@ function postUrl(post: { path: string }): string {
                 {{ post.title }}
               </span>
             </NuxtLink>
-          </div>
+          </TransitionGroup>
 
           <!-- Pagination -->
           <nav
@@ -388,7 +430,7 @@ function postUrl(post: { path: string }): string {
                   ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
                   : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
               )"
-              @click="currentPage--"
+              @click="goToPage(currentPage - 1)"
             >
               <UIcon name="i-heroicons-chevron-left" class="w-3.5 h-3.5" />
             </button>
@@ -410,7 +452,7 @@ function postUrl(post: { path: string }): string {
                     ? 'text-primary-500 border-primary-500/50 bg-primary-500/10'
                     : 'text-neutral-500 border-neutral-200 dark:border-neutral-800 hover:text-primary-500 hover:border-primary-500/50',
                 )"
-                @click="currentPage = page as number"
+                @click="goToPage(page as number)"
               >
                 {{ page }}
               </button>
@@ -426,7 +468,7 @@ function postUrl(post: { path: string }): string {
                   ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
                   : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
               )"
-              @click="currentPage++"
+              @click="goToPage(currentPage + 1)"
             >
               <UIcon name="i-heroicons-chevron-right" class="w-3.5 h-3.5" />
             </button>
