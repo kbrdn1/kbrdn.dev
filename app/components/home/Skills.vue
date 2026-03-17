@@ -12,17 +12,17 @@ interface Skill {
   code: string
 }
 
-const skills: Skill[] = [
+const skills = computed<Skill[]>(() => [
   {
     id: 'typescript',
     label: 'TypeScript',
-    title: 'TypeScript Expert',
-    description: 'Strong typing across every layer of the stack. From frontend components to backend APIs, TypeScript keeps the codebase predictable and maintainable at scale.',
+    title: t('skills.items.typescript.title'),
+    description: t('skills.items.typescript.description'),
     features: [
-      '3+ years of daily production use',
-      'Advanced generics, mapped types & utility types',
-      'Strict mode enforcement on all projects',
-      'End-to-end type safety from API to UI',
+      t('skills.items.typescript.features[0]'),
+      t('skills.items.typescript.features[1]'),
+      t('skills.items.typescript.features[2]'),
+      t('skills.items.typescript.features[3]'),
     ],
     code: `type ApiResponse<T> = {
   data: T
@@ -40,13 +40,13 @@ async function fetchUser(
   {
     id: 'laravel',
     label: 'Laravel',
-    title: 'Laravel — Backend APIs',
-    description: 'Building robust REST APIs and backend services with Laravel. Eloquent ORM, queues, and the full ecosystem for rapid, reliable delivery.',
+    title: t('skills.items.laravel.title'),
+    description: t('skills.items.laravel.description'),
     features: [
-      'RESTful API design with form requests & resources',
-      'Eloquent relationships & query optimization',
-      'Queue workers, jobs & event broadcasting',
-      'Stripe integration, multi-tenancy patterns',
+      t('skills.items.laravel.features[0]'),
+      t('skills.items.laravel.features[1]'),
+      t('skills.items.laravel.features[2]'),
+      t('skills.items.laravel.features[3]'),
     ],
     code: `class OrderController extends Controller
 {
@@ -68,13 +68,13 @@ async function fetchUser(
   {
     id: 'nuxt',
     label: 'Nuxt',
-    title: 'Nuxt — Vue Meta-Framework',
-    description: 'Server-side rendering, static generation, and hybrid modes with Nuxt. The framework behind this very portfolio and several production apps.',
+    title: t('skills.items.nuxt.title'),
+    description: t('skills.items.nuxt.description'),
     features: [
-      'SSR, SSG & hybrid rendering strategies',
-      'File-based routing with middleware & layouts',
-      'Nuxt Content for markdown-driven sites',
-      'Auto-imports, composables & server routes',
+      t('skills.items.nuxt.features[0]'),
+      t('skills.items.nuxt.features[1]'),
+      t('skills.items.nuxt.features[2]'),
+      t('skills.items.nuxt.features[3]'),
     ],
     code: `// composables/useProject.ts
 export function useProject(slug: string) {
@@ -95,13 +95,13 @@ const { data } = await useProject(
   {
     id: 'rust',
     label: 'Rust',
-    title: 'Rust — Systems Programming',
-    description: 'Exploring systems-level programming through Rust. Currently learning ownership, lifetimes, and building CLI tools with real-world utility.',
+    title: t('skills.items.rust.title'),
+    description: t('skills.items.rust.description'),
     features: [
-      'Ownership model & borrow checker fundamentals',
-      'CLI tooling with clap & crossterm',
-      'Built LazyCurl — a Go-based TUI HTTP client',
-      'Growing interest in WebAssembly targets',
+      t('skills.items.rust.features[0]'),
+      t('skills.items.rust.features[1]'),
+      t('skills.items.rust.features[2]'),
+      t('skills.items.rust.features[3]'),
     ],
     code: `use clap::Parser;
 
@@ -123,13 +123,13 @@ fn main() -> Result<(), Box<dyn Error>> {
   {
     id: 'cloud',
     label: 'Cloud',
-    title: 'Cloud & DevOps',
-    description: 'Containerized deployments, CI/CD pipelines, and cloud infrastructure. From local Docker Compose to production on AWS and self-hosted VPS.',
+    title: t('skills.items.cloud.title'),
+    description: t('skills.items.cloud.description'),
     features: [
-      'Docker multi-stage builds & Compose orchestration',
-      'GitHub Actions CI/CD with deploy webhooks',
-      'AWS services — S3, EC2, RDS, CloudFront',
-      'Dokploy self-hosted PaaS on VPS',
+      t('skills.items.cloud.features[0]'),
+      t('skills.items.cloud.features[1]'),
+      t('skills.items.cloud.features[2]'),
+      t('skills.items.cloud.features[3]'),
     ],
     code: `# .github/workflows/deploy.yml
 name: Deploy
@@ -151,10 +151,56 @@ jobs:
     steps:
       - run: curl -X POST $WEBHOOK_URL`,
   },
-]
+])
 
-const activeTab = ref<string>(skills[0].id)
+const activeTab = ref<string>('typescript')
 
+// Simple syntax highlighter — Claude Dark theme colors
+function highlightCode(code: string, lang: string): string {
+  // Escape HTML first
+  let html = code
+    .replace(/&/g, '\u0001amp;')
+    .replace(/</g, '\u0001lt;')
+    .replace(/>/g, '\u0001gt;')
+
+  // Strings (before other replacements to protect string content)
+  html = html.replace(/("[^"]*"|'[^']*')/g, '\u0002s$1\u0003')
+
+  // Comments (// and #)
+  html = html.replace(/(\/\/.*$)/gm, '\u0002c$1\u0003')
+  html = html.replace(/^(\s*#[^[{].*$)/gm, '\u0002c$1\u0003')
+
+  if (lang === 'typescript' || lang === 'nuxt') {
+    html = html.replace(/\b(type|interface|const|let|var|function|async|await|return|import|export|from|new|class|extends)\b/g, '\u0002k$1\u0003')
+    html = html.replace(/\b(string|number|boolean|void|Promise|Record|unknown)\b/g, '\u0002t$1\u0003')
+  } else if (lang === 'laravel') {
+    html = html.replace(/\b(class|public|function|return|new|extends|use)\b/g, '\u0002k$1\u0003')
+    html = html.replace(/\b(JsonResponse|Order|StoreOrderRequest|OrderResource|Controller)\b/g, '\u0002t$1\u0003')
+    html = html.replace(/(\$\w+)/g, '\u0002v$1\u0003')
+  } else if (lang === 'rust') {
+    html = html.replace(/\b(use|fn|let|struct|pub|impl|mod|self|Ok|Err|mut|main)\b/g, '\u0002k$1\u0003')
+    html = html.replace(/\b(String|Result|Box|Parser|Cli)\b/g, '\u0002t$1\u0003')
+    html = html.replace(/(#\[[^\]]*\])/g, '\u0002a$1\u0003')
+  } else if (lang === 'cloud') {
+    html = html.replace(/^(\s*[\w-]+):/gm, '\u0002k$1\u0003:')
+  }
+
+  // Function calls (word before parenthesis)
+  html = html.replace(/\b(\w+)\(/g, '\u0002f$1\u0003(')
+
+  // Now convert markers to actual HTML spans
+  html = html
+    .replace(/\u0001/g, '&')
+    .replace(/\u0002k([\s\S]*?)\u0003/g, '<span class="code-keyword">$1</span>')
+    .replace(/\u0002s([\s\S]*?)\u0003/g, '<span class="code-string">$1</span>')
+    .replace(/\u0002c([\s\S]*?)\u0003/g, '<span class="code-comment">$1</span>')
+    .replace(/\u0002t([\s\S]*?)\u0003/g, '<span class="code-type">$1</span>')
+    .replace(/\u0002f([\s\S]*?)\u0003/g, '<span class="code-function">$1</span>')
+    .replace(/\u0002v([\s\S]*?)\u0003/g, '<span class="code-variable">$1</span>')
+    .replace(/\u0002a([\s\S]*?)\u0003/g, '<span class="code-attribute">$1</span>')
+
+  return html
+}
 </script>
 
 <template>
@@ -280,8 +326,9 @@ const activeTab = ref<string>(skills[0].id)
                   {{ skill.label }}
                 </span>
               </div>
-              <!-- Code content -->
-              <pre class="flex-1 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300 whitespace-pre overflow-x-auto"><code>{{ skill.code }}</code></pre>
+              <!-- Code content with syntax highlighting -->
+              <!-- eslint-disable vue/no-v-html -->
+              <pre class="flex-1 font-mono text-xs leading-relaxed whitespace-pre overflow-x-auto claude-code" v-html="highlightCode(skill.code, skill.id)" />
             </div>
           </div>
         </Transition>

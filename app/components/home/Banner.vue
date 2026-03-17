@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { useI18n } from '#imports'
+
+const { t } = useI18n()
+</script>
+
 <template>
   <div class="w-full h-8 sm:h-10 overflow-hidden relative">
     <ClientOnly>
@@ -23,7 +29,7 @@
       >
         <span class="inline-flex items-center gap-1.5">
           <UIcon name="i-heroicons-rocket-launch" class="w-3.5 h-3.5" />
-          Check out LazyCurl — TUI HTTP Client built in Go
+          {{ t('banner.lazycurl') }}
         </span>
         <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" />
       </a>
