@@ -68,7 +68,7 @@ if (post.value) {
   <div class="min-h-screen flex justify-center overflow-x-hidden">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color);"
     />
 
@@ -142,10 +142,12 @@ if (post.value) {
 
           <!-- Share section -->
           <div class="mb-12">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500 mb-4">
+            <h2 class="font-mono text-xs uppercase tracking-wider text-neutral-500 mb-4">
               {{ t('blog.shareArticle') }}
-            </h3>
+            </h2>
             <button
+              type="button"
+              :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
               class="inline-flex items-center gap-2 border border-neutral-200 dark:border-neutral-800 px-4 py-2 font-mono text-xs text-neutral-600 dark:text-neutral-400 hover:border-primary-500 hover:text-primary-500 transition-colors"
               @click="copyLink"
             >
@@ -156,9 +158,9 @@ if (post.value) {
 
           <!-- More articles -->
           <div v-if="relatedPosts?.length">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500 mb-6">
+            <h2 class="font-mono text-xs uppercase tracking-wider text-neutral-500 mb-6">
               {{ t('blog.moreArticles') }}
-            </h3>
+            </h2>
             <div class="space-y-4">
               <NuxtLink
                 v-for="related in relatedPosts"
@@ -213,7 +215,7 @@ if (post.value) {
 
     <!-- Right stripe zone -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color);"
     />
   </div>
