@@ -187,8 +187,11 @@ function hideTooltip() {
       <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">{{ t('github.title') }}</h2>
       <div class="flex items-center justify-between sm:justify-end gap-4">
         <!-- Tabs -->
-        <div class="flex gap-1 text-xs">
+        <div class="flex gap-1 text-xs" role="tablist" aria-label="Contribution view">
           <button
+            role="tab"
+            :aria-selected="activeTab === 'annual'"
+            :tabindex="activeTab === 'annual' ? 0 : -1"
             :class="cn(
               'px-3 py-1 transition-colors uppercase tracking-wider',
               activeTab === 'annual'
@@ -196,10 +199,15 @@ function hideTooltip() {
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
             )"
             @click="activeTab = 'annual'"
+            @keydown.right.prevent="activeTab = 'monthly'"
+            @keydown.left.prevent="activeTab = 'monthly'"
           >
             {{ t('github.tabs.annual') }}
           </button>
           <button
+            role="tab"
+            :aria-selected="activeTab === 'monthly'"
+            :tabindex="activeTab === 'monthly' ? 0 : -1"
             :class="cn(
               'px-3 py-1 transition-colors uppercase tracking-wider',
               activeTab === 'monthly'
@@ -207,6 +215,8 @@ function hideTooltip() {
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
             )"
             @click="activeTab = 'monthly'"
+            @keydown.right.prevent="activeTab = 'annual'"
+            @keydown.left.prevent="activeTab = 'annual'"
           >
             {{ t('github.tabs.monthly') }}
           </button>
@@ -216,9 +226,10 @@ function hideTooltip() {
           :href="`https://github.com/${username}`"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="View GitHub profile (opens in new window)"
           class="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
         >
-          <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-5 h-5" />
+          <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-5 h-5" aria-hidden="true" />
         </a>
       </div>
     </div>
