@@ -80,6 +80,9 @@ function getInitials(name: string): string {
       >
         <!-- Accordion Header -->
         <button
+          type="button"
+          :aria-expanded="expandedId === exp.id"
+          :aria-controls="'exp-panel-' + exp.id"
           :class="cn(
             'group/header w-full flex items-center gap-4 p-5 text-left transition-all duration-300',
             expandedId === exp.id
@@ -128,7 +131,7 @@ function getInitials(name: string): string {
             <span class="hidden sm:inline font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ formatDate(exp.startDate) }} - {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
             </span>
-            <div class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500">
+            <div class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500" aria-hidden="true">
               <span class="absolute inset-0 flex items-center justify-center">
                 <span class="block w-3 h-0.5 bg-current" />
               </span>
@@ -144,6 +147,9 @@ function getInitials(name: string): string {
 
         <!-- Accordion Content -->
         <div
+          :id="'exp-panel-' + exp.id"
+          role="region"
+          :aria-hidden="expandedId !== exp.id"
           class="accordion-wrapper"
           :class="{ 'is-open': expandedId === exp.id }"
         >
