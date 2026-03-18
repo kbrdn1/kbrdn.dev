@@ -3,7 +3,7 @@ name: Studio Content Sync
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'app/content/**'
 
