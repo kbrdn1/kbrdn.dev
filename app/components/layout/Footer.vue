@@ -183,6 +183,7 @@ const currentYear = new Date().getFullYear();
             <button
               type="submit"
               :disabled="isSubmitting"
+              :aria-busy="isSubmitting"
               :class="
                 cn(
                   'w-full px-4 py-2.5 text-sm font-mono uppercase tracking-wider rounded-none',
@@ -208,18 +209,22 @@ const currentYear = new Date().getFullYear();
             </button>
 
             <!-- Status Messages -->
-            <p
-              v-if="submitStatus === 'success'"
-              class="text-sm text-green-600 dark:text-green-400"
-            >
-              {{ t("footer.contact.success") }}
-            </p>
-            <p
-              v-if="submitStatus === 'error'"
-              class="text-sm text-red-600 dark:text-red-400"
-            >
-              {{ t("footer.contact.error") }}
-            </p>
+            <div aria-live="polite" aria-atomic="true">
+              <p
+                v-if="submitStatus === 'success'"
+                role="status"
+                class="text-sm text-green-600 dark:text-green-400"
+              >
+                {{ t("footer.contact.success") }}
+              </p>
+              <p
+                v-if="submitStatus === 'error'"
+                role="alert"
+                class="text-sm text-red-600 dark:text-red-400"
+              >
+                {{ t("footer.contact.error") }}
+              </p>
+            </div>
           </form>
           </ClientOnly>
         </div>
@@ -231,7 +236,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("blogNav.portfolio") }}
             </h3>
-            <nav class="flex flex-col space-y-2">
+            <nav aria-label="Portfolio" class="flex flex-col space-y-2">
               <a
                 v-for="link in portfolioLinks"
                 :key="link.href"
@@ -248,7 +253,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("sections.blog") }}
             </h3>
-            <nav class="flex flex-col space-y-2">
+            <nav aria-label="Blog" class="flex flex-col space-y-2">
               <a
                 v-for="link in blogLinks"
                 :key="link.href"
@@ -265,7 +270,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("footer.links.title") }}
             </h3>
-            <nav class="flex flex-col space-y-2">
+            <nav aria-label="Social links" class="flex flex-col space-y-2">
               <a
                 v-for="social in socialLinks"
                 :key="social.href"
@@ -285,7 +290,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("footer.links.other") }}
             </h3>
-            <nav class="flex flex-col space-y-2">
+            <nav aria-label="Other links" class="flex flex-col space-y-2">
               <a
                 v-for="link in otherLinks"
                 :key="link.href"
@@ -319,7 +324,7 @@ const currentYear = new Date().getFullYear();
               {{ t("footer.availability.title") }}
             </h3>
             <div class="flex items-center gap-2">
-              <span class="relative flex h-2 w-2">
+              <span class="relative flex h-2 w-2" aria-hidden="true">
                 <span
                   class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"
                 />
