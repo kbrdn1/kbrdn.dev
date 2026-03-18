@@ -116,7 +116,7 @@ function postUrl(post: { path: string }): string {
 </script>
 
 <template>
-  <div class="flex justify-center overflow-x-hidden">
+  <div class="flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
       class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
