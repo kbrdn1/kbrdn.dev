@@ -146,15 +146,7 @@ function goToSlide(index: number) {
         </div>
 
         <!-- Controls -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3">
-          <button
-            type="button"
-            :aria-label="isPaused ? 'Resume carousel' : 'Pause carousel'"
-            class="text-white/70 hover:text-white transition-colors"
-            @click="togglePause"
-          >
-            <UIcon :name="isPaused ? 'i-heroicons-play' : 'i-heroicons-pause'" class="w-4 h-4" aria-hidden="true" />
-          </button>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
           <button
             v-for="(_, index) in slides"
             :key="index"
@@ -172,6 +164,14 @@ function goToSlide(index: number) {
             }"
             @click="goToSlide(index)"
           />
+          <button
+            type="button"
+            :aria-label="isPaused ? 'Resume carousel' : 'Pause carousel'"
+            class="ml-1 flex items-center justify-center w-5 h-5 text-white/50 hover:text-white transition-colors"
+            @click="togglePause"
+          >
+            <UIcon :name="isPaused ? 'i-heroicons-play' : 'i-heroicons-pause'" class="w-3 h-3" aria-hidden="true" />
+          </button>
         </div>
       </div>
     </div>
