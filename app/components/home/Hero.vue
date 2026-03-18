@@ -5,17 +5,19 @@ const { t } = useI18n();
 
 interface Props {
   name: string;
-  title: string;
+  titles: string[];
   handle?: string;
   avatarUrl?: string;
   isHirable?: boolean;
-  sponsorUrl?: string;
+  githubUrl?: string;
+  calendarLink?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   avatarUrl: "/images/avatar.jpg",
   isHirable: true,
-  sponsorUrl: "https://github.com/sponsors/kbrdn1",
+  githubUrl: "https://github.com/kbrdn1",
+  calendarLink: "https://cal.com",
 });
 
 const initials = computed(() => {
@@ -28,114 +30,140 @@ const initials = computed(() => {
 });
 
 const imageError = ref(false);
+
+const currentTitleIndex = ref(0);
+const isTransitioning = ref(false);
+
+const currentTitle = computed(() => props.titles[currentTitleIndex.value] || "");
+
+let interval: ReturnType<typeof setInterval> | undefined;
+
+onMounted(() => {
+  if (props.titles.length > 1) {
+    interval = setInterval(() => {
+      isTransitioning.value = true;
+      setTimeout(() => {
+        currentTitleIndex.value =
+          (currentTitleIndex.value + 1) % props.titles.length;
+        isTransitioning.value = false;
+      }, 300);
+    }, 3000);
+  }
+});
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval);
+});
 </script>
 
 <template>
-  <div>
-    <!-- Main row: Avatar + Info + Controls (desktop) -->
-    <div class="flex items-start gap-4 w-full">
-      <!-- Avatar - Square with rounded corners -->
-      <div class="relative flex-shrink-0">
-        <div
-          v-if="imageError"
-          :class="
-            cn(
-              'w-16 h-16 sm:w-20 sm:h-20 rounded-lg flex items-center justify-center',
-              'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700',
-            )
-          "
-          ,
-        >
-          <span class="text-xl sm:text-2xl font-semibold text-primary-500">{{
-            initials
-          }}</span>
-        </div>
-        <NuxtImg
-          v-else
-          :src="avatarUrl"
-          :alt="name"
-          width="80"
-          height="80"
-          :class="
-            cn(
-              'w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover',
-              'border border-neutral-200 dark:border-neutral-800',
-            )
-          "
-          format="webp"
-          loading="lazy"
-          @error="imageError = true"
-        />
-      </div>
-
-      <!-- Info -->
+  <div class="max-w-5xl mx-auto w-full min-md:px-6">
+    <!-- Split layout: text left, avatar right -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-12">
+      <!-- Left side: text content -->
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2">
-          <!-- Wave emoji -->
-          <span class="text-base sm:text-lg">👋</span>
-          <!-- Name -->
-          <h1
-            class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 truncate"
+        <!-- Available badge -->
+        <div v-if="isHirable" class="mb-4">
+          <span
+            :class="
+              cn(
+                'inline-flex items-center gap-2 px-3 py-1',
+                'text-xs font-mono uppercase tracking-wider',
+                'text-primary-500 dark:text-primary-400',
+                'border border-primary-500/30 dark:border-primary-400/30',
+                'bg-primary-500/5 dark:bg-primary-400/5',
+              )
+            "
           >
-            {{ name }}
-          </h1>
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75" />
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500" />
+            </span>
+            {{ t('hero.availableForHire') }}
+          </span>
         </div>
-        <p class="text-sm sm:text-base text-neutral-500 mt-0.5 truncate">
-          {{ title }}
-        </p>
-      </div>
 
-      <!-- Controls - Desktop only -->
-      <div class="hidden sm:flex items-center gap-2 flex-shrink-0">
-        <!-- Sponsor button -->
-        <a
-          :href="sponsorUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          :class="
-            cn(
-              'flex items-center justify-center w-8 h-8',
-              'text-neutral-500 hover:text-pink-500',
-              'bg-transparent hover:bg-pink-500/10',
-              'border border-transparent hover:border-pink-500/30',
-              'transition-all',
-            )
-          "
-          :title="t('hero.sponsor')"
+        <!-- Name -->
+        <h1 class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
+          {{ name }}
+        </h1>
+
+        <!-- Rotating title -->
+        <p
+          class="text-lg sm:text-xl text-primary-500 font-mono mb-6"
+          :class="isTransitioning ? 'hero-title-hidden' : 'hero-title-visible'"
         >
-          <UIcon name="i-heroicons-heart" class="w-4 h-4" />
-        </a>
-        <!-- Language switcher -->
-        <UiLanguageSwitcher />
-        <!-- Theme toggle -->
-        <UiThemeToggle />
-      </div>
-    </div>
+          {{ currentTitle }}
+        </p>
 
-    <!-- Controls - Mobile only -->
-    <div class="flex sm:hidden items-center justify-end gap-2">
-      <!-- Sponsor button -->
-      <a
-        :href="sponsorUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        :class="
-          cn(
-            'flex items-center justify-center w-8 h-8',
-            'text-neutral-500 hover:text-pink-500',
-            'bg-transparent hover:bg-pink-500/10',
-            'border border-transparent hover:border-pink-500/30',
-            'transition-all',
-          )
-        "
-        :title="t('hero.sponsor')"
-      >
-        <UIcon name="i-heroicons-heart" class="w-4 h-4" />
-      </a>
-      <!-- Language switcher -->
-      <UiLanguageSwitcher />
-      <!-- Theme toggle -->
-      <UiThemeToggle />
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+          <UButton
+            :to="calendarLink"
+            target="_blank"
+            color="primary"
+            variant="solid"
+            size="md"
+            icon="i-heroicons-calendar-days"
+          >
+            {{ t('hero.bookCall') }}
+          </UButton>
+          <UButton
+            :to="githubUrl"
+            target="_blank"
+            color="neutral"
+            variant="outline"
+            size="md"
+            icon="i-simple-icons-github"
+          >
+            {{ t('hero.viewOnGithub') }}
+          </UButton>
+          <UButton
+            to="/blog"
+            color="neutral"
+            variant="outline"
+            size="md"
+            icon="i-heroicons-document-text"
+            class="text-sky-400! border-sky-400/50! hover:bg-sky-400/10! hover:border-sky-400!"
+          >
+            {{ t('hero.readBlog') }}
+          </UButton>
+        </div>
+      </div>
+
+      <!-- Right side: avatar -->
+      <div class="flex-shrink-0 flex justify-center md:justify-end">
+        <div class="relative grid-background border border-neutral-200 dark:border-neutral-800 transition-transform duration-300 hover:scale-105">
+          <div
+            v-if="imageError"
+            :class="
+              cn(
+                'w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center',
+                'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700',
+              )
+            "
+          >
+            <span class="text-4xl sm:text-5xl font-semibold text-primary-500">{{
+              initials
+            }}</span>
+          </div>
+          <NuxtImg
+            v-else
+            :src="avatarUrl"
+            :alt="name"
+            width="192"
+            height="192"
+            :class="
+              cn(
+                'w-40 h-40 sm:w-48 sm:h-48 object-cover',
+              )
+            "
+            format="webp"
+            loading="lazy"
+            @error="imageError = true"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>

@@ -1,4 +1,9 @@
 export default {
+  // Banner
+  banner: {
+    lazycurl: "Découvrez LazyCurl — client HTTP TUI développé en Go",
+  },
+
   // Common
   common: {
     showMore: "Afficher plus",
@@ -22,6 +27,64 @@ export default {
     defaultTitle: "1/3 Design Engineer",
     viewCount: "vues",
     sponsor: "Sponsoriser",
+    availableForHire: "En contrat chez Jewely x Flippad",
+    bookCall: "Prendre rendez-vous",
+    viewOnGithub: "Voir sur GitHub",
+    readBlog: "Lire le Blog",
+  },
+
+  // Section Labels
+  sections: {
+    about: "A PROPOS",
+    projects: "PROJETS",
+    skills: "STACK & COMPÉTENCES",
+    experience: "EXPERIENCE",
+    education: "FORMATION",
+    parcours: "PARCOURS",
+    activity: "ACTIVITE",
+    connect: "CONTACT",
+    blog: "BLOG",
+  },
+
+  // Explore Section
+  explore: {
+    labels: {
+      collab: "✦ Collaboration",
+      crafting: "⚡ Projets",
+      blog: "📝 Blog",
+      sponsor: "♥ Sponsor",
+      motto: "◈ Philosophie",
+    },
+    slides: {
+      collab: {
+        title: "Construisons quelque chose ensemble",
+        description: "Je suis toujours ouvert aux projets intéressants et aux collaborations. Que ce soit une app web, une API, ou un produit full-stack — parlons-en.",
+        cta: "Me contacter",
+      },
+      crafting: {
+        title: "En cours de création...",
+        description: "LazyCurl — un client HTTP TUI moderne construit en Go. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
+      },
+      blog: {
+        title: "Lisez mes articles",
+        description: "J'écris sur le développement web, les patterns d'architecture, les outils que j'utilise et les leçons tirées de projets concrets.",
+        cta: "Parcourir les articles",
+      },
+      sponsor: {
+        title: "Soutenez mon travail",
+        description: "Si mes projets open-source vous sont utiles, pensez à me sponsoriser sur GitHub. Chaque contribution m'aide à continuer à construire.",
+        cta: "Sponsoriser sur GitHub",
+      },
+      motto: {
+        title: "\"Le bon outil, pas celui à la mode.\"",
+        description: "Je crois en l'ingénierie pragmatique. Choisir la stack adaptée au problème, écrire du code durable, et livrer des choses qui comptent.",
+      },
+    },
+  },
+
+  // Music Section
+  music: {
+    listeningTo: "J'écoute",
   },
 
   // Bio Section
@@ -30,6 +93,8 @@ export default {
       "Salut, je suis Kylian, un développeur full stack qui aime créer des sites web et applications modernes et soignés où le design, la fonctionnalité et même les plus petits détails comptent, avec un focus sur des produits à la fois pratiques et visuellement satisfaisants.",
       "La stack technique n'est pas ma préoccupation, je m'adapte à ce dont le projet a besoin, bien que je préfère les frameworks et outils modernes. Je suis toujours ouvert à de nouvelles opportunités pour apprendre et évoluer.",
     ],
+    paragraph1: "Salut, je suis Kylian, un développeur full stack qui aime créer des sites web et applications modernes et soignés où le design, la fonctionnalité et même les plus petits détails comptent, avec un focus sur des produits à la fois pratiques et visuellement satisfaisants.",
+    paragraph2: "Actuellement concentré sur la construction d'architectures solides et scalables. J'aime explorer de nouveaux langages et outils — de Rust aux infrastructures cloud — toujours à la recherche de la bonne solution, pas seulement de la tendance du moment.",
   },
 
   // Actions Section
@@ -78,10 +143,72 @@ export default {
     fr: "Français",
   },
 
+  // Skills Section
+  skills: {
+    featured: "STACK & COMPÉTENCES",
+    title: "Outils avec lesquels je travaille",
+    ariaLabel: "Catégories de compétences",
+    items: {
+      typescript: {
+        title: "Expert TypeScript",
+        description: "Typage fort sur chaque couche de la stack. Des composants frontend aux APIs backend, TypeScript rend la base de code prévisible et maintenable à grande échelle.",
+        features: [
+          "3+ ans d'utilisation quotidienne en production",
+          "Génériques avancés, types mappés et utilitaires",
+          "Mode strict appliqué sur tous les projets",
+          "Sécurité de type de bout en bout, de l'API à l'UI",
+        ],
+      },
+      laravel: {
+        title: "Laravel — APIs Backend",
+        description: "Construction d'APIs REST robustes et de services backend avec Laravel. Eloquent ORM, files d'attente et l'écosystème complet pour une livraison rapide et fiable.",
+        features: [
+          "Conception d'API RESTful avec form requests et resources",
+          "Relations Eloquent et optimisation des requêtes",
+          "Workers de queue, jobs et event broadcasting",
+          "Intégration Stripe, patterns multi-tenant",
+        ],
+      },
+      nuxt: {
+        title: "Nuxt — Meta-Framework Vue",
+        description: "Rendu côté serveur, génération statique et modes hybrides avec Nuxt. Le framework derrière ce portfolio et plusieurs applications en production.",
+        features: [
+          "Stratégies de rendu SSR, SSG et hybride",
+          "Routage basé sur les fichiers avec middleware et layouts",
+          "Nuxt Content pour les sites pilotés par markdown",
+          "Auto-imports, composables et routes serveur",
+        ],
+      },
+      rust: {
+        title: "Rust — Programmation Système",
+        description: "Exploration de la programmation bas niveau avec Rust. Apprentissage de l'ownership, des lifetimes, et développement d'outils CLI avec une utilité concrète.",
+        features: [
+          "Modèle d'ownership et fondamentaux du borrow checker",
+          "Outils CLI avec clap et crossterm",
+          "Développement de LazyCurl — un client HTTP TUI en Go",
+          "Intérêt croissant pour les cibles WebAssembly",
+        ],
+      },
+      cloud: {
+        title: "Cloud & DevOps",
+        description: "Déploiements conteneurisés, pipelines CI/CD et infrastructure cloud. De Docker Compose en local à la production sur AWS et VPS auto-hébergé.",
+        features: [
+          "Builds multi-étapes Docker et orchestration Compose",
+          "CI/CD GitHub Actions avec webhooks de déploiement",
+          "Services AWS — S3, EC2, RDS, CloudFront",
+          "PaaS auto-hébergé Dokploy sur VPS",
+        ],
+      },
+    },
+  },
+
   // Projects Section
   projects: {
     title: "Projets en vedette",
-    viewAll: "Voir tous les projets",
+    featured: "PROJETS EN VEDETTE",
+    viewAll: "Voir tout sur GitHub",
+    viewProject: "Voir le projet",
+    demo: "Démo",
     stats: {
       stars: "Étoiles",
       forks: "Forks",
@@ -155,8 +282,45 @@ export default {
     },
   },
 
+  // Blog Navigation
+  blogNav: {
+    articles: "Articles",
+    tags: "Tags",
+    portfolio: "Portfolio",
+    sponsor: "Sponsoriser",
+  },
+
+  // Blog Section
+  blog: {
+    title: "Articles & Réflexions",
+    description: "J'écris sur le développement web, l'architecture et les outils que j'utilise.",
+    allTags: "Tous",
+    noArticles: "Pas encore d'articles. Restez connectés !",
+    viewAll: "Voir tous les articles",
+    articleCount: "articles",
+    viewList: "Liste",
+    viewCards: "Cartes",
+    viewCompact: "Compact",
+    backToArticles: "Retour aux articles",
+    readingTime: "min de lecture",
+    shareArticle: "Partager cet article",
+    copyLink: "Copier le lien",
+    linkCopied: "Lien copié !",
+    moreArticles: "Plus d'articles",
+    notFound: "Article non trouvé",
+  },
+
   // Footer Section
   footer: {
+    nav: {
+      about: "A propos",
+      skills: "Stack & Compétences",
+      projects: "Projets",
+      experience: "Expérience",
+      education: "Formation",
+      articles: "Articles",
+      tags: "Tags",
+    },
     contact: {
       title: "Me Contacter",
       description:
@@ -175,6 +339,10 @@ export default {
     },
     links: {
       title: "Me Suivre",
+      other: "Liens",
+    },
+    navigation: {
+      title: "Navigation",
     },
     location: {
       title: "Localisation",
@@ -182,7 +350,10 @@ export default {
     },
     availability: {
       title: "Disponibilité",
-      status: "En contrat chez Flippad x Jewely",
+      status: "En contrat chez Jewely x Flippad",
+    },
+    email: {
+      title: "Email",
     },
     copyright: "Tous droits réservés.",
   },

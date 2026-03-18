@@ -1,0 +1,45 @@
+---
+title: "Rebuilding Fiches Pédagogiques from scratch"
+description: "A complete rewrite of an educational platform using Laravel, from architecture to deployment."
+publishedAt: "2026-01-20"
+tags: ["laravel", "architecture", "project"]
+---
+
+## The project
+
+Fiches Pédagogiques is an educational resource platform. The original codebase needed a complete rewrite. I led the backend development.
+
+## Architecture choices
+
+We used **Domain-Driven Design** with an API-first approach:
+
+```php
+class CreateSheetAction
+{
+    public function execute(CreateSheetData $data): Sheet
+    {
+        return DB::transaction(function () use ($data) {
+            $sheet = Sheet::create($data->toArray());
+            $sheet->attachTags($data->tags);
+            event(new SheetCreated($sheet));
+            return $sheet;
+        });
+    }
+}
+```
+
+## Technical highlights
+
+- Stripe integration (subscriptions + one-time purchases)
+- Redis caching for performance
+- CI/CD pipeline from day one
+
+::callout{icon="i-heroicons-chart-bar" color="success"}
+After the rewrite, page load times dropped from 3.2s to 0.8s — a 75% improvement.
+::
+
+## Lessons learned
+
+- Start with the data model
+- Test at the boundaries
+- Deploy early, deploy often

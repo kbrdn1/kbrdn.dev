@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from "#imports";
+
+const { t } = useI18n();
+
 // Use minimal layout without header/footer
 definePageMeta({
   layout: "minimal",
@@ -9,15 +13,31 @@ const { data: page } = await useAsyncData("home", () =>
   queryCollection("pages").path("/").first(),
 );
 
+// Fetch latest blog posts (5 most recent)
+const { data: latestPosts } = await useAsyncData("latest-posts", () =>
+  queryCollection("blog").order("publishedAt", "DESC").limit(5).all(),
+);
+
+const { locale } = useI18n();
+
+function formatBlogDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString(locale.value === "fr" ? "fr-FR" : "en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 // SEO metadata
 useSeoMeta({
   title: page.value?.title
-    ? `${page.value.title} - Web Engineer`
-    : "Kylian Bardini - Web Engineer",
+    ? `${page.value.title} - Full Stack Developer`
+    : "Kylian Bardini - Full Stack Developer",
   description:
     page.value?.bio?.[0] ||
     "Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.",
-  ogTitle: page.value?.title || "Kylian Bardini - Web Engineer",
+  ogTitle: page.value?.title || "Kylian Bardini - Full Stack Developer",
   ogDescription:
     page.value?.bio?.[0] ||
     "Developer, Designer, Creator. Building things for the web.",
@@ -31,11 +51,9 @@ const defaultSocials = [
   { platform: "twitter", url: "https://twitter.com/kbrdn1", label: "Twitter" },
   {
     platform: "linkedin",
-    url: "https://linkedin.com/in/kbrdn1",
+    url: "https://linkedin.com/in/kylian-bardini-aa0528234",
     label: "LinkedIn",
   },
-  { platform: "medium", url: "https://medium.com/@kbrdn1", label: "Medium" },
-  { platform: "behance", url: "https://behance.net/kbrdn1", label: "Behance" },
 ];
 
 // Default content if not found
@@ -52,25 +70,27 @@ const content = computed(() => {
         socials.linkedin
           ? { platform: "linkedin", url: socials.linkedin, label: "LinkedIn" }
           : null,
-        socials.medium
-          ? { platform: "medium", url: socials.medium, label: "Medium" }
-          : null,
-        socials.behance
-          ? { platform: "behance", url: socials.behance, label: "Behance" }
-          : null,
       ].filter(Boolean)
     : defaultSocials;
 
   return {
     name: page.value?.title || "Kylian Bardini",
-    title: page.value?.description || "1/3 Design Engineer",
+    titles: page.value?.titles || [
+      "TypeScript Expert",
+      "Laravel Developer",
+      "Rust Beginner",
+      "Nuxt Developer",
+      "AWS & Cloud Architecture",
+      "Building Proper & Efficient Architecture",
+    ],
     handle: page.value?.handle || "@kbrdn1",
     isHirable: page.value?.isHirable ?? true,
     email: page.value?.email || "hello@kbrdn.dev",
     calendarLink: page.value?.calendarLink || "https://cal.com",
+    githubUrl: socials?.github || "https://github.com/kbrdn1",
     bio: page.value?.bio || [
-      "Hey, I'm Kylian, a full stack developer who loves building clean, modern websites and apps where design, functionality, and even the smallest details matter, with a focus on making products that are both practical and visually satisfying.",
-      "Tech stack isn't my concern, I'm flexible with whatever the project needs, though I prefer modern frameworks and tools. I'm always open for new opportunities to learn and grow.",
+      t('bio.paragraph1'),
+      t('bio.paragraph2'),
     ],
     socials: socialLinks,
   };
@@ -79,189 +99,185 @@ const content = computed(() => {
 
 <template>
   <div class="min-h-screen flex justify-center overflow-x-hidden">
-    <!-- Left border - full height -->
+    <!-- Left stripe zone -->
     <div
-      class="hidden md:block w-px border-dashed-vertical fixed left-[calc(50%-21rem)] top-0 bottom-0"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1"
+      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color);"
     />
 
     <!-- Main content -->
-    <div class="w-full flex flex-col items-center min-md:mt-26">
+    <div class="w-full flex flex-col items-center relative z-10">
+      <!-- Banner -->
+      <HomeBanner />
+
       <!-- Hero Section - Full width with horizontal dashed border -->
-      <section class="p-6 border-dashed-horizontal w-full">
+      <section class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full ">
+        <span class="corner-bottom-left" />
+        <span class="corner-bottom-right" />
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
           <HomeHero
-            class="max-w-2xl mx-auto min-md:px-6"
             :name="content.name"
-            :title="content.title"
+            :titles="content.titles"
             :is-hirable="content.isHirable"
+            :github-url="content.githubUrl"
+            :calendar-link="content.calendarLink"
           />
         </UiAnimatedSection>
       </section>
 
-      <!-- Other sections -->
-      <main class="p-6 space-y-6 w-full max-w-2xl">
-        <!-- Bio Section -->
+      <!-- About section -->
+      <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
         <UiAnimatedSection
+          id="about"
           as="section"
           animation="fadeInUp"
           :delay="100"
           :duration="500"
         >
+          <HomeSectionLabel :label="t('sections.about')" />
           <HomeBio :paragraphs="content.bio" />
+          <HomeNowPlaying />
         </UiAnimatedSection>
 
-        <!-- Action Buttons -->
         <UiAnimatedSection
           as="section"
           animation="fadeInUp"
           :delay="150"
           :duration="500"
         >
-          <HomeActions
-            :calendar-link="content.calendarLink"
-            :email="content.email"
-          />
+          <HomeSectionLabel :label="t('sections.connect')" />
+          <HomeSocials :links="content.socials" />
         </UiAnimatedSection>
 
-        <!-- Social Links -->
+        <!-- Latest Blog Posts -->
         <UiAnimatedSection
           as="section"
           animation="fadeInUp"
           :delay="200"
           :duration="500"
         >
-          <HomeSocials :links="content.socials" />
-        </UiAnimatedSection>
-
-        <!-- GitHub Contribution Chart -->
-        <UiAnimatedSection
-          as="section"
-          animation="fadeInUp"
-          :delay="0"
-          :duration="500"
-        >
-          <ClientOnly>
-            <HomeGitHubChart username="kbrdn1" />
-            <template #fallback>
-              <div class="space-y-6">
-                <!-- Header skeleton -->
-                <div
-                  class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                >
-                  <UiSkeleton class="h-6 w-32" />
-                  <div class="flex items-center gap-4">
-                    <UiSkeleton class="h-6 w-32" />
-                    <UiSkeleton class="h-5 w-5" />
-                  </div>
-                </div>
-                <!-- Stats skeleton -->
-                <div class="flex flex-col sm:flex-row gap-4 sm:gap-8">
-                  <div class="space-y-2">
-                    <UiSkeleton class="h-3 w-28" />
-                    <UiSkeleton class="h-9 w-20" />
-                  </div>
-                  <div class="space-y-2">
-                    <UiSkeleton class="h-3 w-24" />
-                    <UiSkeleton class="h-9 w-24" />
-                  </div>
-                </div>
-                <!-- Grid skeleton with month labels -->
-                <div class="overflow-x-auto">
-                  <div class="min-w-max">
-                    <!-- Month labels skeleton -->
-                    <div class="flex gap-1 mb-1">
-                      <UiSkeleton
-                        v-for="i in 12"
-                        :key="i"
-                        class="h-3"
-                        :style="{ width: '65px' }"
-                      />
-                    </div>
-                    <!-- Grid skeleton -->
-                    <div class="flex gap-[3px]">
-                      <div
-                        v-for="w in 52"
-                        :key="w"
-                        class="flex flex-col gap-[3px]"
-                      >
-                        <UiSkeleton v-for="d in 7" :key="d" class="w-3 h-3" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </ClientOnly>
-        </UiAnimatedSection>
-
-        <!-- Experiences -->
-        <UiAnimatedSection
-          as="section"
-          animation="fadeInUp"
-          :delay="0"
-          :duration="500"
-        >
-          <HomeExperiences />
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
+              {{ t('sections.blog') }}
+            </span>
+            <NuxtLink
+              to="/blog"
+              class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-sky-400 transition-colors"
+            >
+              {{ t('blog.viewAll') }} →
+            </NuxtLink>
+          </div>
+          <div v-if="latestPosts?.length" class="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <NuxtLink
+              v-for="post in latestPosts"
+              :key="post.path"
+              :to="post.path.replace('/blogs/', '/blog/')"
+              class="flex items-center gap-6 py-3 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3"
+            >
+              <span
+                v-if="post.publishedAt"
+                class="shrink-0 w-28 text-xs font-mono text-neutral-500"
+              >
+                {{ formatBlogDate(post.publishedAt) }}
+              </span>
+              <span class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate">
+                {{ post.title }}
+              </span>
+            </NuxtLink>
+          </div>
         </UiAnimatedSection>
       </main>
 
-      <!-- Featured Projects - Full width with horizontal dashed border -->
-      <section class="p-6 border-dashed-horizontal w-full">
+      <!-- Skills & Stack -->
+      <section id="skills" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+        <span class="corner-bottom-left" />
+        <span class="corner-bottom-right" />
         <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-2xl mx-auto min-md:px-6">
+          <div class="max-w-5xl mx-auto min-md:px-6">
+            <HomeSkills />
+          </div>
+        </UiAnimatedSection>
+      </section>
+
+      <!-- Featured Projects -->
+      <section id="projects" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+        <span class="corner-bottom-left" />
+        <span class="corner-bottom-right" />
+        <UiAnimatedSection :delay="0" :duration="500">
+          <div class="max-w-5xl mx-auto min-md:px-6">
+            <HomeSectionLabel :label="t('sections.projects')" />
             <ClientOnly>
               <HomeProjects />
               <template #fallback>
                 <div class="space-y-4">
-                  <!-- Header skeleton -->
                   <div class="flex items-center justify-between">
                     <UiSkeleton class="h-6 w-40" />
                     <UiSkeleton class="h-5 w-5" />
                   </div>
-                  <!-- Project cards skeleton -->
                   <div class="space-y-3">
                     <div
                       v-for="i in 2"
                       :key="i"
                       class="p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 space-y-4"
                     >
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                          <UiSkeleton class="h-5 w-24" />
-                          <UiSkeleton class="h-4 w-32" />
-                        </div>
-                        <div class="flex items-center gap-2">
-                          <UiSkeleton class="h-6 w-14" />
-                          <UiSkeleton class="h-6 w-6" />
-                        </div>
-                      </div>
-                      <div class="flex gap-8">
-                        <div class="space-y-1">
-                          <UiSkeleton class="h-3 w-12" />
-                          <UiSkeleton class="h-6 w-8" />
-                        </div>
-                      </div>
+                      <UiSkeleton class="h-5 w-24" />
                       <UiSkeleton class="h-2 w-full" />
                     </div>
                   </div>
                 </div>
               </template>
             </ClientOnly>
+
+            <!-- GitHub Activity -->
+            <div class="mt-8">
+              <HomeSectionLabel :label="t('sections.activity')" />
+              <ClientOnly>
+                <HomeGitHubChart username="kbrdn1" />
+                <template #fallback>
+                  <div class="space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <UiSkeleton class="h-6 w-32" />
+                      <UiSkeleton class="h-6 w-32" />
+                    </div>
+                    <div class="flex gap-8">
+                      <UiSkeleton class="h-9 w-20" />
+                      <UiSkeleton class="h-9 w-24" />
+                    </div>
+                  </div>
+                </template>
+              </ClientOnly>
+            </div>
           </div>
         </UiAnimatedSection>
       </section>
 
-      <!-- Studies -->
-      <main class="p-6 space-y-6 w-full max-w-2xl">
-        <UiAnimatedSection
-          as="section"
-          animation="fadeInUp"
-          :delay="0"
-          :duration="500"
-        >
-          <HomeStudies />
+      <!-- Parcours (Experience + Education) - Full width -->
+      <section id="experience" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+        <span class="corner-bottom-left" />
+        <span class="corner-bottom-right" />
+        <UiAnimatedSection :delay="0" :duration="500">
+          <div class="max-w-5xl mx-auto min-md:px-6 space-y-8">
+            <HomeSectionLabel :label="t('sections.parcours')" />
+
+            <div>
+              <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+                {{ t('sections.experience') }}
+              </span>
+              <HomeExperiences />
+            </div>
+
+            <div id="education">
+              <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+                {{ t('sections.education') }}
+              </span>
+              <HomeStudies />
+            </div>
+          </div>
         </UiAnimatedSection>
-      </main>
+      </section>
+
+      <!-- Explore Section -->
+      <HomeExplore />
 
       <!-- Footer -->
       <UiAnimatedSection
@@ -275,9 +291,10 @@ const content = computed(() => {
       </UiAnimatedSection>
     </div>
 
-    <!-- Right border - full height -->
+    <!-- Right stripe zone -->
     <div
-      class="hidden md:block w-px border-dashed-vertical fixed right-[calc(50%-21rem)] top-0 bottom-0"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1"
+      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color);"
     />
   </div>
 </template>

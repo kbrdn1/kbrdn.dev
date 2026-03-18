@@ -27,12 +27,6 @@ withDefaults(defineProps<Props>(), {
       url: "https://linkedin.com/in/kylian-bardini-aa0528234/",
       label: "LinkedIn",
     },
-    { platform: "medium", url: "https://medium.com/@kbrdn1", label: "Medium" },
-    {
-      platform: "behance",
-      url: "https://behance.net/kbrdn1",
-      label: "Behance",
-    },
   ],
 });
 
@@ -71,6 +65,7 @@ const getIcon = (platform: string): string => {
         :key="link.platform"
         :index="index"
         as="span"
+        class="inline-flex transition-transform duration-200 hover:scale-105 active:scale-95"
       >
         <UButton
           :to="link.url"
@@ -79,17 +74,19 @@ const getIcon = (platform: string): string => {
           color="neutral"
           size="sm"
           :icon="link.icon || getIcon(link.platform)"
+          class="hover:border-primary-500/50 transition-all duration-200"
         >
           {{ link.label }}
         </UButton>
       </UiStaggerItem>
       <!-- More button -->
-      <UiStaggerItem :index="links.length" as="span">
+      <UiStaggerItem :index="links.length" as="span" class="inline-flex transition-transform duration-200 hover:scale-105 active:scale-95">
         <UButton
           variant="soft"
           color="neutral"
           size="sm"
           icon="i-heroicons-bars-3"
+          class="hover:border-primary-500/50 transition-all duration-200"
         >
           {{ t("socials.more") }}
         </UButton>

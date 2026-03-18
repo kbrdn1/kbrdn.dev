@@ -1,0 +1,50 @@
+---
+title: "Building LazyCurl — A TUI HTTP Client in Go"
+description: "How I built a terminal-based HTTP client using Go and Bubbletea, and what I learned along the way."
+publishedAt: "2026-02-15"
+tags: ["go", "tui", "open-source"]
+banner: true
+---
+
+## Why another HTTP client?
+
+Tools like Postman and Insomnia are great, but they're heavy. I wanted something that lives in the terminal — fast, keyboard-driven, and minimal.
+
+## The tech stack
+
+LazyCurl is built with **Go**, **Bubbletea**, **Lipgloss**, and **Cobra**.
+
+```go
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    switch msg := msg.(type) {
+    case tea.KeyMsg:
+        switch msg.String() {
+        case "ctrl+c", "q":
+            return m, tea.Quit
+        case "enter":
+            return m, m.sendRequest()
+        }
+    }
+    return m, nil
+}
+```
+
+## Design decisions
+
+### Keyboard-first
+
+Every action is accessible via keyboard shortcuts. No mouse needed.
+
+### Session persistence
+
+Requests and responses are saved in YAML files, making it easy to version control your API testing workflow.
+
+::alert{type="info"}
+LazyCurl is open source. Check it out on [GitHub](https://github.com/kbrdn1/LazyCurl).
+::
+
+## What's next
+
+- WebSocket support
+- Environment variables and collections
+- Plugin system for custom transformations

@@ -1,0 +1,51 @@
+---
+title: "My development environment — dotfiles & tools"
+description: "A walkthrough of my macOS setup: AeroSpace, Sketchybar, and managing everything with chezmoi."
+publishedAt: "2025-12-05"
+tags: ["dotfiles", "tooling", "macos"]
+banner: true
+---
+
+## Philosophy
+
+My development environment follows one principle: **keyboard-driven, minimal, fast**.
+
+## Window management — AeroSpace
+
+I use **AeroSpace** as my tiling window manager on macOS. Workspaces organized by context, keyboard shortcuts for everything.
+
+## Terminal & Shell
+
+- **Kitty** terminal — GPU-accelerated
+- **Zsh** with minimal plugins
+- **Starship** prompt
+
+::code-group
+```lua [init.lua]
+vim.g.mapleader = " "
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.tabstop = 2
+```
+
+```toml [starship.toml]
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+```
+::
+
+## Managing it all — chezmoi
+
+Everything is version-controlled with **chezmoi** — dotfiles synced across machines with age encryption.
+
+| Tool | Purpose |
+|------|---------|
+| AeroSpace | Window manager |
+| Sketchybar | Status bar |
+| Kitty | Terminal |
+| chezmoi | Dotfiles management |
+
+::alert{type="success"}
+All my dotfiles are open source on [GitHub](https://github.com/kbrdn1).
+::

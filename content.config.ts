@@ -32,7 +32,7 @@ export default defineContentConfig({
     blog: defineCollection({
       type: 'page',
       source: {
-        include: 'blog/**/*.{md,mdx}',
+        include: 'blogs/**/*.{md,mdx}',
         cwd: contentDir
       },
       schema: z.object({
@@ -40,6 +40,7 @@ export default defineContentConfig({
         description: z.string().optional(),
         publishedAt: z.string().optional(),
         tags: z.array(z.string()).optional(),
+        banner: z.boolean().optional(),
       }),
     }),
     projects: defineCollection({
