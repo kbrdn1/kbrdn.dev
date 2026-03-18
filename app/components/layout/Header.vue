@@ -6,12 +6,18 @@ const route = useRoute();
 
 const showBrandMenu = ref(false);
 
-// Close menu on click outside
+// Close menu on click outside or Escape key
 onMounted(() => {
   document.addEventListener('click', (e: MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (!target.closest('.group\\/brand')) {
+    if (!target.closest('.group\\/brand') && !target.closest('.group\\/brand-mobile')) {
       showBrandMenu.value = false;
+    }
+  });
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      showBrandMenu.value = false;
+      isMobileMenuOpen.value = false;
     }
   });
 });
@@ -88,7 +94,6 @@ const isMobileMenuOpen = ref(false);
   >
     <div class="mx-auto" style="max-width: 80rem;">
       <div class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800">
-        <!-- Brand -->
         <!-- Brand with dropdown -->
         <div
           class="relative border-r border-neutral-200 dark:border-neutral-700 group/brand"
@@ -96,8 +101,12 @@ const isMobileMenuOpen = ref(false);
           @mouseleave="showBrandMenu = false"
         >
           <button
+            type="button"
             class="flex items-center px-6 h-full font-mono font-bold text-sm tracking-tight transition-colors"
+            :aria-expanded="showBrandMenu"
+            aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
+            @keydown.escape="showBrandMenu = false"
           >
             <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
           </button>
@@ -113,10 +122,12 @@ const isMobileMenuOpen = ref(false);
           >
             <div
               v-if="showBrandMenu"
+              role="menu"
               class="absolute left-0 top-full z-50 mt-px min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
             >
               <NuxtLink
                 to="/blog"
+                role="menuitem"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
@@ -136,6 +147,7 @@ const isMobileMenuOpen = ref(false);
             v-for="link in navLinks"
             :key="link.href"
             :href="link.href"
+            :aria-current="activeSection === link.href.replace('#', '') ? 'true' : undefined"
             :class="
               cn(
                 'flex-1 px-6 flex items-center justify-center text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
@@ -160,7 +172,7 @@ const isMobileMenuOpen = ref(false);
             )"
           >
             {{ t('sections.blog') }}
-            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" />
+            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" aria-hidden="true" />
           </NuxtLink>
         </nav>
 
@@ -170,14 +182,15 @@ const isMobileMenuOpen = ref(false);
             href="https://github.com/sponsors/kbrdn1"
             target="_blank"
             rel="noopener noreferrer"
+            :aria-label="t('sections.sponsor') || 'Sponsor on GitHub'"
             class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-pink-500 hover:bg-pink-500/5 transition-all"
           >
-            <UIcon name="i-heroicons-heart" class="w-4 h-4" />
+            <UIcon name="i-heroicons-heart" class="w-4 h-4" aria-hidden="true" />
           </a>
-          <div class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-all cursor-pointer">
+          <div class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-all">
             <UiLanguageSwitcher />
           </div>
-          <div class="flex items-center justify-center px-6 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-all cursor-pointer">
+          <div class="flex items-center justify-center px-6 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-all">
             <UiThemeToggle />
           </div>
         </div>
@@ -187,8 +200,12 @@ const isMobileMenuOpen = ref(false);
       <div class="flex md:hidden items-center justify-between h-14 px-4">
         <div class="relative group/brand-mobile">
           <button
+            type="button"
             class="font-mono font-bold text-sm tracking-tight"
+            :aria-expanded="showBrandMenu"
+            aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
+            @keydown.escape="showBrandMenu = false"
           >
             <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
           </button>
@@ -202,10 +219,12 @@ const isMobileMenuOpen = ref(false);
           >
             <div
               v-if="showBrandMenu"
+              role="menu"
               class="absolute left-0 top-full z-50 mt-2 min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
             >
               <NuxtLink
                 to="/blog"
+                role="menuitem"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
@@ -231,7 +250,9 @@ const isMobileMenuOpen = ref(false);
                 'transition-all',
               )
             "
-            aria-label="Toggle navigation menu"
+            :aria-expanded="isMobileMenuOpen"
+            aria-controls="mobile-nav"
+            :aria-label="isMobileMenuOpen ? t('nav.closeMenu') || 'Close menu' : t('nav.openMenu') || 'Open menu'"
             @click="isMobileMenuOpen = !isMobileMenuOpen"
           >
             <UIcon
@@ -241,6 +262,7 @@ const isMobileMenuOpen = ref(false);
                   : 'i-heroicons-bars-3'
               "
               class="w-4 h-4"
+              aria-hidden="true"
             />
           </button>
         </div>
@@ -257,6 +279,7 @@ const isMobileMenuOpen = ref(false);
       >
         <nav
           v-if="isMobileMenuOpen && isHomepage"
+          id="mobile-nav"
           class="md:hidden py-3 border-t border-neutral-200 dark:border-neutral-800"
           aria-label="Mobile section navigation"
         >
@@ -264,6 +287,7 @@ const isMobileMenuOpen = ref(false);
             v-for="link in navLinks"
             :key="link.href"
             :href="link.href"
+            :aria-current="activeSection === link.href.replace('#', '') ? 'true' : undefined"
             :class="
               cn(
                 'flex items-center px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
@@ -288,7 +312,7 @@ const isMobileMenuOpen = ref(false);
             @click="isMobileMenuOpen = false"
           >
             {{ t('sections.blog') }}
-            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" />
+            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" aria-hidden="true" />
           </NuxtLink>
         </nav>
       </Transition>
