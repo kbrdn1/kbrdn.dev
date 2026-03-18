@@ -275,9 +275,11 @@ function highlightCode(code: string, lang: string): string {
           <!-- Active indicator -->
           <span
             :class="cn(
-              'absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 transition-all duration-300',
+              'absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500',
               activeTab === skill.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
             )"
+            :style="{ transition: 'opacity 300ms ease, transform 300ms ease' }"
+            aria-hidden="true"
           />
         </button>
       </div>
