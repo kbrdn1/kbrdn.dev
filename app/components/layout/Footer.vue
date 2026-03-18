@@ -236,7 +236,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("blogNav.portfolio") }}
             </h3>
-            <nav aria-label="Portfolio" class="flex flex-col space-y-2">
+            <nav :aria-label="t('blogNav.portfolio')" class="flex flex-col space-y-2">
               <a
                 v-for="link in portfolioLinks"
                 :key="link.href"
@@ -253,7 +253,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("sections.blog") }}
             </h3>
-            <nav aria-label="Blog" class="flex flex-col space-y-2">
+            <nav :aria-label="t('sections.blog')" class="flex flex-col space-y-2">
               <a
                 v-for="link in blogLinks"
                 :key="link.href"
@@ -270,7 +270,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("footer.links.title") }}
             </h3>
-            <nav aria-label="Social links" class="flex flex-col space-y-2">
+            <nav :aria-label="t('footer.links.title')" class="flex flex-col space-y-2">
               <a
                 v-for="social in socialLinks"
                 :key="social.href"
@@ -290,7 +290,7 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("footer.links.other") }}
             </h3>
-            <nav aria-label="Other links" class="flex flex-col space-y-2">
+            <nav :aria-label="t('footer.links.other')" class="flex flex-col space-y-2">
               <a
                 v-for="link in otherLinks"
                 :key="link.href"

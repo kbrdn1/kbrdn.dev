@@ -178,6 +178,14 @@ function showTooltip(
 function hideTooltip() {
   tooltipData.value = null
 }
+
+function switchTab(tab: 'annual' | 'monthly') {
+  activeTab.value = tab
+  nextTick(() => {
+    const el = document.querySelector(`[aria-selected="true"]`) as HTMLElement
+    el?.focus()
+  })
+}
 </script>
 
 <template>
@@ -199,8 +207,8 @@ function hideTooltip() {
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
             )"
             @click="activeTab = 'annual'"
-            @keydown.right.prevent="activeTab = 'monthly'"
-            @keydown.left.prevent="activeTab = 'monthly'"
+            @keydown.right.prevent="switchTab('monthly')"
+            @keydown.left.prevent="switchTab('monthly')"
           >
             {{ t('github.tabs.annual') }}
           </button>
@@ -215,8 +223,8 @@ function hideTooltip() {
                 : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
             )"
             @click="activeTab = 'monthly'"
-            @keydown.right.prevent="activeTab = 'annual'"
-            @keydown.left.prevent="activeTab = 'annual'"
+            @keydown.right.prevent="switchTab('annual')"
+            @keydown.left.prevent="switchTab('annual')"
           >
             {{ t('github.tabs.monthly') }}
           </button>

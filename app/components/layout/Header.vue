@@ -7,19 +7,28 @@ const route = useRoute();
 const showBrandMenu = ref(false);
 
 // Close menu on click outside or Escape key
+function handleClickOutside(e: MouseEvent) {
+  const target = e.target as HTMLElement;
+  if (!target.closest('.group\\/brand') && !target.closest('.group\\/brand-mobile')) {
+    showBrandMenu.value = false;
+  }
+}
+
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape') {
+    showBrandMenu.value = false;
+    isMobileMenuOpen.value = false;
+  }
+}
+
 onMounted(() => {
-  document.addEventListener('click', (e: MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.group\\/brand') && !target.closest('.group\\/brand-mobile')) {
-      showBrandMenu.value = false;
-    }
-  });
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      showBrandMenu.value = false;
-      isMobileMenuOpen.value = false;
-    }
-  });
+  document.addEventListener('click', handleClickOutside);
+  document.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('keydown', handleKeydown);
 });
 
 const navLinks = computed(() => [
@@ -122,12 +131,10 @@ const isMobileMenuOpen = ref(false);
           >
             <div
               v-if="showBrandMenu"
-              role="menu"
               class="absolute left-0 top-full z-50 mt-px min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
             >
               <NuxtLink
                 to="/blog"
-                role="menuitem"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
@@ -219,12 +226,10 @@ const isMobileMenuOpen = ref(false);
           >
             <div
               v-if="showBrandMenu"
-              role="menu"
               class="absolute left-0 top-full z-50 mt-2 min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
             >
               <NuxtLink
                 to="/blog"
-                role="menuitem"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
@@ -251,7 +256,7 @@ const isMobileMenuOpen = ref(false);
               )
             "
             :aria-expanded="isMobileMenuOpen"
-            aria-controls="mobile-nav"
+            :aria-controls="isMobileMenuOpen ? 'mobile-nav' : undefined"
             :aria-label="isMobileMenuOpen ? t('nav.closeMenu') || 'Close menu' : t('nav.openMenu') || 'Open menu'"
             @click="isMobileMenuOpen = !isMobileMenuOpen"
           >

@@ -94,6 +94,7 @@ function getInitials(name: string): string {
       >
         <!-- Accordion Header -->
         <button
+          :id="'study-header-' + study.id"
           type="button"
           :aria-expanded="expandedId === study.id"
           :aria-controls="'study-panel-' + study.id"
@@ -160,6 +161,7 @@ function getInitials(name: string): string {
         <div
           :id="'study-panel-' + study.id"
           role="region"
+          :aria-labelledby="'study-header-' + study.id"
           :aria-hidden="expandedId !== study.id"
           class="accordion-wrapper"
           :class="{ 'is-open': expandedId === study.id }"

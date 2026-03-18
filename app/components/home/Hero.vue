@@ -75,7 +75,7 @@ onUnmounted(() => {
               )
             "
           >
-            <span class="relative flex h-2 w-2" role="status" aria-label="Available for hire">
+            <span class="relative flex h-2 w-2" aria-hidden="true">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75" aria-hidden="true" />
               <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500" aria-hidden="true" />
             </span>

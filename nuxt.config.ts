@@ -3,15 +3,6 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  // Accessibility: set HTML lang attribute dynamically via i18n
-  app: {
-    head: {
-      htmlAttrs: {
-        lang: "en",
-      },
-    },
-  },
-
   modules: [
     "@nuxt/ui",
     "@nuxt/content",
