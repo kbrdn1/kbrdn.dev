@@ -116,10 +116,10 @@ function postUrl(post: { path: string }): string {
 </script>
 
 <template>
-  <div class="flex justify-center overflow-x-hidden">
+  <div class="flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
     />
 
@@ -127,8 +127,8 @@ function postUrl(post: { path: string }): string {
     <div class="w-full flex flex-col items-center relative z-10">
       <!-- Hero Section -->
       <section class="p-6 border-dashed-horizontal border-b border-neutral-200 dark:border-neutral-800 w-full">
-        <span class="corner-bottom-left" />
-        <span class="corner-bottom-right" />
+        <span class="corner-bottom-left" aria-hidden="true" />
+        <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <span class="block text-[11px] font-mono uppercase tracking-widest text-sky-400 mb-1">
@@ -498,7 +498,7 @@ function postUrl(post: { path: string }): string {
 
     <!-- Right stripe zone -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
     />
   </div>

@@ -95,8 +95,9 @@ const primaryLanguage = computed(() => {
               'transition-all',
             )"
             :title="t('projects.viewProject')"
+            :aria-label="`${name} - ${t('projects.viewProject')}`"
           >
-            <UIcon name="i-simple-icons-github" class="w-4 h-4" />
+            <UIcon name="i-simple-icons-github" class="w-4 h-4" aria-hidden="true" />
           </a>
           <a
             v-if="demoUrl"
@@ -110,8 +111,9 @@ const primaryLanguage = computed(() => {
               'transition-all',
             )"
             :title="t('projects.demo')"
+            :aria-label="`${name} - ${t('projects.demo')}`"
           >
-            <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" />
+            <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" aria-hidden="true" />
           </a>
         </div>
       </div>

@@ -98,10 +98,10 @@ const content = computed(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex justify-center overflow-x-hidden">
+  <div class="flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color);"
     />
 
@@ -112,8 +112,8 @@ const content = computed(() => {
 
       <!-- Hero Section - Full width with horizontal dashed border -->
       <section class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full ">
-        <span class="corner-bottom-left" />
-        <span class="corner-bottom-right" />
+        <span class="corner-bottom-left" aria-hidden="true" />
+        <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
           <HomeHero
             :name="content.name"
@@ -157,9 +157,9 @@ const content = computed(() => {
           :duration="500"
         >
           <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
+            <h2 class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
               {{ t('sections.blog') }}
-            </span>
+            </h2>
             <NuxtLink
               to="/blog"
               class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-sky-400 transition-colors"
@@ -190,8 +190,8 @@ const content = computed(() => {
 
       <!-- Skills & Stack -->
       <section id="skills" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
-        <span class="corner-bottom-left" />
-        <span class="corner-bottom-right" />
+        <span class="corner-bottom-left" aria-hidden="true" />
+        <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <HomeSkills />
@@ -201,8 +201,8 @@ const content = computed(() => {
 
       <!-- Featured Projects -->
       <section id="projects" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
-        <span class="corner-bottom-left" />
-        <span class="corner-bottom-right" />
+        <span class="corner-bottom-left" aria-hidden="true" />
+        <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <HomeSectionLabel :label="t('sections.projects')" />
@@ -253,23 +253,23 @@ const content = computed(() => {
 
       <!-- Parcours (Experience + Education) - Full width -->
       <section id="experience" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
-        <span class="corner-bottom-left" />
-        <span class="corner-bottom-right" />
+        <span class="corner-bottom-left" aria-hidden="true" />
+        <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6 space-y-8">
             <HomeSectionLabel :label="t('sections.parcours')" />
 
             <div>
-              <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+              <h3 class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
                 {{ t('sections.experience') }}
-              </span>
+              </h3>
               <HomeExperiences />
             </div>
 
             <div id="education">
-              <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+              <h3 class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
                 {{ t('sections.education') }}
-              </span>
+              </h3>
               <HomeStudies />
             </div>
           </div>
@@ -293,7 +293,7 @@ const content = computed(() => {
 
     <!-- Right stripe zone -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color);"
     />
   </div>

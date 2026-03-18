@@ -3,6 +3,32 @@ import { useI18n } from '#imports'
 
 const { t } = useI18n()
 
+function handleTabKeydown(event: KeyboardEvent) {
+  const tabs = skills.value
+  const currentIndex = tabs.findIndex(s => s.id === activeTab.value)
+  let newIndex = currentIndex
+
+  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    event.preventDefault()
+    newIndex = (currentIndex + 1) % tabs.length
+  } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    event.preventDefault()
+    newIndex = (currentIndex - 1 + tabs.length) % tabs.length
+  } else if (event.key === 'Home') {
+    event.preventDefault()
+    newIndex = 0
+  } else if (event.key === 'End') {
+    event.preventDefault()
+    newIndex = tabs.length - 1
+  } else {
+    return
+  }
+
+  activeTab.value = tabs[newIndex].id
+  const tabEl = document.getElementById(`tab-${tabs[newIndex].id}`)
+  tabEl?.focus()
+}
+
 interface Skill {
   id: string
   label: string
@@ -233,6 +259,7 @@ function highlightCode(code: string, lang: string): string {
           role="tab"
           :aria-selected="activeTab === skill.id"
           :aria-controls="`panel-${skill.id}`"
+          :tabindex="activeTab === skill.id ? 0 : -1"
           :class="cn(
             'relative px-5 py-3 text-xs font-mono uppercase tracking-wider whitespace-nowrap',
             'transition-colors duration-200 flex-shrink-0',
@@ -242,14 +269,17 @@ function highlightCode(code: string, lang: string): string {
               : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
           )"
           @click="activeTab = skill.id"
+          @keydown="handleTabKeydown"
         >
           {{ skill.label }}
           <!-- Active indicator -->
           <span
             :class="cn(
-              'absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 transition-all duration-300',
+              'absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500',
               activeTab === skill.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
             )"
+            :style="{ transition: 'opacity 300ms ease, transform 300ms ease' }"
+            aria-hidden="true"
           />
         </button>
       </div>

@@ -41,11 +41,13 @@ const slides = computed<Slide[]>(() => [
 const currentSlide = ref(0)
 const isTransitioning = ref(false)
 const slideDirection = ref<'left' | 'right'>('left')
+const isPaused = ref(false)
 
 let interval: ReturnType<typeof setInterval> | undefined
 
-onMounted(() => {
+function startAutoRotate() {
   interval = setInterval(() => {
+    if (isPaused.value) return
     slideDirection.value = 'left'
     isTransitioning.value = true
     setTimeout(() => {
@@ -53,11 +55,19 @@ onMounted(() => {
       isTransitioning.value = false
     }, 400)
   }, 5000)
+}
+
+onMounted(() => {
+  startAutoRotate()
 })
 
 onUnmounted(() => {
   if (interval) clearInterval(interval)
 })
+
+function togglePause() {
+  isPaused.value = !isPaused.value
+}
 
 function goToSlide(index: number) {
   if (index === currentSlide.value) return
@@ -71,7 +81,7 @@ function goToSlide(index: number) {
 </script>
 
 <template>
-  <section class="w-full relative overflow-hidden mx-auto border-t border-neutral-200 dark:border-neutral-800" style="max-width: 80rem;">
+  <section class="w-full relative overflow-hidden mx-auto border-t border-neutral-200 dark:border-neutral-800" style="max-width: 80rem;" aria-roledescription="carousel" aria-label="Featured content">
     <!-- Background image -->
     <ClientOnly>
       <NuxtImg
@@ -135,11 +145,13 @@ function goToSlide(index: number) {
           </UButton>
         </div>
 
-        <!-- Dot indicators -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3">
+        <!-- Controls -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
           <button
             v-for="(_, index) in slides"
             :key="index"
+            type="button"
+            :aria-label="`Slide ${index + 1} of ${slides.length}${currentSlide === index ? ' (current)' : ''}`"
             :class="cn(
               'h-0.5',
               currentSlide === index
@@ -152,6 +164,14 @@ function goToSlide(index: number) {
             }"
             @click="goToSlide(index)"
           />
+          <button
+            type="button"
+            :aria-label="isPaused ? 'Resume carousel' : 'Pause carousel'"
+            class="ml-1 flex items-center justify-center w-5 h-5 text-white/50 hover:text-white transition-colors"
+            @click="togglePause"
+          >
+            <UIcon :name="isPaused ? 'i-heroicons-play' : 'i-heroicons-pause'" class="w-3 h-3" aria-hidden="true" />
+          </button>
         </div>
       </div>
     </div>

@@ -552,13 +552,24 @@
   }
 }
 
-* {
+*:not([class*="transition-"]) {
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.3s ease,
-    opacity 0.3s ease;
+    color 0.2s ease;
+}
+
+/* ═══════════════════════════════════════════════════
+   Focus Visible - Keyboard Accessibility (RGAA 10.7)
+   ═══════════════════════════════════════════════════ */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* ═══════════════════════════════════════════════════

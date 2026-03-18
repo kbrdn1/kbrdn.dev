@@ -285,9 +285,18 @@ function formatTime(seconds: number): string {
             </span>
             <div
               class="progress-bar flex-1 h-1 bg-neutral-200 dark:bg-neutral-800 cursor-pointer group/bar relative"
+              role="slider"
+              tabindex="0"
+              :aria-label="'Track progress'"
+              :aria-valuenow="Math.round(currentTime)"
+              :aria-valuemin="0"
+              :aria-valuemax="Math.round(duration)"
+              :aria-valuetext="`${formatTime(currentTime)} of ${formatTime(duration)}`"
               :class="{ 'h-1.5': isSeeking }"
               style="transition: height 0.15s ease;"
               @mousedown="startSeek"
+              @keydown.left.prevent="audio && (audio.currentTime = Math.max(0, audio.currentTime - 5))"
+              @keydown.right.prevent="audio && (audio.currentTime = Math.min(duration, audio.currentTime + 5))"
             >
               <div
                 class="h-full bg-primary-500 relative"
@@ -314,6 +323,8 @@ function formatTime(seconds: number): string {
         <button
           v-for="(_, index) in tracks"
           :key="index"
+          type="button"
+          :aria-label="`Track ${index + 1} of ${tracks.length}${currentIndex === index ? ' (current)' : ''}`"
           :class="cn(
             'h-0.5 cursor-pointer',
             currentIndex === index

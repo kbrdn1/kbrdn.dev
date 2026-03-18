@@ -94,6 +94,10 @@ function getInitials(name: string): string {
       >
         <!-- Accordion Header -->
         <button
+          :id="'study-header-' + study.id"
+          type="button"
+          :aria-expanded="expandedId === study.id"
+          :aria-controls="'study-panel-' + study.id"
           :class="cn(
             'group/header w-full flex items-center gap-4 p-5 text-left transition-all duration-300',
             expandedId === study.id
@@ -139,7 +143,7 @@ function getInitials(name: string): string {
             <span class="hidden sm:inline font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ formatDate(study.startDate) }} - {{ study.current ? t('studies.present') : formatDate(study.endDate!) }}
             </span>
-            <div class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500">
+            <div class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500" aria-hidden="true">
               <span class="absolute inset-0 flex items-center justify-center">
                 <span class="block w-3 h-0.5 bg-current" />
               </span>
@@ -155,6 +159,10 @@ function getInitials(name: string): string {
 
         <!-- Accordion Content -->
         <div
+          :id="'study-panel-' + study.id"
+          role="region"
+          :aria-labelledby="'study-header-' + study.id"
+          :aria-hidden="expandedId !== study.id"
           class="accordion-wrapper"
           :class="{ 'is-open': expandedId === study.id }"
         >

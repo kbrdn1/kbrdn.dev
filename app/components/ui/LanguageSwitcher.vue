@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
 
-const { locale, locales, setLocale } = useI18n()
+const { t, locale, locales, setLocale } = useI18n()
 
 const availableLocales = computed(() => {
   return locales.value.filter((l) => typeof l !== 'string')
@@ -20,6 +20,7 @@ function toggleLocale() {
 <template>
   <ClientOnly>
     <button
+      type="button"
       :class="cn(
         'flex items-center justify-center w-full h-full px-3',
         'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100',
@@ -27,6 +28,7 @@ function toggleLocale() {
         'transition-all uppercase text-xs font-medium tracking-wider'
       )"
       :title="currentLocale?.name"
+      :aria-label="`${t?.('nav.switchLanguage') || 'Switch language'} (${currentLocale?.name || locale.toUpperCase()})`"
       @click="toggleLocale"
     >
       {{ locale.toUpperCase() }}
