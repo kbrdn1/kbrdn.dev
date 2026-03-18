@@ -20,6 +20,7 @@ function toggleLocale() {
 <template>
   <ClientOnly>
     <button
+      type="button"
       :class="cn(
         'flex items-center justify-center w-full h-full px-3',
         'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100',
@@ -27,6 +28,7 @@ function toggleLocale() {
         'transition-all uppercase text-xs font-medium tracking-wider'
       )"
       :title="currentLocale?.name"
+      :aria-label="`Switch language (currently ${currentLocale?.name})`"
       @click="toggleLocale"
     >
       {{ locale.toUpperCase() }}
