@@ -1,352 +1,83 @@
 ---
-title: "Fiches Pedagogiques -- Refonte complete d'une plateforme educative"
-description: "Comment j'ai mene la refonte from scratch d'une plateforme de fiches pedagogiques avec Laravel, de l'architecture a la mise en production."
+title: "Fiches Pédagogiques — Refonte d'une plateforme éducative chez Flippad"
+description: "Retour d'expérience sur la refonte complète d'une plateforme de ressources pédagogiques, entre gestion de projet, collaboration d'équipe et choix techniques."
 publishedAt: "2025-01-20"
-tags: ["laravel", "php", "architecture", "project"]
+tags: ["project", "laravel", "nuxt", "career"]
 banner: false
 ---
 
-## Le contexte
+## Un outil au service des enseignants
 
-Chez Flippad, on m'a confie un projet ambitieux : la refonte complete de **Fiches Pedagogiques**, une plateforme de ressources educatives destinee aux enseignants du primaire francais, de la Petite Section au CM2. Le site existait deja, mais le code etait devenu difficilement maintenable. Plutot que de patcher indefiniment, la decision a ete prise de tout repartir de zero.
+Fiches Pédagogiques, c'est une plateforme en ligne pensée pour les enseignants du primaire en France. De la Petite Section au CM2, le site met à disposition un catalogue de milliers de fiches pédagogiques : des exercices prêts à imprimer, des séquences de cours, des activités thématiques, des ressources classées par niveau scolaire, par domaine et par compétence.
 
-J'etais project lead et responsable du backend. Le projet impliquait de repenser l'architecture, de modeliser un domaine metier riche (fiches, collections, abonnements, paiements, ecoles...) et de construire une API capable de servir un front moderne tout en gerant des volumes de contenu importants -- on parle de milliers de fiches pedagogiques, chacune avec ses fichiers, ses previews, ses metadata SEO, ses relations avec des themes, des domaines scolaires, des competences, etc.
+L'idée est simple mais précieuse : faire gagner du temps aux enseignants. Plutôt que de concevoir chaque support de cours depuis zéro, ils peuvent chercher, filtrer et télécharger des fiches adaptées à leur classe. Le tout organisé par thèmes, par domaines scolaires et par cycles, avec un système d'abonnement, des achats à l'unité, et des licences pour les écoles.
 
-## Pourquoi une refonte from scratch
+Le produit existait depuis plusieurs années avec une base d'utilisateurs fidèles. Mais sous le capot, les choses n'allaient plus.
 
-La base de code d'origine avait accumule des annees de dette technique. Les modeles etaient couples aux vues, la validation etait eparpillee, et chaque nouvelle fonctionnalite demandait de toucher a une dizaine de fichiers sans pattern clair. L'ajout d'un systeme d'abonnement Stripe sur cette base aurait ete du suicide technique.
+## Pourquoi tout reprendre de zéro
 
-On avait aussi des besoins nouveaux qui ne rentraient pas dans l'ancien moule :
+Quand on a repris le projet chez Flippad, la plateforme accusait le poids des années. Le code avait été construit sans architecture pensée pour évoluer. Chaque ajout de feature devenait un exercice d'équilibrisme. L'UX était datée, les performances moyennes, le SEO en souffrance.
 
-- Une recherche full-text performante avec filtres combines (niveau scolaire, theme, type de fiche, domaine...)
-- Un back-office admin complet avec gestion fine des permissions
-- Un systeme de paiement flexible (abonnements + achats unitaires + licences ecoles)
-- Du media management avance (previews auto, conversion WebP, extraction de miniatures PDF/video)
+Le client avait des besoins concrets : un moteur de recherche performant avec des filtres fins, un back-office moderne pour son équipe éditoriale, un système de paiement flexible (abonnements, achats unitaires, licences écoles), et une base technique capable de supporter la croissance. Greffer tout ça sur l'existant aurait coûté plus cher que de repartir de zéro.
 
-Repartir de zero nous permettait de poser des fondations solides et d'aller vite sur le long terme.
+La décision a donc été prise : on refait tout, from scratch.
 
-## Le stack technique
+## Mon rôle sur le projet
 
-### Backend -- Laravel 12, PHP 8.4
+J'étais project lead et développeur backend. Concrètement, ça voulait dire deux casquettes au quotidien.
 
-Le choix de Laravel s'est impose naturellement. L'ecosysteme est mature, la documentation est excellente, et surtout il offre tout ce qu'on avait besoin out of the box : Sanctum pour l'auth, Cashier pour Stripe, des jobs en queue, un ORM puissant.
+Côté gestion de projet, je pilotais le planning, découpais les phases de développement, et faisais le lien avec le client pour valider les priorités. Sur un projet de cette envergure -- plus d'une centaine de tables en base de données -- la planification n'était pas un luxe. Il fallait séquencer intelligemment pour livrer un MVP fonctionnel le plus tôt possible, puis itérer.
 
-On tourne sur **PHP 8.4** pour profiter des enums natifs, des readonly properties, et des performances ameliorees. La base de donnees est **MySQL** avec **Redis** reparti sur 5 bases logiques :
+Côté technique, j'ai conçu l'architecture backend et développé la majeure partie de l'API : le système modulaire, la recherche, les paiements, le pipeline de traitement des fichiers, la validation. Près de 4 000 commits côté backend -- ce qui donne une idée du volume de travail et de l'itération constante que la refonte a demandée.
 
-- DB 0 : sessions et donnees par defaut
-- DB 1 : cache applicative
-- DB 2 : cache de recherche
-- DB 3 : logs structures
-- DB 4 : media processing
+## L'équipe
 
-**Elasticsearch 8.16** gere toute la recherche full-text avec 38 index dedies et du fuzzy matching.
+On était trois développeurs sur ce projet : Mehdi, Alexandre et moi.
 
-### Frontend -- Nuxt 4, Vue 3, TypeScript
+La répartition s'est faite naturellement. Je prenais le lead sur le backend et l'architecture globale. Mehdi était la force motrice du frontend -- c'est lui qui a porté l'essentiel de l'application côté client, avec plus de 1 600 commits sur le front. Alexandre intervenait aussi sur le frontend et sur l'intégration, en apportant son regard et ses contributions sur les parcours utilisateurs.
 
-Le front est une application Nuxt 4 avec Vue 3 et TypeScript. L'UI est construite avec **shadcn-nuxt** et **TailwindCSS 4**, la validation des formulaires passe par **Zod + VeeValidate**, et l'etat global est gere avec **Pinia**. L'authentification est assuree par **nuxt-auth-sanctum** qui dialogue avec l'API Sanctum cote backend.
-
-## L'architecture modulaire
-
-C'est probablement la decision technique dont je suis le plus satisfait. Plutot qu'un monolithe Laravel classique avec des controllers geants, j'ai mis en place une **architecture modulaire** ou chaque entite metier est un module autonome.
-
-Chaque module admin contient :
-
-- Un **Controller** qui herite du CRUDController generique
-- Un **Repository** pour les requetes
-- Une **Resource** pour la serialisation
-- Un dossier **Strategies** avec trois classes : `RuleStrategy` (validation), `RelationStrategy` (relations), `ExceptionStrategy` (gestion d'erreurs)
-- Un dossier **Exceptions** propre au module
-
-```
-app/Http/Modules/Admin/Items/
-├── ItemController.php
-├── ItemRepository.php
-├── ItemResource.php
-├── Strategies/
-│   ├── ItemRuleStrategy.php
-│   ├── ItemRelationStrategy.php
-│   └── ItemExceptionStrategy.php
-└── Exceptions/
-```
-
-Cette structure se repete pour chacun des **58 modules admin**. Ca peut sembler verbose, mais en pratique c'est un gain enorme : quand je dois intervenir sur les fiches pedagogiques, tout est dans `Modules/Admin/Items/`. Pas besoin de naviguer entre `Controllers/`, `Requests/`, `Resources/` et `Policies/` a la racine.
-
-### Le CRUDController generique
-
-Le coeur du systeme est un `CRUDController` abstrait qui fournit toutes les operations CRUD standard :
-
-```php
-class CRUDController extends Controller
-{
-  protected ModulesEnum $name;
-  protected PaginationService $pagination;
-  protected RuleContext $rules;
-  protected Repository $repository;
-  protected Resource $resource;
-
-  public function __construct(
-    ModulesEnum $name,
-    Repository $repository,
-    Resource $resource,
-  ) {
-    $this->name = $name;
-    $this->rules = new RuleContext($name);
-    $this->repository = $repository;
-    $this->resource = $resource;
-    $this->pagination = Pagination::getConfiguration($name)
-      ?? new PaginationService();
-  }
-}
-```
-
-Les controllers concrets n'ont plus qu'a declarer leurs specificites. Par exemple, `ItemController` ajoute juste la sanitization HTML et la conversion de certains champs :
-
-```php
-class ItemController extends CRUDController
-{
-  use SanitizesHtmlContent;
-
-  protected array $htmlFields = ["description", "meta_description"];
-  protected array $strictHtmlFields = ["meta_description"];
-
-  public function __construct(
-    ItemRepository $repository,
-    ItemResource $resource,
-  ) {
-    parent::__construct(ModulesEnum::ITEM, $repository, $resource);
-  }
-
-  public function store(Request $request): JsonResponse
-  {
-    $this->convertStringToArray($request);
-    $this->sanitizeHtmlContent($request);
-    return parent::store($request);
-  }
-}
-```
-
-### Le pattern Strategy pour la validation
-
-La validation est un point critique dans une app avec 112 tables et des dizaines de formulaires. Plutot que des `FormRequest` classiques, j'ai implemente un **pattern Strategy** ou chaque module definit ses regles via une `RuleStrategy`.
-
-Chaque strategy expose trois methodes : `getPrimitiveRules()` pour le filtrage et les updates partiels, `getRules()` pour la creation avec toutes les contraintes, et `getDataCollectionRules()` pour les imports en masse.
-
-```php
-class ItemRuleStrategy extends RuleStrategy
-{
-  public function getRules(): array
-  {
-    return [
-      "title" => "required|string|max:255",
-      "cost" => "required|integer",
-      "slug" => ["nullable", "string", "regex:/^[a-z0-9-]+$/",
-                  "unique:items,slug"],
-      "description" => ["string", "nullable", new SanitizedHtml()],
-      "school_domains" => "required|array",
-      "school_domains.*" => "integer|exists:school_domains,id",
-      "sub_school_domains.*" => [
-        "integer",
-        "exists:sub_school_domains,id",
-        $this->getSubSchoolDomainRule(
-          request()->input("school_domains")
-        ),
-      ],
-      "collections" => [
-        "array",
-        new CollectionRequiresAllowedItemType(),
-      ],
-      // ...
-    ];
-  }
-}
-```
-
-Les regles custom comme `SubSchoolDomainBelongsToSchoolDomain` ou `CycleBelongsToSection` garantissent la coherence des donnees metier directement au niveau de la validation -- un sous-domaine scolaire doit appartenir au domaine parent selectionne, un cycle doit correspondre a la section choisie.
-
-## Le DepthAwareResource -- resoudre le N+1 autrement
-
-Un des problemes classiques des API REST avec des relations imbriquees, c'est l'explosion des requetes (N+1) ou les references circulaires. Si une fiche a des collections, et qu'une collection reference ses fiches, on peut vite boucler indefiniment.
-
-J'ai concu un trait `DepthAwareResource` qui resout ce probleme avec un systeme de profondeur et de detection de cycles :
-
-```php
-trait DepthAwareResource
-{
-  protected const MAX_ABSOLUTE_DEPTH = 3;
-
-  protected function createDepthAwareRelations(
-    array $relationMap,
-    $item,
-  ): array {
-    if ($this->currentDepth >= self::MAX_ABSOLUTE_DEPTH) {
-      return [];
-    }
-
-    if (!$this->shouldIncludeRelationsAtCurrentDepth()) {
-      return [];
-    }
-
-    $this->registerSelfInAncestorChain();
-
-    $relations = [];
-    foreach ($relationMap as $relationKey => $module) {
-      if ($this->wouldCreateCircularReference($module)) {
-        continue;
-      }
-
-      $ancestorChainSnapshot = $this->getModuleChain();
-      $this->registerModuleInChain($module);
-
-      $context = $this->createRelationContext($module);
-      $relations[$relationKey] = $this->retrieveRelation(
-        $relationKey,
-        static fn() => $context->getFromModel($item),
-      );
-
-      $this->setModuleChain($ancestorChainSnapshot);
-    }
-
-    return $relations;
-  }
-}
-```
-
-Le mecanisme utilise une chaine d'ancetres stockee dans les attributs de la requete Laravel. Quand une resource serialise ses relations, elle enregistre son module dans la chaine. Si un module enfant detecte qu'il remonte vers un ancetre deja present, il coupe la branche. Et grace a l'isolation par branche (le snapshot/restore), deux relations soeurs ne s'influencent pas mutuellement.
-
-Le front peut aussi controler la profondeur via un parametre `depth` et selectionner les champs retournes via un header `fields` -- utile pour les listes ou on n'a besoin que de `id`, `title` et `thumbnail`.
-
-## La recherche full-text avec Elasticsearch
-
-La recherche est au coeur de l'experience utilisateur. Un enseignant de CE2 qui cherche "fractions decimales" doit trouver des resultats pertinents en quelques millisecondes, avec la possibilite de filtrer par niveau, theme, type de fiche, etc.
-
-Le service de recherche est construit en couches :
-
-- Un **SearchCriteriaTransformer** qui convertit les parametres de requete en filtres Elasticsearch
-- Un **FilterManager** qui applique les filtres combines
-- Un **SearchHighlighter** pour surligner les termes dans les resultats
-- Un **SearchCacheService** avec cache Redis et invalidation par tags
-- Un **ABTestingService** pour tester differents algorithmes de scoring
-
-```php
-class SearchService
-{
-  public function search(
-    SearchCriteria $criteria,
-    string $context = "search",
-  ): array {
-    $startTime = microtime(true);
-
-    $filters = $this->transformer->transform($criteria);
-
-    if ($this->needsGlobalSorting($filters)) {
-      return $this->searchWithGlobalSorting(
-        $criteria, $filters, $context,
-      );
-    }
-
-    return SearchCache::remember(
-      $criteria->toArray(),
-      fn() => $this->performSearch($filters, $context),
-      "search",
-    );
-  }
-}
-```
-
-Chaque modele a son propre index Elasticsearch via le package ElasticLens. Les 53 modeles sont indexes, ce qui permet une recherche cross-entity rapide.
-
-## Le media pipeline
-
-Le projet gere enormement de fichiers : des PDFs de fiches pedagogiques, des images de preview, des videos. Le pipeline media est construit sur **Spatie MediaLibrary** avec des personnalisations maison :
-
-- **CustomPathGenerator** et **CustomUrlGenerator** pour le stockage S3
-- **MediaConversionService** qui genere automatiquement des previews en JPG et WebP
-- **HeroBannerConversionService** pour les bannieres avec des formats responsifs
-- **PdfPageCountService** pour extraire le nombre de pages des PDFs
-- Integration **FFmpeg** pour les previews video
-
-Le tout est traite en queue pour ne pas bloquer les requetes. Quand un admin uploade une fiche avec ses fichiers, un job se charge de generer toutes les conversions en arriere-plan.
-
-## Le front -- une base CRUD generique en TypeScript
-
-Cote front, on a applique la meme philosophie DRY qu'au back. La classe `BaseCRUD<TEntity, TPayload, TFilter>` fournit toutes les operations standard a chaque store Pinia :
-
-```typescript
-export default class BaseCRUD<
-  TEntity extends BaseEntity,
-  TPayload extends object,
-  TFilter extends object,
-  TFields extends readonly (keyof WithCount<TEntity>)[],
-> {
-  protected readonly basePath: string
-  protected readonly fields: TFields
-  protected readonly optionFields: readonly (keyof WithCount<TEntity>)[]
-  protected readonly optionsLimit: number
-  protected transformFn?: <T extends TEntity>(item: T) => T
-  // ...
-}
-```
-
-Les generiques TypeScript garantissent le typage de bout en bout. Quand on cree un `itemStore`, le compilateur sait exactement quels champs sont disponibles, quel est le format du payload de creation, et quels filtres sont applicables. Ca elimine toute une categorie de bugs a la compilation.
-
-La validation cross-layer est un point sur lequel on a beaucoup investi. Les schemas Zod cote front doivent mirrorer les `RuleStrategy` cote back. On a meme un agent QA dedie (`fp-qa`) dans notre workflow Claude Code qui valide la coherence entre les trois couches : Zod, Laravel Rules, et contraintes de la base de donnees.
-
-## Les paiements et les ecoles
-
-Le systeme de monetisation est plus complexe qu'un simple paywall. On gere :
-
-- Des **abonnements individuels** via Stripe (Laravel Cashier)
-- Des **achats unitaires** de fiches
-- Des **licences ecoles** avec mandats administratifs, invitations de collaborateurs, et gestion de domaines scolaires
-- Des **codes promotionnels** avec regles d'utilisation
-- Des **comptes demo** a duree limitee
-
-Chaque type de paiement a son propre flow, ses propres webhooks Stripe, et ses propres regles de validation. Les montants sont stockes en centimes dans toute l'API (4450 = 44.50 EUR) pour eviter les problemes d'arrondi en virgule flottante.
-
-## Le routing dynamique
-
-Le routing de l'API est entierement dynamique. Les routes admin sont generees a partir de l'enum `ModulesEnum` :
-
-```php
-Route::prefix("admin")
-  ->middleware(["auth:sanctum", "crud", "role:super_admin|admin|comptable"])
-  ->group(function () {
-    $adminRoutes = ModulesEnum::getModules(true);
-
-    foreach ($adminRoutes as $route) {
-      if (!file_exists(base_path("routes/admin/{$route}.php"))) {
-        continue;
-      }
-      include base_path("routes/admin/{$route}.php");
-    }
-  });
-```
-
-Ajouter un nouveau module, c'est creer le dossier dans `Modules/Admin/`, ajouter l'entree dans l'enum, et creer le fichier de routes. Le middleware `crud` gere automatiquement les permissions en fonction du module et du role de l'utilisateur.
-
-## Les chiffres
-
-Sans entrer dans des affirmations invverifiables, voici la realite du projet en termes de volume :
-
-- **149 migrations** pour 112 tables
-- **53 modeles Eloquent** avec 38 index Elasticsearch
-- **58 modules admin** avec le pattern Controller/Repository/Resource/Strategy
-- **55+ stores Pinia** cote front
-- **28+ enums PHP** pour typer les valeurs metier
-- 5 bases Redis segmentees par usage
-
-Le projet est en production et sert des enseignants au quotidien. Le back-office admin permet a l'equipe editoriale de gerer le catalogue de fiches, les abonnements, les statistiques de vues et de telechargements, les factures, et l'ensemble du contenu marketing (bannieres, FAQ, pages SEO).
+Côté design, la maquette a été confiée à un studio externe, La Guilde, avec un designer freelance qui a conçu les wireframes et les maquettes UI. On recevait les livrables et on les implémentait. Ça ajoutait une couche de coordination -- s'assurer que les maquettes étaient réalistes techniquement, adapter quand il y avait des écarts avec les contraintes du dev -- mais cette séparation nous a permis de nous concentrer sur ce qu'on faisait le mieux.
+
+On se challengeait sur les choix, on maintenait une cohérence entre le front et le back malgré le rythme soutenu, et surtout on avançait ensemble. Travailler à trois développeurs sur une refonte complète, avec un design externe, c'est un exercice d'équilibre : suffisamment de monde pour avancer vite, pas trop pour que la coordination reste fluide.
+
+## Notre approche
+
+Le projet a démarré en octobre 2024. Les premiers commits posaient les fondations : architecture modulaire, authentification, premiers modules métier.
+
+On a adopté une stratégie de releases progressives -- le backend a traversé plus de 40 versions avant la v1.0. Chaque release apportait son lot de fonctionnalités et de correctifs. Cette approche incrémentale nous permettait de valider régulièrement avec le client et de corriger le tir vite.
+
+Le gros du travail de modélisation métier s'est concentré sur les premiers mois : fiches, collections, domaines scolaires, cycles, thèmes, compétences... Un domaine riche et interconnecté. Ensuite sont venus les systèmes transverses : recherche full-text, paiements, back-office, gestion des fichiers.
+
+Le frontend suivait, avec Mehdi qui construisait les interfaces au fur et à mesure que l'API se stabilisait. Chaque brique du front -- pages publiques, moteur de recherche, tableau de bord, parcours de paiement -- s'appuyait sur un backend solide.
+
+## Les défis qu'on a rencontrés
+
+Le premier défi, et pas des moindres : réécrire une plateforme entière sans perturber celle qui tourne en production. Ça impose une discipline rigoureuse. Il fallait que la nouvelle version couvre toutes les fonctionnalités de l'ancienne avant de pouvoir basculer.
+
+La migration des données a été un chantier conséquent. Des années de contenu accumulé, des relations entre entités qui n'avaient pas toujours été modélisées proprement, des incohérences à nettoyer. On a dû écrire des scripts de migration sur mesure, vérifier l'intégrité des données à chaque étape, et s'assurer que rien ne se perdait en route.
+
+La sécurité a demandé un investissement sérieux, avec un audit complet en mars 2026 couvrant l'authentification, la validation des données, le contrôle d'accès et les paiements. Le genre de chantier invisible pour l'utilisateur mais indispensable.
+
+Le SEO était une préoccupation constante. Une refonte mal gérée peut faire chuter le trafic du jour au lendemain. Il fallait préserver les URLs, gérer les redirections, et s'assurer que les nouvelles pages étaient au moins aussi bien optimisées.
+
+Enfin, la complexité fonctionnelle pure. Le système de paiement à lui seul couvrait plusieurs cas d'usage : abonnements individuels via Stripe, achats à l'unité, licences pour les écoles avec gestion de mandats administratifs et d'invitations de collaborateurs, abonnements manuels pour les cas particuliers, codes promotionnels. Chaque cas avait ses propres règles, ses propres flux, ses propres cas limites.
+
+## Le résultat
+
+En mars 2026, le front a atteint sa v1.0. Plus de 7 800 commits cumulés entre le backend et le frontend, 17 mois de développement, une plateforme entièrement neuve.
+
+Côté performance, la recherche est devenue fluide et rapide, portée par un moteur full-text avec des filtres combinés par niveau, thème, type de fiche et domaine scolaire. Côté UX, l'interface a été repensée de A à Z : navigation intuitive, prévisualisations des fiches, parcours d'achat simplifié. Le tableau de bord permet de retrouver ses fiches achetées, ses téléchargements, ses factures en quelques clics.
+
+L'équipe éditoriale du client dispose maintenant d'un back-office complet : ajout de fiches avec traitement automatique des fichiers, gestion des collections, suivi des statistiques, gestion des abonnements et des promotions.
+
+Et surtout, la nouvelle architecture est pensée pour durer. Ajouter un nouveau module d'administration est devenu une opération rapide, là où c'était un casse-tête sur l'ancienne plateforme.
 
 ## Ce que j'en retiens
 
-Ce projet m'a appris plusieurs choses sur l'architecture logicielle a l'echelle :
+Ce projet reste l'un des plus formateurs de ma carrière. Piloter une refonte from scratch pendant plus d'un an, ça touche à tout : analyse métier, architecture, développement, coordination d'équipe, relation client.
 
-**Le pattern modulaire paie sur la duree.** Au debut, creer un module complet pour chaque entite semble lourd. Mais des qu'on depasse 15-20 entites, le gain en lisibilite et en maintenabilite est indeniable. Chaque developpeur sait exactement ou trouver le code qui l'interesse.
+Ce que je retiens surtout, c'est l'importance de poser les fondations avant de coder. Le temps passé à modéliser le domaine, à réfléchir à l'architecture, à découper le travail en versions... c'est du temps rentabilisé dix fois par la suite.
 
-**Investir dans les abstractions generiques tot.** Le `CRUDController`, le `BaseCRUD` front, le `DepthAwareResource` -- ces composants ont demande du temps a concevoir, mais ils ont accelere la livraison de chaque fonctionnalite suivante. Quand un nouveau module admin prend 15 minutes a creer plutot que 2 heures, l'investissement initial est largement amorti.
+Je retiens aussi la force d'une petite équipe soudée. À trois, avec Mehdi et Alexandre, on a livré un produit qui aurait pu mobiliser une équipe bien plus large. La clé : la confiance, la clarté des responsabilités et la communication constante.
 
-**La validation cross-layer est un vrai sujet.** Maintenir la coherence entre la validation front (Zod), la validation back (Laravel Rules), et les contraintes de base de donnees est un defi permanent. L'automatiser autant que possible -- meme partiellement -- evite des bugs subtils en production.
-
-**Elasticsearch n'est pas gratuit.** Indexer 53 modeles et maintenir 38 index demande un investissement significatif en configuration, monitoring et debug. Mais pour une plateforme de contenu ou la recherche est centrale, c'est un investissement qui en vaut la peine.
-
-Ce projet represente plusieurs mois de travail et reste un des plus complets que j'ai menes en tant que lead technique. De la modelisation initiale du domaine metier au deploiement en production, chaque couche a ete pensee pour etre maintenable, extensible, et performante.
+Et puis il y a la satisfaction de voir un produit abouti, utilisé au quotidien par des enseignants qui y trouvent une vraie valeur. C'est ça qui donne du sens au travail.
