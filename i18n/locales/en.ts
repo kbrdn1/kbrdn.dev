@@ -32,6 +32,13 @@ export default {
     readBlog: "Read Blog",
   },
 
+  // Navigation
+  nav: {
+    skipToContent: "Skip to content",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+  },
+
   // Section Labels
   sections: {
     about: "ABOUT",
@@ -43,6 +50,7 @@ export default {
     activity: "ACTIVITY",
     connect: "CONNECT",
     blog: "BLOG",
+    sponsor: "Sponsor on GitHub",
   },
 
   // Explore Section

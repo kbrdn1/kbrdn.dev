@@ -33,6 +33,13 @@ export default {
     readBlog: "Lire le Blog",
   },
 
+  // Navigation
+  nav: {
+    skipToContent: "Aller au contenu",
+    openMenu: "Ouvrir le menu",
+    closeMenu: "Fermer le menu",
+  },
+
   // Section Labels
   sections: {
     about: "A PROPOS",
@@ -44,6 +51,7 @@ export default {
     activity: "ACTIVITE",
     connect: "CONTACT",
     blog: "BLOG",
+    sponsor: "Sponsoriser sur GitHub",
   },
 
   // Explore Section
