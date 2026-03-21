@@ -1,50 +1,198 @@
 ---
 title: "Building LazyCurl — A TUI HTTP Client in Go"
-description: "How I built a terminal-based HTTP client using Go and Bubbletea, and what I learned along the way."
-publishedAt: "2026-02-15"
-tags: ["go", "tui", "open-source"]
+description: "How I built a modern terminal-based HTTP client with Go, Bubble Tea, and Lipgloss — from idea to working TUI."
+publishedAt: "2025-03-10"
+tags: ["go", "tui", "open-source", "project"]
 banner: true
 ---
 
-## Why another HTTP client?
+## The problem with existing HTTP clients
 
-Tools like Postman and Insomnia are great, but they're heavy. I wanted something that lives in the terminal — fast, keyboard-driven, and minimal.
+I spend most of my day inside the terminal. Git, Docker, vim, tmux -- that is where I feel productive. But every time I need to test an API, I have to leave that environment. Postman is powerful but heavy. Insomnia keeps changing its pricing model. Bruno is great but still a GUI application. And plain `curl` commands get unreadable fast when you need headers, auth, and a JSON body.
 
-## The tech stack
+I wanted something that sits right where I already work: the terminal. Something with the speed and keyboard-driven workflow of Lazygit, but with the API testing capabilities of Postman. That is how **LazyCurl** was born.
 
-LazyCurl is built with **Go**, **Bubbletea**, **Lipgloss**, and **Cobra**.
+## What is LazyCurl
+
+LazyCurl is a Terminal User Interface (TUI) HTTP client written in Go. It gives you a multi-panel layout inspired by Lazygit, with vim motions for navigation, collections for organizing requests, environment variables, JavaScript scripting, and import support for cURL, OpenAPI, and Postman collections.
+
+The core idea is simple: everything you need to test APIs, without leaving your terminal.
+
+## Tech stack and why Go
+
+### Go as the foundation
+
+Go was the obvious choice. A single compiled binary means no runtime dependencies, instant startup (around 50ms), and trivial cross-platform distribution. Users run `go install` and they are done. No Node.js, no Python virtual environments, no Electron.
+
+The standard library `net/http` package handles all the HTTP work reliably, and Go's concurrency model with goroutines makes it straightforward to run requests without blocking the UI.
+
+### Bubble Tea for the TUI framework
+
+The entire interface is built on [Charm's Bubble Tea](https://github.com/charmbracelet/bubbletea), which implements the Elm Architecture in Go. If you have worked with React or Vue, the pattern will feel familiar: your application state lives in a `Model`, user inputs arrive as messages, and `Update` returns a new model plus optional commands.
 
 ```go
-func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-    switch msg := msg.(type) {
-    case tea.KeyMsg:
-        switch msg.String() {
-        case "ctrl+c", "q":
-            return m, tea.Quit
-        case "enter":
-            return m, m.sendRequest()
-        }
+func SendHTTPRequestCmd(req *api.Request) tea.Cmd {
+    return func() tea.Msg {
+        client := api.NewClient()
+        resp, err := client.Send(req)
+        return HTTPResponseMsg{Response: resp, Error: err}
     }
-    return m, nil
 }
 ```
 
-## Design decisions
+This pattern keeps the UI responsive. HTTP requests run as Bubble Tea commands (effectively goroutines), and the result comes back as a message that updates the view. The loader animation ticks every 80ms while the request is in flight, so the interface never freezes.
 
-### Keyboard-first
+### Lipgloss for styling
 
-Every action is accessible via keyboard shortcuts. No mouse needed.
+[Lipgloss](https://github.com/charmbracelet/lipgloss) handles all the visual styling. LazyCurl uses the **Catppuccin Mocha** color palette, defined centrally in a `styles` package. Every color in the interface maps to a named constant:
+
+```go
+// Catppuccin Mocha Colors
+Base     = lipgloss.Color("#1e1e2e") // background
+Lavender = lipgloss.Color("#b4befe") // primary accent
+Green    = lipgloss.Color("#a6e3a1") // success/active
+Red      = lipgloss.Color("#f38ba8") // errors
+```
+
+This makes theming straightforward. Change the color values in one file and the entire application updates. The plan is to eventually expose this as a user-facing theme system.
+
+### Goja for JavaScript scripting
+
+One of the features I am most proud of is the JavaScript scripting engine. LazyCurl uses [Goja](https://github.com/dop251/goja), a pure Go implementation of ECMAScript 5.1+. No CGo, no external dependencies -- it compiles right into the same binary.
+
+This enables pre-request and post-response scripts with a familiar API:
+
+```js
+// Pre-request: set dynamic auth token
+const token = lc.environment.get("auth_token");
+lc.request.setHeader("Authorization", "Bearer " + token);
+
+// Post-response: validate and extract
+lc.test("Status is 200", function() {
+    lc.expect(lc.response.status()).toBe(200);
+});
+
+const userId = lc.response.json().data.id;
+lc.environment.set("user_id", userId);
+```
+
+The scripting API exposes over 75 methods across modules for environment manipulation, request modification, response inspection, console logging, crypto utilities, base64 encoding, and cookie management. Each script runs in a sandboxed Goja runtime with a 5-second timeout to prevent runaway execution.
+
+## Architecture decisions
+
+### The Elm Architecture at scale
+
+The biggest architectural decision was committing fully to Bubble Tea's Elm Architecture. The `Model` struct in `internal/ui/model.go` is the single source of truth for the entire application state. Every keyboard press, mouse click, and HTTP response flows through the same `Update` function.
+
+This sounds clean in theory, but the `Update` function grows fast when your application has dozens of keybindings, multiple panels, modal overlays, and different vim-like modes. I structured it by extracting view rendering into separate files (`collections_view.go`, `request_view.go`, `response_view.go`) and delegating panel-specific logic to dedicated handlers.
+
+### Vim modes, for real
+
+LazyCurl implements four distinct modes, just like vim:
+
+- **NORMAL** -- Navigate between panels and items with `h/j/k/l`
+- **INSERT** -- Type into URL fields, headers, body editors
+- **VIEW** -- Scroll through response bodies and long content
+- **COMMAND** -- Execute commands with the `:` prefix
+
+Each mode has its own color in the status bar (blue, gray, green, orange) and its own keybinding set. Mode transitions are handled as state changes in the model, and the status bar component reads the current mode to display the appropriate indicator.
+
+### Jump mode
+
+One feature that sets LazyCurl apart is **Jump mode**, inspired by vim-easymotion. Press `f` and every focusable element on screen gets a letter label. Type the letter and you jump directly to that element -- no tabbing through panels.
+
+```go
+type JumpTarget struct {
+    Label     string     // "a", "b", ..., "aa", "ab"
+    Panel     PanelType  // Which panel
+    Row       int        // Screen position
+    Col       int        // Screen position
+    Index     int        // Index within panel
+    ElementID string     // Unique element ID
+    Action    JumpAction // Focus, Select, or Activate
+}
+```
+
+Jump targets support three actions: `Focus` for input fields, `Select` for list items, and `Activate` for buttons and tabs. The label assignment is dynamic -- it recalculates on every render based on visible elements.
 
 ### Session persistence
 
-Requests and responses are saved in YAML files, making it easy to version control your API testing workflow.
+When you close LazyCurl and reopen it, everything is exactly where you left it. The session system serializes the complete UI state to `.lazycurl/session.yml`:
 
-::alert{type="info"}
-LazyCurl is open source. Check it out on [GitHub](https://github.com/kbrdn1/LazyCurl).
-::
+```yaml
+version: 1
+active_panel: request
+active_collection: "my-api"
+active_request: "get-users"
+panels:
+  collections:
+    expanded_folders: ["auth", "users"]
+    scroll_position: 3
+  request:
+    active_tab: "body"
+  response:
+    active_tab: "headers"
+```
 
-## What's next
+Collections themselves are stored as JSON files in the same `.lazycurl/` directory, making them easy to version control alongside your project code. This is a deliberate design choice borrowed from Bruno: your API testing workspace is part of your repository, not locked in a cloud service.
 
-- WebSocket support
-- Environment variables and collections
-- Plugin system for custom transformations
+## Import system
+
+Getting users started quickly was a priority. Nobody wants to recreate their 50-endpoint API collection from scratch. LazyCurl supports three import formats:
+
+**cURL commands** -- Paste a curl command with `Ctrl+I` and it gets parsed into a full request with method, URL, headers, body, and auth.
+
+**OpenAPI 3.x specifications** -- Point LazyCurl at your `openapi.yaml` and it generates a complete collection. The converter handles path parameters, query parameters, request bodies with schema examples, and security schemes (Bearer, Basic, API Key). It uses [libopenapi](https://github.com/pb33f/libopenapi) for spec parsing, which handles both JSON and YAML formats.
+
+**Postman collections** -- If you are migrating from Postman, export your collection and import it directly. Environments come along for the ride.
+
+## Test assertions
+
+The testing system provides 16 built-in matchers that cover the most common API validation scenarios:
+
+```js
+lc.test("User creation", function() {
+    lc.expect(lc.response.status()).toBe(201);
+    lc.expect(lc.response.json().name).toContain("Kylian");
+    lc.expect(lc.response.headers("Content-Type")).toBe("application/json");
+    lc.expect(lc.response.time()).toBeLessThan(500);
+});
+```
+
+Assertion results are collected in a thread-safe `AssertionCollector` and displayed in the console panel after each request. Passed tests show green, failed tests show red with expected vs actual values.
+
+## Challenges along the way
+
+### Terminal rendering complexity
+
+Terminals are not browsers. There is no flexbox, no CSS grid, no overflow handling. Every panel needs explicit width and height calculations. When the terminal resizes, every component recalculates its dimensions. Getting the three-panel layout to resize gracefully while maintaining minimum widths and proper borders was one of the most time-consuming parts of the project.
+
+### Keyboard input conflicts
+
+With four vim modes and dozens of keybindings, conflicts are inevitable. The letter `j` moves down in NORMAL mode but types the letter "j" in INSERT mode. `Ctrl+S` sends a request but should not trigger the terminal's XOFF flow control. Each mode needs a clean keymap, and switching between modes needs to be instantaneous and obvious to the user.
+
+### External editor integration
+
+The external editor feature (`Ctrl+E` to open the request body in your preferred editor) required suspending the Bubble Tea program, launching the editor process, waiting for it to exit, reading the modified file, and resuming the TUI. This involves temporary file management, process spawning, and careful state restoration. It works with vim, VS Code, nano, and any editor that blocks until the file is saved and closed.
+
+## What is next
+
+LazyCurl has reached feature parity with posting (its closest TUI competitor) and is closing the gap with Bruno on the scripting and testing front. The roadmap for the coming months includes:
+
+- **Collection Runner** -- Execute all requests in a collection sequentially, useful for integration testing workflows
+- **Request Chaining** -- Extract values from responses using JSONPath and feed them into subsequent requests automatically
+- **GraphQL and WebSocket support** -- Moving toward multi-protocol coverage
+- **CLI mode** -- Run collections headlessly for CI/CD integration with proper exit codes
+
+## Try it out
+
+LazyCurl is open source under the MIT license. If you live in the terminal and test APIs regularly, give it a try:
+
+```bash
+go install github.com/kbrdn1/LazyCurl/cmd/lazycurl@latest
+lazycurl
+```
+
+Press `?` for help, `n` to create your first request, and `Ctrl+S` to send it.
+
+The source code is on [GitHub](https://github.com/kbrdn1/LazyCurl). Issues, feedback, and contributions are welcome.
