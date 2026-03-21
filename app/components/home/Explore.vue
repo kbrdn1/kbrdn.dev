@@ -41,13 +41,10 @@ const slides = computed<Slide[]>(() => [
 const currentSlide = ref(0)
 const isTransitioning = ref(false)
 const slideDirection = ref<'left' | 'right'>('left')
-const isPaused = ref(false)
-
 let interval: ReturnType<typeof setInterval> | undefined
 
 function startAutoRotate() {
   interval = setInterval(() => {
-    if (isPaused.value) return
     slideDirection.value = 'left'
     isTransitioning.value = true
     setTimeout(() => {
@@ -64,10 +61,6 @@ onMounted(() => {
 onUnmounted(() => {
   if (interval) clearInterval(interval)
 })
-
-function togglePause() {
-  isPaused.value = !isPaused.value
-}
 
 function goToSlide(index: number) {
   if (index === currentSlide.value) return
@@ -99,7 +92,7 @@ function goToSlide(index: number) {
     <div class="absolute inset-0 bg-gradient-to-r from-neutral-950/50 via-transparent to-neutral-950/50" />
 
     <!-- Content -->
-    <div class="relative z-10 py-20 sm:py-28 px-6">
+    <div class="relative z-10 py-14 sm:py-28 px-6">
       <div class="max-w-5xl mx-auto min-md:px-6 flex flex-col items-center text-center">
         <!-- Rotating content -->
         <div
@@ -146,7 +139,7 @@ function goToSlide(index: number) {
         </div>
 
         <!-- Controls -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div class="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
           <button
             v-for="(_, index) in slides"
             :key="index"
@@ -164,14 +157,6 @@ function goToSlide(index: number) {
             }"
             @click="goToSlide(index)"
           />
-          <button
-            type="button"
-            :aria-label="isPaused ? 'Resume carousel' : 'Pause carousel'"
-            class="ml-1 flex items-center justify-center w-5 h-5 text-white/50 hover:text-white transition-colors"
-            @click="togglePause"
-          >
-            <UIcon :name="isPaused ? 'i-heroicons-play' : 'i-heroicons-pause'" class="w-3 h-3" aria-hidden="true" />
-          </button>
         </div>
       </div>
     </div>

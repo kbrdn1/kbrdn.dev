@@ -253,7 +253,7 @@
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition: grid-template-rows 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease;
+  transition: grid-template-rows 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms ease !important;
 }
 
 .accordion-wrapper.is-open {
@@ -263,6 +263,49 @@
 
 .accordion-wrapper > .accordion-inner {
   overflow: hidden;
+}
+
+/* Nav entrance animation */
+@keyframes nav-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.nav-entrance {
+  animation: nav-fade-in 0.6s ease both !important;
+}
+
+/* Page transition (fade + slide up) */
+.page-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+.page-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.page-enter-from {
+  opacity: 0 !important;
+  transform: translateY(10px) !important;
+}
+
+.page-enter-to {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.page-leave-from {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.page-leave-to {
+  opacity: 0 !important;
+  transform: translateY(-10px) !important;
 }
 
 /* ═══════════════════════════════════════════════════
@@ -357,6 +400,64 @@
 .blog-item-to {
   opacity: 1 !important;
   transform: translateY(0) !important;
+}
+
+/* Stagger list enter/leave animations (Projects, GitHub Chart, Skills) */
+.stagger-enter {
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+.stagger-leave {
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.stagger-enter-from {
+  opacity: 0 !important;
+  transform: translateY(16px) !important;
+}
+
+.stagger-enter-to {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.stagger-leave-from {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.stagger-leave-to {
+  opacity: 0 !important;
+  transform: translateY(16px) !important;
+}
+
+/* Tab switch transition (Skills) */
+.tab-switch-enter {
+  transition: opacity 0.4s ease, transform 0.4s ease !important;
+}
+
+.tab-switch-leave {
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+}
+
+.tab-switch-enter-from {
+  opacity: 0 !important;
+  transform: translateY(24px) !important;
+}
+
+.tab-switch-enter-to {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.tab-switch-leave-from {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+.tab-switch-leave-to {
+  opacity: 0 !important;
+  transform: translateY(-24px) !important;
 }
 
 /* Code syntax highlighting — Claude Dark theme */
@@ -472,7 +573,7 @@
   transform: rotate(0deg);
 }
 
-/* Grid background for featured sections */
+/* Grid background for featured sections (diagonal stripes) */
 .grid-background {
   background-image: repeating-linear-gradient(
     -45deg,
@@ -481,6 +582,14 @@
     var(--stripe-color-alt) 10px,
     var(--stripe-color-alt) 10.5px
   );
+}
+
+/* Grid background for blog pages (square grid) */
+.grid-background-blog {
+  background-image:
+    linear-gradient(var(--stripe-color-alt) 1px, transparent 1px),
+    linear-gradient(90deg, var(--stripe-color-alt) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* Section with corner triangle marks at border intersections */
@@ -829,4 +938,16 @@
 
 .dark .prose-blog :deep(strong) {
   color: var(--color-neutral-100);
+}
+
+.prose-blog :deep(em) {
+  font-family: 'Fenix', serif;
+  font-style: italic;
+}
+
+/* Headings use Fenix */
+.prose-blog :deep(h1),
+.prose-blog :deep(h2),
+.prose-blog :deep(h3) {
+  font-family: 'Fenix', serif;
 }

@@ -41,6 +41,7 @@ export default defineContentConfig({
         publishedAt: z.string().optional(),
         tags: z.array(z.string()).optional(),
         banner: z.boolean().optional(),
+        bannerImage: z.string().optional(),
       }),
     }),
     projects: defineCollection({

@@ -90,7 +90,8 @@ onUnmounted(() => {
 
         <!-- Rotating title -->
         <p
-          class="text-lg sm:text-xl text-primary-500 font-mono mb-6"
+          class="text-xl sm:text-2xl text-primary-500 mb-6"
+          style="font-family: 'Fenix', serif;"
           :class="isTransitioning ? 'hero-title-hidden' : 'hero-title-visible'"
         >
           {{ currentTitle }}

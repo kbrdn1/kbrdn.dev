@@ -323,19 +323,13 @@ const currentYear = new Date().getFullYear();
             <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
               {{ t("footer.availability.title") }}
             </h3>
-            <div class="flex items-center gap-2">
-              <span class="relative flex h-2 w-2" aria-hidden="true">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"
-                />
-                <span
-                  class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"
-                />
+            <span class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-primary-500/20 text-primary-400 bg-primary-500/5">
+              <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75" />
+                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary-500" />
               </span>
-              <span class="text-sm text-neutral-300">
-                {{ t("footer.availability.status") }}
-              </span>
-            </div>
+              {{ t("footer.availability.status") }}
+            </span>
           </div>
 
           <!-- Email -->

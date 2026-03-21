@@ -1,45 +1,88 @@
 ---
-title: "Rebuilding Fiches Pédagogiques from scratch"
-description: "A complete rewrite of an educational platform using Laravel, from architecture to deployment."
-publishedAt: "2026-01-20"
-tags: ["laravel", "architecture", "project"]
+title: "Fiches Pédagogiques — Refonte d'une plateforme éducative chez Flippad"
+description: "Retour d'expérience sur la refonte complète d'une plateforme de ressources pédagogiques, entre gestion de projet, collaboration d'équipe et choix techniques."
+publishedAt: "2025-01-20"
+tags: ["project", "laravel", "nuxt", "career"]
+banner: true
+bannerImage: "/images/blog/fiches-pedagogiques/banner.png"
 ---
 
-## The project
+## Un outil au service des enseignants
 
-Fiches Pédagogiques is an educational resource platform. The original codebase needed a complete rewrite. I led the backend development.
+Fiches Pédagogiques, c'est une plateforme en ligne pensée pour les enseignants du primaire en France. De la Petite Section au CM2, le site met à disposition un catalogue de milliers de fiches pédagogiques : des exercices prêts à imprimer, des séquences de cours, des activités thématiques, des ressources classées par niveau scolaire, par domaine et par compétence.
 
-## Architecture choices
+L'idée est simple mais précieuse : faire gagner du temps aux enseignants. Plutôt que de concevoir chaque support de cours depuis zéro, ils peuvent chercher, filtrer et télécharger des fiches adaptées à leur classe. Le tout organisé par thèmes, par domaines scolaires et par cycles, avec un système d'abonnement, des achats à l'unité, et des licences pour les écoles.
 
-We used **Domain-Driven Design** with an API-first approach:
+Le produit existait depuis plusieurs années avec une base d'utilisateurs fidèles. Mais sous le capot, les choses n'allaient plus.
 
-```php
-class CreateSheetAction
-{
-    public function execute(CreateSheetData $data): Sheet
-    {
-        return DB::transaction(function () use ($data) {
-            $sheet = Sheet::create($data->toArray());
-            $sheet->attachTags($data->tags);
-            event(new SheetCreated($sheet));
-            return $sheet;
-        });
-    }
-}
-```
+## Pourquoi tout reprendre de zéro
 
-## Technical highlights
+Quand on a repris le projet chez Flippad, la plateforme accusait le poids des années. Le code avait été construit sans architecture pensée pour évoluer. Chaque ajout de feature devenait un exercice d'équilibrisme. L'UX était datée, les performances moyennes, le SEO en souffrance.
 
-- Stripe integration (subscriptions + one-time purchases)
-- Redis caching for performance
-- CI/CD pipeline from day one
+Le client avait des besoins concrets : un moteur de recherche performant avec des filtres fins, un back-office moderne pour son équipe éditoriale, un système de paiement flexible (abonnements, achats unitaires, licences écoles), et une base technique capable de supporter la croissance. Greffer tout ça sur l'existant aurait coûté plus cher que de repartir de zéro.
 
-::callout{icon="i-heroicons-chart-bar" color="success"}
-After the rewrite, page load times dropped from 3.2s to 0.8s — a 75% improvement.
-::
+La décision a donc été prise : on refait tout, from scratch.
 
-## Lessons learned
+![L'ancienne version de Fiches Pédagogiques](/images/blog/fiches-pedagogiques/fp-old.png)
 
-- Start with the data model
-- Test at the boundaries
-- Deploy early, deploy often
+![La nouvelle version de Fiches Pédagogiques](/images/blog/fiches-pedagogiques/fp-new.png)
+
+## Mon rôle sur le projet
+
+J'étais project lead et développeur backend. Concrètement, ça voulait dire deux casquettes au quotidien.
+
+Côté gestion de projet, je pilotais le planning, découpais les phases de développement, et faisais le lien avec le client pour valider les priorités. Sur un projet de cette envergure -- plus d'une centaine de tables en base de données -- la planification n'était pas un luxe. Il fallait séquencer intelligemment pour livrer un MVP fonctionnel le plus tôt possible, puis itérer.
+
+Côté technique, j'ai conçu l'architecture backend et développé la majeure partie de l'API : le système modulaire, la recherche, les paiements, le pipeline de traitement des fichiers, la validation. Près de 4 000 commits côté backend -- ce qui donne une idée du volume de travail et de l'itération constante que la refonte a demandée.
+
+## L'équipe
+
+On était trois développeurs sur ce projet : Mehdi, Alexandre et moi.
+
+La répartition s'est faite naturellement. Je prenais le lead sur le backend et l'architecture globale. Mehdi était la force motrice du frontend -- c'est lui qui a porté l'essentiel de l'application côté client, avec plus de 1 600 commits sur le front. Alexandre intervenait aussi sur le frontend et sur l'intégration, en apportant son regard et ses contributions sur les parcours utilisateurs.
+
+Côté design, la maquette a été confiée à un studio externe, La Guilde, avec un designer freelance qui a conçu les wireframes et les maquettes UI. On recevait les livrables et on les implémentait. Ça ajoutait une couche de coordination -- s'assurer que les maquettes étaient réalistes techniquement, adapter quand il y avait des écarts avec les contraintes du dev -- mais cette séparation nous a permis de nous concentrer sur ce qu'on faisait le mieux.
+
+On se challengeait sur les choix, on maintenait une cohérence entre le front et le back malgré le rythme soutenu, et surtout on avançait ensemble. Travailler à trois développeurs sur une refonte complète, avec un design externe, c'est un exercice d'équilibre : suffisamment de monde pour avancer vite, pas trop pour que la coordination reste fluide.
+
+## Notre approche
+
+Le projet a démarré en octobre 2024. Les premiers commits posaient les fondations : architecture modulaire, authentification, premiers modules métier.
+
+On a adopté une stratégie de releases progressives -- le backend a traversé plus de 40 versions avant la v1.0. Chaque release apportait son lot de fonctionnalités et de correctifs. Cette approche incrémentale nous permettait de valider régulièrement avec le client et de corriger le tir vite.
+
+Le gros du travail de modélisation métier s'est concentré sur les premiers mois : fiches, collections, domaines scolaires, cycles, thèmes, compétences... Un domaine riche et interconnecté. Ensuite sont venus les systèmes transverses : recherche full-text, paiements, back-office, gestion des fichiers.
+
+Le frontend suivait, avec Mehdi qui construisait les interfaces au fur et à mesure que l'API se stabilisait. Chaque brique du front -- pages publiques, moteur de recherche, tableau de bord, parcours de paiement -- s'appuyait sur un backend solide.
+
+## Les défis qu'on a rencontrés
+
+Le premier défi, et pas des moindres : réécrire une plateforme entière sans perturber celle qui tourne en production. Ça impose une discipline rigoureuse. Il fallait que la nouvelle version couvre toutes les fonctionnalités de l'ancienne avant de pouvoir basculer.
+
+La migration des données a été un chantier conséquent. Des années de contenu accumulé, des relations entre entités qui n'avaient pas toujours été modélisées proprement, des incohérences à nettoyer. On a dû écrire des scripts de migration sur mesure, vérifier l'intégrité des données à chaque étape, et s'assurer que rien ne se perdait en route.
+
+La sécurité a demandé un investissement sérieux, avec un audit complet en mars 2026 couvrant l'authentification, la validation des données, le contrôle d'accès et les paiements. Le genre de chantier invisible pour l'utilisateur mais indispensable.
+
+Le SEO était une préoccupation constante. Une refonte mal gérée peut faire chuter le trafic du jour au lendemain. Il fallait préserver les URLs, gérer les redirections, et s'assurer que les nouvelles pages étaient au moins aussi bien optimisées.
+
+Enfin, la complexité fonctionnelle pure. Le système de paiement à lui seul couvrait plusieurs cas d'usage : abonnements individuels via Stripe, achats à l'unité, licences pour les écoles avec gestion de mandats administratifs et d'invitations de collaborateurs, abonnements manuels pour les cas particuliers, codes promotionnels. Chaque cas avait ses propres règles, ses propres flux, ses propres cas limites.
+
+## Le résultat
+
+En mars 2026, le front a atteint sa v1.0. Plus de 7 800 commits cumulés entre le backend et le frontend, 17 mois de développement, une plateforme entièrement neuve.
+
+Côté performance, la recherche est devenue fluide et rapide, portée par un moteur full-text avec des filtres combinés par niveau, thème, type de fiche et domaine scolaire. Côté UX, l'interface a été repensée de A à Z : navigation intuitive, prévisualisations des fiches, parcours d'achat simplifié. Le tableau de bord permet de retrouver ses fiches achetées, ses téléchargements, ses factures en quelques clics.
+
+L'équipe éditoriale du client dispose maintenant d'un back-office complet : ajout de fiches avec traitement automatique des fichiers, gestion des collections, suivi des statistiques, gestion des abonnements et des promotions.
+
+Et surtout, la nouvelle architecture est pensée pour durer. Ajouter un nouveau module d'administration est devenu une opération rapide, là où c'était un casse-tête sur l'ancienne plateforme.
+
+## Ce que j'en retiens
+
+Ce projet reste l'un des plus formateurs de ma carrière. Piloter une refonte from scratch pendant plus d'un an, ça touche à tout : analyse métier, architecture, développement, coordination d'équipe, relation client.
+
+Ce que je retiens surtout, c'est l'importance de poser les fondations avant de coder. Le temps passé à modéliser le domaine, à réfléchir à l'architecture, à découper le travail en versions... c'est du temps rentabilisé dix fois par la suite.
+
+Je retiens aussi la force d'une petite équipe soudée. À trois, avec Mehdi et Alexandre, on a livré un produit qui aurait pu mobiliser une équipe bien plus large. La clé : la confiance, la clarté des responsabilités et la communication constante.
+
+Et puis il y a la satisfaction de voir un produit abouti, utilisé au quotidien par des enseignants qui y trouvent une vraie valeur. C'est ça qui donne du sens au travail.

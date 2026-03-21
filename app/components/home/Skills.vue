@@ -294,12 +294,12 @@ function highlightCode(code: string, lang: string): string {
         :hidden="activeTab !== skill.id"
       >
         <Transition
-          enter-active-class="transition-all duration-400 ease-out"
-          enter-from-class="opacity-0 translate-y-6"
-          enter-to-class="opacity-100 translate-y-0"
-          leave-active-class="transition-all duration-300 ease-in"
-          leave-from-class="opacity-100 translate-y-0"
-          leave-to-class="opacity-0 -translate-y-6"
+          enter-active-class="tab-switch-enter"
+          enter-from-class="tab-switch-enter-from"
+          enter-to-class="tab-switch-enter-to"
+          leave-active-class="tab-switch-leave"
+          leave-from-class="tab-switch-leave-from"
+          leave-to-class="tab-switch-leave-to"
           mode="out-in"
         >
           <div

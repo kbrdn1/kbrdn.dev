@@ -59,6 +59,7 @@ export default defineNuxtConfig({
     families: [
       { name: "Inter", provider: "google" },
       { name: "Caveat", provider: "google" },
+      { name: "Fenix", provider: "google" },
     ],
   },
 
@@ -66,6 +67,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     githubToken: process.env.GITHUB_TOKEN || "",
     resendApiKey: process.env.RESEND_API_KEY || "",
+  },
+
+  // Page transition
+  app: {
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+    },
   },
 
   // Content configuration (collections defined in content.config.ts)

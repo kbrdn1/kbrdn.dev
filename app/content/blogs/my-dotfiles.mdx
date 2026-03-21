@@ -1,51 +1,195 @@
 ---
-title: "My development environment — dotfiles & tools"
-description: "A walkthrough of my macOS setup: AeroSpace, Sketchybar, and managing everything with chezmoi."
-publishedAt: "2025-12-05"
-tags: ["dotfiles", "tooling", "macos"]
+title: "Mes Dotfiles — Guide de configuration d'un développeur"
+description: "Un tour d'horizon de ma configuration terminal, de mon éditeur et des outils que j'utilise au quotidien en tant que développeur full-stack."
+publishedAt: "2025-06-15"
+tags: ["dotfiles", "macos", "terminal", "open-source"]
 banner: true
+bannerImage: "/images/blog/dotfiles/banner.png"
 ---
 
-## Philosophy
+## Pourquoi les dotfiles, c'est important
 
-My development environment follows one principle: **keyboard-driven, minimal, fast**.
+Chaque développeur a ses préférences. La façon de naviguer dans les fichiers, la couleur du prompt, le raccourci qui divise un panneau de terminal -- ces petites décisions s'accumulent et font toute la différence entre un environnement qui résiste et un qui disparaît sous les doigts.
 
-## Window management — AeroSpace
+Les dotfiles sont les fichiers de configuration qui définissent cet environnement. Sur macOS et Linux, ils vivent dans le répertoire personnel (préfixés d'un point, d'où le nom) et contrôlent tout, du comportement du shell à la disposition de l'éditeur. Le problème, c'est qu'ils s'accumulent en silence. On modifie quelque chose dans `.zshrc`, on ajoute une ligne à la config tmux, on ajuste un réglage d'éditeur, et avant même de s'en rendre compte, des années de mémoire musculaire se retrouvent éparpillées dans des dizaines de fichiers sans aucune stratégie de sauvegarde.
 
-I use **AeroSpace** as my tiling window manager on macOS. Workspaces organized by context, keyboard shortcuts for everything.
+J'affine ma configuration depuis des années. Après quelques réinstallations trop douloureuses, j'ai décidé de tout versionner, d'automatiser le bootstrap et de rendre mon environnement entièrement reproductible. Cet article explique ce que j'utilise, comment tout s'articule, et les raisons derrière les choix.
 
-## Terminal & Shell
+L'ensemble de la configuration est open source sur [github.com/kbrdn1/dotfiles](https://github.com/kbrdn1/dotfiles).
 
-- **Kitty** terminal — GPU-accelerated
-- **Zsh** with minimal plugins
-- **Starship** prompt
+![Mon setup — Zed, terminal et outils](/images/blog/dotfiles/banner.png)
 
-::code-group
-```lua [init.lua]
-vim.g.mapleader = " "
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.tabstop = 2
+## La stratégie de gestion : Chezmoi et Nix
+
+Bien gérer ses dotfiles revient à résoudre deux problèmes : synchroniser les fichiers de configuration entre machines et installer les outils dont ces configs dépendent. J'utilise deux outils pour ça, chacun gérant un côté de l'équation.
+
+### Chezmoi pour la gestion des dotfiles
+
+[Chezmoi](https://www.chezmoi.io/) gère les fichiers de configuration eux-mêmes. Contrairement aux outils basés sur les liens symboliques comme GNU Stow, Chezmoi copie les fichiers vers leurs destinations et conserve la source de vérité dans un dépôt Git. Ça m'offre la gestion de templates (pratique pour les valeurs spécifiques à une machine, comme les chemins), la gestion des secrets, et un `chezmoi diff` clair pour vérifier ce qui a changé avant d'appliquer.
+
+Le workflow est simple. Je modifie une config, je lance `chezmoi add` pour la suivre, je commit, et je push. Sur une nouvelle machine, une seule commande récupère tout et l'applique :
+
+```bash
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply https://github.com/kbrdn1/dotfiles.git
 ```
 
-```toml [starship.toml]
-[character]
-success_symbol = "[➜](bold green)"
-error_symbol = "[✗](bold red)"
+### Nix et Home Manager pour les paquets
+
+Pour installer les outils eux-mêmes, j'utilise [Nix](https://nixos.org/) avec [Home Manager](https://github.com/nix-community/home-manager). Nix est un gestionnaire de paquets purement fonctionnel qui me garantit des builds reproductibles et un épinglage de versions via un lockfile. Home Manager se pose par-dessus et me permet de déclarer tout mon environnement utilisateur -- plus de 70 outils CLI -- dans un seul fichier `home.nix`.
+
+La séparation est intentionnelle. Nix gère tous les outils CLI (langages de programmation, utilitaires de développement, plugins shell), tandis que Homebrew gère les applications GUI via les casks. Chaque outil joue dans sa cour : Nix est imbattable pour la reproductibilité et les outils CLI, tandis que l'écosystème cask de Homebrew couvre les applications GUI macOS de façon plus fiable.
+
+```bash
+# Appliquer les changements de configuration Nix
+nix run home-manager/release-24.11 -- switch --flake ~/nix-config
+
+# Installer les apps GUI via les casks Homebrew
+brew install --cask ghostty zed@preview orbstack
 ```
-::
 
-## Managing it all — chezmoi
+## Shell : Zsh avec Oh My Zsh et Powerlevel10k
 
-Everything is version-controlled with **chezmoi** — dotfiles synced across machines with age encryption.
+Mon shell est Zsh, étendu avec [Oh My Zsh](https://ohmyz.sh/) et thémé avec [Powerlevel10k](https://github.com/romkatv/powerlevel10k). La liste de plugins est délibérément longue car les plugins Oh My Zsh sont chargés en lazy et la plupart ne font que fournir des alias :
 
-| Tool | Purpose |
-|------|---------|
-| AeroSpace | Window manager |
-| Sketchybar | Status bar |
-| Kitty | Terminal |
-| chezmoi | Dotfiles management |
+```bash
+plugins=(macos git git-auto-fetch gh battery brew composer
+         docker docker-compose alias-finder bun eza fzf
+         history laravel symfony npm vi-mode web-search)
+```
 
-::alert{type="success"}
-All my dotfiles are open source on [GitHub](https://github.com/kbrdn1).
-::
+Deux plugins supplémentaires tournent en dehors d'Oh My Zsh pour plus de contrôle : **zsh-autosuggestions** (suggestions à la fish tirées de l'historique) et **zsh-syntax-highlighting** (validation des commandes en temps réel). Les deux sont gérés via Nix et sourcés directement dans `.zshrc`.
+
+### Le mode vi
+
+J'utilise le mode vi dans le shell. Le curseur change entre bloc (mode normal) et barre (mode insertion), donc je sais toujours dans quel mode je suis. Il faut une semaine pour s'y habituer, mais naviguer et éditer des commandes longues avec les motions vim vaut largement l'effort d'adaptation.
+
+```bash
+VI_MODE_SET_CURSOR=true
+VI_MODE_CURSOR_NORMAL=2
+VI_MODE_CURSOR_VISUAL=6
+VI_MODE_CURSOR_INSERT=6
+```
+
+### Les alias qui font gagner des heures
+
+Les petits alias s'accumulent. Ce sont ceux que j'utilise en permanence :
+
+```bash
+alias ls='eza --color=always --long --git --no-filesize --icons=always --no-time --no-user --no-permissions --group-directories-first'
+alias lg='lazygit'
+alias lzd='lazydocker'
+alias f='fzf --tmux top,50%'
+alias t='tmux -2'
+alias x='exit'
+```
+
+L'alias `ls` remplace la commande par défaut par [eza](https://eza.rocks/), qui affiche les couleurs, les indicateurs de statut git et les icônes de fichiers. À chaque listage de répertoire, je vois immédiatement quels fichiers sont suivis, modifiés ou ignorés.
+
+## Terminal : Ghostty avec un thème personnalisé
+
+[Ghostty](https://ghostty.org/) est mon terminal principal. Il est accéléré par GPU, écrit en Zig, et démarre en moins de 100ms. La configuration est minimaliste mais peaufinée pour la lisibilité et l'esthétique :
+
+```ini
+# Configuration Ghostty
+theme = catppuccin-macchiato.conf
+background-opacity = 0.85
+background-blur-radius = 55
+font-family = "CaskaydiaCove Nerd Font Mono"
+font-size = 14
+
+# Shader de curseur personnalisé pour un effet de traînée
+custom-shader = shaders/cursor_smear_fade.glsl
+
+# Spécifique macOS
+macos-titlebar-style = transparent
+macos-icon-ghost-color = CF7932
+macos-icon-screen-color = CF7932
+```
+
+Le flou et la transparence de l'arrière-plan donnent juste assez de profondeur pour voir la fenêtre derrière le terminal sans perdre en lisibilité. Le shader de curseur personnalisé ajoute une légère traînée quand le curseur se déplace -- ça semble gadget au premier abord, mais ça aide vraiment à le suivre sur les grands écrans.
+
+## Tmux : le multiplexeur avec un thème Claude Dark
+
+Tmux tourne à l'intérieur de Ghostty et gère les sessions, la division en panneaux et les espaces de travail persistants. Le préfixe est rebind de `Ctrl+B` à `Ctrl+A` (plus facile à atteindre), et toute la navigation utilise les touches vim `h/j/k/l`.
+
+Des plugins clés rendent l'expérience fluide :
+
+- **sesh** -- un gestionnaire de sessions intelligent qui s'intègre à fzf, me permettant de faire une recherche floue parmi les sessions tmux, les répertoires zoxide et les dossiers de projets avec un seul raccourci (`prefix + T`).
+- **tmux.nvim** -- permet une navigation fluide entre les panneaux tmux et les splits Neovim avec `Ctrl+h/j/k/l`. Aucun changement de contexte mental entre le multiplexeur et l'éditeur.
+- **fzf-url** -- extrait les URLs du buffer terminal et permet de les ouvrir avec fzf (`prefix + U`).
+
+Le thème utilise une palette "Claude Dark" personnalisée avec un accent cuivré chaud (`#D4825D`) qui se décline sur toute la configuration -- terminal, éditeur, barre de statut et tmux.
+
+## Éditeurs : Zed et Neovim
+
+J'utilise deux éditeurs, chacun pour des contextes différents.
+
+### Zed comme éditeur principal
+
+[Zed](https://zed.dev/) est mon outil de travail au quotidien pour les projets. Il est rapide (écrit en Rust, rendu GPU natif), dispose d'une intégration IA intégrée, et le mode vim est suffisamment solide pour ne pas regretter Neovim dans la plupart des situations. La navigation entre panneaux reprend la configuration tmux avec `Ctrl+h/j/k/l`, donc passer du terminal à l'éditeur se fait de façon identique.
+
+### Neovim comme éditeur terminal
+
+[Neovim](https://neovim.io/) avec [LazyVim](https://www.lazyvim.org/) est l'éditeur secondaire pour les modifications rapides de fichiers, les opérations git et les workflows à fort usage du terminal. La configuration inclut une palette Claude Dark personnalisée qui correspond au reste de l'environnement, plus des plugins pour les git worktrees, la gestion Docker et le développement Rust.
+
+```
+~/.config/nvim/lua/
+  config/         -- Config principale (keymaps, options, autocmds)
+  plugins/        -- Specs de plugins (un fichier par plugin)
+  claude-dark/    -- Palette de couleurs personnalisée
+  overseer/       -- Templates de tâches (compatibles Zed)
+```
+
+Le plugin `overseer.nvim` mérite une mention : il lit les définitions de tâches compatibles Zed, ce qui me permet de définir les tâches de build et de test une seule fois et de les lancer depuis l'un ou l'autre éditeur.
+
+## Gestion des fenêtres : AeroSpace et Sketchybar
+
+La gestion des fenêtres macOS par défaut est pénible pour les workflows orientés clavier. J'utilise [AeroSpace](https://github.com/nikitabobko/AeroSpace) comme gestionnaire de fenêtres en tiling -- il ne nécessite pas de désactiver System Integrity Protection (contrairement à yabai), ce qui le rend plus sûr et plus facile à maintenir.
+
+Les espaces de travail sont organisés par contexte : espace 1 pour la messagerie et le calendrier, 2 pour la musique, 3 pour le développement, et ainsi de suite. Chaque espace a des règles d'application qui déplacent automatiquement les nouvelles fenêtres au bon endroit. La touche leader (Option droite, remappée sur F18 via Karabiner-Elements) déclenche toutes les opérations sur les fenêtres.
+
+[Sketchybar](https://github.com/FelixKratz/SketchyBar) remplace la barre de menu macOS par défaut par une barre de statut entièrement personnalisable. Je maintiens six thèmes que je peux changer à la volée, Claude Dark étant celui par défaut. La barre affiche l'espace de travail actif, l'application courante, la batterie, l'utilisation CPU et un indicateur de mode pour le gestionnaire de fenêtres.
+
+## La recherche floue : fzf partout
+
+[fzf](https://github.com/junegunn/fzf) est la colle qui relie beaucoup d'outils ensemble. Il offre la recherche floue dans l'historique des commandes (`Ctrl+R`), la navigation dans les fichiers (`Ctrl+T`) et le saut entre répertoires (`Alt+C`). La configuration s'intègre avec bat pour les prévisualisations de fichiers et eza pour les prévisualisations de répertoires :
+
+```bash
+export FZF_DEFAULT_OPTS="--style full \
+  --border-label ' FZF ' --header-label ' File Type ' \
+  --preview 'bat -n --color=always --line-range :500 {}'"
+
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+```
+
+Des fonctions de complétion personnalisées utilisent [fd](https://github.com/sharkdp/fd) à la place du `find` par défaut pour des résultats plus rapides et la prise en compte du `.gitignore`. Les complétions de répertoires affichent une prévisualisation en arbre, les complétions SSH montrent les lookups DNS, et les complétions de variables d'environnement affichent leurs valeurs courantes.
+
+## Le bootstrap : un seul script pour tout gouverner
+
+L'environnement entier s'installe depuis un unique script `install.sh`. Il suit un ordre précis conçu pour gérer correctement les dépendances :
+
+1. Installer les outils CLI xCode (essentiels pour les builds macOS)
+2. Installer Nix en mode daemon multi-utilisateur
+3. Installer Homebrew pour les applications GUI
+4. Installer les apps GUI via les casks Homebrew
+5. Installer les outils de gestion des fenêtres (AeroSpace, Sketchybar, Borders)
+6. Installer les polices (variantes Nerd Font pour les icônes)
+7. Cloner la config Nix et appliquer Home Manager (installe 70+ outils CLI)
+8. Appliquer les dotfiles avec Chezmoi
+9. Configurer les réglages système macOS (vitesse de répétition des touches, comportement du Dock)
+
+Un MacBook tout neuf passe de l'état d'usine à une configuration complète en environ 20 minutes, dont la majeure partie est du temps de téléchargement. L'ensemble du processus est idempotent -- le relancer met tout à jour sans casser la configuration existante.
+
+## Conseils pour construire la vôtre
+
+**Commencez petit.** Nix et Chezmoi ne sont pas nécessaires dès le premier jour. Un dépôt Git avec votre `.zshrc` et quelques liens symboliques est un point de départ tout à fait valide. Ajoutez de la complexité au fur et à mesure que vos besoins évoluent.
+
+**Choisissez un seul outil de gestion.** Chezmoi, GNU Stow et les dépôts Git nus fonctionnent tous. Ce qui compte, c'est d'en choisir un et de s'y tenir. Mélanger les approches crée de la confusion.
+
+**Versionnez votre liste de paquets.** Que ce soit un `Brewfile`, un `home.nix` ou une simple liste texte, avoir un inventaire déclaratif de ce qu'on utilise vaut plus que les configs elles-mêmes. Les configs peuvent être recréées ; se souvenir de chaque outil sur lequel on comptait, non.
+
+**Thémez de façon cohérente.** Une palette de couleurs unifiée entre terminal, éditeur, barre de statut et tmux donne à l'environnement une impression de cohérence plutôt que d'assemblage de pièces disparates. Choisissez un thème et portez-le partout.
+
+**Automatisez le bootstrap.** Le script d'installation n'a pas besoin d'être parfait. Même un script approximatif qui installe les dépendances dans le bon ordre économise des heures par rapport à une procédure manuelle avec de vieilles notes sous les yeux.
+
+Mes dotfiles sont un projet vivant. Ils changent chaque semaine au gré des nouveaux outils découverts ou des workflows affinés. Si quelque chose ici vous est utile, forkez le repo, prenez ce qui fonctionne, et faites-en quelque chose qui vous ressemble.

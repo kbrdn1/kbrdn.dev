@@ -18,16 +18,8 @@ const { data: latestPosts } = await useAsyncData("latest-posts", () =>
   queryCollection("blog").order("publishedAt", "DESC").limit(5).all(),
 );
 
-const { locale } = useI18n();
-
-function formatBlogDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString(locale.value === "fr" ? "fr-FR" : "en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
+const { formatDate } = useFormatDate();
+const { postUrl } = useBlogUrl();
 
 // SEO metadata
 useSeoMeta({
@@ -171,14 +163,14 @@ const content = computed(() => {
             <NuxtLink
               v-for="post in latestPosts"
               :key="post.path"
-              :to="post.path.replace('/blogs/', '/blog/')"
+              :to="postUrl(post)"
               class="flex items-center gap-6 py-3 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3"
             >
               <span
                 v-if="post.publishedAt"
                 class="shrink-0 w-28 text-xs font-mono text-neutral-500"
               >
-                {{ formatBlogDate(post.publishedAt) }}
+                {{ formatDate(post.publishedAt, 'short') }}
               </span>
               <span class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate">
                 {{ post.title }}
