@@ -169,13 +169,13 @@ const canExpand = computed(() => projects.value.length > DEFAULT_PROJECTS)
       <TransitionGroup
         tag="div"
         class="space-y-4"
-        enter-active-class="transition-all duration-300 ease-out"
-        enter-from-class="opacity-0 translate-y-4"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-200 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 translate-y-4"
-        move-class="transition-all duration-300"
+        enter-active-class="stagger-enter"
+        enter-from-class="stagger-enter-from"
+        enter-to-class="stagger-enter-to"
+        leave-active-class="stagger-leave"
+        leave-from-class="stagger-leave-from"
+        leave-to-class="stagger-leave-to"
+        move-class="stagger-enter"
       >
         <div
           v-for="(project, index) in visibleProjects"
