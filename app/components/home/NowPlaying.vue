@@ -49,9 +49,10 @@ function onAudioEnded() {
   isPlaying.value = false
   currentTime.value = 0
   if (!tracks.value?.length) return
+  const nextIdx = pickNextIndex('next')
   isTransitioning.value = true
   setTimeout(() => {
-    currentIndex.value = (currentIndex.value + 1) % tracks.value!.length
+    currentIndex.value = nextIdx
     currentTime.value = 0
     isTransitioning.value = false
   }, 300)
@@ -65,9 +66,10 @@ function nextTrack() {
   if (!tracks.value?.length) return
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
+  const nextIdx = pickNextIndex('next')
   isTransitioning.value = true
   setTimeout(() => {
-    currentIndex.value = (currentIndex.value + 1) % tracks.value!.length
+    currentIndex.value = nextIdx
     currentTime.value = 0
     isTransitioning.value = false
   }, 300)
@@ -78,9 +80,10 @@ function prevTrack() {
   if (!tracks.value?.length) return
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) { audio.value.pause(); isPlaying.value = false }
+  const prevIdx = pickNextIndex('prev')
   isTransitioning.value = true
   setTimeout(() => {
-    currentIndex.value = (currentIndex.value - 1 + tracks.value!.length) % tracks.value!.length
+    currentIndex.value = prevIdx
     currentTime.value = 0
     isTransitioning.value = false
   }, 300)
@@ -121,6 +124,23 @@ onUnmounted(() => {
 })
 
 const isSeeking = ref(false)
+const showListing = ref(false)
+const shuffleMode = ref(false)
+
+function pickNextIndex(direction: 'next' | 'prev'): number {
+  if (!tracks.value?.length) return 0
+  if (shuffleMode.value) {
+    let randomIndex: number
+    do {
+      randomIndex = Math.floor(Math.random() * tracks.value.length)
+    } while (randomIndex === currentIndex.value && tracks.value.length > 1)
+    return randomIndex
+  }
+  if (direction === 'next') {
+    return (currentIndex.value + 1) % tracks.value.length
+  }
+  return (currentIndex.value - 1 + tracks.value.length) % tracks.value.length
+}
 
 function seekTo(e: MouseEvent) {
   e.preventDefault()
@@ -240,8 +260,8 @@ function formatTime(seconds: number): string {
               </span>
             </div>
 
-            <!-- Controls: prev / play / next -->
-            <div class="flex items-center gap-1 shrink-0">
+            <!-- Controls: prev / play / next + shuffle & listing grouped -->
+            <div class="flex items-center gap-0.5 shrink-0">
               <button
                 type="button"
                 class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
@@ -274,6 +294,23 @@ function formatTime(seconds: number): string {
                 @click.prevent.stop="nextTrack"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
+              </button>
+              <span class="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-0.5" />
+              <button
+                type="button"
+                :class="['flex items-center justify-center w-7 h-7 transition-colors', shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500']"
+                :aria-label="shuffleMode ? 'Disable shuffle' : 'Enable shuffle'"
+                @click.prevent.stop="shuffleMode = !shuffleMode"
+              >
+                <UIcon name="i-heroicons-arrows-right-left" class="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                :class="['flex items-center justify-center w-7 h-7 transition-colors', showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500']"
+                :aria-label="showListing ? 'Hide tracklist' : 'Show tracklist'"
+                @click.prevent.stop="showListing = !showListing"
+              >
+                <UIcon name="i-heroicons-queue-list" class="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -319,7 +356,7 @@ function formatTime(seconds: number): string {
       </div>
 
       <!-- Track indicators -->
-      <div v-if="tracks.length > 1" class="flex items-center justify-center gap-2 px-3 pb-3">
+      <div v-if="tracks.length > 1 && !showListing" class="flex items-center justify-center gap-2 px-3 pb-3">
         <button
           v-for="(_, index) in tracks"
           :key="index"
@@ -337,6 +374,43 @@ function formatTime(seconds: number): string {
           }"
           @click.prevent.stop="goToTrack(index)"
         />
+      </div>
+
+      <!-- Track listing -->
+      <div
+        class="border-t border-neutral-200 dark:border-neutral-800 grid overflow-hidden"
+        :class="showListing ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0 border-t-transparent'"
+        style="transition: grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease, border-color 200ms ease !important;"
+      >
+        <div class="overflow-hidden">
+          <div class="max-h-48 overflow-y-auto">
+            <button
+              v-for="(t, index) in tracks"
+              :key="index"
+              type="button"
+              :class="[
+                'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
+                currentIndex === index
+                  ? 'bg-primary-500/10'
+                  : 'hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
+              ]"
+              @click.prevent.stop="goToTrack(index)"
+            >
+              <span :class="['text-[10px] font-mono w-4 text-right shrink-0', currentIndex === index ? 'text-primary-500' : 'text-neutral-400']">
+                {{ currentIndex === index && isPlaying ? '▸' : String(index + 1) }}
+              </span>
+              <img :src="t.cover" :alt="t.album" class="w-8 h-8 shrink-0 object-cover" />
+              <div class="min-w-0 flex-1">
+                <span :class="['block text-xs truncate', currentIndex === index ? 'text-primary-500 font-medium' : 'text-neutral-900 dark:text-neutral-100']">
+                  {{ t.title }}
+                </span>
+                <span class="block text-[10px] text-neutral-500 truncate">
+                  {{ t.artist }}
+                </span>
+              </div>
+            </button>
+          </div>
+        </div>
       </div>
 
       <audio
