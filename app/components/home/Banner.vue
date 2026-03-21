@@ -2,31 +2,48 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
+const colorMode = useColorMode()
+const isDark = computed(() => colorMode.value === 'dark')
 </script>
 
 <template>
   <div class="w-full h-8 sm:h-10 overflow-hidden relative">
     <ClientOnly>
+      <!-- Dark mode image -->
       <NuxtImg
-        :src="$colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'"
-        alt="Banner"
-        class="w-full h-full object-cover object-top"
+        v-if="isDark"
+        src="/images/banners/dark.jpg"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover object-top"
+        loading="eager"
+      />
+      <!-- Light mode image -->
+      <NuxtImg
+        v-else
+        src="/images/banners/light.jpg"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover object-top"
         loading="eager"
       />
       <template #fallback>
-        <div class="w-full h-full bg-neutral-200 dark:bg-neutral-800" />
+        <div class="absolute inset-0 bg-neutral-200 dark:bg-neutral-800" />
       </template>
     </ClientOnly>
-    <!-- Gradient overlays - fade edges -->
-    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-white/20 dark:to-neutral-950/50" />
-    <div class="absolute inset-0 bg-gradient-to-r from-white/20 dark:from-neutral-950/50 via-transparent to-white/20 dark:to-neutral-950/50" />
+    <!-- Gradient overlays -->
+    <ClientOnly>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent to-neutral-950/50" />
+      <div class="absolute inset-0 bg-gradient-to-r from-neutral-950/50 via-transparent to-neutral-950/50" />
+    </ClientOnly>
     <!-- Content -->
     <div class="absolute inset-0 flex items-center justify-center">
       <a
         href="https://github.com/kbrdn1/LazyCurl"
         target="_blank"
         rel="noopener noreferrer"
-        class="flex items-center gap-2 px-4 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-white/90 hover:text-white transition-colors"
+        :class="[
+          'flex items-center gap-2 px-4 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors',
+          'text-white/90 hover:text-white',
+        ]"
       >
         <span class="inline-flex items-center gap-1.5">
           <UIcon name="i-heroicons-rocket-launch" class="w-3.5 h-3.5" />
