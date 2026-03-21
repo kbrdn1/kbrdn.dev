@@ -119,7 +119,7 @@ function postUrl(post: { path: string }): string {
   <div class="flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
     />
 
@@ -134,7 +134,7 @@ function postUrl(post: { path: string }): string {
             <span class="block text-[11px] font-mono uppercase tracking-widest text-sky-400 mb-1">
               {{ t('sections.blog') }}
             </span>
-            <h1 class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2">
+            <h1 class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2" style="font-family: 'Fenix', serif;">
               {{ t('blog.title') }}
             </h1>
             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
@@ -320,12 +320,13 @@ function postUrl(post: { path: string }): string {
 
               <!-- Title + Description -->
               <div class="flex-1 min-w-0 relative z-10">
-                <span class="block text-sm sm:text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors">
+                <span class="block text-sm sm:text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors" style="font-family: 'Fenix', serif;">
                   {{ post.title }}
                 </span>
                 <span
                   v-if="post.description"
-                  class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1 truncate"
+                  class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1 overflow-hidden whitespace-nowrap"
+                  style="mask-image: linear-gradient(to right, black 50%, transparent); -webkit-mask-image: linear-gradient(to right, black 50%, transparent);"
                 >
                   {{ post.description }}
                 </span>
@@ -355,24 +356,28 @@ function postUrl(post: { path: string }): string {
               )"
               :style="{ transitionDelay: `${index * 60}ms` }"
             >
-              <!-- Thumbnail -->
+              <!-- Thumbnail fade (if banner) -->
               <ClientOnly v-if="post.banner">
-                <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
                   <NuxtImg
                     :src="$colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'"
                     alt=""
-                    class="w-full h-full object-cover opacity-20"
+                    class="w-full h-full object-cover"
                   />
+                  <div class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950" />
                 </div>
               </ClientOnly>
               <div class="relative z-10">
                 <span v-if="post.publishedAt" class="block text-[10px] font-mono text-neutral-500 mb-2">
                   {{ formatDate(post.publishedAt) }}
                 </span>
-                <h3 class="text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors">
+                <h3 class="text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors" style="font-family: 'Fenix', serif;">
                   {{ post.title }}
                 </h3>
-                <p v-if="post.description" class="text-xs text-neutral-500 dark:text-neutral-400 mt-2 line-clamp-2">
+                <p
+                  v-if="post.description"
+                  class="text-xs text-neutral-500 dark:text-neutral-400 mt-2 line-clamp-2"
+                >
                   {{ post.description }}
                 </p>
                 <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 mt-3">
@@ -498,7 +503,7 @@ function postUrl(post: { path: string }): string {
 
     <!-- Right stripe zone -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
     />
   </div>
