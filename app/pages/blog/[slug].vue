@@ -15,9 +15,9 @@ const { data: post } = await useAsyncData(`blog-${slug}`, () =>
 const { data: relatedPosts } = await useAsyncData(`blog-related-${slug}`, async () => {
   const all = await queryCollection('blog')
     .order('publishedAt', 'DESC')
-    .limit(4)
+    .limit(7)
     .all()
-  return all.filter(p => p.path !== `/blogs/${slug}`).slice(0, 3)
+  return all.filter(p => p.path !== `/blogs/${slug}`).slice(0, 6)
 })
 
 // Reading time estimate (~200 words/min)
@@ -115,6 +115,13 @@ onMounted(() => {
   })
 })
 
+const mobileTocOpen = ref(false)
+
+const activeHeadingText = computed(() => {
+  const item = tocItems.value.find(i => i.id === activeHeading.value)
+  return item?.text || ''
+})
+
 function scrollToHeading(id: string) {
   const el = document.getElementById(id)
   if (el) {
@@ -122,6 +129,7 @@ function scrollToHeading(id: string) {
     const top = el.getBoundingClientRect().top + window.scrollY - offset
     window.scrollTo({ top, behavior: 'smooth' })
   }
+  mobileTocOpen.value = false
 }
 </script>
 
@@ -138,8 +146,8 @@ function scrollToHeading(id: string) {
       <!-- Article found -->
       <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto;">
         <!-- Banner header - full width -->
-        <header v-if="post.banner" class="mb-10">
-          <div class="px-6 lg:px-12 pt-6 pb-4">
+        <header v-if="post.banner" class="mb-4 sm:mb-6 lg:mb-8">
+          <div class="px-4 sm:px-6 lg:px-12 pt-4 sm:pt-6 pb-3">
             <NuxtLink
               to="/blog"
               class="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-neutral-500 hover:text-sky-500 group"
@@ -153,38 +161,38 @@ function scrollToHeading(id: string) {
               <NuxtImg
                 :src="$colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'"
                 alt=""
-                class="w-full h-64 sm:h-80 object-cover"
+                class="w-full h-48 sm:h-64 lg:h-80 object-cover"
               />
               <template #fallback>
-                <div class="w-full h-64 sm:h-80 bg-neutral-800" />
+                <div class="w-full h-48 sm:h-64 lg:h-80 bg-neutral-800" />
               </template>
             </ClientOnly>
             <div class="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/50 to-neutral-950/20" />
-            <div class="absolute bottom-0 left-0 right-0 p-6 lg:p-12">
-              <div class="flex items-center gap-3 mb-3">
+            <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-12">
+              <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                 <time
                   v-if="post.publishedAt"
                   :datetime="post.publishedAt"
-                  class="font-mono text-xs uppercase tracking-wider text-white/60"
+                  class="font-mono text-[10px] sm:text-xs uppercase tracking-wider text-white/60"
                 >
                   {{ formatDate(post.publishedAt) }}
                 </time>
                 <span class="text-white/40">&middot;</span>
-                <span class="font-mono text-xs uppercase tracking-wider text-white/60">
+                <span class="font-mono text-[10px] sm:text-xs uppercase tracking-wider text-white/60">
                   {{ readingTime }} {{ t('blog.readingTime') }}
                 </span>
               </div>
-              <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2" style="font-family: 'Fenix', serif;">
+              <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2" style="font-family: 'Fenix', serif;">
                 {{ post.title }}
               </h1>
-              <p v-if="post.description" class="text-base text-white/70 mt-2 max-w-2xl">
+              <p v-if="post.description" class="text-sm sm:text-base text-white/70 mt-1 sm:mt-2 max-w-2xl">
                 {{ post.description }}
               </p>
-              <div v-if="post.tags?.length" class="flex flex-wrap gap-2 mt-4">
+              <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
                 <span
                   v-for="tag in post.tags"
                   :key="tag"
-                  class="inline-block border border-white/20 font-mono text-xs px-2.5 py-1 text-white/60"
+                  class="inline-block border border-white/20 font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 text-white/60"
                 >
                   {{ tag }}
                 </span>
@@ -194,46 +202,46 @@ function scrollToHeading(id: string) {
         </header>
 
         <!-- Standard header - no banner -->
-        <header v-else class="px-6 lg:px-12 pt-6 mb-10">
+        <header v-else class="px-4 sm:px-6 lg:px-12 pt-4 sm:pt-6 mb-4 sm:mb-6 lg:mb-8">
           <NuxtLink
             to="/blog"
-            class="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-neutral-500 hover:text-sky-500 group mb-6"
+            class="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-neutral-500 hover:text-sky-500 group mb-4 sm:mb-6"
           >
             <span class="inline-block transition-transform group-hover:-translate-x-1">&larr;</span>
             {{ t('blog.backToArticles') }}
           </NuxtLink>
-          <div class="flex items-center gap-3 mb-4">
+          <div class="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <time
               v-if="post.publishedAt"
               :datetime="post.publishedAt"
-              class="font-mono text-xs uppercase tracking-wider text-neutral-500"
+              class="font-mono text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500"
             >
               {{ formatDate(post.publishedAt) }}
             </time>
             <span class="text-neutral-700 dark:text-neutral-600">&middot;</span>
-            <span class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <span class="font-mono text-[10px] sm:text-xs uppercase tracking-wider text-neutral-500">
               {{ readingTime }} {{ t('blog.readingTime') }}
             </span>
           </div>
-          <h1 class="text-3xl sm:text-4xl font-bold text-neutral-950 dark:text-neutral-100 mb-2" style="font-family: 'Fenix', serif;">
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-950 dark:text-neutral-100 mb-1 sm:mb-2" style="font-family: 'Fenix', serif;">
             {{ post.title }}
           </h1>
-          <p v-if="post.description" class="text-lg text-neutral-500 mt-2">
+          <p v-if="post.description" class="text-base sm:text-lg text-neutral-500 mt-1 sm:mt-2">
             {{ post.description }}
           </p>
-          <div v-if="post.tags?.length" class="flex flex-wrap gap-2 mt-4">
+          <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
             <span
               v-for="tag in post.tags"
               :key="tag"
-              class="inline-block border border-neutral-200 dark:border-neutral-800 font-mono text-xs px-2.5 py-1 text-neutral-600 dark:text-neutral-400"
+              class="inline-block border border-neutral-200 dark:border-neutral-800 font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 text-neutral-600 dark:text-neutral-400"
             >
               {{ tag }}
             </span>
           </div>
-          <div class="border-b border-neutral-200 dark:border-neutral-800 mt-8" />
+          <div class="border-b border-neutral-200 dark:border-neutral-800 mt-4 sm:mt-6 lg:mt-8" />
         </header>
 
-        <div class="flex gap-10 px-6 lg:px-12 pb-12">
+        <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
           <!-- Main column -->
           <div class="flex-1 min-w-0">
 
@@ -283,7 +291,7 @@ function scrollToHeading(id: string) {
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 mb-16 space-y-8 px-6 lg:px-12">
+        <footer class="mt-12 mb-28 lg:mb-16 space-y-8 px-6 lg:px-12">
           <!-- Separator -->
           <div class="border-b border-neutral-200 dark:border-neutral-800" />
 
@@ -305,31 +313,52 @@ function scrollToHeading(id: string) {
 
           <!-- More articles -->
           <div v-if="relatedPosts?.length">
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
+            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">
               {{ t('blog.moreArticles') }}
             </h2>
-            <div class="space-y-3">
+            <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
               <NuxtLink
                 v-for="related in relatedPosts"
                 :key="related.path"
                 :to="related.path.replace('/blogs/', '/blog/')"
-                class="block border border-neutral-200 dark:border-neutral-800 p-3 hover:border-primary-500/30 transition-colors group"
+                class="relative flex items-center gap-6 py-5 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3 overflow-hidden"
               >
-                <div class="flex items-center gap-3 mb-0.5">
-                  <time
+                <!-- Thumbnail fade (if banner) -->
+                <ClientOnly v-if="related.banner">
+                  <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
+                    <NuxtImg
+                      :src="$colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'"
+                      alt=""
+                      class="w-full h-full object-cover"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950" />
+                  </div>
+                </ClientOnly>
+
+                <!-- Date & Author -->
+                <div class="shrink-0 w-28 sm:w-36 relative z-10">
+                  <span
                     v-if="related.publishedAt"
                     :datetime="related.publishedAt"
-                    class="font-mono text-[10px] text-neutral-500"
+                    class="block text-[10px] sm:text-xs font-mono text-neutral-500"
                   >
                     {{ formatDate(related.publishedAt) }}
-                  </time>
+                  </span>
                 </div>
-                <h4 class="text-sm font-medium text-neutral-950 dark:text-neutral-100 group-hover:text-primary-500 transition-colors">
-                  {{ related.title }}
-                </h4>
-                <p v-if="related.description" class="text-xs text-neutral-500 mt-1 line-clamp-1">
-                  {{ related.description }}
-                </p>
+
+                <!-- Title + Description -->
+                <div class="flex-1 min-w-0 relative z-10">
+                  <span class="block text-sm sm:text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors" style="font-family: 'Fenix', serif;">
+                    {{ related.title }}
+                  </span>
+                  <span
+                    v-if="related.description"
+                    class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1 overflow-hidden whitespace-nowrap"
+                    style="mask-image: linear-gradient(to right, black 50%, transparent); -webkit-mask-image: linear-gradient(to right, black 50%, transparent);"
+                  >
+                    {{ related.description }}
+                  </span>
+                </div>
               </NuxtLink>
             </div>
           </div>
@@ -363,6 +392,69 @@ function scrollToHeading(id: string) {
       class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
       style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color);"
     />
+
+    <!-- Mobile TOC - bottom bar -->
+    <Teleport to="body">
+      <div
+        v-if="tocItems.length > 0"
+        class="lg:hidden fixed bottom-0 left-0 right-0 z-50"
+      >
+        <!-- Expanded TOC list -->
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 translate-y-4"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 translate-y-4"
+        >
+          <div
+            v-if="mobileTocOpen"
+            class="border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md px-4 py-3 max-h-64 overflow-y-auto"
+          >
+            <ul class="space-y-px font-mono">
+              <li
+                v-for="item in tocItems"
+                :key="item.id"
+              >
+                <button
+                  type="button"
+                  :class="[
+                    'flex items-center w-full text-left text-xs leading-snug py-1.5 px-2 rounded transition-all',
+                    item.level >= 3 ? 'ml-4' : '',
+                    activeHeading === item.id
+                      ? 'text-primary-500 bg-primary-500/10'
+                      : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200',
+                  ]"
+                  @click="scrollToHeading(item.id)"
+                >
+                  <span v-if="activeHeading === item.id" class="shrink-0 text-primary-500 mr-1.5 select-none">▸</span>
+                  <span v-else class="shrink-0 mr-1.5 w-2 select-none" />
+                  <span v-if="item.level >= 3" class="shrink-0 text-neutral-300 dark:text-neutral-600 mr-1">└</span>
+                  {{ item.text }}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </Transition>
+
+        <!-- Always visible bar -->
+        <button
+          type="button"
+          class="w-full flex items-center gap-3 px-4 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md"
+          @click="mobileTocOpen = !mobileTocOpen"
+        >
+          <span class="text-[9px] font-mono uppercase tracking-widest text-neutral-400 shrink-0">Sommaire</span>
+          <span class="flex-1 text-xs font-mono text-primary-500 truncate text-left">
+            {{ activeHeadingText }}
+          </span>
+          <UIcon
+            name="i-heroicons-chevron-up"
+            :class="['w-4 h-4 text-neutral-400 transition-transform', mobileTocOpen ? 'rotate-180' : '']"
+          />
+        </button>
+      </div>
+    </Teleport>
 
   </div>
 </template>
