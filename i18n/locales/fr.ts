@@ -41,10 +41,10 @@ export default {
     switchLanguage: "Changer de langue",
   },
 
-  // Theme
-  theme: {
-    switchToLight: "Passer en mode clair",
-    switchToDark: "Passer en mode sombre",
+  // Theme toggle
+  themeSwitch: {
+    toLight: "Passer en mode clair",
+    toDark: "Passer en mode sombre",
   },
 
   // Section Labels
@@ -100,6 +100,14 @@ export default {
   // Music Section
   music: {
     listeningTo: "J'écoute",
+    play: "Lecture",
+    pause: "Pause",
+    previous: "Piste précédente",
+    next: "Piste suivante",
+    shuffleOn: "Activer le mélange",
+    shuffleOff: "Désactiver le mélange",
+    showList: "Afficher la liste",
+    hideList: "Masquer la liste",
   },
 
   // Bio Section

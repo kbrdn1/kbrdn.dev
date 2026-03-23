@@ -99,36 +99,42 @@ onUnmounted(() => {
 
         <!-- CTA Buttons -->
         <div class="flex flex-wrap items-center gap-3">
-          <UButton
-            :to="calendarLink"
-            target="_blank"
-            color="primary"
-            variant="solid"
-            size="md"
-            icon="i-heroicons-calendar-days"
-          >
-            {{ t('hero.bookCall') }}
-          </UButton>
-          <UButton
-            :to="githubUrl"
-            target="_blank"
-            color="neutral"
-            variant="outline"
-            size="md"
-            icon="i-simple-icons-github"
-          >
-            {{ t('hero.viewOnGithub') }}
-          </UButton>
-          <UButton
-            to="/blog"
-            color="neutral"
-            variant="outline"
-            size="md"
-            icon="i-heroicons-document-text"
-            class="text-sky-400! border-sky-400/50! hover:bg-sky-400/10! hover:border-sky-400!"
-          >
-            {{ t('hero.readBlog') }}
-          </UButton>
+          <UTooltip :text="t('hero.bookCall')">
+            <UButton
+              :to="calendarLink"
+              target="_blank"
+              color="primary"
+              variant="solid"
+              size="md"
+              icon="i-heroicons-calendar-days"
+            >
+              {{ t('hero.bookCall') }}
+            </UButton>
+          </UTooltip>
+          <UTooltip :text="t('hero.viewOnGithub')">
+            <UButton
+              :to="githubUrl"
+              target="_blank"
+              color="neutral"
+              variant="outline"
+              size="md"
+              icon="i-simple-icons-github"
+            >
+              {{ t('hero.viewOnGithub') }}
+            </UButton>
+          </UTooltip>
+          <UTooltip :text="t('hero.readBlog')">
+            <UButton
+              to="/blog"
+              color="neutral"
+              variant="outline"
+              size="md"
+              icon="i-heroicons-document-text"
+              class="text-sky-400! border-sky-400/50! hover:bg-sky-400/10! hover:border-sky-400!"
+            >
+              {{ t('hero.readBlog') }}
+            </UButton>
+          </UTooltip>
         </div>
       </div>
 

@@ -262,56 +262,66 @@ function formatTime(seconds: number): string {
 
             <!-- Controls: prev / play / next + shuffle & listing grouped -->
             <div class="flex items-center gap-0.5 shrink-0">
-              <button
-                type="button"
-                class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-                aria-label="Previous"
-                @click.prevent.stop="prevTrack"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
-              </button>
-              <button
-                type="button"
-                :class="cn(
-                  'flex items-center justify-center w-8 h-8',
-                  'text-white bg-primary-500 hover:bg-primary-400',
-                  'transition-all',
-                )"
-                :aria-label="isPlaying ? 'Pause' : 'Play'"
-                @click="togglePlay"
-              >
-                <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ml-0.5">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                  <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
-                aria-label="Next"
-                @click.prevent.stop="nextTrack"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
-              </button>
+              <UTooltip :text="t('music.previous')">
+                <button
+                  type="button"
+                  class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
+                  :aria-label="t('music.previous')"
+                  @click.prevent.stop="prevTrack"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" /></svg>
+                </button>
+              </UTooltip>
+              <UTooltip :text="isPlaying ? t('music.pause') : t('music.play')">
+                <button
+                  type="button"
+                  :class="cn(
+                    'flex items-center justify-center w-8 h-8',
+                    'text-white bg-primary-500 hover:bg-primary-400',
+                    'transition-all cursor-pointer',
+                  )"
+                  :aria-label="isPlaying ? t('music.pause') : t('music.play')"
+                  @click="togglePlay"
+                >
+                  <svg v-if="!isPlaying" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 ml-0.5">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                  </svg>
+                </button>
+              </UTooltip>
+              <UTooltip :text="t('music.next')">
+                <button
+                  type="button"
+                  class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
+                  :aria-label="t('music.next')"
+                  @click.prevent.stop="nextTrack"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" /></svg>
+                </button>
+              </UTooltip>
               <span class="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-0.5" />
-              <button
-                type="button"
-                :class="cn('flex items-center justify-center w-7 h-7 transition-colors', shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500')"
-                :aria-label="shuffleMode ? 'Disable shuffle' : 'Enable shuffle'"
-                @click.prevent.stop="shuffleMode = !shuffleMode"
-              >
-                <UIcon name="i-heroicons-arrows-right-left" class="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                :class="cn('flex items-center justify-center w-7 h-7 transition-colors', showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500')"
-                :aria-label="showListing ? 'Hide tracklist' : 'Show tracklist'"
-                @click.prevent.stop="showListing = !showListing"
-              >
-                <UIcon name="i-heroicons-queue-list" class="w-3.5 h-3.5" />
-              </button>
+              <UTooltip :text="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')">
+                <button
+                  type="button"
+                  :class="cn('flex items-center justify-center w-7 h-7 transition-colors cursor-pointer', shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500')"
+                  :aria-label="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')"
+                  @click.prevent.stop="shuffleMode = !shuffleMode"
+                >
+                  <UIcon name="i-heroicons-arrows-right-left" class="w-3.5 h-3.5" />
+                </button>
+              </UTooltip>
+              <UTooltip :text="showListing ? t('music.hideList') : t('music.showList')">
+                <button
+                  type="button"
+                  :class="cn('flex items-center justify-center w-7 h-7 transition-colors cursor-pointer', showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500')"
+                  :aria-label="showListing ? t('music.hideList') : t('music.showList')"
+                  @click.prevent.stop="showListing = !showListing"
+                >
+                  <UIcon name="i-heroicons-queue-list" class="w-3.5 h-3.5" />
+                </button>
+              </UTooltip>
             </div>
           </div>
 

@@ -40,10 +40,10 @@ export default {
     switchLanguage: "Switch language",
   },
 
-  // Theme
-  theme: {
-    switchToLight: "Switch to light mode",
-    switchToDark: "Switch to dark mode",
+  // Theme toggle
+  themeSwitch: {
+    toLight: "Switch to light mode",
+    toDark: "Switch to dark mode",
   },
 
   // Section Labels
@@ -99,6 +99,14 @@ export default {
   // Music Section
   music: {
     listeningTo: "Listening to",
+    play: "Play",
+    pause: "Pause",
+    previous: "Previous track",
+    next: "Next track",
+    shuffleOn: "Enable shuffle",
+    shuffleOff: "Disable shuffle",
+    showList: "Show tracklist",
+    hideList: "Hide tracklist",
   },
 
   // Bio Section

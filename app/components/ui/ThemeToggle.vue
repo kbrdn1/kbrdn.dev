@@ -16,7 +16,7 @@ function toggleTheme() {
 }
 
 const tooltipText = computed(() =>
-  isDark.value ? t('theme.switchToLight') : t('theme.switchToDark')
+  isDark.value ? t('themeSwitch.toLight') : t('themeSwitch.toDark')
 )
 </script>
 

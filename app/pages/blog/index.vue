@@ -201,22 +201,26 @@ const { postUrl } = useBlogUrl()
 
             <!-- View mode toggle - Desktop -->
             <div class="hidden sm:flex items-center gap-1 shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3">
-              <button
+              <UTooltip
                 v-for="mode in (['list', 'cards', 'compact'] as const)"
                 :key="mode"
-                :class="cn(
-                  'p-1.5 transition-all',
-                  viewMode === mode
-                    ? 'text-primary-500 bg-primary-500/10'
-                    : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300',
-                )"
-                @click="viewMode = mode"
+                :text="mode === 'list' ? t('blog.viewList') : mode === 'cards' ? t('blog.viewCards') : t('blog.viewCompact')"
               >
-                <UIcon
-                  :name="mode === 'list' ? 'i-heroicons-bars-3' : mode === 'cards' ? 'i-heroicons-squares-2x2' : 'i-heroicons-list-bullet'"
-                  class="w-4 h-4"
-                />
-              </button>
+                <button
+                  :class="cn(
+                    'p-1.5 transition-all cursor-pointer',
+                    viewMode === mode
+                      ? 'text-primary-500 bg-primary-500/10'
+                      : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300',
+                  )"
+                  @click="viewMode = mode"
+                >
+                  <UIcon
+                    :name="mode === 'list' ? 'i-heroicons-bars-3' : mode === 'cards' ? 'i-heroicons-squares-2x2' : 'i-heroicons-list-bullet'"
+                    class="w-4 h-4"
+                  />
+                </button>
+              </UTooltip>
             </div>
 
             <!-- View mode toggle - Mobile dropdown -->

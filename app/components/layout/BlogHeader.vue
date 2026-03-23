@@ -138,15 +138,17 @@ const isMobileMenuOpen = ref(false);
 
         <!-- Right side: controls -->
         <div class="flex items-stretch">
-          <a
-            href="https://github.com/sponsors/kbrdn1"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="t('sections.sponsor') || 'Sponsor on GitHub'"
-            class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-pink-500 hover:bg-pink-500/5 transition-all"
-          >
-            <UIcon name="i-heroicons-heart" class="w-4 h-4" aria-hidden="true" />
-          </a>
+          <UTooltip :text="t('hero.sponsor')">
+            <a
+              href="https://github.com/sponsors/kbrdn1"
+              target="_blank"
+              rel="noopener noreferrer"
+              :aria-label="t('hero.sponsor')"
+              class="flex items-center justify-center px-6 h-full border-r border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-pink-500 hover:bg-pink-500/5 transition-all"
+            >
+              <UIcon name="i-heroicons-heart" class="w-4 h-4" aria-hidden="true" />
+            </a>
+          </UTooltip>
           <UiLanguageSwitcher class="border-r border-neutral-200 dark:border-neutral-700" />
           <UiThemeToggle />
         </div>
