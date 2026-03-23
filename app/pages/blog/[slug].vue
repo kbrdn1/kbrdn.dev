@@ -52,14 +52,16 @@ if (post.value) {
     title: post.value.title,
     description: post.value.description,
   })
-  defineOgImage('Blog', {
-    title: post.value.title,
-    description: post.value.description,
-    publishedAt: post.value.publishedAt,
-    tags: post.value.tags || [],
-    slug,
-    bannerImage: post.value.bannerImage || '/images/banners/dark.jpg',
-  })
+  if (import.meta.server) {
+    defineOgImage('Blog', {
+      title: post.value.title,
+      description: post.value.description,
+      publishedAt: post.value.publishedAt,
+      tags: post.value.tags || [],
+      slug,
+      bannerImage: post.value.bannerImage || '/images/banners/dark.jpg',
+    })
+  }
 }
 
 // Table of contents

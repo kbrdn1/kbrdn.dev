@@ -36,19 +36,21 @@ useSeoMeta({
   twitterCard: "summary_large_image",
 });
 
-const requestUrl = useRequestURL()
-const siteOrigin = requestUrl.origin
+if (import.meta.server) {
+  const requestUrl = useRequestURL()
+  const siteOrigin = requestUrl.origin
 
-defineOgImage('Default', {
-  title: page.value?.title || 'Kylian Bardini',
-  subtitle: page.value?.titles?.[0] || 'Full Stack Developer',
-  handle: page.value?.handle || '@kbrdn1',
-  isHirable: page.value?.isHirable ?? true,
-  statusText: t('hero.availableForHire'),
-  avatarUrl: `${siteOrigin}/images/avatar.jpg`,
-  bannerText: t('banner.lazycurl'),
-  bannerImage: `${siteOrigin}/images/banners/dark.jpg`,
-});
+  defineOgImage('Default', {
+    title: page.value?.title || 'Kylian Bardini',
+    subtitle: page.value?.titles?.[0] || 'Full Stack Developer',
+    handle: page.value?.handle || '@kbrdn1',
+    isHirable: page.value?.isHirable ?? true,
+    statusText: t('hero.availableForHire'),
+    avatarUrl: `${siteOrigin}/images/avatar.jpg`,
+    bannerText: t('banner.lazycurl'),
+    bannerImage: `${siteOrigin}/images/banners/dark.jpg`,
+  });
+}
 
 // Default social links with more platforms
 const defaultSocials = [

@@ -16,10 +16,12 @@ useSeoMeta({
   description: t('blog.description'),
 })
 
-defineOgImage('Default', {
-  title: t('blog.title'),
-  description: t('blog.description'),
-})
+if (import.meta.server) {
+  defineOgImage('Default', {
+    title: t('blog.title'),
+    description: t('blog.description'),
+  })
+}
 
 // Active tag filter
 const activeTag = ref<string | null>(null)
