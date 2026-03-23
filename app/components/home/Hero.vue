@@ -105,6 +105,7 @@ onUnmounted(() => {
               variant="solid"
               size="md"
               icon="i-heroicons-calendar-days"
+              class="btn-disabled-striped"
               disabled
             >
               {{ t('hero.bookCall') }}

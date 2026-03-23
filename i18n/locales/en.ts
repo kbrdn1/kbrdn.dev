@@ -340,6 +340,14 @@ export default {
     notFound: "Article not found",
   },
 
+  // Error Page
+  error: {
+    title: "Page not found",
+    subtitle: "Looks like this page got lost in the pixels",
+    backHome: "Back to home",
+    reset: "Reset pixels",
+  },
+
   // Footer Section
   footer: {
     nav: {

@@ -74,6 +74,17 @@
   transform: rotate(0deg);
 }
 
+/* Disabled button with subtle diagonal striped background */
+.btn-disabled-striped {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    rgba(212, 130, 93, 0.12) 4px,
+    rgba(212, 130, 93, 0.12) 5px
+  ) !important;
+}
+
 /* Grid background for featured sections (diagonal stripes) */
 .grid-background {
   background-image: repeating-linear-gradient(

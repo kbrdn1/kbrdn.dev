@@ -341,6 +341,14 @@ export default {
     notFound: "Article non trouvé",
   },
 
+  // Error Page
+  error: {
+    title: "Page introuvable",
+    subtitle: "On dirait que cette page s'est perdue dans les pixels",
+    backHome: "Retour à l'accueil",
+    reset: "Réinitialiser",
+  },
+
   // Footer Section
   footer: {
     nav: {
