@@ -147,12 +147,8 @@ const isMobileMenuOpen = ref(false);
           >
             <UIcon name="i-heroicons-heart" class="w-4 h-4" aria-hidden="true" />
           </a>
-          <div class="flex items-center justify-center px-6 border-r border-neutral-200 dark:border-neutral-700">
-            <UiLanguageSwitcher />
-          </div>
-          <div class="flex items-center justify-center px-6">
-            <UiThemeToggle />
-          </div>
+          <UiLanguageSwitcher class="border-r border-neutral-200 dark:border-neutral-700" />
+          <UiThemeToggle />
         </div>
       </div>
 
