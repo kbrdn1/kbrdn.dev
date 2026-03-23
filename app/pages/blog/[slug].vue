@@ -73,6 +73,8 @@ const tocItems = ref<TocItem[]>([])
 const activeHeading = ref('')
 const articleRef = ref<HTMLElement | null>(null)
 
+let observer: IntersectionObserver | null = null
+
 onMounted(() => {
   nextTick(() => {
     if (!articleRef.value) return
@@ -97,7 +99,7 @@ onMounted(() => {
     tocItems.value = items
 
     // Observe headings for active state
-    const observer = new IntersectionObserver(
+    observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
@@ -108,11 +110,11 @@ onMounted(() => {
       { rootMargin: '-80px 0px -70% 0px' },
     )
 
-    headings.forEach((heading) => observer.observe(heading))
-
-    onUnmounted(() => observer.disconnect())
+    headings.forEach((heading) => observer!.observe(heading))
   })
 })
+
+onUnmounted(() => observer?.disconnect())
 
 const activeHeadingText = computed(() => {
   const item = tocItems.value.find(i => i.id === activeHeading.value)

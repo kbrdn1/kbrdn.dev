@@ -38,6 +38,7 @@ export default {
     skipToContent: "Aller au contenu",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
+    switchLanguage: "Changer de langue",
   },
 
   // Section Labels

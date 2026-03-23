@@ -139,19 +139,12 @@ const primaryLanguage = computed(() => {
 
         <!-- Tags -->
         <div v-if="tags.length" class="flex flex-wrap gap-1.5 justify-end">
-          <span
+          <UiTag
             v-for="tag in tags"
             :key="tag"
-            :class="cn(
-              'px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider',
-              'border border-neutral-200 dark:border-neutral-800',
-              'text-neutral-500',
-              'hover:bg-primary-500/10 hover:border-primary-500/30 hover:text-primary-500',
-              'transition-colors cursor-default',
-            )"
-          >
-            {{ tag }}
-          </span>
+            :label="tag"
+            variant="auto"
+          />
         </div>
       </div>
 
