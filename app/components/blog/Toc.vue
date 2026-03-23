@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   items: { id: string; text: string; level: number }[]
   activeHeading: string
   progress?: number
@@ -8,17 +8,27 @@ defineProps<{
 const emit = defineEmits<{
   'scroll-to': [id: string]
 }>()
+
+const tocListRef = ref<HTMLElement | null>(null)
+
+watch(() => props.activeHeading, (id) => {
+  if (!id || !tocListRef.value) return
+  const activeBtn = tocListRef.value.querySelector(`[data-toc-id="${id}"]`) as HTMLElement
+  if (activeBtn) {
+    activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }
+})
 </script>
 
 <template>
   <aside
     v-if="items.length > 0"
-    class="w-full shrink-0"
+    class="w-full min-h-0 flex flex-col"
     aria-label="Table of contents"
   >
-    <div class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono">
+    <div class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono flex flex-col min-h-0">
       <!-- Header with progress -->
-      <div class="flex items-center justify-between px-3 py-2">
+      <div class="flex items-center justify-between px-3 py-2 shrink-0">
         <span class="text-[9px] uppercase tracking-widest text-neutral-400">sommaire</span>
         <span
           v-if="progress !== undefined"
@@ -29,15 +39,15 @@ const emit = defineEmits<{
       </div>
 
       <!-- Progress bar -->
-      <div class="mx-3 h-px bg-neutral-200 dark:bg-neutral-800 relative overflow-hidden">
+      <div class="mx-3 h-px bg-neutral-200 dark:bg-neutral-800 relative overflow-hidden shrink-0">
         <div
           class="absolute inset-y-0 left-0 bg-primary-500 transition-all duration-300"
           :style="{ width: `${progress || 0}%` }"
         />
       </div>
 
-      <!-- Items -->
-      <div class="p-3">
+      <!-- Items (scrollable) -->
+      <div ref="tocListRef" class="p-3 overflow-y-auto min-h-0 scrollbar-none">
         <ul class="space-y-px">
           <li
             v-for="item in items"
@@ -45,6 +55,7 @@ const emit = defineEmits<{
           >
             <button
               type="button"
+              :data-toc-id="item.id"
               :class="cn(
                 'flex items-center w-full text-left text-[11px] leading-snug py-1 px-1.5 -mx-1.5 transition-all',
                 activeHeading === item.id

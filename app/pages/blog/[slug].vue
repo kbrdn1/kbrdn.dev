@@ -166,7 +166,7 @@ function scrollToHeading(id: string) {
 
           <!-- TOC sidebar + promo card -->
           <div class="hidden lg:block w-64 shrink-0">
-            <div class="sticky top-20 flex flex-col gap-4">
+            <div class="sticky top-20 flex flex-col gap-4 max-h-[calc(100vh-6rem)]">
               <BlogToc
                 :items="tocItems"
                 :active-heading="activeHeading"
