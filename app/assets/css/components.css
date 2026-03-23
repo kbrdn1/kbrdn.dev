@@ -1,0 +1,263 @@
+/* ═══════════════════════════════════════════════════
+   Layout & Decorative Components
+   ═══════════════════════════════════════════════════ */
+
+/* Custom dashed border with longer/wider dashes */
+.card-dashed-border {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      270deg,
+      var(--color-neutral-700),
+      var(--color-neutral-700) 12px,
+      transparent 12px,
+      transparent 20px
+    );
+  background-size:
+    2px 100%,
+    100% 2px,
+    2px 100%,
+    100% 2px;
+  background-position:
+    0 0,
+    0 0,
+    100% 0,
+    0 100%;
+  background-repeat: no-repeat;
+}
+
+/* Nav tab active indicator */
+.nav-tab-active {
+  position: relative;
+}
+
+.nav-tab-active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-primary-500);
+}
+
+/* Accordion +/- icon animation */
+.accordion-icon-bar {
+  transition: transform 300ms ease !important;
+}
+
+.accordion-icon-bar.is-collapsed {
+  transform: rotate(90deg);
+}
+
+.accordion-icon-bar.is-expanded {
+  transform: rotate(0deg);
+}
+
+/* Grid background for featured sections (diagonal stripes) */
+.grid-background {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 10px,
+    var(--stripe-color-alt) 10px,
+    var(--stripe-color-alt) 10.5px
+  );
+}
+
+/* Grid background for blog pages (square grid) */
+.grid-background-blog {
+  background-image:
+    linear-gradient(var(--stripe-color-alt) 1px, transparent 1px),
+    linear-gradient(90deg, var(--stripe-color-alt) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Section with corner triangle marks at border intersections */
+.border-dashed-horizontal {
+  position: relative;
+}
+
+/* Corner triangle - top left */
+.border-dashed-horizontal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: calc(50% - 40rem);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 6px 0 0;
+  border-color: var(--corner-color) transparent transparent transparent;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Corner triangle - top right */
+.border-dashed-horizontal::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: calc(50% - 40rem);
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 0 0 6px;
+  border-color: var(--corner-color) transparent transparent transparent;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Bottom corner triangles via inner elements */
+.corner-bottom-left,
+.corner-bottom-right {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.corner-bottom-left {
+  left: calc(50% - 40rem);
+  border-style: solid;
+  border-width: 0 6px 6px 0;
+  border-color: transparent transparent var(--corner-color) transparent;
+}
+
+.corner-bottom-right {
+  right: calc(50% - 40rem);
+  border-style: solid;
+  border-width: 0 0 6px 6px;
+  border-color: transparent transparent var(--corner-color) transparent;
+}
+
+@media (max-width: 768px) {
+  .border-dashed-horizontal::before,
+  .border-dashed-horizontal::after,
+  .corner-bottom-left,
+  .corner-bottom-right {
+    display: none;
+  }
+}
+
+/* Code syntax highlighting — Claude Dark theme */
+.claude-code {
+  color: #b0b0b0;
+}
+
+.claude-code .code-keyword {
+  color: #d4825d;
+  font-weight: 500;
+}
+
+.claude-code .code-string {
+  color: #86e89a;
+}
+
+.claude-code .code-type {
+  color: #e8a573;
+}
+
+.claude-code .code-function {
+  color: #7ab8ff;
+}
+
+.claude-code .code-comment {
+  color: #666;
+  font-style: italic;
+}
+
+.claude-code .code-variable {
+  color: #c79bff;
+}
+
+.claude-code .code-attribute {
+  color: #8abfb8;
+}
+
+/* Light mode overrides */
+:root .claude-code {
+  color: #374151;
+}
+
+:root .claude-code .code-keyword {
+  color: #c15f3c;
+}
+
+:root .claude-code .code-string {
+  color: #16a34a;
+}
+
+:root .claude-code .code-type {
+  color: #b45309;
+}
+
+:root .claude-code .code-function {
+  color: #2563eb;
+}
+
+:root .claude-code .code-comment {
+  color: #9ca3af;
+}
+
+:root .claude-code .code-variable {
+  color: #7c3aed;
+}
+
+:root .claude-code .code-attribute {
+  color: #0d9488;
+}
+
+.dark .claude-code {
+  color: #b0b0b0;
+}
+
+.dark .claude-code .code-keyword {
+  color: #d4825d;
+}
+
+.dark .claude-code .code-string {
+  color: #86e89a;
+}
+
+.dark .claude-code .code-type {
+  color: #e8a573;
+}
+
+.dark .claude-code .code-function {
+  color: #7ab8ff;
+}
+
+.dark .claude-code .code-comment {
+  color: #666;
+}
+
+.dark .claude-code .code-variable {
+  color: #c79bff;
+}
+
+.dark .claude-code .code-attribute {
+  color: #8abfb8;
+}

@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════
+   Blog Article Prose Styling
+   ═══════════════════════════════════════════════════ */
+
+.prose-blog {
+  line-height: 1.75;
+  color: var(--color-neutral-600);
+}
+
+.dark .prose-blog {
+  color: var(--color-neutral-300);
+}
+
+/* Headings */
+.prose-blog :deep(h1) {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--color-neutral-950);
+}
+
+.dark .prose-blog :deep(h1) {
+  color: var(--color-neutral-100);
+}
+
+.prose-blog :deep(h2) {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-neutral-950);
+}
+
+.dark .prose-blog :deep(h2) {
+  color: var(--color-neutral-100);
+}
+
+.prose-blog :deep(h3) {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-neutral-950);
+}
+
+.dark .prose-blog :deep(h3) {
+  color: var(--color-neutral-100);
+}
+
+/* Headings use Fenix */
+.prose-blog :deep(h1),
+.prose-blog :deep(h2),
+.prose-blog :deep(h3) {
+  font-family: 'Fenix', serif;
+}
+
+/* Paragraphs */
+.prose-blog :deep(p) {
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+}
+
+/* Links */
+.prose-blog :deep(a) {
+  color: var(--color-primary-500);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-blog :deep(a:hover) {
+  color: var(--color-primary-400);
+}
+
+/* Code blocks */
+.prose-blog :deep(pre) {
+  background-color: var(--color-neutral-900);
+  border: 1px solid var(--color-neutral-800);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* Inline code */
+.prose-blog :deep(:not(pre) > code) {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.125rem 0.375rem;
+  background-color: var(--color-neutral-100);
+  border: 1px solid var(--color-neutral-200);
+  color: var(--color-primary-600);
+}
+
+.dark .prose-blog :deep(:not(pre) > code) {
+  background-color: var(--color-neutral-900);
+  border-color: var(--color-neutral-800);
+  color: var(--color-primary-400);
+}
+
+/* Blockquotes */
+.prose-blog :deep(blockquote) {
+  border-left: 2px solid var(--color-primary-500);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: var(--color-neutral-500);
+}
+
+/* Lists */
+.prose-blog :deep(ul) {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose-blog :deep(ol) {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose-blog :deep(li) {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.prose-blog :deep(ul > li)::marker {
+  color: var(--color-primary-500);
+}
+
+.prose-blog :deep(ol > li)::marker {
+  color: var(--color-primary-500);
+  font-weight: 600;
+}
+
+/* Images */
+.prose-blog :deep(img) {
+  width: 100%;
+  border: 1px solid var(--color-neutral-200);
+  margin: 1.5rem 0;
+}
+
+.dark .prose-blog :deep(img) {
+  border-color: var(--color-neutral-800);
+}
+
+/* Horizontal rules */
+.prose-blog :deep(hr) {
+  border: none;
+  border-top: 1px solid var(--color-neutral-200);
+  margin: 2rem 0;
+}
+
+.dark .prose-blog :deep(hr) {
+  border-color: var(--color-neutral-800);
+}
+
+/* Tables */
+.prose-blog :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+}
+
+.prose-blog :deep(th) {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--color-neutral-200);
+  color: var(--color-neutral-950);
+}
+
+.dark .prose-blog :deep(th) {
+  border-color: var(--color-neutral-800);
+  color: var(--color-neutral-100);
+}
+
+.prose-blog :deep(td) {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.dark .prose-blog :deep(td) {
+  border-color: var(--color-neutral-800);
+}
+
+/* Strong and emphasis */
+.prose-blog :deep(strong) {
+  font-weight: 600;
+  color: var(--color-neutral-950);
+}
+
+.dark .prose-blog :deep(strong) {
+  color: var(--color-neutral-100);
+}
+
+.prose-blog :deep(em) {
+  font-family: 'Fenix', serif;
+  font-style: italic;
+}

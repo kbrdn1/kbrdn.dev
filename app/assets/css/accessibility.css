@@ -1,0 +1,67 @@
+/* ═══════════════════════════════════════════════════
+   Focus Visible - Keyboard Accessibility (RGAA 10.7)
+   ═══════════════════════════════════════════════════ */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   Reduced Motion Support
+   ═══════════════════════════════════════════════════ */
+
+/* Disable all animations and transitions for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Utility classes for motion-sensitive content */
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* Keep essential hover states even with reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hover\:scale-105:hover,
+  .hover\:scale-125:hover,
+  .hover\:-translate-y-0\.5:hover {
+    transform: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   Performance Optimizations
+   ═══════════════════════════════════════════════════ */
+
+/* GPU acceleration for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize paint for skeleton animations */
+.skeleton-shimmer {
+  will-change: background-position;
+}
+
+/* Remove will-change after animations complete to free GPU memory */
+.animation-complete {
+  will-change: auto;
+}

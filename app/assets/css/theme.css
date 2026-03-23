@@ -1,0 +1,127 @@
+@theme static {
+  /* Typography */
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "Monaspace Krypton", "JetBrains Mono", "Courier New", monospace;
+  --font-code:
+    "OperatorMonoLig Nerd Font", "Monaspace Neon", "Monaspace Krypton",
+    monospace;
+  --font-comment: "Monaspace Radon", "Caveat", cursive;
+
+  /* ═══════════════════════════════════════════════════
+     Dark Mode Colors - Claude Dark (Pure)
+     ═══════════════════════════════════════════════════ */
+  --color-neutral-950: #1a1a1a;
+  --color-neutral-900: #242424;
+  --color-neutral-800: #2a2a2a;
+  --color-neutral-700: #3a3a3a;
+  --color-neutral-600: #555555;
+  --color-neutral-500: #666666;
+  --color-neutral-400: #999999;
+  --color-neutral-300: #b0b0b0;
+  --color-neutral-200: #d0d0d0;
+  --color-neutral-100: #e0e0e0;
+  --color-neutral-50: #f5f5f5;
+
+  /* Primary - Claude Orange */
+  --color-primary-950: #3d1f10;
+  --color-primary-900: #5c2f18;
+  --color-primary-800: #8b3d24;
+  --color-primary-700: #a64d2e;
+  --color-primary-600: #c15f3c;
+  --color-primary-500: #d4825d;
+  --color-primary-400: #e8a573;
+  --color-primary-300: #f4c895;
+  --color-primary-200: #f8ddb8;
+  --color-primary-100: #fcf0e0;
+  --color-primary-50: #fef8f3;
+
+  /* Semantic colors */
+  --color-red-500: #ff7a7a;
+  --color-red-600: #e06060;
+  --color-green-500: #86e89a;
+  --color-green-600: #6bc97f;
+  --color-yellow-500: #ffdf61;
+  --color-yellow-600: #e6c654;
+  --color-blue-500: #7ab8ff;
+  --color-blue-600: #5aa0e6;
+  --color-purple-500: #c79bff;
+  --color-purple-600: #a87ee0;
+  --color-cyan-500: #8abfb8;
+  --color-cyan-600: #6fa39c;
+}
+
+:root {
+  /* Sharp corners */
+  --ui-radius: 0;
+
+  /* Layout variables */
+  --stripe-color: #e8e8e8;
+  --stripe-color-alt: #ddd;
+  --border-color: #e5e5e5;
+  --corner-color: #d4d4d4;
+}
+
+/* ═══════════════════════════════════════════════════
+   Light Mode
+   ═══════════════════════════════════════════════════ */
+.light {
+  --ui-primary: var(--color-primary-600);
+  --ui-secondary: var(--color-blue-600);
+  --ui-success: var(--color-green-600);
+  --ui-info: var(--color-cyan-600);
+  --ui-warning: var(--color-yellow-600);
+  --ui-error: var(--color-red-600);
+
+  --ui-bg: var(--color-neutral-50);
+  --ui-bg-muted: var(--color-neutral-100);
+  --ui-bg-elevated: var(--color-neutral-200);
+  --ui-bg-accented: var(--color-neutral-300);
+  --ui-bg-inverted: var(--color-neutral-950);
+
+  --ui-text: var(--color-neutral-950);
+  --ui-text-highlighted: var(--color-neutral-950);
+  --ui-text-muted: var(--color-neutral-700);
+  --ui-text-dimmed: var(--corner-color);
+  --ui-text-toned: var(--color-neutral-500);
+  --ui-text-inverted: var(--color-neutral-50);
+
+  --ui-border: var(--color-neutral-200);
+  --ui-border-muted: var(--color-neutral-300);
+  --ui-border-accented: var(--color-neutral-400);
+  --ui-border-inverted: var(--color-neutral-950);
+}
+
+/* ═══════════════════════════════════════════════════
+   Dark Mode - Claude Dark (Pure)
+   ═══════════════════════════════════════════════════ */
+.dark {
+  --stripe-color: #2a2a2a;
+  --stripe-color-alt: #333;
+  --border-color: #2a2a2a;
+  --corner-color: #2a2a2a;
+
+  --ui-primary: var(--color-primary-500);
+  --ui-secondary: var(--color-blue-500);
+  --ui-success: var(--color-green-500);
+  --ui-info: var(--color-cyan-500);
+  --ui-warning: var(--color-yellow-500);
+  --ui-error: var(--color-red-500);
+
+  --ui-bg: var(--color-neutral-950);
+  --ui-bg-muted: var(--color-neutral-950);
+  --ui-bg-elevated: var(--color-neutral-900);
+  --ui-bg-accented: var(--corner-color);
+  --ui-bg-inverted: var(--color-neutral-100);
+
+  --ui-text: var(--color-neutral-100);
+  --ui-text-highlighted: var(--color-neutral-100);
+  --ui-text-muted: var(--color-neutral-400);
+  --ui-text-dimmed: var(--color-neutral-500);
+  --ui-text-toned: var(--corner-color);
+  --ui-text-inverted: var(--color-neutral-950);
+
+  --ui-border: var(--color-neutral-900);
+  --ui-border-muted: var(--corner-color);
+  --ui-border-accented: var(--color-neutral-700);
+  --ui-border-inverted: var(--color-neutral-100);
+}
