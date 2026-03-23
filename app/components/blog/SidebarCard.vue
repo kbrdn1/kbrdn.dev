@@ -78,37 +78,33 @@ function dismiss() {
         </p>
       </div>
 
-      <!-- Hover actions -->
-      <Transition
-        enter-active-class="transition-all duration-200 ease-out"
-        enter-from-class="opacity-0 translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 translate-y-2"
+      <!-- Hover actions (grid height animation) -->
+      <div
+        class="grid overflow-hidden"
+        :class="isHovered ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+        style="transition: grid-template-rows 250ms cubic-bezier(0.4, 0, 0.2, 1), opacity 200ms ease !important;"
       >
-        <div
-          v-if="isHovered"
-          class="flex items-center justify-between px-3 pb-3"
-        >
-          <a
-            :href="url"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-[11px] font-mono font-bold text-primary-500 hover:text-primary-400 transition-colors"
-          >
-            Read more
-          </a>
-          <button
-            v-if="dismissable"
-            type="button"
-            class="text-[11px] font-mono text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
-            @click.stop="dismiss"
-          >
-            Dismiss
-          </button>
+        <div class="overflow-hidden">
+          <div class="flex items-center justify-between px-3 pb-3 pt-0">
+            <a
+              :href="url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[11px] font-mono font-bold text-primary-500 hover:text-primary-400 transition-colors"
+            >
+              Read more
+            </a>
+            <button
+              v-if="dismissable"
+              type="button"
+              class="text-[11px] font-mono text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+              @click.stop="dismiss"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
-      </Transition>
+      </div>
     </div>
   </div>
 </template>
