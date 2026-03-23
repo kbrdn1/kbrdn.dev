@@ -29,6 +29,7 @@ export default {
     availableForHire: "In contract at Jewely x Flippad",
     bookCall: "Book a Call",
     bookCallTip: "Schedule a 30-min meeting to discuss your project",
+    bookCallDisabled: "Booking temporarily unavailable",
     viewOnGithub: "View on GitHub",
     viewOnGithubTip: "Explore my open-source projects and contributions",
     readBlog: "Read Blog",

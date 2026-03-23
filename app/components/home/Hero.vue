@@ -99,14 +99,13 @@ onUnmounted(() => {
 
         <!-- CTA Buttons -->
         <div class="flex flex-wrap items-center gap-3">
-          <UTooltip :text="t('hero.bookCallTip')">
+          <UTooltip :text="t('hero.bookCallDisabled')">
             <UButton
-              :to="calendarLink"
-              target="_blank"
               color="primary"
               variant="solid"
               size="md"
               icon="i-heroicons-calendar-days"
+              disabled
             >
               {{ t('hero.bookCall') }}
             </UButton>
