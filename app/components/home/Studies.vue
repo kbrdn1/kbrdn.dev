@@ -129,9 +129,10 @@ function getInitials(name: string): string {
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2.5">
               <span class="text-lg font-medium text-neutral-900 dark:text-neutral-100">{{ study.school }}</span>
-              <span class="px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400">
-                {{ study.level }}
-              </span>
+              <UiTag
+                :label="study.level"
+                variant="default"
+              />
             </div>
             <p class="text-sm text-neutral-400 truncate">
               {{ getStudyContent(study).degree }}

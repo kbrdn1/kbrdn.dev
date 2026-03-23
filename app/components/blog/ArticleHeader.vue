@@ -66,7 +66,7 @@ const { formatDate } = useFormatDate()
             v-for="tag in post.tags"
             :key="tag"
             :label="tag"
-            variant="light"
+            variant="auto"
           />
         </div>
       </div>
@@ -100,7 +100,7 @@ const { formatDate } = useFormatDate()
         v-for="tag in post.tags"
         :key="tag"
         :label="tag"
-        variant="default"
+        variant="auto"
       />
     </div>
     <div class="border-b border-neutral-200 dark:border-neutral-800 mt-4 sm:mt-6 lg:mt-8" />

@@ -16,6 +16,11 @@ useSeoMeta({
   description: t('blog.description'),
 })
 
+defineOgImage('Default', {
+  title: t('blog.title'),
+  description: t('blog.description'),
+})
+
 // Active tag filter
 const activeTag = ref<string | null>(null)
 
@@ -329,13 +334,12 @@ const { postUrl } = useBlogUrl()
                   {{ post.description }}
                 </p>
                 <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 mt-3">
-                  <span
+                  <UiTag
                     v-for="tag in post.tags.slice(0, 3)"
                     :key="tag"
-                    class="px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider border border-neutral-200 dark:border-neutral-800 text-neutral-500"
-                  >
-                    {{ tag }}
-                  </span>
+                    :label="tag"
+                    variant="auto"
+                  />
                 </div>
               </div>
             </NuxtLink>

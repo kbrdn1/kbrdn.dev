@@ -115,12 +115,11 @@ function getInitials(name: string): string {
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2.5">
               <span class="text-lg font-medium text-neutral-900 dark:text-neutral-100">{{ exp.company }}</span>
-              <span
+              <UiTag
                 v-if="exp.current"
-                class="px-2 py-0.5 text-[11px] font-mono uppercase tracking-wider border border-primary-500/30 text-primary-500"
-              >
-                {{ t('experiences.current') }}
-              </span>
+                :label="t('experiences.current')"
+                variant="primary"
+              />
             </div>
             <p class="text-sm text-neutral-400 truncate">
               {{ getExperienceContent(exp).role }}
