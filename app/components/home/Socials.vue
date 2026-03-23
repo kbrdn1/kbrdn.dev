@@ -125,19 +125,19 @@ const getDescription = (platform: string): string => {
               <!-- GitHub stats -->
               <div
                 v-if="link.platform === 'github' && githubProfile"
-                class="flex items-center gap-4 mb-3 py-2 px-3 border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
+                class="flex items-center mb-3 py-2 border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
               >
-                <div class="text-center">
+                <div class="flex-1 text-center">
                   <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">{{ githubProfile.followers }}</p>
                   <p class="text-[9px] font-mono uppercase tracking-wider text-neutral-500">followers</p>
                 </div>
-                <div class="w-px h-6 bg-neutral-200 dark:bg-neutral-700" />
-                <div class="text-center">
+                <div class="w-px h-8 bg-neutral-200 dark:bg-neutral-700" />
+                <div class="flex-1 text-center">
                   <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">{{ githubProfile.following }}</p>
                   <p class="text-[9px] font-mono uppercase tracking-wider text-neutral-500">following</p>
                 </div>
-                <div class="w-px h-6 bg-neutral-200 dark:bg-neutral-700" />
-                <div class="text-center">
+                <div class="w-px h-8 bg-neutral-200 dark:bg-neutral-700" />
+                <div class="flex-1 text-center">
                   <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">{{ githubProfile.repos }}</p>
                   <p class="text-[9px] font-mono uppercase tracking-wider text-neutral-500">repos</p>
                 </div>
