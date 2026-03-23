@@ -20,17 +20,21 @@
     "better-sqlite3": "^12.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "eslint": "^10.0.3",
+    "eslint": "^10.1.0",
     "nuxt": "^4.4.2",
     "nuxt-component-meta": "^0.17.2",
-    "nuxt-studio": "^1.4.0",
+    "nuxt-studio": "^1.5.1",
     "tailwind-merge": "^3.5.0",
     "vue": "^3.5.30",
-    "vue-router": "^5.0.3"
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.74",
-    "baseline-browser-mapping": "^2.10.8"
+    "@resvg/resvg-js": "^2.6.2",
+    "@takumi-rs/core": "^0.73.1",
+    "baseline-browser-mapping": "^2.10.10",
+    "nuxt-og-image": "^6.1.2",
+    "satori": "^0.26.0"
   }
 }

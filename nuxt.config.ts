@@ -11,8 +11,21 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxtjs/i18n",
     "nuxt-component-meta",
+    "nuxt-og-image",
     // "nuxt-studio", // Désactivé: incompatible avec @nuxt/content v3.7.1 (alpha)
   ],
+
+  site: {
+    url: "https://kbrdn.dev",
+    name: "kbrdn.dev",
+  },
+
+  ogImage: {
+    defaults: {
+      width: 1200,
+      height: 630,
+    },
+  },
 
   // i18n configuration
   i18n: {
@@ -57,9 +70,10 @@ export default defineNuxtConfig({
   // Font configuration
   fonts: {
     families: [
-      { name: "Inter", provider: "google" },
+      { name: "Inter", provider: "google", weights: [400, 500, 600, 700, 900] },
       { name: "Caveat", provider: "google" },
-      { name: "Fenix", provider: "google" },
+      { name: "Fenix", provider: "google", weights: [400] },
+      { name: "Monaspace Krypton", provider: "local", src: "/fonts/monaspace/MonaspaceKrypton-Static.ttf" },
     ],
   },
 
@@ -71,6 +85,11 @@ export default defineNuxtConfig({
 
   // Page transition
   app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      ],
+    },
     pageTransition: {
       name: 'page',
       mode: 'out-in',
