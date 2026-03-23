@@ -99,7 +99,7 @@ onUnmounted(() => {
 
         <!-- CTA Buttons -->
         <div class="flex flex-wrap items-center gap-3">
-          <UTooltip :text="t('hero.bookCall')">
+          <UTooltip :text="t('hero.bookCallTip')">
             <UButton
               :to="calendarLink"
               target="_blank"
@@ -111,7 +111,7 @@ onUnmounted(() => {
               {{ t('hero.bookCall') }}
             </UButton>
           </UTooltip>
-          <UTooltip :text="t('hero.viewOnGithub')">
+          <UTooltip :text="t('hero.viewOnGithubTip')">
             <UButton
               :to="githubUrl"
               target="_blank"
@@ -123,7 +123,7 @@ onUnmounted(() => {
               {{ t('hero.viewOnGithub') }}
             </UButton>
           </UTooltip>
-          <UTooltip :text="t('hero.readBlog')">
+          <UTooltip :text="t('hero.readBlogTip')">
             <UButton
               to="/blog"
               color="neutral"

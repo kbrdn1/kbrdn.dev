@@ -30,7 +30,13 @@ withDefaults(defineProps<Props>(), {
   ],
 });
 
-// Map platform to icon name
+// Fetch GitHub profile stats
+const { data: githubProfile } = await useFetch('/api/github/profile', {
+  query: { username: 'kbrdn1' },
+  lazy: true,
+  server: false,
+})
+
 const getIcon = (platform: string): string => {
   const icons: Record<string, string> = {
     github: "i-simple-icons-github",
@@ -99,7 +105,8 @@ const getDescription = (platform: string): string => {
           </UButton>
 
           <template #content>
-            <div class="w-64 p-3">
+            <div class="w-72 p-3">
+              <!-- Header: icon + name + handle -->
               <div class="flex items-center gap-3 mb-2">
                 <div class="flex items-center justify-center w-10 h-10 border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800">
                   <UIcon :name="link.icon || getIcon(link.platform)" class="w-5 h-5 text-neutral-600 dark:text-neutral-300" />
@@ -109,9 +116,34 @@ const getDescription = (platform: string): string => {
                   <p v-if="getHandle(link.platform)" class="text-xs font-mono text-neutral-500">{{ getHandle(link.platform) }}</p>
                 </div>
               </div>
-              <p v-if="getDescription(link.platform)" class="text-xs text-neutral-500 dark:text-neutral-400 mb-2">
+
+              <!-- Description -->
+              <p v-if="getDescription(link.platform)" class="text-xs text-neutral-500 dark:text-neutral-400 mb-3">
                 {{ getDescription(link.platform) }}
               </p>
+
+              <!-- GitHub stats -->
+              <div
+                v-if="link.platform === 'github' && githubProfile"
+                class="flex items-center gap-4 mb-3 py-2 px-3 border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
+              >
+                <div class="text-center">
+                  <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">{{ githubProfile.followers }}</p>
+                  <p class="text-[9px] font-mono uppercase tracking-wider text-neutral-500">followers</p>
+                </div>
+                <div class="w-px h-6 bg-neutral-200 dark:bg-neutral-700" />
+                <div class="text-center">
+                  <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">{{ githubProfile.following }}</p>
+                  <p class="text-[9px] font-mono uppercase tracking-wider text-neutral-500">following</p>
+                </div>
+                <div class="w-px h-6 bg-neutral-200 dark:bg-neutral-700" />
+                <div class="text-center">
+                  <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">{{ githubProfile.repos }}</p>
+                  <p class="text-[9px] font-mono uppercase tracking-wider text-neutral-500">repos</p>
+                </div>
+              </div>
+
+              <!-- Visit link -->
               <div class="flex items-center gap-1 text-[10px] font-mono text-primary-500">
                 <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3 h-3" />
                 {{ t('socials.visitProfile') }}

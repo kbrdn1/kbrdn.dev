@@ -28,8 +28,11 @@ export default {
     sponsor: "Sponsor",
     availableForHire: "In contract at Jewely x Flippad",
     bookCall: "Book a Call",
+    bookCallTip: "Schedule a 30-min meeting to discuss your project",
     viewOnGithub: "View on GitHub",
+    viewOnGithubTip: "Explore my open-source projects and contributions",
     readBlog: "Read Blog",
+    readBlogTip: "Articles about dev, tools and side projects",
   },
 
   // Navigation
