@@ -7,10 +7,6 @@ const availableLocales = computed(() => {
   return locales.value.filter((l) => typeof l !== 'string')
 })
 
-const currentLocale = computed(() => {
-  return availableLocales.value.find((l) => l.code === locale.value)
-})
-
 const nextLocaleName = computed(() => {
   const next = locale.value === 'en' ? 'fr' : 'en'
   const found = availableLocales.value.find((l) => l.code === next)
@@ -33,10 +29,9 @@ const tooltipText = computed(() =>
       <button
         type="button"
         :class="cn(
-          'flex items-center justify-center px-3 py-2',
+          'flex items-center justify-center w-full h-full',
           'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100',
-          'bg-transparent',
-          'transition-all uppercase text-xs font-medium tracking-wider'
+          'transition-all uppercase text-xs font-medium tracking-wider cursor-pointer'
         )"
         :aria-label="tooltipText"
         @click="toggleLocale"
@@ -45,16 +40,7 @@ const tooltipText = computed(() =>
       </button>
     </UTooltip>
     <template #fallback>
-      <div
-        :class="cn(
-          'flex items-center justify-center px-3 py-2',
-          'text-neutral-500',
-          'bg-transparent',
-          'uppercase text-xs font-medium tracking-wider'
-        )"
-      >
-        --
-      </div>
+      <span class="text-neutral-500 uppercase text-xs font-medium tracking-wider">--</span>
     </template>
   </ClientOnly>
 </template>

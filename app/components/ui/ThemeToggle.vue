@@ -26,10 +26,9 @@ const tooltipText = computed(() =>
       <button
         type="button"
         :class="cn(
-          'flex items-center justify-center px-3 py-2',
+          'flex items-center justify-center w-full h-full',
           'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100',
-          'bg-transparent',
-          'transition-all'
+          'transition-all cursor-pointer'
         )"
         :aria-label="tooltipText"
         @click="toggleTheme"
@@ -47,15 +46,7 @@ const tooltipText = computed(() =>
       </button>
     </UTooltip>
     <template #fallback>
-      <div
-        :class="cn(
-          'flex items-center justify-center px-3 py-2',
-          'text-neutral-500',
-          'bg-transparent',
-        )"
-      >
-        <div class="w-4 h-4" />
-      </div>
+      <div class="flex items-center justify-center w-4 h-4" />
     </template>
   </ClientOnly>
 </template>
