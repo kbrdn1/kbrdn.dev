@@ -165,20 +165,22 @@ function scrollToHeading(id: string) {
           </div>
 
           <!-- TOC sidebar + promo card -->
-          <div class="hidden lg:flex flex-col w-64 shrink-0">
-            <BlogToc
-              :items="tocItems"
-              :active-heading="activeHeading"
-              :progress="readProgress"
-              @scroll-to="scrollToHeading"
-            />
-            <BlogSidebarCard
-              title="LazyCurl — TUI HTTP Client"
-              description="A modern HTTP client built in Go with Bubble Tea. Test APIs directly from your terminal."
-              image="/images/blog/lazycurl/banner.png"
-              badge="New"
-              url="https://github.com/kbrdn1/LazyCurl"
-            />
+          <div class="hidden lg:block w-64 shrink-0">
+            <div class="sticky top-20 flex flex-col gap-4">
+              <BlogToc
+                :items="tocItems"
+                :active-heading="activeHeading"
+                :progress="readProgress"
+                @scroll-to="scrollToHeading"
+              />
+              <BlogSidebarCard
+                title="LazyCurl — TUI HTTP Client"
+                description="A modern HTTP client built in Go with Bubble Tea. Test APIs directly from your terminal."
+                image="/images/blog/lazycurl/banner.png"
+                badge="New"
+                url="https://github.com/kbrdn1/LazyCurl"
+              />
+            </div>
           </div>
         </div>
 

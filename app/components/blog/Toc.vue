@@ -16,7 +16,7 @@ const emit = defineEmits<{
     class="w-full shrink-0"
     aria-label="Table of contents"
   >
-    <div class="sticky top-20 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono">
+    <div class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono">
       <!-- Header with progress -->
       <div class="flex items-center justify-between px-3 py-2">
         <span class="text-[9px] uppercase tracking-widest text-neutral-400">sommaire</span>

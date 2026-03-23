@@ -23,7 +23,7 @@ function dismiss() {
 <template>
   <div
     v-if="!dismissed"
-    class="hidden lg:block mt-4"
+    class="w-full"
   >
     <div
       class="relative overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-all duration-300 hover:border-primary-500/40"
