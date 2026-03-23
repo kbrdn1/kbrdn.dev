@@ -2,6 +2,7 @@
 defineProps<{
   items: { id: string; text: string; level: number }[]
   activeHeading: string
+  progress?: number
 }>()
 
 const emit = defineEmits<{
@@ -16,10 +17,26 @@ const emit = defineEmits<{
     aria-label="Table of contents"
   >
     <div class="sticky top-20 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono">
-      <div class="px-3 py-2">
+      <!-- Header with progress -->
+      <div class="flex items-center justify-between px-3 py-2">
         <span class="text-[9px] uppercase tracking-widest text-neutral-400">sommaire</span>
+        <span
+          v-if="progress !== undefined"
+          class="text-[10px] font-bold tabular-nums text-primary-500"
+        >
+          {{ progress }}%
+        </span>
       </div>
-      <div class="mx-3 border-b border-neutral-200 dark:border-neutral-800" />
+
+      <!-- Progress bar -->
+      <div class="mx-3 h-px bg-neutral-200 dark:bg-neutral-800 relative overflow-hidden">
+        <div
+          class="absolute inset-y-0 left-0 bg-primary-500 transition-all duration-300"
+          :style="{ width: `${progress || 0}%` }"
+        />
+      </div>
+
+      <!-- Items -->
       <div class="p-3">
         <ul class="space-y-px">
           <li

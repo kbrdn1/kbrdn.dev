@@ -3,6 +3,7 @@ defineProps<{
   items: { id: string; text: string; level: number }[]
   activeHeading: string
   activeHeadingText: string
+  progress?: number
 }>()
 
 const emit = defineEmits<{
@@ -62,6 +63,14 @@ function handleScrollTo(id: string) {
         </div>
       </Transition>
 
+      <!-- Progress bar (full width slider above the bar) -->
+      <div class="h-0.5 bg-neutral-200 dark:bg-neutral-800 relative">
+        <div
+          class="absolute inset-y-0 left-0 bg-primary-500 transition-all duration-300"
+          :style="{ width: `${progress || 0}%` }"
+        />
+      </div>
+
       <!-- Always visible bar -->
       <button
         type="button"
@@ -71,6 +80,12 @@ function handleScrollTo(id: string) {
         <span class="text-[9px] font-mono uppercase tracking-widest text-neutral-400 shrink-0">Sommaire</span>
         <span class="flex-1 text-xs font-mono text-primary-500 truncate text-left">
           {{ activeHeadingText }}
+        </span>
+        <span
+          v-if="progress !== undefined"
+          class="text-[10px] font-mono font-bold tabular-nums text-primary-500 shrink-0"
+        >
+          {{ progress }}%
         </span>
         <UIcon
           name="i-heroicons-chevron-up"

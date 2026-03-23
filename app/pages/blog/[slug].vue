@@ -118,6 +118,14 @@ onMounted(() => {
 
 onUnmounted(() => observer?.disconnect())
 
+// Reading progress based on active heading position in TOC
+const readProgress = computed(() => {
+  if (!tocItems.value.length || !activeHeading.value) return 0
+  const idx = tocItems.value.findIndex(i => i.id === activeHeading.value)
+  if (idx < 0) return 0
+  return Math.round(((idx + 1) / tocItems.value.length) * 100)
+})
+
 const activeHeadingText = computed(() => {
   const item = tocItems.value.find(i => i.id === activeHeading.value)
   return item?.text || ''
@@ -160,6 +168,7 @@ function scrollToHeading(id: string) {
           <BlogToc
             :items="tocItems"
             :active-heading="activeHeading"
+            :progress="readProgress"
             @scroll-to="scrollToHeading"
           />
         </div>
@@ -222,6 +231,7 @@ function scrollToHeading(id: string) {
       :items="tocItems"
       :active-heading="activeHeading"
       :active-heading-text="activeHeadingText"
+      :progress="readProgress"
       @scroll-to="scrollToHeading"
     />
   </div>
