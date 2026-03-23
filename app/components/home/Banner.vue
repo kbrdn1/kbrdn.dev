@@ -40,10 +40,10 @@ const isDark = computed(() => colorMode.value === 'dark')
         href="https://github.com/kbrdn1/LazyCurl"
         target="_blank"
         rel="noopener noreferrer"
-        :class="[
+        :class="cn(
           'flex items-center gap-2 px-4 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider transition-colors',
           'text-white/90 hover:text-white',
-        ]"
+        )"
       >
         <span class="inline-flex items-center gap-1.5">
           <UIcon name="i-heroicons-rocket-launch" class="w-3.5 h-3.5" />

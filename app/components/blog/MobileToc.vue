@@ -43,13 +43,13 @@ function handleScrollTo(id: string) {
             >
               <button
                 type="button"
-                :class="[
+                :class="cn(
                   'flex items-center w-full text-left text-xs leading-snug py-1.5 px-2 rounded transition-all',
-                  item.level >= 3 ? 'ml-4' : '',
+                  item.level >= 3 && 'ml-4',
                   activeHeading === item.id
                     ? 'text-primary-500 bg-primary-500/10'
                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200',
-                ]"
+                )"
                 @click="handleScrollTo(item.id)"
               >
                 <span v-if="activeHeading === item.id" class="shrink-0 text-primary-500 mr-1.5 select-none">▸</span>
@@ -74,7 +74,7 @@ function handleScrollTo(id: string) {
         </span>
         <UIcon
           name="i-heroicons-chevron-up"
-          :class="['w-4 h-4 text-neutral-400 transition-transform', mobileTocOpen ? 'rotate-180' : '']"
+          :class="cn('w-4 h-4 text-neutral-400 transition-transform', mobileTocOpen && 'rotate-180')"
         />
       </button>
     </div>

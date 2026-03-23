@@ -40,12 +40,12 @@ const iconColorMap = {
 
 <template>
   <div
-    :class="[
+    :class="cn(
       'my-6 flex items-start gap-3 px-4 py-3 border text-sm',
       styleMap[props.type],
-    ]"
+    )"
   >
-    <UIcon :name="iconMap[props.type]" :class="['w-5 h-5 shrink-0 mt-0.5', iconColorMap[props.type]]" aria-hidden="true" />
+    <UIcon :name="iconMap[props.type]" :class="cn('w-5 h-5 shrink-0 mt-0.5', iconColorMap[props.type])" aria-hidden="true" />
     <div>
       <p v-if="props.title" class="font-medium mb-1">{{ props.title }}</p>
       <div class="text-neutral-600 dark:text-neutral-300 [&_a]:text-primary-500 [&_a]:underline [&_a]:underline-offset-2 [&_p]:m-0 [&_p]:inline">

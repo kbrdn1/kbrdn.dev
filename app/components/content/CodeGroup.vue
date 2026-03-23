@@ -43,11 +43,11 @@ const tabs = computed(() => {
         v-for="tab in tabs"
         :key="tab.index"
         class="px-4 py-2 text-sm font-medium transition-colors"
-        :class="[
+        :class="cn(
           activeTab === tab.index
             ? 'border-b-2 border-primary-500 bg-white text-primary-600 dark:bg-neutral-950 dark:text-primary-400'
             : 'text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100',
-        ]"
+        )"
         @click="activeTab = tab.index"
       >
         {{ tab.label }}

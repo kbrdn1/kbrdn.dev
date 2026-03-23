@@ -298,7 +298,7 @@ function formatTime(seconds: number): string {
               <span class="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-0.5" />
               <button
                 type="button"
-                :class="['flex items-center justify-center w-7 h-7 transition-colors', shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500']"
+                :class="cn('flex items-center justify-center w-7 h-7 transition-colors', shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500')"
                 :aria-label="shuffleMode ? 'Disable shuffle' : 'Enable shuffle'"
                 @click.prevent.stop="shuffleMode = !shuffleMode"
               >
@@ -306,7 +306,7 @@ function formatTime(seconds: number): string {
               </button>
               <button
                 type="button"
-                :class="['flex items-center justify-center w-7 h-7 transition-colors', showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500']"
+                :class="cn('flex items-center justify-center w-7 h-7 transition-colors', showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500')"
                 :aria-label="showListing ? 'Hide tracklist' : 'Show tracklist'"
                 @click.prevent.stop="showListing = !showListing"
               >
@@ -388,20 +388,20 @@ function formatTime(seconds: number): string {
               v-for="(t, index) in tracks"
               :key="index"
               type="button"
-              :class="[
+              :class="cn(
                 'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
                 currentIndex === index
                   ? 'bg-primary-500/10'
                   : 'hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
-              ]"
+              )"
               @click.prevent.stop="goToTrack(index)"
             >
-              <span :class="['text-[10px] font-mono w-4 text-right shrink-0', currentIndex === index ? 'text-primary-500' : 'text-neutral-400']">
+              <span :class="cn('text-[10px] font-mono w-4 text-right shrink-0', currentIndex === index ? 'text-primary-500' : 'text-neutral-400')">
                 {{ currentIndex === index && isPlaying ? '▸' : String(index + 1) }}
               </span>
               <img :src="t.cover" :alt="t.album" class="w-8 h-8 shrink-0 object-cover" />
               <div class="min-w-0 flex-1">
-                <span :class="['block text-xs truncate', currentIndex === index ? 'text-primary-500 font-medium' : 'text-neutral-900 dark:text-neutral-100']">
+                <span :class="cn('block text-xs truncate', currentIndex === index ? 'text-primary-500 font-medium' : 'text-neutral-900 dark:text-neutral-100')">
                   {{ t.title }}
                 </span>
                 <span class="block text-[10px] text-neutral-500 truncate">

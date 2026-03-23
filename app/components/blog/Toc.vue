@@ -28,12 +28,12 @@ const emit = defineEmits<{
           >
             <button
               type="button"
-              :class="[
+              :class="cn(
                 'flex items-center w-full text-left text-[11px] leading-snug py-1 px-1.5 -mx-1.5 transition-all',
                 activeHeading === item.id
                   ? 'text-primary-500 bg-primary-500/10'
                   : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
-              ]"
+              )"
               @click="emit('scroll-to', item.id)"
             >
               <span v-if="activeHeading === item.id" class="shrink-0 text-primary-500 mr-1 select-none">▸</span>
