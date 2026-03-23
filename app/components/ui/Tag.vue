@@ -44,8 +44,10 @@ const VARIANT_CLASSES = {
 const props = withDefaults(defineProps<{
   label: string
   variant?: 'default' | 'light' | 'primary' | 'sky' | 'status' | 'auto'
+  tooltip?: boolean
 }>(), {
   variant: 'default',
+  tooltip: true,
 })
 
 const variantClasses = computed(() => {
@@ -58,7 +60,18 @@ const variantClasses = computed(() => {
 </script>
 
 <template>
+  <UTooltip v-if="tooltip" :text="label">
+    <span
+      :class="cn(
+        'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
+        variantClasses,
+      )"
+    >
+      {{ label }}
+    </span>
+  </UTooltip>
   <span
+    v-else
     :class="cn(
       'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
       variantClasses,

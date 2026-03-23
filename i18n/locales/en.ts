@@ -40,6 +40,12 @@ export default {
     switchLanguage: "Switch language",
   },
 
+  // Theme
+  theme: {
+    switchToLight: "Switch to light mode",
+    switchToDark: "Switch to dark mode",
+  },
+
   // Section Labels
   sections: {
     about: "ABOUT",
@@ -117,10 +123,14 @@ export default {
     label: "socials",
     more: "More",
     github: "GitHub",
+    githubDesc: "Open-source projects & contributions",
     twitter: "Twitter",
+    twitterDesc: "Thoughts on tech & dev",
     linkedin: "LinkedIn",
+    linkedinDesc: "Professional profile & experience",
     medium: "Medium",
     behance: "Behance",
+    visitProfile: "Visit profile",
   },
 
   // GitHub Chart
