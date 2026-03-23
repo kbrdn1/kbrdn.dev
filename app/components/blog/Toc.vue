@@ -13,7 +13,7 @@ const emit = defineEmits<{
 <template>
   <aside
     v-if="items.length > 0"
-    class="hidden lg:block w-64 shrink-0"
+    class="w-full shrink-0"
     aria-label="Table of contents"
   >
     <div class="sticky top-20 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono">
