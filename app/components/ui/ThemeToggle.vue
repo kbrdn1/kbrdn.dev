@@ -26,8 +26,10 @@ const tooltipText = computed(() =>
       <button
         type="button"
         :class="cn(
-          'flex items-center justify-center w-full h-full',
+          'flex items-center justify-center',
+          'min-w-[48px] min-h-[48px] px-4',
           'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100',
+          'hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50',
           'transition-all cursor-pointer'
         )"
         :aria-label="tooltipText"
@@ -46,7 +48,9 @@ const tooltipText = computed(() =>
       </button>
     </UTooltip>
     <template #fallback>
-      <div class="flex items-center justify-center w-4 h-4" />
+      <div class="flex items-center justify-center min-w-[48px] min-h-[48px]">
+        <div class="w-4 h-4" />
+      </div>
     </template>
   </ClientOnly>
 </template>
