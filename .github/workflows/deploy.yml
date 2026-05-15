@@ -107,11 +107,21 @@ jobs:
       url: ${{ needs.resolve.outputs.env == 'prod' && 'https://kbrdn.dev' || 'https://pre-prod.kbrdn.dev' }}
     steps:
       - name: Setup ssh
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 700 ~/.ssh
+          # passer par env var puis printf garantit un newline final propre
+          # (openssh refuse une key sans trailing newline avec "error in libcrypto")
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          # normalise CRLF -> LF si copier-collé depuis windows
+          sed -i 's/\r$//' ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          # sanity check sans dévoiler la clé
+          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Compute image ref
         id: img
