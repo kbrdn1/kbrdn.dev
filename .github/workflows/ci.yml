@@ -58,6 +58,7 @@ jobs:
       - name: Build
         run: bun run build
         env:
+          NODE_OPTIONS: --max-old-space-size=4096
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
 
