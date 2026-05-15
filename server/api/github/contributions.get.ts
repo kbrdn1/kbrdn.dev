@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, setResponseHeader, createError } from 'h3'
+import { defineEventHandler, getQuery, setResponseHeader } from 'h3'
 
 interface ContributionDay {
   contributionCount: number
