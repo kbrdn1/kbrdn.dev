@@ -1,0 +1,268 @@
+---
+title: "Construire gwm — Un manager de git worktrees TUI en Rust"
+description: "Comment j'ai construit gwm, un outil CLI + TUI pour gérer les git worktrees à travers tous mes projets — du besoin concret au binaire libgit2 vendored."
+publishedAt: "2026-05-18"
+tags: ["rust", "tui", "git", "open-source", "project"]
+banner: false
+---
+
+## Le problème avec les git worktrees
+
+J'utilise les git worktrees presque tous les jours. C'est la meilleure façon que je connaisse de travailler sur plusieurs branches en parallèle sans payer le coût d'un `git stash`, d'un `git checkout`, ou d'un `cargo build` complet à chaque bascule. Une branche = un dossier physique = un workspace isolé avec sa propre `target/`, ses propres dépendances installées, sa propre config locale. Tout cohabite, rien ne s'écrase.
+
+Mais le workflow autour des worktrees est aussi pénible que la primitive est puissante.
+
+Sur le projet Laravel d'avant, on avait un script bash dans `tools/worktree-manager.sh` qui orchestrait la création : `git worktree add`, puis copie du `.env.testing`, puis vérification que le `.env` copié ne pointait pas vers AWS RDS (incident vécu, on s'est fait prendre une fois — `php artisan test` avec `RefreshDatabase` qui tourne sur la base de prod, je n'ai pas envie de revivre ça), puis suppression du symlink `vendor/` qui casse `composer dump-autoload` quand il est partagé entre plusieurs worktrees, puis `composer install`, puis `direnv allow`.
+
+Le script faisait ce qu'il fallait, mais il était figé dans ce projet. Quand j'ai voulu appliquer la même hygiène à `kbrdn.dev` (Nuxt + Bun) ou à un projet Go, j'ai dû tout dupliquer en l'adaptant. Et à chaque modification, j'oubliais de propager. Le wrapper Laravel avait sa logique anti-RDS hardcodée. Le wrapper Node aurait dû avoir une logique anti-`node_modules`-symlinké. Le wrapper Rust aurait dû gérer le partage incrémental de `target/`. Trois scripts, trois philosophies, trois sources de bugs.
+
+Côté outils existants, [`gwq`](https://github.com/coucou-no/gwq) est sympa pour lister et supprimer, mais il n'a pas de notion de bootstrap. `git worktree` brut est minimaliste par design. Je cherchais quelque chose qui :
+
+- pose la même convention de branche (`<type>/#<issue>-<desc>`) dans **tous** mes projets,
+- exécute un bootstrap **déclaratif** lisible par n'importe qui qui lit le repo,
+- ouvre une **TUI** quand je veux naviguer rapidement entre worktres et que je ne veux pas taper trois `git worktree list | grep`,
+- soit **un seul binaire**, sans dépendance Python/Node/Bash en chaîne, qui se compile partout.
+
+J'ai écrit **gwm**.
+
+## C'est quoi gwm
+
+`gwm` (pour _git worktree manager_) est un outil CLI + TUI en Rust qui pilote `git worktree` via `libgit2` vendored. Un binaire unique, zéro dépendance à l'exécution. Il se lance soit en mode CLI :
+
+```bash
+gwm create feat 42 user-authentication
+# → branche feat/#42-user-authentication
+# → worktree dans ~/cc-worktree/<repo>/feat-42-user-authentication/
+# → bootstrap exécuté selon .gwm.toml
+```
+
+…soit sans argument, ce qui ouvre la TUI ratatui sur le repo courant :
+
+```bash
+gwm
+# → liste des worktrees, sidebar de détails à droite, raccourcis vim
+```
+
+La TUI affiche une table avec le nom du worktree, sa branche, son status (clean / dirty / `↑N ↓M` vs upstream), et son chemin. À droite, si le terminal fait au moins 120 colonnes, un panneau **details** style lazyssh montre les commits récents, les fichiers modifiés, et un cheat-sheet des raccourcis. La touche `l` suspend la TUI et lance `lazygit` fullscreen sur le worktree sélectionné — quand on quitte lazygit, gwm reprend exactement où on l'avait laissé. `gg` saute au premier worktree, `G` au dernier, `Tab` bascule le focus entre la liste et la sidebar.
+
+Tout ça vit dans un crate Rust unique avec une séparation `bin` / `lib` :
+
+```
+src/
+├── lib.rs              # public re-exports — les tests importent ça
+├── main.rs             # binaire, dispatch CLI/TUI
+├── error.rs            # GwmError (thiserror) + Result alias
+├── config.rs           # parsing .gwm.toml
+├── naming.rs           # conventions de branche / chemin
+├── worktree.rs         # libgit2 ops (add, list, remove, prune)
+├── bootstrap.rs        # run(BootstrapCtx) → BootstrapReport
+├── cli.rs              # clap subcommands
+└── tui/
+    ├── mod.rs          # event loop crossterm
+    ├── app.rs          # state
+    └── ui.rs           # rendering ratatui
+```
+
+La séparation `lib` est volontaire : tous les tests d'intégration vivent sous `tests/`, jamais en `#[cfg(test)] mod tests` inline. Ils créent un vrai repo git dans un `TempDir`, exécutent l'opération, et vérifient l'état on-disk + libgit2. Le hardcore TDD du projet (74 tests à la v0.2.0) repose là-dessus.
+
+## Pourquoi Rust et pourquoi libgit2 vendored
+
+Rust règle plusieurs problèmes en même temps.
+
+**Un binaire compilé unique**, statiquement lié, qui se distribue par `cargo install --path .` ou par téléchargement d'archive. Pas de Python à provisionner, pas de Node.js, pas de runtime à packager pour Linux/macOS/Windows séparément. Le release shippe les cinq cibles standard (Linux x86_64 + aarch64, macOS Intel + Apple Silicon, Windows x86_64) en un workflow GitHub Actions.
+
+**libgit2 vendored** est le détail qui change tout. La crate [`git2`](https://docs.rs/git2) peut linker contre une libgit2 système ou la compiler depuis ses sources. La feature `vendored-libgit2` choisit la deuxième option. Concrètement, `cargo install gwm` (ou un build CI) compile libgit2 depuis ses sources C et le lie statiquement dans le binaire. Aucune dépendance partagée à `libgit2.so` côté utilisateur. Aucun risque de version libgit2 incompatible côté CI. C'est plus lent à compiler la première fois, mais une fois le binaire en place, il marche partout, isolé du système.
+
+```toml
+[dependencies]
+git2 = { version = "0.20", default-features = false, features = ["vendored-libgit2"] }
+```
+
+Le reste du stack est plus convenu :
+
+- [`clap`](https://docs.rs/clap) pour le parsing CLI avec le pattern `derive`,
+- [`ratatui`](https://docs.rs/ratatui) + [`crossterm`](https://docs.rs/crossterm) pour la TUI,
+- [`serde`](https://docs.rs/serde) + [`toml`](https://docs.rs/toml) pour `.gwm.toml`,
+- [`thiserror`](https://docs.rs/thiserror) pour l'enum d'erreur unifiée (`GwmError`).
+
+## La feature signature : bootstrap déclaratif
+
+Le cœur de gwm, c'est le fichier `.gwm.toml` au root du repo. Au lieu d'un script bash qui sait tout, on déclare ce que doit faire le bootstrap après chaque création de worktree. Quatre primitives :
+
+```toml
+[worktree]
+base           = "{home}/cc-worktree/{repo}"
+path_pattern   = "{type}-{issue}-{desc}"
+branch_pattern = "{type}/#{issue}-{desc}"
+
+# 1. Copies depuis le repo principal vers le worktree
+[[bootstrap.copy]]
+from = ".env"
+to   = ".env"
+required = false
+guards = ["no-aws-rds"]
+
+# 2. Garde-fous regex sur les fichiers copiés
+[[bootstrap.guard]]
+name = "no-aws-rds"
+deny_patterns = ["amazonaws\\.com", "\\.rds\\."]
+on_match = "seed-from-example"
+example_file = ".env.example"
+
+# 3. Symlinks refusés (le worktree doit avoir son propre dossier local)
+[[bootstrap.no_symlink]]
+path = "vendor"
+
+# 4. Commandes shell post-bootstrap
+[[bootstrap.command]]
+name = "composer install"
+run  = "composer install --no-interaction --prefer-dist"
+when = "file_exists:composer.json"
+env  = { COMPOSER_IGNORE_PLATFORM_REQ = "ext-imagick" }
+```
+
+Chaque primitive correspond à un problème concret. Les **copies** déplacent les `.env*` et autres fichiers non-versionnés du repo principal vers le worktree neuf. Les **guards** sont les garde-fous regex : avant de copier le fichier, on grep dedans. Si un pattern interdit matche (par exemple un hostname AWS RDS qui sent la prod), on _refuse_ la copie. À la place, on seed depuis `.env.example` ou on abort le bootstrap selon `on_match`. Les **no_symlink** suppriment les symlinks hérités du repo principal qui ne devraient jamais être partagés entre worktrees (`vendor/`, `node_modules/`, `target/` — bref tout ce qui dépend de l'état local du build). Les **commands** sont les hooks post-copy : `composer install`, `bun install`, `cargo fetch`, `direnv allow`. Avec un prédicat `when = "file_exists:..."` pour ne pas tenter `composer install` sur un repo qui n'a pas de `composer.json`.
+
+Le résultat est lisible par n'importe qui qui ouvre le repo. Pas besoin de connaître Bash. Pas besoin de relire un script de 200 lignes. La config raconte l'histoire : voilà ce qui se passe quand on crée un worktree ici.
+
+Côté code, le bootstrap se résume à une seule fonction publique :
+
+```rust
+pub fn run(ctx: &BootstrapCtx) -> Result<BootstrapReport> {
+  let mut report = BootstrapReport::default();
+  for step in &ctx.config.bootstrap.steps_in_order() {
+    let outcome = step.execute(ctx);
+    report.steps.push(outcome);
+  }
+  Ok(report)
+}
+```
+
+Chaque step retourne un `StepOutcome` avec un status (`Ok` / `Skipped` / `Warning` / `Failed`) et un détail textuel. La TUI affiche le rapport dans un overlay quand on crée ou re-bootstrap un worktree :
+
+```
+✓ copy .env.testing → .env.testing
+· copy .env → .env  (skipped: source missing)
+! no-symlink vendor (removed inherited symlink)
+✓ command: composer install (8.2s)
+· command: npm install  (skipped: no package.json)
+```
+
+Le `·` est volontaire — il dit "j'ai considéré ce step, il n'y avait rien à faire". C'est important pour un outil qu'on relit un mois plus tard.
+
+## L'interface TUI
+
+La TUI a évolué entre v0.1 et v0.2.
+
+À la v0.1, c'était une simple `List` ratatui : un par worktree, sélection au clavier, formulaire de création en overlay. Fonctionnel, mais frustrant dès qu'on a plus de cinq worktrees ouverts (un par feature en cours, un pour les bumps deps, un pour les expériences) et qu'on veut savoir où en est chacun sans `cd` dedans.
+
+À la v0.2, j'ai refait le rendu en `Table` avec quatre colonnes (NAME / BRANCH / STATUS / PATH) dont les largeurs s'adaptent au contenu, et ajouté un panneau **details** à droite qui ne s'affiche que si le terminal est assez large. Le panneau s'inspire visuellement de `lazyssh` :
+
+```
+┌─ worktrees (4) ──────────────────────┬─ Details ─────────────────┐
+│ ▶ feat-10-tui-sidebar       feat/…   │ feat-10-tui-sidebar       │
+│   feat-42-search            feat/…   │                           │
+│   fix-7-locked-detection    fix/…    │ Basic Settings:           │
+│ ★ gwm-cli                   main     │   Branch: feat/#10-tui-…  │
+│                                      │   Head: 2404ae9           │
+│                                      │   Status: clean           │
+│                                      │                           │
+│                                      │ Recent commits:           │
+│                                      │   2404ae9 perf: cache…    │
+│                                      │   3d8c74b docs: sideba…   │
+│                                      │   98b1335 feat: detail…   │
+│                                      │                           │
+│                                      │ Commands:                 │
+│                                      │   Enter: Copy path        │
+│                                      │       l: Lazygit          │
+│                                      │       v: Toggle sidebar   │
+│                                      │     gg: Jump to first     │
+│                                      │      G: Jump to last      │
+└──────────────────────────────────────┴───────────────────────────┘
+```
+
+Le panneau est responsive : caché si le terminal fait moins de 120 colonnes, affiché sinon. Toggle manuel avec `v`. `Tab` bascule le focus liste ↔ sidebar (la bordure du panneau focus passe en cyan). Quand la sidebar a le focus, `j` / `k` scrollent le panneau au lieu de naviguer dans la liste — comportement vim-like sans surprise.
+
+Le contenu du panneau est **caché** sur l'objet `App` et invalidé seulement quand la sélection change ou que l'utilisateur appuie sur `r` (refresh). Sans cache, chaque keypress provoquerait deux `git log` et un `git status --short` sur le worktree sélectionné — la responsivité s'effondrerait dès qu'on tient `j` enfoncé. La review Copilot a attrapé ce point exact pendant la PR : "the PR description says cached, but no caching is actually implemented." Honteux et utile. Le commit qui ajoute le cache est le seul `⚡ perf(tui):` du projet pour l'instant.
+
+Et la touche `l`. C'est la plus satisfaisante. Quand on est sur un worktree intéressant et qu'on veut faire un rebase compliqué ou une histoire interactive, on appuie sur `l`. La TUI gwm se suspend proprement : `LeaveAlternateScreen`, raw mode désactivé, curseur restauré. `lazygit -p <path>` est lancé en synchrone, héritant du terminal — lazygit prend tout l'écran, on fait ses opérations git, on quitte. La TUI gwm est restaurée à l'écran, exactement où on l'avait laissée. La logique tient en une dizaine de lignes :
+
+```rust
+fn run_lazygit(
+  terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
+  path: &std::path::Path,
+  app: &mut App,
+) -> Result<()> {
+  disable_raw_mode()?;
+  execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
+  terminal.show_cursor()?;
+
+  let spawn = std::process::Command::new("lazygit").arg("-p").arg(path).status();
+
+  enable_raw_mode()?;
+  execute!(terminal.backend_mut(), EnterAlternateScreen, EnableMouseCapture)?;
+  terminal.clear()?;
+
+  match spawn {
+    Ok(s) if s.success() => app.status = format!("lazygit exited ok ({})", path.display()),
+    Ok(s) => app.status = format!("lazygit exited with code {:?}", s.code()),
+    Err(e) => app.status = format!("failed to launch lazygit: {}", e),
+  }
+  Ok(())
+}
+```
+
+Le `which::which("lazygit").is_err()` est testé avant le spawn — si lazygit n'est pas dans le `PATH`, on ne quitte pas la TUI. Une ligne dans la status bar suffit.
+
+## Workflow type d'une journée
+
+Concrètement, à quoi ça ressemble dans la vraie vie. Je travaille sur trois choses en parallèle : une feature TUI, un fix de bug, une review de PR. Chacune dans son worktree, chacune avec son shell et son `cargo build` indépendant.
+
+```bash
+# Nouvelle feature
+gwm create feat 10 tui-lazygit-sidebar
+# → bootstrap automatique (cargo fetch + direnv allow si .envrc)
+cd "$(gwm path tui-lazygit-sidebar)"
+
+# Travailler, committer normalement
+# `cargo test` n'interfère pas avec les builds des autres worktrees
+
+# Naviguer entre worktrees
+gwm
+# → TUI, sélectionner, Enter pour copier le path dans la clipboard
+# → ou l pour lancer lazygit sur le worktree sélectionné
+
+# Cleanup à la fin
+gwm remove tui-lazygit-sidebar --delete-branch
+# → supprime le dossier + l'admin .git/worktrees/ + la branche locale
+```
+
+La convention de branche `<type>/#<issue>-<desc>` est mise en place automatiquement à partir des trois arguments de `gwm create`. Les types sont fixés (`feat`, `fix`, `hotfix`, `docs`, `test`, `refactor`, `chore`, `perf`, `ci`, `build`) et `gwm types` les liste. Le chemin du worktree suit `path_pattern`, par défaut `{type}-{issue}-{desc}`. Tout ça reste configurable via `.gwm.toml` si on veut une autre convention.
+
+## Au-delà du tool : industrialiser la release
+
+Construire l'outil, c'est un truc. L'expédier proprement, c'est un autre projet à part entière, qu'on sous-estime souvent quand on commence un side-project. À la v0.2, j'ai pris le temps de monter l'infrastructure que je voulais :
+
+- une branche `dev` comme branche d'intégration où arrivent toutes les features et tous les bumps,
+- une CI `ci.yml` qui tourne sur `main` ET sur `dev`,
+- une `pre-release.yml` qui se déclenche sur les tags `v*.*.*-rc.*` (et `-alpha.*`, `-beta.*`) et publie une GitHub Release marquée `prerelease: true`,
+- une `release.yml` qui se déclenche sur les tags `v*.*.*` stables et publie la release officielle,
+- un `dependabot.yml` configuré avec `target-branch: dev` pour que les bumps automatiques arrivent sur la branche d'intégration sans manip manuelle.
+
+Les deux workflows de release construisent les cinq mêmes cibles (Linux x86_64 + aarch64 via `cross`, macOS Intel + Apple Silicon, Windows x86_64), produisent des archives `.tar.gz` ou `.zip` avec des sidecars `.sha256` portables. Le tag `v0.2.0-rc.1` cuit le premier matin sert de validation : binaires construits, installables, fonctionnels. Le soir, le même code reçoit le tag stable `v0.2.0` après merge `dev` → `main`. Aucune surprise entre les deux puisque le code est identique — seul le label de version a changé.
+
+Ce setup est encore récent et il y a des leçons à en tirer. Le pattern glob `v*.*.*` de la première version de `release.yml` matche aussi `v0.2.0-rc.1`, ce qui a fait fire les deux workflows en parallèle sur le tag rc — c'est un follow-up à régler. La race condition de `softprops/action-gh-release@v2` sur les uploads parallèles a été corrigée en passant à `v3`. Le `gh pr edit --base dev` sur les PR dependabot ne survit pas au rebase automatique de dependabot, d'où le besoin de `target-branch: dev` dans `dependabot.yml`. Trois petits bugs, trois apprentissages.
+
+## Ce qu'il reste à faire
+
+À la v0.2, le bootstrap supporte un seul type de prédicat dans `when` : `file_exists:`. C'est suffisant pour 90% des cas mais on aurait envie de `cmd_exists:`, `env_set:`, ou des opérateurs `&&` / `||`. Idem côté TUI : une recherche fuzzy sur la liste de worktrees serait précieuse dès qu'on dépasse dix entrées. Et un mode `--watch` qui re-render la sidebar quand le worktree sélectionné change dehors (par exemple : un `git pull` lancé depuis un autre shell).
+
+La roadmap publique liste ces points dans le README. Les contributions sont bienvenues, mais surtout, gwm a atteint le point où il fait disparaître la friction qu'il a été conçu pour éliminer. C'est le seul critère qui compte pour un outil personnel.
+
+Le code source est sur [github.com/kbrdn1/gwm-cli](https://github.com/kbrdn1/gwm-cli). Les binaires v0.2.0 sont disponibles pour Linux, macOS et Windows dans [les releases GitHub](https://github.com/kbrdn1/gwm-cli/releases). Et pour installer depuis les sources :
+
+```bash
+cargo install --git https://github.com/kbrdn1/gwm-cli
+```
+
+Une fois en place, faites `gwm` dans n'importe quel repo git, et voyez si ça remplace votre workflow.
