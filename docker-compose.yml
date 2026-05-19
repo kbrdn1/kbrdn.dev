@@ -1,12 +1,10 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       - NODE_ENV=production
       - HOST=0.0.0.0
@@ -14,10 +12,10 @@ services:
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - RESEND_API_KEY=${RESEND_API_KEY}
       - NUXT_STUDIO_TOKEN=${NUXT_STUDIO_TOKEN}
-      - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-https://kbrdn.dev}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000"]
       interval: 30s
       timeout: 10s
       retries: 3

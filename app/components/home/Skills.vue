@@ -214,6 +214,7 @@ function highlightCode(code: string, lang: string): string {
   // Function calls (word before parenthesis)
   html = html.replace(/\b(\w+)\(/g, '\u0002f$1\u0003(')
 
+  /* eslint-disable no-control-regex -- markers internes pour la coloration syntaxique */
   // Now convert markers to actual HTML spans
   html = html
     .replace(/\u0001/g, '&')
@@ -224,6 +225,7 @@ function highlightCode(code: string, lang: string): string {
     .replace(/\u0002f([\s\S]*?)\u0003/g, '<span class="code-function">$1</span>')
     .replace(/\u0002v([\s\S]*?)\u0003/g, '<span class="code-variable">$1</span>')
     .replace(/\u0002a([\s\S]*?)\u0003/g, '<span class="code-attribute">$1</span>')
+  /* eslint-enable no-control-regex */
 
   return html
 }

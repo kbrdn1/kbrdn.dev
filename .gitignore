@@ -34,3 +34,10 @@ lerna-debug.log*
 # Editor directories
 .vscode/*
 !.vscode/extensions.json
+
+# Claude Code local state
+.claude/
+
+# CI/CD artifacts hors repo
+*.tmp
+
