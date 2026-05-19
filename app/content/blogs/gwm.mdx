@@ -3,7 +3,8 @@ title: "Construire gwm — Un manager de git worktrees TUI en Rust"
 description: "Comment j'ai construit gwm, un outil CLI + TUI pour gérer les git worktrees à travers tous mes projets — du besoin concret au binaire libgit2 vendored."
 publishedAt: "2026-05-18"
 tags: ["rust", "tui", "git", "open-source", "project"]
-banner: false
+banner: true
+bannerImage: "/images/blog/gwm/banner.png"
 ---
 
 ## Le problème avec les git worktrees
@@ -26,6 +27,8 @@ Côté outils existants, [`gwq`](https://github.com/coucou-no/gwq) est sympa pou
 J'ai écrit **gwm**.
 
 ## C'est quoi gwm
+
+![gwm — Interface TUI avec la sidebar de détails](/images/blog/gwm/banner.png)
 
 `gwm` (pour _git worktree manager_) est un outil CLI + TUI en Rust qui pilote `git worktree` via `libgit2` vendored. Un binaire unique, zéro dépendance à l'exécution. Il se lance soit en mode CLI :
 
