@@ -121,29 +121,28 @@ docker-compose up
 ### CI/CD Workflows
 Located in `.github/workflows/`:
 
-**deploy.yml** - Main deployment pipeline:
-- Triggers on push to master (ignores docs/specs changes)
-- Build job: Bun install, lint, typecheck, build
-- Deploy job: Triggers Dokploy webhook with retry logic
-- Notify job: Creates GitHub step summary
+**deploy.yml** - Main deployment pipeline (build → push → SSH deploy):
+- Triggers on push to `main` (→ prod) and `dev` (→ preprod), ignoring `**.md` / `docs/` / `specs/` changes; `workflow_dispatch` supports a target env + rollback-only run
+- `resolve` job: derives env (prod/preprod) and image tag (main/dev) from the ref
+- `build` job: builds the multi-stage Docker image with buildx and pushes it to GHCR (`ghcr.io/<repo>:<tag>` + `:sha-<sha>`)
+- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) inline; writes a GitHub step summary
 
-**studio-sync.yml** - Content sync:
-- Triggers on content file changes in `app/content/`
-- Triggers Dokploy redeployment for content updates
+Content changes (`app/content/**.mdx`) deploy through this same pipeline — `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
 
 ### Production Deployment
-- **Platform**: Dokploy on VPS (72.60.212.44)
+- **Platform**: self-hosted VPS, image pulled from GHCR and deployed over SSH by `deploy.yml` (no Dokploy)
+- **Environments**: `main` → prod (https://kbrdn.dev), `dev` → preprod (https://pre-prod.kbrdn.dev)
 - **Domain**: kbrdn.dev with Let's Encrypt SSL
 - **Health Check**: `wget --spider http://localhost:3000` every 30s
 
 ### Required Secrets
-See `docs/SECRETS.md` for configuration:
-- `DOKPLOY_WEBHOOK_URL` - Deployment trigger
-- `GH_TOKEN` - GitHub API access
-- `RESEND_API_KEY` - Email sending
+Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
+- `VPS_HOST` / `VPS_USER` / `VPS_SSH_PRIVATE_KEY` - SSH deploy target + key
+- `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
+- `RESEND_API_KEY` - Email sending (contact form) — **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - Nuxt Studio API
 
 ## Active Technologies
 - TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker
 - File-based content (Markdown/MDX) via @nuxt/content, no database
-- Dokploy for container orchestration, GitHub Actions for CI/CD
+- GHCR for image registry, self-hosted VPS + SSH deploy, GitHub Actions for CI/CD
