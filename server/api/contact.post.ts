@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
           'Content-Type': 'application/json'
         },
         body: {
-          from: 'contact@kbrdn.dev',
+          from: 'contact@email.kbrdn.dev',
           to: 'hello@kbrdn.dev',
           subject: `New contact from ${body.name}`,
           html: `
@@ -60,7 +60,12 @@ export default defineEventHandler(async (event) => {
 
     return { success: true }
   } catch (error) {
-    console.error('Failed to send contact email:', error)
+    // Surface the real Resend error (status + response body) server-side —
+    // $fetch/ofetch puts the parsed API response under `.data` and the HTTP
+    // status under `.status`. The generic message is all the client gets.
+    const status = (error as { status?: number })?.status
+    const detail = (error as { data?: unknown })?.data ?? error
+    console.error(`Failed to send contact email (status: ${status ?? 'n/a'}):`, detail)
     throw createError({
       statusCode: 500,
       message: 'Failed to send message'
