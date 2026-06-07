@@ -37,7 +37,7 @@ const isDark = computed(() => colorMode.value === 'dark')
     <!-- Content -->
     <div class="absolute inset-0 flex items-center justify-center">
       <a
-        href="https://github.com/kbrdn1/LazyCurl"
+        href="https://github.com/kbrdn1/gwm-cli"
         target="_blank"
         rel="noopener noreferrer"
         :class="cn(
@@ -47,7 +47,7 @@ const isDark = computed(() => colorMode.value === 'dark')
       >
         <span class="inline-flex items-center gap-1.5">
           <UIcon name="i-heroicons-rocket-launch" class="w-3.5 h-3.5" />
-          {{ t('banner.lazycurl') }}
+          {{ t('banner.gwm') }}
         </span>
         <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" />
       </a>
