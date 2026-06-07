@@ -1,7 +1,7 @@
 export default {
   // Banner
   banner: {
-    lazycurl: "Découvrez LazyCurl — client HTTP TUI développé en Go",
+    gwm: "Découvrez gwm — gestionnaire de worktrees Git (CLI + TUI)",
   },
 
   // Common
@@ -82,7 +82,7 @@ export default {
       },
       crafting: {
         title: "En cours de création...",
-        description: "LazyCurl — un client HTTP TUI moderne construit en Go. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
+        description: "gwm — un gestionnaire de worktrees Git (CLI + TUI) construit en Rust. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
       },
       blog: {
         title: "Lisez mes articles",
@@ -216,7 +216,7 @@ export default {
         features: [
           "Modèle d'ownership et fondamentaux du borrow checker",
           "Outils CLI avec clap et crossterm",
-          "Développement de LazyCurl — un client HTTP TUI en Go",
+          "Développement de gwm — un gestionnaire de worktrees Git en Rust (CLI + TUI)",
           "Intérêt croissant pour les cibles WebAssembly",
         ],
       },

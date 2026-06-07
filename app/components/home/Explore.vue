@@ -20,7 +20,7 @@ const slides = computed<Slide[]>(() => [
   {
     title: t('explore.slides.crafting.title'),
     description: t('explore.slides.crafting.description'),
-    cta: { label: 'LazyCurl', href: 'https://github.com/kbrdn1/LazyCurl', icon: 'i-simple-icons-github' },
+    cta: { label: 'gwm', href: 'https://github.com/kbrdn1/gwm-cli', icon: 'i-simple-icons-github' },
   },
   {
     title: t('explore.slides.blog.title'),

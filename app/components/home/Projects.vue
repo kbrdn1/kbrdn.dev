@@ -14,10 +14,10 @@ interface ProjectConfig {
 // Configure which repos to show and their display settings
 const projectConfigs: ProjectConfig[] = [
   {
-    repo: 'LazyCurl',
-    displayName: 'LazyCurl',
-    description: 'TUI HTTP Client',
-    tags: ['cli', 'open-source']
+    repo: 'gwm-cli',
+    displayName: 'gwm',
+    description: 'Git Worktree Manager',
+    tags: ['rust', 'cli']
   },
   {
     repo: 'kbrdn.dev-old',

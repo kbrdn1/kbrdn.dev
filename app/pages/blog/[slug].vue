@@ -174,11 +174,11 @@ function scrollToHeading(id: string) {
                 @scroll-to="scrollToHeading"
               />
               <BlogSidebarCard
-                title="LazyCurl — TUI HTTP Client"
-                description="A modern HTTP client built in Go with Bubble Tea. Test APIs directly from your terminal."
-                image="/images/blog/lazycurl/banner.png"
+                title="gwm — Git Worktree Manager"
+                description="A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap."
+                image="/images/blog/gwm/banner.png"
                 badge="New"
-                url="https://github.com/kbrdn1/LazyCurl"
+                url="https://github.com/kbrdn1/gwm-cli"
               />
             </div>
           </div>

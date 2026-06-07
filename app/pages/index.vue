@@ -47,7 +47,7 @@ if (import.meta.server) {
     isHirable: page.value?.isHirable ?? true,
     statusText: t('hero.availableForHire'),
     avatarUrl: `${siteOrigin}/images/avatar.jpg`,
-    bannerText: t('banner.lazycurl'),
+    bannerText: t('banner.gwm'),
     bannerImage: `${siteOrigin}/images/banners/dark.jpg`,
   });
 }
