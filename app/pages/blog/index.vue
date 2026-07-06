@@ -4,10 +4,13 @@ import { useI18n } from '#imports'
 definePageMeta({ layout: 'blog' })
 
 const { t } = useI18n()
+const { locale, collection } = useBlogCollection()
 
-// Fetch all blog posts
-const { data: posts } = await useAsyncData('blog-posts', () =>
-  queryCollection('blog').all()
+// Fetch all blog posts for the active locale
+const { data: posts } = await useAsyncData(
+  'blog-posts',
+  () => queryCollection(collection.value).all(),
+  { watch: [locale] },
 )
 
 // SEO metadata

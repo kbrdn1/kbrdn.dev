@@ -2,6 +2,7 @@
 import { useI18n } from "#imports";
 
 const { t } = useI18n();
+const { locale, collection } = useBlogCollection();
 
 // Use minimal layout without header/footer
 definePageMeta({
@@ -13,9 +14,11 @@ const { data: page } = await useAsyncData("home", () =>
   queryCollection("pages").path("/").first(),
 );
 
-// Fetch latest blog posts (5 most recent)
-const { data: latestPosts } = await useAsyncData("latest-posts", () =>
-  queryCollection("blog").order("publishedAt", "DESC").limit(5).all(),
+// Fetch latest blog posts (5 most recent) for the active locale
+const { data: latestPosts } = await useAsyncData(
+  "latest-posts",
+  () => queryCollection(collection.value).order("publishedAt", "DESC").limit(5).all(),
+  { watch: [locale] },
 );
 
 const { formatDate } = useFormatDate();
