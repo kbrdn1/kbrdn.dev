@@ -17,3 +17,18 @@ branch_pattern = "{type}/#{issue}-{desc}"
 # vendor/ isolation in the Laravel repos).
 [[bootstrap.no_symlink]]
 path = "node_modules"
+
+# ── exec / clean profiles for the TUI overlays (x / X) — issue #325 ──────────
+[exec.profiles.dev]
+command = ["npm", "run", "dev"]
+[exec.profiles.build]
+command = ["npm", "run", "build"]
+[exec.profiles.generate]
+command = ["npm", "run", "generate"]
+[exec.profiles.lint]
+command = ["npm", "run", "lint"]
+[exec.profiles.typecheck]
+command = ["npm", "run", "typecheck"]
+
+[clean.profiles.node]
+dirs = ["node_modules", "dist", ".nuxt", ".cache", "build"]
