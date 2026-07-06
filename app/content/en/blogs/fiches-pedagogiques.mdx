@@ -1,0 +1,88 @@
+---
+title: "Fiches Pédagogiques — Rebuilding an Educational Platform at Flippad"
+description: "A retrospective on the complete rebuild of an educational resources platform, spanning project management, team collaboration, and technical decisions."
+publishedAt: "2025-01-20"
+tags: ["project", "laravel", "nuxt", "career"]
+banner: true
+bannerImage: "/images/blog/fiches-pedagogiques/banner.png"
+---
+
+## A tool built for teachers
+
+Fiches Pédagogiques is an online platform designed for primary school teachers in France. From the very first years of preschool up to the final year of primary, the site offers a catalog of thousands of teaching resources: print-ready exercises, lesson sequences, themed activities, and materials organized by grade level, subject area, and skill.
+
+The idea is simple but valuable: save teachers time. Instead of building every lesson from scratch, they can search, filter, and download resources tailored to their class. Everything is organized by theme, subject area, and cycle, with a subscription system, one-off purchases, and school-wide licenses.
+
+The product had existed for several years with a loyal user base. But under the hood, things had stopped holding together.
+
+## Why we started over from scratch
+
+When we took over the project at Flippad, the platform was showing its age. The codebase had been built without an architecture designed to evolve. Every new feature became a balancing act. The UX was dated, performance was mediocre, and SEO was suffering.
+
+The client had concrete needs: a fast search engine with fine-grained filters, a modern back office for their editorial team, a flexible payment system (subscriptions, one-off purchases, school licenses), and a technical foundation capable of supporting growth. Bolting all of that onto the existing codebase would have cost more than starting over.
+
+So the decision was made: rebuild everything, from scratch.
+
+![The old version of Fiches Pédagogiques](/images/blog/fiches-pedagogiques/fp-old.png)
+
+![The new version of Fiches Pédagogiques](/images/blog/fiches-pedagogiques/fp-new.png)
+
+## My role on the project
+
+I was the project lead and backend developer. In practice, that meant wearing two hats every day.
+
+On the project management side, I owned the roadmap, broke the work into development phases, and acted as the bridge with the client to prioritize the work. On a project of this scale -- more than a hundred database tables -- planning was not a luxury. We had to sequence the work carefully to ship a functional MVP as early as possible, then iterate.
+
+On the technical side, I designed the backend architecture and built most of the API: the modular system, search, payments, the file-processing pipeline, and validation. Nearly 4,000 commits on the backend alone -- which gives a sense of the sheer volume of work and the constant iteration the rebuild demanded.
+
+## The team
+
+We were three developers on this project: Mehdi, Alexandre, and me.
+
+The split came together naturally. I took the lead on the backend and the overall architecture. Mehdi was the driving force behind the frontend -- he carried most of the client-side application, with more than 1,600 commits on the front end. Alexandre also worked on the frontend and on integration, bringing his perspective and contributions to the user journeys.
+
+On the design side, the mockups were handled by an external studio, La Guilde, with a freelance designer who produced the wireframes and UI mockups. We received the deliverables and implemented them. That added a layer of coordination -- making sure the mockups were technically realistic, adapting when there were gaps with the constraints of development -- but that separation let us focus on what we each did best.
+
+We challenged each other's choices, kept the front and back consistent despite the demanding pace, and above all moved forward together. Working as three developers on a complete rebuild, with design handled externally, is a balancing act: enough people to move fast, not so many that coordination becomes a drag.
+
+## Our approach
+
+The project kicked off in October 2024. The first commits laid the foundations: modular architecture, authentication, and the first business modules.
+
+We adopted a strategy of incremental releases -- the backend went through more than 40 versions before v1.0. Each release brought its own batch of features and fixes. This incremental approach let us validate regularly with the client and course-correct quickly.
+
+The bulk of the domain modeling was concentrated in the first few months: resources, collections, subject areas, cycles, themes, skills... a rich and deeply interconnected domain. Then came the cross-cutting systems: full-text search, payments, the back office, and file management.
+
+The frontend followed, with Mehdi building the interfaces as the API stabilized. Every part of the front end -- public pages, search engine, dashboard, checkout flow -- was built on a solid backend.
+
+## The challenges we ran into
+
+The first challenge, and no small one: rewriting an entire platform without disrupting the one running in production. That demands rigorous discipline. The new version had to cover every feature of the old one before we could switch over.
+
+Data migration was a substantial undertaking. Years of accumulated content, relationships between entities that hadn't always been modeled cleanly, inconsistencies to clean up. We had to write custom migration scripts, verify data integrity at every step, and make sure nothing got lost along the way.
+
+Security required a serious investment, including a full audit in March 2026 covering authentication, data validation, access control, and payments. The kind of work that's invisible to the user but essential.
+
+SEO was a constant concern. A poorly managed rebuild can tank your traffic overnight. We had to preserve URLs, handle redirects, and make sure the new pages were at least as well optimized.
+
+Finally, there was the sheer functional complexity. The payment system alone covered several use cases: individual subscriptions via Stripe, one-off purchases, school licenses with administrative purchase orders and collaborator invitations, manual subscriptions for edge cases, and promo codes. Each case had its own rules, its own flows, its own edge cases.
+
+## The result
+
+In March 2026, the front end reached its v1.0. More than 7,800 combined commits across the backend and frontend, 17 months of development, and a brand-new platform.
+
+On the performance side, search became smooth and fast, powered by a full-text engine with combined filters by grade level, theme, resource type, and subject area. On the UX side, the interface was rethought from top to bottom: intuitive navigation, resource previews, and a streamlined checkout flow. The dashboard lets users find their purchased resources, downloads, and invoices in a few clicks.
+
+The client's editorial team now has a full back office: adding resources with automatic file processing, managing collections, tracking statistics, and handling subscriptions and promotions.
+
+And above all, the new architecture is built to last. Adding a new admin module became a quick operation, where it used to be a headache on the old platform.
+
+## What I took away from it
+
+This project remains one of the most formative of my career. Leading a rebuild from scratch for more than a year touches on everything: business analysis, architecture, development, team coordination, and the client relationship.
+
+What I take away most of all is the importance of laying the foundations before writing code. The time spent modeling the domain, thinking through the architecture, and breaking the work into versions... that time paid off tenfold down the line.
+
+I also take away the strength of a small, tight-knit team. As three -- with Mehdi and Alexandre -- we shipped a product that could have kept a much larger team busy. The key: trust, clear responsibilities, and constant communication.
+
+And then there's the satisfaction of seeing a finished product, used every day by teachers who find real value in it. That's what gives the work meaning.

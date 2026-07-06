@@ -4,21 +4,32 @@ import { useI18n } from '#imports'
 definePageMeta({ layout: 'blog' })
 
 const { t } = useI18n()
+const { locale, collection, fallback } = useBlogCollection()
 const route = useRoute()
 const slug = route.params.slug as string
 
-const { data: post } = await useAsyncData(`blog-${slug}`, () =>
-  queryCollection('blog').path(`/blogs/${slug}`).first()
+const { data: post } = await useAsyncData(
+  `blog-${slug}`,
+  async () => {
+    const found = await queryCollection(collection.value).path(`/blogs/${slug}`).first()
+    // Fall back to the other locale when this article isn't translated yet
+    return found ?? (await queryCollection(fallback.value).path(`/blogs/${slug}`).first())
+  },
+  { watch: [locale] },
 )
 
 // Fetch related posts (recent posts excluding current)
-const { data: relatedPosts } = await useAsyncData(`blog-related-${slug}`, async () => {
-  const all = await queryCollection('blog')
-    .order('publishedAt', 'DESC')
-    .limit(7)
-    .all()
-  return all.filter(p => p.path !== `/blogs/${slug}`).slice(0, 6)
-})
+const { data: relatedPosts } = await useAsyncData(
+  `blog-related-${slug}`,
+  async () => {
+    const all = await queryCollection(collection.value)
+      .order('publishedAt', 'DESC')
+      .limit(7)
+      .all()
+    return all.filter(p => p.path !== `/blogs/${slug}`).slice(0, 6)
+  },
+  { watch: [locale] },
+)
 
 // Reading time estimate (~200 words/min)
 const readingTime = computed(() => {

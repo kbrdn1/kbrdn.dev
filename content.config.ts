@@ -3,6 +3,16 @@ import { defineContentConfig, defineCollection, z } from '@nuxt/content'
 // Content directory relative to project root
 const contentDir = 'app/content'
 
+// Shared schema for localized blog collections (blog_en / blog_fr)
+const blogSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  publishedAt: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  banner: z.boolean().optional(),
+  bannerImage: z.string().optional(),
+})
+
 export default defineContentConfig({
   collections: {
     pages: defineCollection({
@@ -29,20 +39,23 @@ export default defineContentConfig({
         }).optional(),
       }),
     }),
-    blog: defineCollection({
+    blog_en: defineCollection({
       type: 'page',
       source: {
-        include: 'blogs/**/*.{md,mdx}',
+        include: 'en/blogs/**/*.{md,mdx}',
+        prefix: '/blogs',
         cwd: contentDir
       },
-      schema: z.object({
-        title: z.string(),
-        description: z.string().optional(),
-        publishedAt: z.string().optional(),
-        tags: z.array(z.string()).optional(),
-        banner: z.boolean().optional(),
-        bannerImage: z.string().optional(),
-      }),
+      schema: blogSchema,
+    }),
+    blog_fr: defineCollection({
+      type: 'page',
+      source: {
+        include: 'fr/blogs/**/*.{md,mdx}',
+        prefix: '/blogs',
+        cwd: contentDir
+      },
+      schema: blogSchema,
     }),
     projects: defineCollection({
       type: 'page',
