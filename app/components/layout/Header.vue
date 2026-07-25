@@ -118,6 +118,7 @@ const isMobileMenuOpen = ref(false);
             @click="showBrandMenu = !showBrandMenu"
             @keydown.escape="showBrandMenu = false"
           >
+            <UiLogo class="mr-2 text-neutral-900 dark:text-neutral-100" />
             <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
           </button>
 
@@ -207,12 +208,13 @@ const isMobileMenuOpen = ref(false);
         <div class="relative group/brand-mobile">
           <button
             type="button"
-            class="font-mono font-bold text-sm tracking-tight"
+            class="flex items-center font-mono font-bold text-sm tracking-tight"
             :aria-expanded="showBrandMenu"
             aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
             @keydown.escape="showBrandMenu = false"
           >
+            <UiLogo class="mr-2 text-neutral-900 dark:text-neutral-100" />
             <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
           </button>
           <Transition
