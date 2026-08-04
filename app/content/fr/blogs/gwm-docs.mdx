@@ -1,0 +1,144 @@
+---
+title: "gwm.kbrdn.dev : sortir la doc du repo sans la déplacer"
+description: "Comment j'ai publié la doc de gwm sur un site Astro Starlight : un monorepo Bun multi-produits, un design system partagé, un pont de synchronisation depuis gwm-cli, et des cartes Open Graph générées au build. La doc, elle, ne bouge pas du repo du produit."
+publishedAt: "2026-08-04"
+tags: ["astro", "docs", "cloudflare", "open-source", "project"]
+banner: true
+bannerImage: "/images/blog/gwm-docs/fr/banner.png"
+---
+
+## Le problème n'était pas d'écrire la doc
+
+[gwm](/blog/gwm) a sa doc depuis longtemps. Elle vit dans le repo, sous `gwm-cli/docs/`, au format Nuxt Content : 76 pages Markdown, 38 en anglais à la racine et autant en français sous `fr/`, l'ordre des pages encodé dans les préfixes numériques des noms de fichiers (`1.getting-started/2.first-worktree.md`). Elle est complète, relue, à jour avec le code.
+
+Elle est aussi illisible en pratique.
+
+GitHub rend un fichier Markdown, pas un site. Pas de recherche, pas de sidebar, pas de fil d'Ariane, pas de « page suivante ». Les liens relatifs entre pages marchent une fois sur deux selon qu'on regarde le blob ou le rendu. Les captures s'affichent en pleine largeur au milieu du texte. La navigation entre le guide TUI et la référence CLI, c'est un aller-retour par l'arborescence du repo. Quelqu'un qui découvre l'outil ouvre le README, tombe sur un lien `docs/`, et se retrouve dans un explorateur de fichiers.
+
+Donc : un site. Mais pas au prix du déplacement de la doc.
+
+![La page d'accueil de gwm.kbrdn.dev, avec le graphe de branches, les chiffres du projet et la commande d'installation](/images/blog/gwm-docs/fr/landing.png)
+
+## La contrainte qui décide de tout
+
+La doc reste dans `gwm-cli`. C'est la seule décision structurante de ce projet, et tout le reste en découle.
+
+Une doc qui vit dans le repo du produit voyage avec le code. Une PR qui change le comportement de `gwm create` change la page `getting-started/first-worktree.md` dans le même diff, sous la même review, dans le même commit. Un `git checkout v1.2.0` sort le binaire de la 1.2.0 et sa doc. La CI du produit peut vérifier que la doc parle bien de flags qui existent.
+
+Sortir la doc pour la mettre dans un repo de site, c'est perdre tout ça d'un coup, contre un peu de confort d'édition. Le site n'est donc pas la source : c'est un **miroir**, reconstruit à chaque livraison.
+
+## Le monorepo
+
+Le site vit dans un repo à part, `kbrdn-docs`, pensé multi-produits dès le départ parce que gwm ne sera pas le seul (LazyCurl suit).
+
+```
+kbrdn-docs/
+├── packages/
+│   └── ds-shared/      # @kbrdn/ds-shared : thème, overrides Starlight, composants MDX
+└── sites/
+    └── gwm/            # @kbrdn/docs-gwm : le site Starlight de gwm
+```
+
+**Astro Starlight** pour le framework de doc, **Bun workspaces** pour le monorepo, **Cloudflare Pages** pour le déploiement, tout en statique. Pas de backend, pas de CMS, pas de base : git est la base de données, la CI est le pipeline, le CDN est le runtime.
+
+Starlight est conçu mono-produit, et je l'assume plutôt que de le tordre : un site par produit, avec son thème et sa landing, et la consistance dans un package partagé. `@kbrdn/ds-shared` porte la barre du haut, le footer, le sommaire, les tokens de thème et les composants MDX réutilisables. La règle d'entrée dans le package est simple : un composant n'y monte que s'il sert sur plus d'un produit. Tant qu'il n'y a qu'un site, la moitié du package est en pari, alors il reste petit.
+
+Le thème, c'est le « Claude Dark » du portfolio porté sur Starlight : mêmes tokens de couleur, Inter pour le corps, Fenix pour les titres, Monaspace pour le code, et un thème expressive-code assorti pour que les blocs de code ne sortent pas en github-dark au milieu du reste.
+
+![Une page de référence CLI en français : sidebar de navigation à gauche, contenu au centre, sommaire de page à droite](/images/blog/gwm-docs/fr/docs-page.png)
+
+## Le pont
+
+C'est la partie qui fait tenir la contrainte. Deux workflows qui se répondent.
+
+Côté `gwm-cli`, `docs-sync.yml` sonne la cloche. Il ne fait rien d'autre : un `repository_dispatch` vers le repo du site. Toute la conversion, le build et le déploiement vivent en face, parce que faire la sync ici traînerait un monorepo Bun dans la CI d'un projet Rust, pour un build que ce repo ne sait pas vérifier.
+
+Le déclencheur est `main`, et uniquement `main`. `dev` publierait des pages décrivant un comportement que personne ne peut installer. Les tags seraient pires : le glob `v*.*.*` de GitHub matche aussi `v1.6.0-rc.4`, et la doc de chaque release candidate partirait en ligne comme si elle était stable. `main` n'est atteinte que par une PR `dev` → `main` : ce qui y arrive est ce qui est livré, donc exactement ce que le site doit servir.
+
+```yaml
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'changelogs/**'
+      # Pas de la doc, mais le site le lit : le badge de version du header
+      # sort du [package] de ce fichier.
+      - 'Cargo.toml'
+```
+
+Côté `kbrdn-docs`, `sync-gwm.yml` rejoue la conversion, commite la dérive et réveille le déploiement. La concurrence est sérialisée sans `cancel-in-progress` : deux livraisons rapprochées poussent sur la même branche, et un run annulé entre son commit et son déploiement laisserait le site en retard d'une version sans que rien ne soit rouge.
+
+Les pages générées sont **commitées**, pas construites à la volée. Elles pourraient l'être, mais la CI construit le site à chaque push et à chaque PR : sans les pages dans l'arbre, elle casserait. Le dépôt reste l'image fidèle de ce qui est en ligne, et un `git log` sur le site dit quelle version de la doc amont est servie.
+
+## Ce que le script de conversion doit réparer
+
+Nuxt Content et Starlight rendent tous les deux du Markdown, mais pas le même. Chaque écart traité par le script correspond à un vrai problème rencontré, pas à une précaution :
+
+| Écart | Traitement |
+|:--|:--|
+| Ordre encodé dans le nom (`2.first-worktree.md`) | Renommé, et l'ordre posé en `sidebar.order` dans le frontmatter |
+| `# Titre` en ouverture de page | Retiré : Starlight rend déjà `title` en `<h1>` |
+| Clé `navigation:` (Nuxt) | Bloc entier retiré, pas juste sa ligne, sinon les enfants indentés restent orphelins et cassent le YAML |
+| Valeur de frontmatter contenant `:` | Requotée : Nuxt l'acceptait nue, le parser YAML d'Astro y lit un mapping imbriqué |
+| Captures `docs/<section>/_assets/x.png` | Déplacées sous `src/assets/captures/`, avec réécriture des deux formes de lien (anglais et français) |
+| Liens internes des pages françaises | Préfixés `/fr` |
+
+Le changelog, lui, n'est pas porté : il est **généré**. Une page par fichier de `gwm-cli/changelogs/`, triée en ordre sémantique décroissant (`1.10.0` doit passer devant `1.9.0`, ce que l'ordre lexicographique fait à l'envers), plus une page d'index avec le tableau des versions et leurs dates. Le badge de version du header sort du `[package]` du `Cargo.toml` amont, scopé à cette section parce qu'un `Cargo.toml` porte un `version = "…"` par dépendance et que le premier venu serait celui d'une crate tierce.
+
+## Le détail typographique que je ne pensais pas coder
+
+Je n'écris pas de tirets cadratins dans les textes publiés. La doc amont en est pleine, parce qu'elle a été écrite sur plusieurs mois sans cette règle.
+
+Le remplacement est un tiret court entouré d'espaces. Pas une virgule, pas un deux-points : ceux-là demanderaient de juger chaque phrase, alors qu'un tiret court garde la valeur d'incise sans jamais déplacer le sens. Le seul cadratin de cet article est dans le bloc qui suit, et c'est exactement le point : dans du code, le caractère est une donnée, pas de la typographie.
+
+```js
+const dedash = (s) => s.replace(/\s*—\s*/g, ' - ').replace(/—/g, '-');
+```
+
+Sur le corps, c'est moins simple : le code est intouchable. Un cadratin dans un bloc clôturé ou entre backticks fait partie d'un exemple, sortie de commande ou sigle d'une TUI, et le réécrire casse l'exemple. Le corps passe donc par une variante qui met les zones de code de côté avant de remplacer, puis les remet.
+
+Ça a mis un bug de côté au passage. La regex qui capture les spans de code était d'abord gourmande et bornée à la ligne : un span replié sur deux lignes désynchronisait l'appariement des backticks, et toute la prose qui suivait était traitée comme du code. Son cadratin survivait, sur une seule page, celle du changelog de la 1.0.0. Trouvé en relisant le rendu, pas en relisant la regex.
+
+## Les cartes Open Graph
+
+Chaque page a sa carte Open Graph, générée au build, à la charte du kit bannière que j'utilise pour les README. Ce sont **deux moteurs**, et ce n'est pas un caprice : aucun ne fait le travail seul.
+
+![La carte Open Graph de la page Install : cadre rayé, logo, badge de version, titre en Fenix et description de la page](/images/blog/gwm-docs/fr/og-card.png)
+
+Le cadre (rayures diagonales, filets, triangles d'angle) est un SVG rasterisé par **sharp**. Satori ne sait dessiner ni `repeating-linear-gradient` ni les triangles obtenus par `border-width`, qui sont exactement la signature du motif. Comme ce cadre est identique sur toutes les cartes, il est rendu une fois et mémoïsé : son coût est amorti sur l'ensemble des pages.
+
+Le texte est posé par **satori**. Le confier à sharp lui ferait résoudre la police auprès du système via librsvg, or Fenix n'est installée sur aucun runner de CI : le rendu retomberait sur une police par défaut sans rien signaler, et personne ne le verrait avant de regarder une carte en production. Satori façonne le texte depuis un buffer explicite et sort des glyphes déjà convertis en tracés.
+
+Une seule police, et c'est mesuré : satori rejette le woff2 (« Unsupported OpenType signature wOF2 »), or Inter et Monaspace ne sont distribuées qu'en woff2 dans le dépôt. Fenix est le seul TTF disponible, et c'est la police des titres du site, donc la carte reste dans la voix du produit.
+
+## Les chiffres viennent du contenu
+
+Le bandeau de la page d'accueil affiche quatre chiffres. Ils sont dérivés du contenu du site, pas écrits en dur :
+
+- les sous-commandes sont comptées dans les pages de référence CLI, en dédoublonnant (une commande peut être citée dans deux pages) ;
+- les versions publiées sont comptées dans les pages de changelog générées.
+
+Écrits en dur, ces chiffres seraient faux une livraison plus tard, et personne ne remarquerait avant longtemps. Ce qui ne peut pas être dérivé est écrit avec sa source citée en commentaire, et le compte de tests vient d'un `cargo test -- --list` réel plutôt que d'un comptage de marqueurs `#[test]`.
+
+Une nuance honnête : la page `/development/testing/` du site annonce encore un chiffre daté de la 1.0.0, parce qu'il vit dans la doc amont et se corrigera à la prochaine passe. C'est la contrepartie du miroir : le site ne peut pas être plus à jour que sa source.
+
+## Le SEO d'un site qui a deux adresses
+
+Un projet Cloudflare Pages est servi sur son adresse `*.pages.dev` en plus du domaine, et cette adresse ne se retire pas. Deux adresses pour le même contenu, c'est du contenu dupliqué.
+
+Le `site:` d'Astro pointe le domaine de production, donc le sitemap et les URLs canoniques désignent `gwm.kbrdn.dev`. Le `pages.dev` est écarté par un en-tête `X-Robots-Tag: noindex` posé dans `public/_headers`, et surtout **pas** par un `Disallow` dans le `robots.txt` : interdire le crawl rendrait l'en-tête invisible, et l'adresse resterait indexée sans jamais que le robot lise la directive qui l'exclut. Un `robots.txt` explicite est quand même servi, sinon Cloudflare y colle sa propre réponse et le sitemap n'est signalé nulle part.
+
+## Ce qui n'est pas fait
+
+Le versioning est prévu **par branche** : `release/gwm/v1.6` fige la doc d'une version et se déploie séparément. Rien n'est cutté pour l'instant, parce qu'il n'y a qu'une version vivante et qu'un sélecteur de version qui ne propose qu'une entrée est une pièce de plus à maintenir pour zéro service rendu.
+
+La génération automatique de la référence CLI depuis `gwm --help` est en attente pour la même raison : la référence est à jour, la maintenir à la main coûte encore moins cher que le générateur. Le jour où ça bascule, la génération ira côté `gwm-cli`, dans une action qui ouvre une PR de mise à jour ici.
+
+Et le vrai test du package partagé, ce sera le deuxième produit. Tant qu'un seul site le consomme, « composant partagé » et « composant du site gwm » sont indistinguables.
+
+## C'est en ligne
+
+[**gwm.kbrdn.dev**](https://gwm.kbrdn.dev) sert la doc de la version publiée de gwm, en anglais à la racine et [en français sous `/fr/`](https://gwm.kbrdn.dev/fr/) : démarrage, guide TUI, référence CLI, configuration `.gwm.toml`, intégrations, changelog complet et roadmap. Le site est sous licence MIT sur [github.com/kbrdn1/kbrdn-docs](https://github.com/kbrdn1/kbrdn-docs), le produit sur [github.com/kbrdn1/gwm-cli](https://github.com/kbrdn1/gwm-cli).
+
+Et si tu veux l'histoire de l'outil lui-même plutôt que celle de sa doc, [c'est par ici](/blog/gwm).
