@@ -9,6 +9,7 @@ Thanks for your interest in contributing to kbrdn.dev! Please take a moment to r
 - [Development](#development)
 - [Commit Convention](#commit-convention)
 - [Branch Convention](#branch-convention)
+- [Versioning & releases](#versioning--releases)
 - [GitHub Issue Management](#github-issue-management)
 - [Pull Request Process](#pull-request-process)
 
@@ -142,6 +143,18 @@ docs/#23-update-readme
 
 - `main` - Production branch (protected)
 - `dev` - Development branch (default for PRs)
+
+### Versioning & releases
+
+SemVer, single source of truth in `package.json`, changelog split one file per
+version under `changelogs/`. Tags drive deployment: `vX.Y.Z-rc.N` ships a
+frozen candidate to preprod, `vX.Y.Z` ships to production — both publish their
+GitHub release from the CI, never by hand.
+
+One constraint bites on the first cut: every PR to `main` must close an issue —
+the release PR included, so each version needs its own. `dev → main` merges as
+a **merge commit**, never a squash. Full protocol:
+[`docs/RELEASE.md`](docs/RELEASE.md).
 
 ## GitHub Issue Management
 

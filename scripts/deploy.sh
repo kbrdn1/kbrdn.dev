@@ -4,9 +4,19 @@
 # usage:
 #   deploy.sh --env prod    --image ghcr.io/kbrdn1/kbrdn.dev:main
 #   deploy.sh --env preprod --image ghcr.io/kbrdn1/kbrdn.dev:dev
+#   deploy.sh --env prod    --image ghcr.io/kbrdn1/kbrdn.dev:v1.0.0   # version précise
 #   deploy.sh --env prod    --build              # build local, sans registry
 #   deploy.sh --env prod    --skip-build         # redeploie l'image actuelle
-#   deploy.sh --env prod    --rollback           # bascule sur l'autre couleur si encore up
+#   deploy.sh --env prod    --rollback           # redémarre la couleur précédente
+#
+# deux façons de revenir en arrière, à ne pas confondre :
+#   --rollback              rebascule sur la couleur précédente, conservée
+#                           stoppée par le dernier deploy. Instantané, mais ne
+#                           remonte que d'un cran.
+#   --image ...:vX.Y.Z      redéploie une version précise depuis le registry.
+#                           Seule option qui traverse plusieurs versions, et la
+#                           seule qui survive à une perte des conteneurs — les
+#                           tags de version sont immutables (cf. release.yml).
 #
 # env vars consommées (passées au conteneur runtime):
 #   GITHUB_TOKEN       (obligatoire pour github contribs)
@@ -18,6 +28,25 @@ set -euo pipefail
 log()  { printf '\033[1;34m[deploy %s]\033[0m %s\n' "${ENV:-?}" "$*"; }
 warn() { printf '\033[1;33m[deploy %s]\033[0m %s\n' "${ENV:-?}" "$*" >&2; }
 die()  { printf '\033[1;31m[deploy %s]\033[0m %s\n' "${ENV:-?}" "$*" >&2; exit 1; }
+
+# Attend qu'un conteneur passe healthy. Renvoie 1 au lieu de mourir : le deploy
+# et le rollback n'ont pas le même ménage à faire en cas d'échec (l'un détruit
+# le conteneur neuf, l'autre doit laisser la couleur courante en place).
+wait_healthy() {
+  local name="$1" deadline=$((SECONDS + 90)) s=""
+  log "attente healthy de $name (timeout 90s)"
+  while (( SECONDS < deadline )); do
+    s=$(docker inspect -f '{{.State.Health.Status}}' "$name" 2>/dev/null || echo missing)
+    if [[ "$s" == healthy ]]; then
+      log "$name healthy"
+      return 0
+    fi
+    sleep 2
+  done
+  warn "$name pas healthy (state=$s) — logs:"
+  docker logs --tail=50 "$name" >&2 || true
+  return 1
+}
 
 [[ $EUID -eq 0 ]] || die "doit être lancé en root (modifie nginx)"
 
@@ -36,7 +65,9 @@ while [[ $# -gt 0 ]]; do
     --skip-build) SKIP_BUILD=1; shift ;;
     --rollback)   ACTION="rollback"; SKIP_BUILD=1; shift ;;
     --context)    BUILD_CONTEXT="$2"; shift 2 ;;
-    -h|--help)    sed -n '2,16p' "$0"; exit 0 ;;
+    # jusqu'à la première ligne vide, plutôt qu'une plage figée que le moindre
+    # ajout à l'en-tête tronque en silence
+    -h|--help)    sed -n '2,/^$/p' "$0"; exit 0 ;;
     *) die "flag inconnu: $1" ;;
   esac
 done
@@ -83,8 +114,26 @@ NEW_NAME="${NAME_PREFIX}${NEW}"
 log "actif: $CUR (:$CUR_PORT) — cible: $NEW (:$NEW_PORT)"
 
 if [[ "$ACTION" == "rollback" ]]; then
-  docker ps -q --filter "name=^${NEW_NAME}$" | grep -q . || die "rollback impossible: $NEW_NAME absent"
-  log "rollback vers $NEW (déjà up)"
+  # `ps -a` et non `ps` : depuis que le deploy conserve la couleur sortante au
+  # lieu de la supprimer, elle est là mais stoppée. Avant ce changement, le
+  # deploy la détruisait et ce rollback ne pouvait qu'échouer au repos.
+  docker ps -aq --filter "name=^${NEW_NAME}$" | grep -q . \
+    || die "rollback impossible: $NEW_NAME absent — viser une version précise avec --image ghcr.io/kbrdn1/kbrdn.dev:vX.Y.Z"
+
+  if ! docker ps -q --filter "name=^${NEW_NAME}$" | grep -q .; then
+    log "redémarrage de $NEW_NAME (conservé stoppé par le dernier deploy)"
+    docker start "$NEW_NAME" >/dev/null
+  fi
+
+  # Le stopper avant d'abandonner : il porte `--restart unless-stopped`, donc
+  # le laisser tourner le maintiendrait en vie (ou en boucle de redémarrage)
+  # sur un port que plus rien ne sert. Le chemin de deploy fait déjà l'analogue
+  # avec son `docker rm -f`.
+  if ! wait_healthy "$NEW_NAME"; then
+    docker stop "$NEW_NAME" >/dev/null 2>&1 || true
+    die "rollback abandonné, $CUR reste actif"
+  fi
+  log "rollback vers $NEW"
 else
   if [[ $BUILD_LOCAL -eq 1 ]]; then
     [[ -d "$BUILD_CONTEXT" ]] || die "context build manquant: $BUILD_CONTEXT"
@@ -107,36 +156,27 @@ else
     --restart unless-stopped \
     --label "kbrdn.env=$ENV" \
     --label "kbrdn.color=$NEW" \
+    --label "kbrdn.version=${IMAGE##*:}" \
     -e NODE_ENV=production \
     -e HOST=0.0.0.0 \
     -e PORT=3000 \
     -e NUXT_PUBLIC_SITE_URL="$SITE_URL" \
+    -e NUXT_APP_ENV="$ENV" \
     -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
     -e RESEND_API_KEY="${RESEND_API_KEY:-}" \
     -e NUXT_STUDIO_TOKEN="${NUXT_STUDIO_TOKEN:-}" \
     -p "127.0.0.1:$NEW_PORT:3000" \
-    --health-cmd "wget --spider -q http://127.0.0.1:3000" \
+    --health-cmd "wget -q -O /dev/null http://127.0.0.1:3000/api/health" \
     --health-interval=5s \
     --health-timeout=3s \
     --health-retries=3 \
     --health-start-period=15s \
     "$IMAGE" >/dev/null
 
-  log "attente healthy (timeout 90s)"
-  deadline=$((SECONDS + 90))
-  s=""
-  while (( SECONDS < deadline )); do
-    s=$(docker inspect -f '{{.State.Health.Status}}' "$NEW_NAME" 2>/dev/null || echo missing)
-    [[ "$s" == healthy ]] && break
-    sleep 2
-  done
-  if [[ "$s" != healthy ]]; then
-    warn "$NEW_NAME pas healthy (state=$s) — logs:"
-    docker logs --tail=50 "$NEW_NAME" >&2 || true
+  if ! wait_healthy "$NEW_NAME"; then
     docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
     die "deploy abandonné, $CUR reste actif"
   fi
-  log "$NEW_NAME healthy"
 fi
 
 # swap atomique upstream
@@ -159,7 +199,16 @@ upstream $UPSTREAM_NAME {
 }
 EOF
   nginx -t || true
-  [[ "$ACTION" != rollback ]] && docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
+  # Dans les deux cas la cible ne sert plus rien : l'upstream est revenu sur
+  # $CUR. Un deploy la détruit (elle vient d'être créée) ; un rollback la
+  # stoppe seulement — c'est une couleur qu'on veut pouvoir relancer — mais
+  # la laisser tourner sous `--restart unless-stopped` la maintiendrait en vie
+  # sur un port mort.
+  if [[ "$ACTION" != rollback ]]; then
+    docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
+  else
+    docker stop "$NEW_NAME" >/dev/null 2>&1 || true
+  fi
   die "nginx refuse la config"
 fi
 systemctl reload nginx
@@ -167,13 +216,25 @@ systemctl reload nginx
 log "drain 5s avant stop ancien"
 sleep 5
 
-# stop ancien (couleur opposée + legacy names)
-for name in "$CUR_NAME" "${LEGACY_NAMES[@]}"; do
-  if docker ps -aq --filter "name=^${name}$" | grep -q .; then
-    log "stop $name"
-    docker rm -f "$name" >/dev/null 2>&1 || true
-  fi
-done
+# La couleur sortante est stoppée mais CONSERVÉE : c'est elle que `--rollback`
+# redémarre. Elle était supprimée jusqu'ici, ce qui rendait le rollback
+# impossible dès que le déploiement précédent s'était bien passé.
+# Pas d'accumulation pour autant : le `docker rm -f "$NEW_NAME"` en début de
+# deploy nettoie celle du cycle d'avant, il n'y en a jamais plus d'une.
+if docker ps -q --filter "name=^${CUR_NAME}$" | grep -q .; then
+  log "stop $CUR_NAME (conservé pour rollback)"
+  docker stop "$CUR_NAME" >/dev/null 2>&1 || true
+fi
+
+# Les noms legacy, eux, n'ont pas vocation à revenir.
+if [[ ${#LEGACY_NAMES[@]} -gt 0 ]]; then
+  for name in "${LEGACY_NAMES[@]}"; do
+    if docker ps -aq --filter "name=^${name}$" | grep -q .; then
+      log "suppression du conteneur legacy $name"
+      docker rm -f "$name" >/dev/null 2>&1 || true
+    fi
+  done
+fi
 
 # coupe les compose projects legacy
 if [[ -f /srv/kbrdn.dev/docker-compose.yml ]] && docker compose -f /srv/kbrdn.dev/docker-compose.yml ps -q 2>/dev/null | grep -q .; then

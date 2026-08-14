@@ -90,6 +90,14 @@ jobs:
           context: .
           file: Dockerfile
           push: true
+          # Mêmes build-args que release.yml : sans eux /api/health annoncerait
+          # env=local sur preprod en permanence, puisque le déploiement passe
+          # par un wrapper VPS qui ne transmet pas forcément NUXT_APP_ENV.
+          # Pas d'APP_VERSION ici — une image de branche n'a pas de version de
+          # release, le fallback package.json est le bon.
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            APP_ENV=${{ needs.resolve.outputs.env }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:${{ needs.resolve.outputs.image_tag }}
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:sha-${{ github.sha }}
@@ -102,6 +110,14 @@ jobs:
     if: always() && (needs.build.result == 'success' || needs.resolve.outputs.rollback == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Clé partagée avec le job deploy de release.yml (les groupes de
+    # concurrence sont globaux au repo) : le merge dev → main déclenche ce
+    # workflow et le push du tag qui suit déclenche l'autre, tous deux vers
+    # prod. Sans cette sérialisation, deux `deploy.sh --env prod` manipulent en
+    # même temps les mêmes conteneurs blue/green et le même upstream nginx.
+    concurrency:
+      group: vps-deploy-${{ needs.resolve.outputs.env }}
+      cancel-in-progress: false
     environment:
       name: ${{ needs.resolve.outputs.env }}
       url: ${{ needs.resolve.outputs.env == 'prod' && 'https://kbrdn.dev' || 'https://pre-prod.kbrdn.dev' }}
