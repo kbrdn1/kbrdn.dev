@@ -28,6 +28,13 @@ migrates `[Unreleased]` into that file and empties this one — see
   release. Pushing to `dev` still redeploys preprod for day-to-day iteration —
   that path is untouched.
 
+- **SemVer versioning, starting at `1.0.0`**, with `package.json` as the single
+  source of truth and a changelog split one file per version. `release.yml`
+  refuses to publish when the tag and `package.json` disagree, or when the
+  notes file is missing — both checked before anything is deployed. The
+  protocol, including the two branch-protection constraints that bite on the
+  first cut, is in [`docs/RELEASE.md`](docs/RELEASE.md).
+
 - **`GET /api/health`** returning `{ status, version, sha, env }`, with the
   version baked in at build time from `package.json` and the sha passed as a
   Docker build arg. The container `HEALTHCHECK` now points at it instead of
