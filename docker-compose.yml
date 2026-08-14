@@ -15,7 +15,11 @@ services:
       - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-https://kbrdn.dev}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000"]
+      # Doit rester aligné sur le HEALTHCHECK du Dockerfile, qu'il remplace
+      # entièrement : sur `/`, la sonde passe au vert dès que la home rend côté
+      # serveur, y compris quand la couche API est morte. Et pas `--spider` :
+      # il émet un HEAD, que h3 ne route pas vers un handler .get (404).
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3

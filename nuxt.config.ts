@@ -1,3 +1,5 @@
+import pkg from "./package.json";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -81,6 +83,23 @@ export default defineNuxtConfig({
   runtimeConfig: {
     githubToken: process.env.GITHUB_TOKEN || "",
     resendApiKey: process.env.RESEND_API_KEY || "",
+    // Identité du build, exposée par /api/health. Figée ici au moment du
+    // build : c'est ce qui rend l'image auto-descriptive, une valeur lue à
+    // l'exécution suivrait le conteneur, pas l'artefact.
+    //
+    // APP_VERSION porte la version du tag, suffixe de pré-release compris
+    // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
+    // (`1.1.0`) — sans ça deux candidats successifs seraient indiscernables.
+    appVersion: process.env.APP_VERSION || pkg.version,
+    gitSha: process.env.GIT_SHA || "dev",
+    // Figée au build elle aussi, via le build-arg APP_ENV que passent les deux
+    // workflows : le déploiement traverse un wrapper sur le VPS, donc rien ne
+    // garantit qu'une variable de run atteigne le conteneur.
+    //
+    // Elle reste surchargeable à l'exécution, mais seulement par la convention
+    // Nuxt `NUXT_<CLÉ>` — c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
+    // fois le build figé.
+    appEnv: process.env.APP_ENV || "local",
   },
 
   // Page transition

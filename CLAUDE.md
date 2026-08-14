@@ -129,11 +129,21 @@ Located in `.github/workflows/`:
 
 Content changes (`app/content/**.mdx`) deploy through this same pipeline — `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
 
+**release.yml** - Tag-driven release + deploy (see `docs/RELEASE.md`):
+- Triggers on `push: tags` matching `v*.*.*`, so it never overlaps `deploy.yml` (which only watches branches); `workflow_dispatch` takes an explicit tag
+- `resolve` job: routes the tag via `scripts/resolve-release-tag.sh` — `vX.Y.Z-rc.N` → preprod + GitHub pre-release, `vX.Y.Z` → prod + release. Gates on `package.json` matching the tag and on the notes file existing, **before** anything deploys
+- `build` job: pushes an **immutable** `ghcr.io/<repo>:vX.Y.Z`, with `APP_VERSION` / `GIT_SHA` baked in as build args
+- `deploy` job: same SSH wrapper as `deploy.yml`, then verifies `/api/health` from the outside actually serves that version on that domain
+- `release` job: `gh release create` with `--notes-file changelogs/X.Y.Z.md`, title = the bare tag. **Never create the release by hand** — the CI owns it
+
+The routing logic lives in a script rather than inline YAML because getting it wrong ships an unvalidated candidate to kbrdn.dev; `scripts/resolve-release-tag.test.sh` covers it.
+
 ### Production Deployment
 - **Platform**: self-hosted VPS, image pulled from GHCR and deployed over SSH by `deploy.yml` (no Dokploy)
 - **Environments**: `main` → prod (https://kbrdn.dev), `dev` → preprod (https://pre-prod.kbrdn.dev)
 - **Domain**: kbrdn.dev with Let's Encrypt SSL
-- **Health Check**: `wget --spider http://localhost:3000` every 30s
+- **Health Check**: `wget -q -O /dev/null http://localhost:3000/api/health` every 30s. Not `--spider` — that sends a HEAD, and h3 does not route HEAD to a `.get` handler (HEAD returns 404 where GET returns 200), so a spider probe marks every container unhealthy
+- **Versioning**: SemVer from `1.0.0`, single source of truth in `package.json`. `GET /api/health` returns `{ status, version, sha, env }` — that is how you answer "which version is live". Cutting a version: `docs/RELEASE.md`
 
 ### Required Secrets
 Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
