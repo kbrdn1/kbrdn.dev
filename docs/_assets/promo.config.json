@@ -1,0 +1,13 @@
+{
+  "eyebrow": "Personal site & portfolio",
+  "version": "v1.0.0",
+  "wordmark": "kbrdn.dev",
+  "wordmarkSize": 104,
+  "tagline": "Nuxt 4, file-based content, shipped blue/green on a tag.",
+  "chips": ["Nuxt 4 + Nuxt UI v4", "Markdown content", "FR / EN", "OG images", "Blue/green deploy"],
+  "install": "bun install && bun run dev",
+  "footer": "github.com/kbrdn1/kbrdn.dev · TypeScript · Bun",
+  "motif": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='300' height='300' role='img' aria-label='kbrdn monogram'><g fill='#8a8a8a'><rect x='2' y='2' width='28' height='4'/><rect x='2' y='2' width='4' height='28'/><rect x='26' y='2' width='4' height='14'/><rect x='2' y='26' width='14' height='4'/></g><path d='M19 9 L7 16 L19 23 V19 L14 16 L19 13 Z' fill='#d4825d'/></svg>",
+  "width": 1600,
+  "height": 500
+}
