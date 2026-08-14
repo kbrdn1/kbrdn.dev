@@ -148,7 +148,7 @@ Deux mécanismes, à ne pas confondre :
 
 ```bash
 # d'un cran, instantané : redémarre la couleur précédente, conservée stoppée
-# ⚠️ ne marche qu'une fois le VPS synchronisé (cf. point ouvert plus bas) —
+# ⚠️ ne marche qu'une fois le VPS synchronisé (cf. « Synchroniser le VPS ») —
 #    jusque-là la couleur sortante est détruite à chaque deploy
 ssh <vps> 'ENV=prod rollback'
 
@@ -169,30 +169,92 @@ aussi, mais reconstruit l'image et tente de recréer une release qui existe déj
 - **`deploy.yml` a un `paths-ignore` sur `**.md` et `docs/**`.** Un merge de
   release qui ne toucherait que du markdown ne redéploierait pas prod par ce
   chemin — raison de plus pour que le déploiement de prod appartienne au tag.
-## Point ouvert : le wrapper VPS
+## La chaîne de déploiement
 
-`deploy.yml` et `release.yml` envoient `ENV=... IMAGE=... deploy` en SSH,
-c'est-à-dire une **commande nue configurée par variables d'environnement**,
-alors que `scripts/deploy.sh` de ce repo parse des **flags** et réinitialise
-`ENV` au démarrage. Les deux ne peuvent pas décrire le même binaire : il existe
-un wrapper sur le VPS, ou une copie de `deploy.sh` qui a drifté.
+`deploy.yml` et `release.yml` envoient `ENV=... IMAGE=... deploy` en SSH — une
+commande nue configurée par variables d'environnement — alors que
+`scripts/deploy.sh` parse des flags. Les deux interfaces sont réconciliées par
+un maillon qui ne se voyait pas depuis le repo :
 
-```bash
-ssh root@<VPS_HOST> 'type deploy rollback; cat $(command -v deploy)'
+```
+ssh root@vps "ENV=prod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:v1.1.0 GITHUB_TOKEN=... deploy"
+  └─ authorized_keys : restrict,command="/srv/github-deploy.sh"
+       ForceCommand ignore la commande du client ; elle reste lisible
+       dans $SSH_ORIGINAL_COMMAND
+  └─ /srv/github-deploy.sh   exporte les `clé=valeur`, prend le premier token nu
+                             comme action (deploy | rollback | status | ping)
+       exec /srv/deploy.sh --env prod --image ghcr.io/...
+  └─ /srv/deploy.sh          le moteur blue/green
 ```
 
-Tant que ce n'est pas tranché, les changements de ce repo n'ont pas tous le
-même sort :
+`/usr/local/bin/deploy` et `/usr/local/bin/rollback` existent aussi, mais ce
+sont des shims pour l'usage manuel sur le VPS — **le CI ne passe pas par eux**,
+le `ForceCommand` s'interpose avant.
+
+`/srv/github-deploy.sh` n'était versionné nulle part ; sa copie de référence
+vit désormais dans [`scripts/github-deploy.sh`](../scripts/github-deploy.sh).
+
+## Synchroniser le VPS
+
+`/srv/deploy.sh` est aujourd'hui **identique** à `scripts/deploy.sh` (mêmes
+sha256). Ce repo ne le déploie pas : le `ForceCommand` n'autorise que
+`deploy|rollback|status|ping`, donc ni `scp` ni `rsync` ne passent par la clé du
+CI. La synchronisation est **manuelle**, depuis un accès admin :
+
+```bash
+scp scripts/deploy.sh        root@<VPS_HOST>:/srv/deploy.sh
+scp scripts/github-deploy.sh root@<VPS_HOST>:/srv/github-deploy.sh   # si modifié
+ssh root@<VPS_HOST> 'chmod +x /srv/deploy.sh /srv/github-deploy.sh'
+```
+
+Tant que ce n'est pas fait, les changements de cette PR n'ont pas tous le même
+sort :
 
 | Change | Effet au merge |
 |---|---|
 | Version et env dans `/api/health` | **immédiat** — build-args, cuits dans l'image |
 | `HEALTHCHECK` du `Dockerfile` → `/api/health` | **immédiat** — cuit dans l'image |
 | Gates de `release.yml`, tag → deploy, release GitHub | **immédiat** — côté CI |
-| `--health-cmd` du `docker run` | **attend la sync VPS** — c'est un override de celui de l'image, lui-même déjà correct |
-| Label `kbrdn.version` | **attend la sync VPS** |
-| `-e NUXT_APP_ENV` | **attend la sync VPS** — sans effet utile, la valeur du build est déjà la bonne |
-| Rollback qui conserve la couleur sortante | **attend la sync VPS** — jusque-là `--rollback` reste cassé, seul `--image ...:vX.Y.Z` fonctionne |
+| `--health-cmd` du `docker run` | **après sync** — override de celui de l'image, lui-même déjà correct |
+| Label `kbrdn.version` | **après sync** — vide sur les conteneurs actuels |
+| `-e NUXT_APP_ENV` | **après sync** — sans effet utile, la valeur du build est déjà la bonne |
+| Rollback qui conserve la couleur sortante | **après sync** — jusque-là `--rollback` reste cassé, seul `--image ...:vX.Y.Z` fonctionne |
 
 Aucun de ces reports ne casse une release : le workflow ne dépend que de ce qui
 est cuit dans l'image ou exécuté côté CI.
+
+### L'état constaté sur le VPS
+
+Diagnostic du 2026-08-14, en lecture seule :
+
+| env | conteneur | couleur | port | image | health |
+|---|---|---|---|---|---|
+| prod | `kbrdn-prod-green` | green | 3001 | `:main` | healthy |
+| preprod | `kbrdn-preprod-blue` | blue | 3002 | `:dev` | healthy |
+
+**Une seule couleur par environnement**, et `docker ps -a` ne liste même pas les
+opposées — elles sont détruites en fin de déploiement. C'est ce qui rend le
+`--rollback` actuel incapable de fonctionner ailleurs que dans la fenêtre de
+drain de 5 s d'un déploiement en cours, et ce que corrige le passage au `docker
+stop`.
+
+Le seul déclencheur de déploiement est le SSH de GitHub Actions : ni Dokploy, ni
+watchtower, ni webhook, ni cron (vérifié). Le `docker-compose.yml` du repo, que
+`deploy.sh` nettoie défensivement en fin de course, n'a plus aucun conteneur
+actif — c'est du legacy.
+
+### Suivi
+
+- **Durcir `github-deploy.sh`** : il fait `export "$tok"` sur n'importe quelle
+  variable, `PATH` compris, alors que `deploy.sh` résout `docker`, `nginx` et
+  `systemctl` par le PATH, en root. Une allowlist (`ENV`, `IMAGE`,
+  `GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) ferme la porte.
+  L'escalade suppose déjà la clé privée SSH — donc quelqu'un qui peut de toute
+  façon déployer l'image de son choix en root — mais le correctif est bon marché.
+  À faire depuis le VPS, où il est testable.
+- **Les blocs `server{}` nginx** consommant `kbrdn_app` / `kbrdn_preprod_app`
+  n'ont été trouvés ni dans `sites-enabled/` ni dans `conf.d/`. Le mapping
+  upstream → port → conteneur est confirmé, le chemin domaine → upstream ne
+  l'est pas.
+- **Le digest de l'image prod** n'a pas été comparé au dernier `:main` du
+  registry : rien ne prouve que la prod tourne sur le dernier build de `main`.
