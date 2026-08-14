@@ -14,49 +14,6 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ## [Unreleased]
 
-### Added
-
-- **A release flow, where there was none**
-  ([#18](https://github.com/kbrdn1/kbrdn.dev/issues/18)). The site deployed
-  fine, but nothing tied a deployment to a version: images were tagged `:main`
-  and `:dev` (both mutable), `package.json` carried no `version` field at all,
-  and no one could answer "which version is live on pre-prod right now".
-
-  Tags now drive deployment. `vX.Y.Z-rc.N` builds an immutable
-  `ghcr.io/kbrdn1/kbrdn.dev:vX.Y.Z-rc.N`, ships it to **preprod** and opens a
-  GitHub pre-release; `vX.Y.Z` does the same for **prod** and publishes the
-  release. Pushing to `dev` still redeploys preprod for day-to-day iteration —
-  that path is untouched.
-
-- **SemVer versioning, starting at `1.0.0`**, with `package.json` as the single
-  source of truth and a changelog split one file per version. `release.yml`
-  refuses to publish when the tag and `package.json` disagree, or when the
-  notes file is missing — both checked before anything is deployed. The
-  protocol, including the two branch-protection constraints that bite on the
-  first cut, is in [`docs/RELEASE.md`](docs/RELEASE.md).
-
-- **`GET /api/health`** returning `{ status, version, sha, env }`, with the
-  version baked in at build time from `package.json` and the sha passed as a
-  Docker build arg. The container `HEALTHCHECK` now points at it instead of
-  `/`: the old probe passed as soon as the home page rendered server-side,
-  which stays true even when the API layer behind `/api/github/*` and
-  `/api/contact` is dead.
-
-### Changed
-
-- **Rollback actually rolls back**
-  ([#18](https://github.com/kbrdn1/kbrdn.dev/issues/18)). `scripts/deploy.sh`
-  used to `docker rm -f` the outgoing colour at the end of every deploy, which
-  left `--rollback` requiring a container that had just been destroyed — at
-  steady state it could only fail. The outgoing colour is now **stopped and
-  kept**, so `--rollback` restarts it and swaps nginx back, and the immutable
-  per-version images make `--image ghcr.io/kbrdn1/kbrdn.dev:vX.Y.Z` a real
-  return to a known version rather than a colour flip.
-
-- Containers carry a `kbrdn.version` label, so `docker inspect` answers the
-  same question as `/api/health` from inside the VPS.
-
 ## Past releases
 
-_None yet. `1.0.0` will be the first cut — see
-[`docs/RELEASE.md`](docs/RELEASE.md)._
+- [1.0.0](changelogs/1.0.0.md) — 2026-08-14
