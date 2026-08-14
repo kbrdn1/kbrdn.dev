@@ -248,7 +248,24 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
-          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          # ssh-keyscan expire au bout de 5 s par defaut, et son echec en
+          # derniere commande d'un step lance sous `bash -e` faisait tomber tout
+          # le deploiement — avec `2>/dev/null` pour masquer la raison. Vecu sur
+          # le premier deploiement prod de v1.0.0. Timeout explicite, retry, et
+          # verification qu'on a vraiment une cle avant de continuer.
+          for i in 1 2 3 4 5; do
+            if ssh-keyscan -T 10 -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null \
+               && [ -s ~/.ssh/known_hosts ]; then
+              echo "known_hosts ok (tentative $i)"
+              break
+            fi
+            echo "ssh-keyscan sans reponse (tentative $i/5)"
+            if [ "$i" -eq 5 ]; then
+              echo "::error::ssh-keyscan n'a pas recupere la cle hote apres 5 tentatives"
+              exit 1
+            fi
+            sleep 5
+          done
 
       - name: Deploy via ssh wrapper
         env:
