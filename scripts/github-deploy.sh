@@ -24,18 +24,35 @@
 # le workflow passe sa configuration par variables d'environnement, alors que
 # scripts/deploy.sh attend des flags.
 #
-# Note de durcissement (non appliquée, à faire depuis le VPS où c'est testable) :
-# `export "$tok"` accepte n'importe quelle variable, `PATH` compris — or
-# deploy.sh résout `docker`, `nginx` et `systemctl` via le PATH, en root. Une
-# allowlist (ENV, IMAGE, GITHUB_TOKEN, RESEND_API_KEY, NUXT_STUDIO_TOKEN)
-# fermerait la porte. L'escalade suppose déjà la clé privée SSH — donc un
-# attaquant capable de déployer l'image de son choix en root — mais le coût du
-# correctif est faible.
 set -euo pipefail
 ORIG="${SSH_ORIGINAL_COMMAND:-}"
+
+# Allowlist des variables acceptées. Sans elle, `export "$tok"` prend
+# n'importe quoi, `PATH` compris — et deploy.sh résout `docker`, `nginx` et
+# `systemctl` par le PATH, en root : un `PATH=/tmp/x deploy` exécuterait des
+# binaires choisis par l'appelant. L'escalade suppose déjà la clé privée SSH,
+# donc quelqu'un qui peut de toute façon déployer l'image de son choix, mais
+# refermer la porte ne coûte rien.
+#
+# Refus explicite plutôt qu'ignorance silencieuse : une variable inattendue
+# signale un workflow désynchronisé, ça doit se voir.
+ALLOWED_VARS=(ENV IMAGE GITHUB_TOKEN RESEND_API_KEY NUXT_STUDIO_TOKEN)
+
 declare -a CMD=()
 for tok in $ORIG; do
   if [[ "$tok" == *=* && "$tok" != *' '* ]]; then
+    key="${tok%%=*}"
+    allowed=0
+    for ok in "${ALLOWED_VARS[@]}"; do
+      # `if` et non `[[ ... ]] && ...` : en dernière commande du corps de
+      # boucle, l'AND-list renvoie 1 quand la condition est fausse et `set -e`
+      # tuerait le script au premier nom qui ne correspond pas.
+      if [[ "$key" == "$ok" ]]; then allowed=1; break; fi
+    done
+    if [[ "$allowed" -ne 1 ]]; then
+      echo "variable refusée: $key (autorisées: ${ALLOWED_VARS[*]})" >&2
+      exit 1
+    fi
     export "$tok"
   else
     CMD+=("$tok")

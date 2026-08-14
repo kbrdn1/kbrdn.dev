@@ -214,9 +214,17 @@ CI. La synchronisation est **manuelle**, depuis un accès admin :
 
 ```bash
 scp scripts/deploy.sh        root@<VPS_HOST>:/srv/deploy.sh
-scp scripts/github-deploy.sh root@<VPS_HOST>:/srv/github-deploy.sh   # si modifié
+scp scripts/github-deploy.sh root@<VPS_HOST>:/srv/github-deploy.sh
 ssh root@<VPS_HOST> 'chmod +x /srv/deploy.sh /srv/github-deploy.sh'
+ssh root@<VPS_HOST> 'ENV=prod IMAGE=x ping'   # doit répondre "pong from …"
 ```
+
+⚠️ Les deux fichiers vont **ensemble** : `github-deploy.sh` n'accepte plus que
+les variables de son allowlist (`ENV`, `IMAGE`, `GITHUB_TOKEN`,
+`RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) et refuse le reste. Ajouter une variable
+au workflow sans l'ajouter à cette liste casse le déploiement — c'est
+volontaire, un refus se voit, un `export` silencieux non. Le `ping` ci-dessus
+vérifie la chaîne complète sans rien déployer.
 
 Tant que ce n'est pas fait, les changements de cette PR n'ont pas tous le même
 sort :
@@ -256,13 +264,6 @@ actif — c'est du legacy.
 
 ### Suivi
 
-- **Durcir `github-deploy.sh`** : il fait `export "$tok"` sur n'importe quelle
-  variable, `PATH` compris, alors que `deploy.sh` résout `docker`, `nginx` et
-  `systemctl` par le PATH, en root. Une allowlist (`ENV`, `IMAGE`,
-  `GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) ferme la porte.
-  L'escalade suppose déjà la clé privée SSH — donc quelqu'un qui peut de toute
-  façon déployer l'image de son choix en root — mais le correctif est bon marché.
-  À faire depuis le VPS, où il est testable.
 - **Les blocs `server{}` nginx** consommant `kbrdn_app` / `kbrdn_preprod_app`
   n'ont été trouvés ni dans `sites-enabled/` ni dans `conf.d/`. Le mapping
   upstream → port → conteneur est confirmé, le chemin domaine → upstream ne
