@@ -1,3 +1,11 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)"  srcset="docs/_assets/promo.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/_assets/promo-light.png">
+    <img alt="kbrdn.dev — Nuxt 4, file-based content, shipped blue/green on a tag" src="docs/_assets/promo.png" width="100%">
+  </picture>
+</p>
+
 # kbrdn.dev - Portfolio v2
 
 Modern portfolio website built with Nuxt 4 and Nuxt UI.
