@@ -35,8 +35,11 @@ lerna-debug.log*
 .vscode/*
 !.vscode/extensions.json
 
-# Claude Code local state
-.claude/
+# Claude Code local state — sauf les commandes du repo (/changelog fait partie
+# du protocole de release, cf. docs/RELEASE.md). La négation exige d'exclure le
+# contenu (.claude/*) et non le dossier : git n'entre pas dans un dossier exclu.
+.claude/*
+!.claude/commands/
 
 # CI/CD artifacts hors repo
 *.tmp
