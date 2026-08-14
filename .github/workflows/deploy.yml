@@ -90,6 +90,14 @@ jobs:
           context: .
           file: Dockerfile
           push: true
+          # Mêmes build-args que release.yml : sans eux /api/health annoncerait
+          # env=local sur preprod en permanence, puisque le déploiement passe
+          # par un wrapper VPS qui ne transmet pas forcément NUXT_APP_ENV.
+          # Pas d'APP_VERSION ici — une image de branche n'a pas de version de
+          # release, le fallback package.json est le bon.
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            APP_ENV=${{ needs.resolve.outputs.env }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:${{ needs.resolve.outputs.image_tag }}
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:sha-${{ github.sha }}

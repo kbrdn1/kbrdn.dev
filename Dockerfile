@@ -28,8 +28,15 @@ FROM base AS builder
 # fallback est alors la version de package.json.
 ARG GIT_SHA=dev
 ARG APP_VERSION=""
+# APP_ENV est aussi un build-arg, et pas seulement une variable de run : le
+# déploiement passe par un wrapper sur le VPS, donc rien ne garantit qu'un
+# NUXT_APP_ENV atteigne le conteneur. Le figer ici rend /api/health correct
+# sans dépendre de ce wrapper. Chaque image ne vise de toute façon qu'un
+# étage — les candidats ne vont qu'en preprod, les stables qu'en prod.
+ARG APP_ENV=""
 ENV GIT_SHA=$GIT_SHA
 ENV APP_VERSION=$APP_VERSION
+ENV APP_ENV=$APP_ENV
 
 # Copy installed dependencies
 COPY --from=deps /app/node_modules ./node_modules

@@ -127,6 +127,7 @@ jobs:
           build-args: |
             GIT_SHA=${{ github.sha }}
             APP_VERSION=${{ needs.resolve.outputs.version }}
+            APP_ENV=${{ needs.resolve.outputs.env }}
           tags: ${{ needs.resolve.outputs.image }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

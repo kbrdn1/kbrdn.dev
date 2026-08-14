@@ -92,10 +92,13 @@ export default defineNuxtConfig({
     // (`1.1.0`) — sans ça deux candidats successifs seraient indiscernables.
     appVersion: process.env.APP_VERSION || pkg.version,
     gitSha: process.env.GIT_SHA || "dev",
-    // Contrairement aux deux clés au-dessus, celle-ci se règle à l'exécution :
-    // la même image sert preprod et prod. La surcharge passe par la convention
-    // Nuxt `NUXT_<CLÉ>`, donc `NUXT_APP_ENV` — un `APP_ENV` nu est ignoré une
-    // fois le build figé (scripts/deploy.sh passe bien NUXT_APP_ENV).
+    // Figée au build elle aussi, via le build-arg APP_ENV que passent les deux
+    // workflows : le déploiement traverse un wrapper sur le VPS, donc rien ne
+    // garantit qu'une variable de run atteigne le conteneur.
+    //
+    // Elle reste surchargeable à l'exécution, mais seulement par la convention
+    // Nuxt `NUXT_<CLÉ>` — c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
+    // fois le build figé.
     appEnv: process.env.APP_ENV || "local",
   },
 

@@ -148,6 +148,8 @@ Deux mécanismes, à ne pas confondre :
 
 ```bash
 # d'un cran, instantané : redémarre la couleur précédente, conservée stoppée
+# ⚠️ ne marche qu'une fois le VPS synchronisé (cf. point ouvert plus bas) —
+#    jusque-là la couleur sortante est détruite à chaque deploy
 ssh <vps> 'ENV=prod rollback'
 
 # vers une version précise, depuis le registry
@@ -167,14 +169,30 @@ aussi, mais reconstruit l'image et tente de recréer une release qui existe déj
 - **`deploy.yml` a un `paths-ignore` sur `**.md` et `docs/**`.** Un merge de
   release qui ne toucherait que du markdown ne redéploierait pas prod par ce
   chemin — raison de plus pour que le déploiement de prod appartienne au tag.
-- **Point ouvert : le wrapper VPS.** `deploy.yml` et `release.yml` envoient
-  `ENV=... IMAGE=... deploy` en SSH, c'est-à-dire une commande nue configurée
-  par variables d'environnement, alors que `scripts/deploy.sh` de ce repo parse
-  des flags. Il existe donc un wrapper sur le VPS, ou une copie qui a drifté.
-  Les changements de `scripts/deploy.sh` (rollback, label de version, sonde
-  `/api/health`) doivent être propagés à ce qui tourne réellement là-bas, sinon
-  ils n'ont aucun effet.
+## Point ouvert : le wrapper VPS
 
-  ```bash
-  ssh root@<VPS_HOST> 'type deploy rollback; cat $(command -v deploy)'
-  ```
+`deploy.yml` et `release.yml` envoient `ENV=... IMAGE=... deploy` en SSH,
+c'est-à-dire une **commande nue configurée par variables d'environnement**,
+alors que `scripts/deploy.sh` de ce repo parse des **flags** et réinitialise
+`ENV` au démarrage. Les deux ne peuvent pas décrire le même binaire : il existe
+un wrapper sur le VPS, ou une copie de `deploy.sh` qui a drifté.
+
+```bash
+ssh root@<VPS_HOST> 'type deploy rollback; cat $(command -v deploy)'
+```
+
+Tant que ce n'est pas tranché, les changements de ce repo n'ont pas tous le
+même sort :
+
+| Change | Effet au merge |
+|---|---|
+| Version et env dans `/api/health` | **immédiat** — build-args, cuits dans l'image |
+| `HEALTHCHECK` du `Dockerfile` → `/api/health` | **immédiat** — cuit dans l'image |
+| Gates de `release.yml`, tag → deploy, release GitHub | **immédiat** — côté CI |
+| `--health-cmd` du `docker run` | **attend la sync VPS** — c'est un override de celui de l'image, lui-même déjà correct |
+| Label `kbrdn.version` | **attend la sync VPS** |
+| `-e NUXT_APP_ENV` | **attend la sync VPS** — sans effet utile, la valeur du build est déjà la bonne |
+| Rollback qui conserve la couleur sortante | **attend la sync VPS** — jusque-là `--rollback` reste cassé, seul `--image ...:vX.Y.Z` fonctionne |
+
+Aucun de ces reports ne casse une release : le workflow ne dépend que de ce qui
+est cuit dans l'image ou exécuté côté CI.
