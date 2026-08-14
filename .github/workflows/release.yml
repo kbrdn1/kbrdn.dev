@@ -170,13 +170,19 @@ jobs:
           if [[ $RC -eq 0 ]]; then
             echo "::notice::$IMAGE existe déjà — build et push sautés, l'artefact d'origine est conservé"
             echo "found=true" >> "$GITHUB_OUTPUT"
-          elif grep -qiE "manifest unknown|not found|name unknown|no such manifest|denied" <<< "$OUT"; then
+          elif grep -qiE "manifest unknown|not found|name unknown|no such manifest" <<< "$OUT"; then
             echo "found=false" >> "$GITHUB_OUTPUT"
           else
             # Fail-closed : un timeout ou une panne GHCR ne doit pas être lu
             # comme « l'image n'existe pas ». Repartir sur un build écraserait
             # un tag déjà publié dès que l'accès revient, ce que ce garde-fou
             # existe précisément pour empêcher.
+            #
+            # `denied` est volontairement absent des motifs d'absence : il
+            # signale aussi un incident d'authentification sur un tag qui, lui,
+            # existe. Le package ghcr.io/kbrdn1/kbrdn.dev existe déjà (:main et
+            # :dev y sont publiées), donc un tag absent répond « manifest
+            # unknown » — ce fail-closed ne bloque pas le premier tag.
             echo "::error::lecture du registre impossible pour $IMAGE (rc=$RC) — on n'en déduit rien :"
             echo "$OUT"
             exit 1

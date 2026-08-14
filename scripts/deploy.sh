@@ -199,7 +199,16 @@ upstream $UPSTREAM_NAME {
 }
 EOF
   nginx -t || true
-  [[ "$ACTION" != rollback ]] && docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
+  # Dans les deux cas la cible ne sert plus rien : l'upstream est revenu sur
+  # $CUR. Un deploy la détruit (elle vient d'être créée) ; un rollback la
+  # stoppe seulement — c'est une couleur qu'on veut pouvoir relancer — mais
+  # la laisser tourner sous `--restart unless-stopped` la maintiendrait en vie
+  # sur un port mort.
+  if [[ "$ACTION" != rollback ]]; then
+    docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
+  else
+    docker stop "$NEW_NAME" >/dev/null 2>&1 || true
+  fi
   die "nginx refuse la config"
 fi
 systemctl reload nginx

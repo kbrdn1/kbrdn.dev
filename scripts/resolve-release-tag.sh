@@ -28,11 +28,17 @@ fi
 
 VERSION="${TAG#v}"
 
-if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-(rc|alpha|beta)\.[0-9]+$ ]]; then
+# `(0|[1-9][0-9]*)` et non `[0-9]+` : SemVer interdit les zéros initiaux sur
+# les composantes numériques, donc `1.0.0-rc.01` n'est pas une version valide
+# et ne doit pas atteindre un déploiement.
+NUM='(0|[1-9][0-9]*)'
+CORE_RE="^${NUM}\.${NUM}\.${NUM}"
+
+if [[ "$VERSION" =~ ${CORE_RE}-(rc|alpha|beta)\.${NUM}$ ]]; then
   ENV=preprod
   PRERELEASE=true
   NOTES="changelogs/pre-releases/${VERSION}.md"
-elif [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+elif [[ "$VERSION" =~ ${CORE_RE}$ ]]; then
   ENV=prod
   PRERELEASE=false
   NOTES="changelogs/${VERSION}.md"

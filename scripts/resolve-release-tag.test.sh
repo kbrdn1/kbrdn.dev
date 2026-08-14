@@ -64,6 +64,14 @@ expect_reject 1.0.0              # sans préfixe v
 expect_reject v1.0               # pas un SemVer complet
 expect_reject v1.0.0-nightly.1   # identifiant non supporté
 expect_reject ""                 # rien
+expect_reject v1.0.0-rc.01       # zéro initial interdit par SemVer
+expect_reject v01.0.0            # idem sur le majeur
+expect_reject v1.02.0            # idem sur le mineur
+expect_reject v1.0.00            # idem sur le patch
+
+echo "les zéros légitimes passent toujours"
+expect v0.1.0 env prod
+expect v1.0.0-rc.10 env preprod
 
 if [[ $FAILED -eq 0 ]]; then
   echo "PASS"
