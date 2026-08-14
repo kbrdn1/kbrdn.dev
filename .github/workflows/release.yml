@@ -1,0 +1,251 @@
+name: Release
+
+# Le tag pilote le déploiement.
+#
+#   tag v1.1.0-rc.1  →  image :v1.1.0-rc.1  →  preprod  +  pre-release GitHub
+#   tag v1.1.0       →  image :v1.1.0       →  prod     +  release GitHub
+#
+# `deploy.yml` reste en place et garde l'itération quotidienne (push dev →
+# preprod, push main → prod) : il déclenche sur `push: branches` et n'est donc
+# jamais réveillé par un tag, les deux ne se marchent pas dessus.
+#
+# Un seul fichier pour les deux étages, là où gwm-cli sépare release.yml et
+# pre-release.yml : chez lui les matrices de build diffèrent (5 cibles, .deb,
+# .rpm), ici c'est la même image des deux côtés et seuls changent
+# l'environnement visé, le flag --prerelease et le chemin des notes. Deux
+# fichiers ne feraient que diverger.
+#
+# L'aiguillage lui-même vit dans scripts/resolve-release-tag.sh, couvert par
+# scripts/resolve-release-tag.test.sh — se tromper de branche ici publierait
+# un candidat non validé sur kbrdn.dev.
+
+on:
+  push:
+    tags:
+      # Matche aussi les pré-releases (`v1.1.0-rc.1`) : elles sont aiguillées
+      # par le script de résolution plutôt que filtrées ici.
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'tag à (re)publier (ex: v1.0.0 ou v1.1.0-rc.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  resolve:
+    name: Resolve tag + validate
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set.outputs.tag }}
+      version: ${{ steps.set.outputs.version }}
+      env: ${{ steps.set.outputs.env }}
+      prerelease: ${{ steps.set.outputs.prerelease }}
+      notes: ${{ steps.set.outputs.notes }}
+      url: ${{ steps.set.outputs.url }}
+      image: ${{ steps.set.outputs.image }}
+    steps:
+      # Sur workflow_dispatch, github.ref_name est la branche de lancement et
+      # pas le tag — d'où la préférence donnée à l'input, ici et au checkout.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - id: set
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: ./scripts/resolve-release-tag.sh "$TAG" "$GITHUB_REPOSITORY" >> "$GITHUB_OUTPUT"
+
+      - name: Validate version + notes
+        env:
+          VERSION: ${{ steps.set.outputs.version }}
+          CORE: ${{ steps.set.outputs.core }}
+          NOTES: ${{ steps.set.outputs.notes }}
+        run: |
+          set -euo pipefail
+
+          # package.json ne porte que la version cible : un candidat 1.1.0-rc.2
+          # est un candidat de 1.1.0. La comparaison se fait donc sur le coeur
+          # du SemVer, pas sur la version complète.
+          PKG=$(jq -r .version package.json)
+          if [[ "$PKG" != "$CORE" ]]; then
+            echo "::error::package.json version=$PKG mais le tag vise $CORE — bumper package.json avant de taguer"
+            exit 1
+          fi
+
+          # Échouer ici plutôt qu'après le déploiement : une release publiée
+          # sans notes est un snapshot déjà visible, que corriger après coup
+          # demande un `gh release edit`.
+          if [[ ! -f "$NOTES" ]]; then
+            echo "::error::notes de release manquantes: $NOTES — lancer /changelog $VERSION avant de taguer"
+            exit 1
+          fi
+          echo "ok: version=$VERSION notes=$NOTES"
+
+  build:
+    name: Build & push ${{ needs.resolve.outputs.tag }}
+    needs: resolve
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.tag }}
+
+      - name: Setup buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # L'image est taguée du tag git et jamais réécrite : c'est elle qui rend
+      # `deploy.sh --image ...:v1.0.0` capable de ramener une version précise,
+      # là où :main et :dev sont mutables et ne désignent que « le dernier ».
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            APP_VERSION=${{ needs.resolve.outputs.version }}
+          tags: ${{ needs.resolve.outputs.image }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy ${{ needs.resolve.outputs.env }}
+    needs: [resolve, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: ${{ needs.resolve.outputs.env }}
+      url: ${{ needs.resolve.outputs.url }}
+    steps:
+      # Bloc repris tel quel de deploy.yml (mêmes secrets, même wrapper
+      # distant). Le printf et le sed CRLF viennent d'un incident réel :
+      # openssh rejette une clé sans newline final avec "error in libcrypto".
+      - name: Setup ssh
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          sed -i 's/\r$//' ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Deploy via ssh wrapper
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER || 'root' }}
+          ENV: ${{ needs.resolve.outputs.env }}
+          IMAGE: ${{ needs.resolve.outputs.image }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
+        run: |
+          REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN deploy"
+          ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_USER@$VPS_HOST" "$REMOTE_CMD"
+
+      # Vérifie depuis l'extérieur que c'est bien cette version qui sert le
+      # trafic — pas seulement que le conteneur a démarré. deploy.sh attend
+      # déjà `healthy` en interne, ce qui reste vrai même si l'upstream nginx
+      # pointe sur l'autre couleur.
+      - name: Verify deployed version
+        env:
+          URL: ${{ needs.resolve.outputs.url }}
+          EXPECTED: ${{ needs.resolve.outputs.version }}
+          EXPECTED_ENV: ${{ needs.resolve.outputs.env }}
+        run: |
+          set -euo pipefail
+          BODY=""
+          for i in 1 2 3 4 5; do
+            BODY=$(curl -fsS -m 15 "$URL/api/health") && break
+            echo "tentative $i échouée"
+            if [[ $i -lt 5 ]]; then sleep 5; fi
+          done
+          if [[ -z "$BODY" ]]; then
+            echo "::error::$URL/api/health injoignable après 5 tentatives"
+            exit 1
+          fi
+          echo "$BODY"
+          GOT=$(jq -r .version <<< "$BODY")
+          GOT_ENV=$(jq -r .env <<< "$BODY")
+          if [[ "$GOT" != "$EXPECTED" ]]; then
+            echo "::error::$URL sert la version $GOT, attendu $EXPECTED"
+            exit 1
+          fi
+          if [[ "$GOT_ENV" != "$EXPECTED_ENV" ]]; then
+            echo "::error::$URL se déclare env=$GOT_ENV, attendu $EXPECTED_ENV"
+            exit 1
+          fi
+
+  release:
+    name: GitHub release
+    needs: [resolve, deploy]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.tag }}
+
+      # Publiée après un déploiement vérifié : une release ne doit pas annoncer
+      # une version qui n'a pas atteint son environnement.
+      #
+      # Titre = le tag seul, le descriptif vit dans le fichier de notes. La
+      # release est un snapshot : corriger le .md après coup ne la met pas à
+      # jour, il faut `gh release edit <tag> --notes-file ...`.
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.resolve.outputs.tag }}
+          NOTES: ${{ needs.resolve.outputs.notes }}
+          PRERELEASE: ${{ needs.resolve.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+          FLAGS=()
+          # `[[ ... ]] && cmd` en dernière commande renverrait 1 quand la
+          # condition est fausse, et `set -e` tuerait le step sur un stable.
+          if [[ "$PRERELEASE" == "true" ]]; then
+            FLAGS+=(--prerelease)
+          fi
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file "$NOTES" \
+            "${FLAGS[@]}"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Release ${{ needs.resolve.outputs.tag }}"
+            echo "- env: ${{ needs.resolve.outputs.env }}"
+            echo "- image: \`${{ needs.resolve.outputs.image }}\`"
+            echo "- notes: \`${{ needs.resolve.outputs.notes }}\`"
+            echo "- pre-release: ${{ needs.resolve.outputs.prerelease }}"
+            echo "- url: ${{ needs.resolve.outputs.url }}"
+          } >> $GITHUB_STEP_SUMMARY
