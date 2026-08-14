@@ -181,6 +181,7 @@ aussi, mais reconstruit l'image et tente de recréer une release qui existe déj
 - **`deploy.yml` a un `paths-ignore` sur `**.md` et `docs/**`.** Un merge de
   release qui ne toucherait que du markdown ne redéploierait pas prod par ce
   chemin — raison de plus pour que le déploiement de prod appartienne au tag.
+
 ## La chaîne de déploiement
 
 `deploy.yml` et `release.yml` envoient `ENV=... IMAGE=... deploy` en SSH — une
@@ -214,11 +215,44 @@ sha256). Ce repo ne le déploie pas : le `ForceCommand` n'autorise que
 CI. La synchronisation est **manuelle**, depuis un accès admin :
 
 ```bash
-scp scripts/deploy.sh        root@<VPS_HOST>:/srv/deploy.sh
-scp scripts/github-deploy.sh root@<VPS_HOST>:/srv/github-deploy.sh
-ssh root@<VPS_HOST> 'chmod +x /srv/deploy.sh /srv/github-deploy.sh'
+# 1. aucun déploiement ne doit être en vol — cf. l'encadré ci-dessous
+gh run list --workflow=deploy.yml --limit 1
+
+# 2. copier à côté, puis remplacer d'un `mv` : il échange l'inode au lieu
+#    d'écrire dans le fichier que bash est peut-être en train de lire
+scp scripts/deploy.sh        root@<VPS_HOST>:/srv/deploy.sh.new
+scp scripts/github-deploy.sh root@<VPS_HOST>:/srv/github-deploy.sh.new
+ssh root@<VPS_HOST> 'chmod +x /srv/*.new \
+  && mv /srv/deploy.sh.new /srv/deploy.sh \
+  && mv /srv/github-deploy.sh.new /srv/github-deploy.sh'
+
+# 3. vérifier la chaîne sans rien déployer
 ssh root@<VPS_HOST> 'ENV=prod IMAGE=x ping'   # doit répondre "pong from …"
+
+# 4. et que le dernier déploiement est toujours vert
+gh run list --workflow=deploy.yml --limit 1
 ```
+
+> ⛔ **Ne jamais écraser `/srv/deploy.sh` pendant qu'un déploiement tourne.**
+> bash lit un script **par offset**, au fil de l'exécution : remplacer son
+> contenu en cours de route lui fait reprendre sa lecture au même offset dans le
+> nouveau texte, au milieu d'une autre construction.
+>
+> Vécu le 2026-08-14 — le `scp` a croisé le déploiement déclenché par le merge :
+>
+> ```
+> 16:20:16  [deploy preprod] actif: blue (:3002) — cible: green (:3003)
+> 16:21:33  /srv/deploy.sh: line 144: syntax error near unexpected token `('
+> 16:21:33  [deploy preprod] kbrdn-preprod-green healthy
+>           exit code 2
+> ```
+>
+> Le script est mort **entre le passage healthy et le swap nginx** : preprod a
+> continué de servir l'ancienne image pendant que la nouvelle tournait, healthy,
+> sur un port que rien ne routait. Le `mv` de l'étape 2 évite ça — l'exécution en
+> cours garde l'ancien inode jusqu'au bout. Rattrapage si ça arrive quand même :
+> relancer `deploy.yml`, qui détruit la couleur cible en début de course et
+> emporte l'orphelin avec.
 
 ⚠️ Les deux fichiers vont **ensemble** : `github-deploy.sh` n'accepte plus que
 les variables de son allowlist (`ENV`, `IMAGE`, `GITHUB_TOKEN`,
