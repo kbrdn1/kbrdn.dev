@@ -64,17 +64,15 @@ main`, il ne bloque pas.
 
 ## Protocole
 
-### 1. Changelog, sur `dev`
+⚠️ **L'ordre compte.** La migration du changelog vide `[Unreleased]` : la faire
+avant de couper un candidat ne laisserait rien à photographier. Le candidat
+passe donc **avant**, et la migration stable ne vient qu'après sa validation.
+
+### 1. Bump, sur `dev`
 
 ```bash
 git checkout dev && git pull --ff-only origin dev
-/changelog 1.1.0
 ```
-
-`## [Unreleased]` migre vers `changelogs/1.1.0.md`, le `CHANGELOG.md` racine
-repart avec un `[Unreleased]` vide et gagne sa ligne sous `## Past releases`.
-
-### 2. Bump
 
 `package.json` → `"version": "1.1.0"`. C'est la seule vérité de version ;
 `release.yml` refuse de publier si le tag ne correspond pas.
@@ -83,16 +81,17 @@ Un candidat `1.1.0-rc.2` est un candidat **de 1.1.0** : `package.json` porte
 `1.1.0`, le suffixe ne vit que dans le tag. La comparaison se fait sur le cœur
 du SemVer.
 
+À ce stade, `## [Unreleased]` doit décrire ce que la version apporte — c'est
+elle qui deviendra les notes.
+
 ```
 🔖 chore(release): v1.1.0
 ```
 
-### 3. Candidat sur preprod (optionnel mais recommandé)
-
-Depuis `dev`, une fois le changelog et le bump commités :
+### 2. Candidat sur preprod (optionnel mais recommandé)
 
 ```bash
-# les notes du candidat doivent exister, le workflow les exige
+# photographie [Unreleased] sans la vider — le workflow exige ce fichier
 /changelog 1.1.0-rc.1          # → changelogs/pre-releases/1.1.0-rc.1.md
 git tag -a v1.1.0-rc.1 -m "v1.1.0-rc.1" && git push origin v1.1.0-rc.1
 ```
@@ -100,6 +99,18 @@ git tag -a v1.1.0-rc.1 -m "v1.1.0-rc.1" && git push origin v1.1.0-rc.1
 `release.yml` construit `:v1.1.0-rc.1`, la déploie sur
 https://pre-prod.kbrdn.dev, vérifie `/api/health`, puis ouvre une pre-release.
 Valider dessus avant de continuer.
+
+Un correctif trouvé sur le candidat se commite sur `dev`, complète
+`[Unreleased]`, et donne un `-rc.2`.
+
+### 3. Migrer le changelog, une fois le candidat validé
+
+```bash
+/changelog 1.1.0
+```
+
+`## [Unreleased]` migre vers `changelogs/1.1.0.md`, le `CHANGELOG.md` racine
+repart avec un `[Unreleased]` vide et gagne sa ligne sous `## Past releases`.
 
 ### 4. `dev` → `main`
 
@@ -134,7 +145,10 @@ les mêmes conteneurs.
 
 Republier un tag existant (`workflow_dispatch`) **ne reconstruit pas** l'image :
 le tag de registre est mutable, mais l'artefact d'origine est conservé et
-redéployé tel quel.
+redéployé tel quel. C'est aussi le rattrapage si un run de release est annulé :
+GitHub Actions ne garde qu'un job en attente par groupe de concurrence, donc
+trois déploiements qui se chevauchent sur un même environnement peuvent en
+évincer un. Relancer le tag est sans effet de bord.
 
 Le push du tag suffit — `release.yml` prend la suite : image `:v1.1.0`, deploy
 prod, vérification `/api/health`, puis release GitHub avec
