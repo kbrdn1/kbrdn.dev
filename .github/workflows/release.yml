@@ -166,11 +166,19 @@ jobs:
           IMAGE: ${{ needs.resolve.outputs.image }}
         run: |
           set -uo pipefail
-          OUT=$(docker manifest inspect "$IMAGE" 2>&1); RC=$?
-          if [[ $RC -eq 0 ]]; then
+          # `if OUT=$(…)` et non `OUT=$(…); RC=$?` : GitHub Actions lance ce
+          # step avec `bash -e`, que le `set -uo` ci-dessus ne désactive pas.
+          # Une affectation qui échoue tuerait donc le step avant tout test —
+          # or elle échoue précisément dans le cas nominal du premier tag,
+          # quand l'image n'existe pas encore. Un `if` met la commande en
+          # contexte conditionnel, où `set -e` ne mord pas.
+          if OUT=$(docker manifest inspect "$IMAGE" 2>&1); then
             echo "::notice::$IMAGE existe déjà — build et push sautés, l'artefact d'origine est conservé"
             echo "found=true" >> "$GITHUB_OUTPUT"
           elif grep -qiE "manifest unknown|not found|name unknown|no such manifest" <<< "$OUT"; then
+            # tracé même dans le cas nominal : c'est ce message qui dira, au
+            # premier tag réel, comment GHCR formule une absence
+            echo "image absente du registre, on build. réponse : $OUT"
             echo "found=false" >> "$GITHUB_OUTPUT"
           else
             # Fail-closed : un timeout ou une panne GHCR ne doit pas être lu
