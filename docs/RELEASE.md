@@ -29,31 +29,17 @@ les deux ne se réveillent jamais ensemble.
 | Fichier de changelog | `changelogs/X.Y.Z.md` (**sans** préfixe `v`) |
 | Candidats | `changelogs/pre-releases/X.Y.Z-rc.N.md` |
 | Branches | `dev` → `main` |
-| `main` protégée | **oui** — PR, 1 approbation, 4 checks, historique linéaire |
+| `main` protégée | **oui** — PR, 1 approbation, 4 checks. Merge commit autorisé |
 | Qui publie la release | **la CI** (`release.yml` sur le tag) — ne rien créer à la main |
 | Gate de vérif | `bun run lint` + `bun run build` (CI). **Pas de tests** dans ce repo, hors `scripts/*.test.sh` |
 | Post-release | vérification `/api/health` automatique dans le workflow |
 
-## Deux contraintes propres à ce repo
+## La contrainte propre à ce repo
 
-Elles ne sont pas dans le protocole générique `me:release` et bloquent le
-premier cut si on les découvre en route.
+Elle n'est pas dans le protocole générique `me:release` et bloque le premier
+cut si on la découvre en route.
 
-### 1. `main` refuse les merge commits
-
-`required_linear_history` est actif. Le `dev → main` en merge commit du
-protocole générique **ne passe pas**. Deux options :
-
-- **Rebase merge** (jamais squash — il écraserait les commits atomiques).
-  `main` et `dev` porteront alors des sha différents pour le même contenu.
-- **Désactiver `required_linear_history`** sur `main` pour s'aligner sur
-  `gwm-cli` et `kbrdn-docs`, qui mergent en merge commit.
-
-```bash
-gh api repos/kbrdn1/kbrdn.dev/branches/main/protection --jq '.required_linear_history'
-```
-
-### 2. Toute PR vers `main` doit fermer une issue
+### Toute PR vers `main` doit fermer une issue
 
 Le check `Linked issue` de `validate-pr.yml` exige un `Closes #N` dans le corps
 de la PR. **Chaque cut de version a donc besoin de sa propre issue de
@@ -121,8 +107,9 @@ de release>`, titre au format conventionnel :
 🔖 chore(release): v1.1.0
 ```
 
-Attendre les 4 checks verts, puis merger — **rebase merge**, jamais squash
-(sauf si `required_linear_history` a été désactivé, auquel cas merge commit).
+Attendre les 4 checks verts, puis merger en **merge commit** — jamais squash,
+il écraserait les commits atomiques. `required_linear_history` a été désactivé
+sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
 
 ### 5. Tag, depuis `main`, APRÈS le merge
 

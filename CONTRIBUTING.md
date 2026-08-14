@@ -151,9 +151,9 @@ version under `changelogs/`. Tags drive deployment: `vX.Y.Z-rc.N` ships a
 frozen candidate to preprod, `vX.Y.Z` ships to production — both publish their
 GitHub release from the CI, never by hand.
 
-Two constraints bite on the first cut: `main` requires a **linear history** (so
-`dev → main` cannot be a merge commit as-is), and every PR to `main` must close
-an issue — including the release PR. Full protocol, with both workarounds:
+One constraint bites on the first cut: every PR to `main` must close an issue —
+the release PR included, so each version needs its own. `dev → main` merges as
+a **merge commit**, never a squash. Full protocol:
 [`docs/RELEASE.md`](docs/RELEASE.md).
 
 ## GitHub Issue Management
