@@ -154,11 +154,21 @@ jobs:
         env:
           IMAGE: ${{ needs.resolve.outputs.image }}
         run: |
-          if docker manifest inspect "$IMAGE" >/dev/null 2>&1; then
+          set -uo pipefail
+          OUT=$(docker manifest inspect "$IMAGE" 2>&1); RC=$?
+          if [[ $RC -eq 0 ]]; then
             echo "::notice::$IMAGE existe déjà — build et push sautés, l'artefact d'origine est conservé"
             echo "found=true" >> "$GITHUB_OUTPUT"
-          else
+          elif grep -qiE "manifest unknown|not found|name unknown|no such manifest|denied" <<< "$OUT"; then
             echo "found=false" >> "$GITHUB_OUTPUT"
+          else
+            # Fail-closed : un timeout ou une panne GHCR ne doit pas être lu
+            # comme « l'image n'existe pas ». Repartir sur un build écraserait
+            # un tag déjà publié dès que l'accès revient, ce que ce garde-fou
+            # existe précisément pour empêcher.
+            echo "::error::lecture du registre impossible pour $IMAGE (rc=$RC) — on n'en déduit rien :"
+            echo "$OUT"
+            exit 1
           fi
 
       # L'image est taguée du tag git et jamais réécrite : c'est elle qui rend
@@ -286,16 +296,20 @@ jobs:
           PRERELEASE: ${{ needs.resolve.outputs.prerelease }}
         run: |
           set -euo pipefail
-          FLAGS=()
-          # `[[ ... ]] && cmd` en dernière commande renverrait 1 quand la
-          # condition est fausse, et `set -e` tuerait le step sur un stable.
-          if [[ "$PRERELEASE" == "true" ]]; then
-            FLAGS+=(--prerelease)
+          # Republier un tag déjà sorti est un scénario documenté
+          # (workflow_dispatch) : `create` échouerait alors que l'environnement
+          # vient d'être redéployé avec succès. On met à jour au lieu de mourir.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::notice::release $TAG déjà publiée — mise à jour des notes"
+            gh release edit "$TAG" \
+              --notes-file "$NOTES" \
+              --prerelease="$PRERELEASE"
+          else
+            gh release create "$TAG" \
+              --title "$TAG" \
+              --notes-file "$NOTES" \
+              --prerelease="$PRERELEASE"
           fi
-          gh release create "$TAG" \
-            --title "$TAG" \
-            --notes-file "$NOTES" \
-            "${FLAGS[@]}"
 
       - name: Summary
         if: always()
