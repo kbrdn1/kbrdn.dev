@@ -61,7 +61,12 @@ jobs:
       # l'historique, un clone superficiel ne le permet pas.
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag || github.ref_name }}
+          # `refs/tags/` explicite, et pas le nom nu : `actions/checkout`
+          # résout un nom nu comme n'importe quelle ref, donc une branche
+          # nommée `v1.2.3` ferait l'affaire. Le préfixe impose que ce soit un
+          # tag, et fait échouer le job si le tag n'existe pas — précondition
+          # évidente d'une release, que rien ne vérifiait.
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
           fetch-depth: 0
 
       - id: set
@@ -122,10 +127,12 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      sha: ${{ steps.sha.outputs.value }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.resolve.outputs.tag }}
+          ref: refs/tags/${{ needs.resolve.outputs.tag }}
 
       # `github.sha` désigne le commit de la branche de lancement sur un
       # workflow_dispatch, pas celui du tag demandé — l'image afficherait alors
@@ -247,6 +254,7 @@ jobs:
           URL: ${{ needs.resolve.outputs.url }}
           EXPECTED: ${{ needs.resolve.outputs.version }}
           EXPECTED_ENV: ${{ needs.resolve.outputs.env }}
+          EXPECTED_SHA: ${{ needs.build.outputs.sha }}
         run: |
           set -euo pipefail
           BODY=""
@@ -262,8 +270,17 @@ jobs:
           echo "$BODY"
           GOT=$(jq -r .version <<< "$BODY")
           GOT_ENV=$(jq -r .env <<< "$BODY")
+          GOT_SHA=$(jq -r .sha <<< "$BODY")
           if [[ "$GOT" != "$EXPECTED" ]]; then
             echo "::error::$URL sert la version $GOT, attendu $EXPECTED"
+            exit 1
+          fi
+          # La version seule ne suffit pas à identifier l'artefact : l'image
+          # `:main` construite après le tag porte le même package.json tant que
+          # personne n'a bumpé. Un déploiement sans effet passerait donc le
+          # contrôle de version — le sha, lui, distingue les deux commits.
+          if [[ "$GOT_SHA" != "$EXPECTED_SHA" ]]; then
+            echo "::error::$URL sert le sha $GOT_SHA, attendu $EXPECTED_SHA — l'artefact tagué ne sert pas le trafic"
             exit 1
           fi
           if [[ "$GOT_ENV" != "$EXPECTED_ENV" ]]; then
@@ -280,7 +297,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.resolve.outputs.tag }}
+          ref: refs/tags/${{ needs.resolve.outputs.tag }}
 
       # Publiée après un déploiement vérifié : une release ne doit pas annoncer
       # une version qui n'a pas atteint son environnement.
@@ -305,9 +322,13 @@ jobs:
               --notes-file "$NOTES" \
               --prerelease="$PRERELEASE"
           else
+            # --verify-tag : sans lui, `gh release create` créerait le tag
+            # absent depuis la branche par défaut, et la release pointerait
+            # alors un autre commit que l'image déployée.
             gh release create "$TAG" \
               --title "$TAG" \
               --notes-file "$NOTES" \
+              --verify-tag \
               --prerelease="$PRERELEASE"
           fi
 
