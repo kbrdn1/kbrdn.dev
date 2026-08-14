@@ -100,24 +100,28 @@ jobs:
           fi
           echo "ok: version=$VERSION notes=$NOTES"
 
-      # Un tag stable déploie la production. Rien n'empêchait jusqu'ici de le
-      # poser sur `dev` avant le merge : package.json et les notes y sont déjà,
-      # les deux gates au-dessus passaient, et prod recevait un commit non
-      # fusionné. docs/RELEASE.md l'interdit, ce contrôle l'applique.
-      # Les candidats ne sont pas concernés : ils vivent sur `dev`, c'est leur
-      # raison d'être.
-      - name: Stable tags must live on main
-        if: steps.set.outputs.env == 'prod'
+      # Un tag doit pointer un commit de la branche dont il est censé sortir :
+      # `main` pour un stable, `dev` pour un candidat. Rien ne l'imposait —
+      # package.json et les notes existent déjà sur la branche de travail, donc
+      # les deux gates au-dessus passaient et prod pouvait recevoir un commit
+      # non fusionné. docs/RELEASE.md l'interdit, ce contrôle l'applique.
+      #
+      # Le cas du candidat n'est pas cosmétique non plus : un rc tagué sur une
+      # branche feature publierait une pre-release GitHub que `dev` ne permet
+      # pas de reproduire.
+      - name: Tags must live on their branch
         env:
           TAG: ${{ steps.set.outputs.tag }}
+          ENV: ${{ steps.set.outputs.env }}
         run: |
           set -euo pipefail
-          git fetch --no-tags --quiet origin main
-          if ! git merge-base --is-ancestor HEAD origin/main; then
-            echo "::error::$TAG ne pointe pas un commit de main — taguer APRÈS le merge dev → main"
+          if [[ "$ENV" == "prod" ]]; then BRANCH=main; else BRANCH=dev; fi
+          git fetch --no-tags --quiet origin "$BRANCH"
+          if ! git merge-base --is-ancestor HEAD "origin/$BRANCH"; then
+            echo "::error::$TAG ne pointe pas un commit de $BRANCH — taguer depuis $BRANCH (pour un stable : APRÈS le merge dev → main)"
             exit 1
           fi
-          echo "ok: $TAG est un ancêtre de origin/main"
+          echo "ok: $TAG est un ancêtre de origin/$BRANCH"
 
   build:
     name: Build & push ${{ needs.resolve.outputs.tag }}

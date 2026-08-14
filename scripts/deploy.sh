@@ -125,7 +125,14 @@ if [[ "$ACTION" == "rollback" ]]; then
     docker start "$NEW_NAME" >/dev/null
   fi
 
-  wait_healthy "$NEW_NAME" || die "rollback abandonné, $CUR reste actif"
+  # Le stopper avant d'abandonner : il porte `--restart unless-stopped`, donc
+  # le laisser tourner le maintiendrait en vie (ou en boucle de redémarrage)
+  # sur un port que plus rien ne sert. Le chemin de deploy fait déjà l'analogue
+  # avec son `docker rm -f`.
+  if ! wait_healthy "$NEW_NAME"; then
+    docker stop "$NEW_NAME" >/dev/null 2>&1 || true
+    die "rollback abandonné, $CUR reste actif"
+  fi
   log "rollback vers $NEW"
 else
   if [[ $BUILD_LOCAL -eq 1 ]]; then
