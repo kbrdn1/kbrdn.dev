@@ -57,9 +57,12 @@ jobs:
     steps:
       # Sur workflow_dispatch, github.ref_name est la branche de lancement et
       # pas le tag — d'où la préférence donnée à l'input, ici et au checkout.
+      # fetch-depth: 0 : le contrôle d'ascendance plus bas a besoin de
+      # l'historique, un clone superficiel ne le permet pas.
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.tag || github.ref_name }}
+          fetch-depth: 0
 
       - id: set
         env:
@@ -92,6 +95,25 @@ jobs:
           fi
           echo "ok: version=$VERSION notes=$NOTES"
 
+      # Un tag stable déploie la production. Rien n'empêchait jusqu'ici de le
+      # poser sur `dev` avant le merge : package.json et les notes y sont déjà,
+      # les deux gates au-dessus passaient, et prod recevait un commit non
+      # fusionné. docs/RELEASE.md l'interdit, ce contrôle l'applique.
+      # Les candidats ne sont pas concernés : ils vivent sur `dev`, c'est leur
+      # raison d'être.
+      - name: Stable tags must live on main
+        if: steps.set.outputs.env == 'prod'
+        env:
+          TAG: ${{ steps.set.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --quiet origin main
+          if ! git merge-base --is-ancestor HEAD origin/main; then
+            echo "::error::$TAG ne pointe pas un commit de main — taguer APRÈS le merge dev → main"
+            exit 1
+          fi
+          echo "ok: $TAG est un ancêtre de origin/main"
+
   build:
     name: Build & push ${{ needs.resolve.outputs.tag }}
     needs: resolve
@@ -105,6 +127,13 @@ jobs:
         with:
           ref: ${{ needs.resolve.outputs.tag }}
 
+      # `github.sha` désigne le commit de la branche de lancement sur un
+      # workflow_dispatch, pas celui du tag demandé — l'image afficherait alors
+      # via /api/health un sha sans rapport avec son contenu.
+      - name: Resolve tagged sha
+        id: sha
+        run: echo "value=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Setup buildx
         uses: docker/setup-buildx-action@v3
 
@@ -115,17 +144,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Les tags de registre restent mutables : republier `:v1.1.0` écraserait
+      # l'artefact d'origine. Et il ne serait pas identique — `oven/bun:1-alpine`
+      # bouge, `bun install` n'est pas figé — donc le rollback vers une version
+      # ne ramènerait plus ce qui a été publié. C'est précisément la propriété
+      # sur laquelle repose `--image ...:vX.Y.Z`, d'où ce garde-fou.
+      - name: Image already published?
+        id: exists
+        env:
+          IMAGE: ${{ needs.resolve.outputs.image }}
+        run: |
+          if docker manifest inspect "$IMAGE" >/dev/null 2>&1; then
+            echo "::notice::$IMAGE existe déjà — build et push sautés, l'artefact d'origine est conservé"
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # L'image est taguée du tag git et jamais réécrite : c'est elle qui rend
       # `deploy.sh --image ...:v1.0.0` capable de ramener une version précise,
       # là où :main et :dev sont mutables et ne désignent que « le dernier ».
       - name: Build & push
+        if: steps.exists.outputs.found != 'true'
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
           push: true
           build-args: |
-            GIT_SHA=${{ github.sha }}
+            GIT_SHA=${{ steps.sha.outputs.value }}
             APP_VERSION=${{ needs.resolve.outputs.version }}
             APP_ENV=${{ needs.resolve.outputs.env }}
           tags: ${{ needs.resolve.outputs.image }}
@@ -137,6 +184,17 @@ jobs:
     needs: [resolve, build]
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Clé partagée avec le job deploy de deploy.yml — les groupes de
+    # concurrence sont globaux au repo. Sans elle, le protocole normal met deux
+    # déploiements prod en vol simultanément : le merge dev → main réveille
+    # deploy.yml, le push du tag qui suit réveille release.yml, et leurs
+    # groupes au niveau workflow étant distincts, rien ne les sérialise. Les
+    # deux `deploy.sh --env prod` visent alors les mêmes noms de conteneurs et
+    # le même upstream nginx : le second `docker rm -f` celui du premier, et
+    # l'image active à l'arrivée est indéterminée.
+    concurrency:
+      group: vps-deploy-${{ needs.resolve.outputs.env }}
+      cancel-in-progress: false
     environment:
       name: ${{ needs.resolve.outputs.env }}
       url: ${{ needs.resolve.outputs.url }}

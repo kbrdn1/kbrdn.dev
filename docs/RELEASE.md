@@ -123,7 +123,18 @@ git push origin v1.1.0
 
 ⛔ **Jamais avant le merge** : le tag doit pointer un commit qui porte déjà le
 bump et le changelog, sinon la publication n'est pas reproductible depuis le
-tag.
+tag. `release.yml` le vérifie — un tag stable qui n'est pas un ancêtre de
+`origin/main` est refusé avant tout build, donc un `vX.Y.Z` posé sur `dev` ne
+déploiera pas la production.
+
+Les déploiements vers un même environnement sont sérialisés entre `deploy.yml`
+et `release.yml` (clé de concurrence partagée) : le merge réveille le premier,
+le tag le second, et sans ça les deux `deploy.sh --env prod` se disputeraient
+les mêmes conteneurs.
+
+Republier un tag existant (`workflow_dispatch`) **ne reconstruit pas** l'image :
+le tag de registre est mutable, mais l'artefact d'origine est conservé et
+redéployé tel quel.
 
 Le push du tag suffit — `release.yml` prend la suite : image `:v1.1.0`, deploy
 prod, vérification `/api/health`, puis release GitHub avec
