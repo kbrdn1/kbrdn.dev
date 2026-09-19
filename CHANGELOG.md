@@ -23,6 +23,15 @@ migrates `[Unreleased]` into that file and empties this one — see
   current. The experience now closes on `2026-09` with the role renamed to Full
   Stack Engineer, and the status reads "Open to opportunities".
 
+- **Linting and formatting move to oxc**
+  ([#37](https://github.com/kbrdn1/kbrdn.dev/issues/37)). `oxlint` replaces
+  ESLint and `@nuxt/eslint`, with the rules migrated from the old config. Not
+  carried over: the template-only rules of eslint-plugin-vue, which oxlint does
+  not implement, and three Nuxt-specific rules that would have kept an ESLint
+  plugin around. `oxfmt` formats the code — Markdown and MDX are left alone —
+  and CI now fails on unformatted code. The one-off reformat commit is listed in
+  `.git-blame-ignore-revs`.
+
 ### Fixed
 
 - **The typecheck was not running in CI**
