@@ -68,3 +68,9 @@ jobs:
         run: |
           test -d .output || { echo "::error::missing .output"; exit 1; }
           echo "build size: $(du -sh .output | cut -f1)"
+
+      # Les images OG sont rendues à la requête : aucun step au-dessus ne les
+      # exécute. Sert .output et compare /, /blog et un article à leurs
+      # références (scripts/og-smoke/) — détail dans le script.
+      - name: OG images
+        run: ./scripts/og-smoke.sh
