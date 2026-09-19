@@ -28,6 +28,7 @@ export default defineContentConfig({
         publishedAt: z.string().optional(),
         // Homepage specific fields
         handle: z.string().optional(),
+        titles: z.array(z.string()).optional(),
         isHirable: z.boolean().optional(),
         email: z.string().optional(),
         calendarLink: z.string().optional(),

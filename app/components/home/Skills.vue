@@ -24,8 +24,10 @@ function handleTabKeydown(event: KeyboardEvent) {
     return
   }
 
-  activeTab.value = tabs[newIndex].id
-  const tabEl = document.getElementById(`tab-${tabs[newIndex].id}`)
+  const tab = tabs[newIndex]
+  if (!tab) return
+  activeTab.value = tab.id
+  const tabEl = document.getElementById(`tab-${tab.id}`)
   tabEl?.focus()
 }
 

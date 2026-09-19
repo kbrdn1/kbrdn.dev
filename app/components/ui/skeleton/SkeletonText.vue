@@ -47,9 +47,9 @@ const widthPatterns = ['w-full', 'w-11/12', 'w-10/12', 'w-9/12', 'w-8/12', 'w-7/
 function getLineWidth(index: number): string {
   if (props.widthPattern === 'full') return 'w-full'
   // Last line is usually shorter
-  if (index === props.lines - 1) return widthPatterns[Math.floor(Math.random() * 3) + 3]
+  if (index === props.lines - 1) return widthPatterns[Math.floor(Math.random() * 3) + 3] ?? 'w-full'
   // Other lines vary between full and 10/12
-  return widthPatterns[Math.floor(Math.random() * 2)]
+  return widthPatterns[Math.floor(Math.random() * 2)] ?? 'w-full'
 }
 </script>
 

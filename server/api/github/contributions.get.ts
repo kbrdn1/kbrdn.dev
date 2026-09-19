@@ -189,7 +189,7 @@ function generateMockData(yearsCount: number): ContributionCalendar {
 
         contributionDays.push({
           contributionCount: count,
-          date: currentDate.toISOString().split('T')[0],
+          date: currentDate.toISOString().slice(0, 10),
           color: getContributionColor(count)
         })
       }

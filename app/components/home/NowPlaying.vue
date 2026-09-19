@@ -248,15 +248,15 @@ function formatTime(seconds: number): string {
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
               <a
-                :href="track.link"
+                :href="track?.link"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="block text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate hover:text-primary-500 transition-colors"
               >
-                {{ track.title }}
+                {{ track?.title }}
               </a>
               <span class="block text-xs text-neutral-500 truncate mt-0.5">
-                {{ track.artist }} · {{ track.album }}
+                {{ track?.artist }} · {{ track?.album }}
               </span>
             </div>
 

@@ -80,7 +80,7 @@ const content = computed(() => {
         socials.linkedin
           ? { platform: "linkedin", url: socials.linkedin, label: "LinkedIn" }
           : null,
-      ].filter(Boolean)
+      ].filter(link => link !== null)
     : defaultSocials;
 
   return {
