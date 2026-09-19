@@ -15,7 +15,11 @@ const slides = computed<Slide[]>(() => [
   {
     title: t('explore.slides.collab.title'),
     description: t('explore.slides.collab.description'),
-    cta: { label: t('explore.slides.collab.cta'), href: 'mailto:hello@kbrdn.dev', icon: 'i-heroicons-envelope' },
+    cta: {
+      label: t('explore.slides.collab.cta'),
+      href: 'mailto:hello@kbrdn.dev',
+      icon: 'i-heroicons-envelope',
+    },
   },
   {
     title: t('explore.slides.crafting.title'),
@@ -30,7 +34,11 @@ const slides = computed<Slide[]>(() => [
   {
     title: t('explore.slides.sponsor.title'),
     description: t('explore.slides.sponsor.description'),
-    cta: { label: t('explore.slides.sponsor.cta'), href: 'https://github.com/sponsors/kbrdn1', icon: 'i-heroicons-heart' },
+    cta: {
+      label: t('explore.slides.sponsor.cta'),
+      href: 'https://github.com/sponsors/kbrdn1',
+      icon: 'i-heroicons-heart',
+    },
   },
   {
     title: t('explore.slides.motto.title'),
@@ -75,7 +83,12 @@ function goToSlide(index: number) {
 </script>
 
 <template>
-  <section class="w-full relative overflow-hidden mx-auto border-t border-neutral-200 dark:border-neutral-800" style="max-width: 80rem;" aria-roledescription="carousel" aria-label="Featured content">
+  <section
+    class="w-full relative overflow-hidden mx-auto border-t border-neutral-200 dark:border-neutral-800"
+    style="max-width: 80rem"
+    aria-roledescription="carousel"
+    aria-label="Featured content"
+  >
     <!-- Background image -->
     <ClientOnly>
       <NuxtImg
@@ -89,8 +102,12 @@ function goToSlide(index: number) {
       </template>
     </ClientOnly>
     <!-- Fade edges -->
-    <div class="absolute inset-0 bg-radial-[ellipse_at_center] from-transparent via-transparent/30 to-neutral-950/50" />
-    <div class="absolute inset-0 bg-gradient-to-r from-neutral-950/50 via-transparent to-neutral-950/50" />
+    <div
+      class="absolute inset-0 bg-radial-[ellipse_at_center] from-transparent via-transparent/30 to-neutral-950/50"
+    />
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-neutral-950/50 via-transparent to-neutral-950/50"
+    />
 
     <!-- Content -->
     <div class="relative z-10 py-14 sm:py-28 px-6">
@@ -105,16 +122,28 @@ function goToSlide(index: number) {
           }"
         >
           <!-- Label -->
-          <span class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-primary-400 drop-shadow-sm">
-            {{ [t('explore.labels.collab'), t('explore.labels.crafting'), t('explore.labels.blog'), t('explore.labels.sponsor'), t('explore.labels.motto')][currentSlide] }}
+          <span
+            class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-primary-400 drop-shadow-sm"
+          >
+            {{
+              [
+                t('explore.labels.collab'),
+                t('explore.labels.crafting'),
+                t('explore.labels.blog'),
+                t('explore.labels.sponsor'),
+                t('explore.labels.motto'),
+              ][currentSlide]
+            }}
           </span>
 
           <!-- Title -->
           <h2
-            :class="cn(
-              'text-2xl sm:text-4xl font-bold text-white max-w-2xl leading-tight drop-shadow-md',
-              currentSlide === 2 ? 'font-mono' : '',
-            )"
+            :class="
+              cn(
+                'text-2xl sm:text-4xl font-bold text-white max-w-2xl leading-tight drop-shadow-md',
+                currentSlide === 2 ? 'font-mono' : '',
+              )
+            "
           >
             {{ slide?.title }}
           </h2>
@@ -140,18 +169,22 @@ function goToSlide(index: number) {
         </div>
 
         <!-- Controls -->
-        <div class="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <div
+          class="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2"
+        >
           <button
             v-for="(_, index) in slides"
             :key="index"
             type="button"
             :aria-label="`Slide ${index + 1} of ${slides.length}${currentSlide === index ? ' (current)' : ''}`"
-            :class="cn(
-              'h-0.5',
-              currentSlide === index
-                ? 'bg-primary-500'
-                : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500',
-            )"
+            :class="
+              cn(
+                'h-0.5',
+                currentSlide === index
+                  ? 'bg-primary-500'
+                  : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500',
+              )
+            "
             :style="{
               width: currentSlide === index ? '32px' : '16px',
               transition: 'width 300ms ease, background-color 300ms ease',

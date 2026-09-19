@@ -44,7 +44,8 @@ export default defineEventHandler(async (event) => {
 
   // Check for GitHub token (support both classic ghp_ and fine-grained github_pat_ tokens)
   const token = config.githubToken
-  const isValidToken = token &&
+  const isValidToken =
+    token &&
     !token.includes('xxxx') &&
     (token.startsWith('ghp_') || token.startsWith('github_pat_')) &&
     token.length > 20
@@ -67,9 +68,7 @@ export default defineEventHandler(async (event) => {
       // For current year: January 1 to now
       // For past years: January 1 to December 31
       const from = new Date(year, 0, 1)
-      const to = i === 0
-        ? now
-        : new Date(year, 11, 31, 23, 59, 59)
+      const to = i === 0 ? now : new Date(year, 11, 31, 23, 59, 59)
 
       // Skip years before GitHub account creation (approximate)
       if (year < 2008) break
@@ -77,8 +76,8 @@ export default defineEventHandler(async (event) => {
       const response = await $fetch<GitHubResponse>('https://api.github.com/graphql', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
         body: {
           query: `
@@ -102,9 +101,9 @@ export default defineEventHandler(async (event) => {
           variables: {
             username,
             from: from.toISOString(),
-            to: to.toISOString()
-          }
-        }
+            to: to.toISOString(),
+          },
+        },
       })
 
       if (response.errors) {
@@ -125,7 +124,7 @@ export default defineEventHandler(async (event) => {
       years.push({
         year,
         totalContributions: calendar.totalContributions,
-        weeks: calendar.weeks
+        weeks: calendar.weeks,
       })
 
       totalContributions += calendar.totalContributions
@@ -136,7 +135,7 @@ export default defineEventHandler(async (event) => {
 
     return {
       totalContributions,
-      years
+      years,
     }
   } catch (error) {
     console.error('GitHub API error:', error)
@@ -190,7 +189,7 @@ function generateMockData(yearsCount: number): ContributionCalendar {
         contributionDays.push({
           contributionCount: count,
           date: currentDate.toISOString().slice(0, 10),
-          color: getContributionColor(count)
+          color: getContributionColor(count),
         })
       }
 
@@ -204,7 +203,7 @@ function generateMockData(yearsCount: number): ContributionCalendar {
     years.push({
       year,
       totalContributions: yearTotal,
-      weeks
+      weeks,
     })
 
     totalContributions += yearTotal

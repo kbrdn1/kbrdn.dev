@@ -1,21 +1,21 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 /* Scan content directory for Tailwind classes in markdown */
 @source "../../../app/content/**/*.{md,mdx}";
 
 /* Project CSS modules */
-@import "./fonts.css";
-@import "./theme.css";
-@import "./components.css";
-@import "./transitions.css";
-@import "./prose.css";
-@import "./accessibility.css";
+@import './fonts.css';
+@import './theme.css';
+@import './components.css';
+@import './transitions.css';
+@import './prose.css';
+@import './accessibility.css';
 
 /* ═══════════════════════════════════════════════════
    Global Transition (theme switching)
    ═══════════════════════════════════════════════════ */
-*:not([class*="transition-"]) {
+*:not([class*='transition-']) {
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,

@@ -1,8 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "import"
-  ],
+  "plugins": ["import"],
   "categories": {
     "correctness": "off"
   },
@@ -12,9 +10,7 @@
     "browser": true,
     "node": true
   },
-  "ignorePatterns": [
-    "**/public"
-  ],
+  "ignorePatterns": ["**/public"],
   "rules": {
     "constructor-super": "error",
     "for-direction": "error",
@@ -81,13 +77,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.mts",
-        "**/*.cts",
-        "**/*.vue"
-      ],
+      "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts", "**/*.vue"],
       "rules": {
         "constructor-super": "off",
         "getter-return": "off",
@@ -161,14 +151,10 @@
         ],
         "typescript/no-import-type-side-effects": "error"
       },
-      "plugins": [
-        "typescript"
-      ]
+      "plugins": ["typescript"]
     },
     {
-      "files": [
-        "**/*.vue"
-      ],
+      "files": ["**/*.vue"],
       "rules": {
         "vue/no-arrow-functions-in-watch": "error",
         "vue/no-async-in-computed-properties": "error",
@@ -207,9 +193,7 @@
         "vue/no-multiple-slot-args": "warn",
         "vue/no-required-prop-with-default": "warn"
       },
-      "plugins": [
-        "vue"
-      ]
+      "plugins": ["vue"]
     }
   ]
 }

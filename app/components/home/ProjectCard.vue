@@ -30,11 +30,11 @@ const props = withDefaults(defineProps<Props>(), {
   tags: () => [],
   stats: () => [],
   techStack: () => [],
-  language: ''
+  language: '',
 })
 
 const techStackTotal = computed(() =>
-  props.techStack.reduce((sum, tech) => sum + tech.percentage, 0)
+  props.techStack.reduce((sum, tech) => sum + tech.percentage, 0),
 )
 
 const primaryLanguage = computed(() => {
@@ -45,11 +45,13 @@ const primaryLanguage = computed(() => {
 
 <template>
   <div
-    :class="cn(
-      'group relative overflow-hidden',
-      'border border-neutral-200 dark:border-neutral-800',
-      'hover:border-primary-500/40 transition-all duration-300',
-    )"
+    :class="
+      cn(
+        'group relative overflow-hidden',
+        'border border-neutral-200 dark:border-neutral-800',
+        'hover:border-primary-500/40 transition-all duration-300',
+      )
+    "
   >
     <!-- Tech stack bar as top accent -->
     <div v-if="techStack.length" class="h-1 flex">
@@ -75,7 +77,9 @@ const primaryLanguage = computed(() => {
             {{ primaryLanguage }}
           </span>
           <!-- Title -->
-          <h3 class="text-lg font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-primary-500 transition-colors">
+          <h3
+            class="text-lg font-medium text-neutral-900 dark:text-neutral-100 group-hover:text-primary-500 transition-colors"
+          >
             {{ name }}
           </h3>
         </div>
@@ -87,12 +91,14 @@ const primaryLanguage = computed(() => {
             :href="githubUrl"
             target="_blank"
             rel="noopener noreferrer"
-            :class="cn(
-              'flex items-center justify-center w-8 h-8',
-              'border border-neutral-200 dark:border-neutral-800',
-              'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
-              'transition-all',
-            )"
+            :class="
+              cn(
+                'flex items-center justify-center w-8 h-8',
+                'border border-neutral-200 dark:border-neutral-800',
+                'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
+                'transition-all',
+              )
+            "
             :title="t('projects.viewProject')"
             :aria-label="`${name} - ${t('projects.viewProject')}`"
           >
@@ -103,16 +109,22 @@ const primaryLanguage = computed(() => {
             :href="demoUrl"
             target="_blank"
             rel="noopener noreferrer"
-            :class="cn(
-              'flex items-center justify-center w-8 h-8',
-              'border border-primary-500/30',
-              'text-primary-500 hover:bg-primary-500/10 hover:border-primary-500/50',
-              'transition-all',
-            )"
+            :class="
+              cn(
+                'flex items-center justify-center w-8 h-8',
+                'border border-primary-500/30',
+                'text-primary-500 hover:bg-primary-500/10 hover:border-primary-500/50',
+                'transition-all',
+              )
+            "
             :title="t('projects.demo')"
             :aria-label="`${name} - ${t('projects.demo')}`"
           >
-            <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-4 h-4" aria-hidden="true" />
+            <UIcon
+              name="i-heroicons-arrow-top-right-on-square"
+              class="w-4 h-4"
+              aria-hidden="true"
+            />
           </a>
         </div>
       </div>
@@ -138,22 +150,16 @@ const primaryLanguage = computed(() => {
 
         <!-- Tags -->
         <div v-if="tags.length" class="flex flex-wrap gap-1.5 justify-end">
-          <UiTag
-            v-for="tag in tags"
-            :key="tag"
-            :label="tag"
-            variant="auto"
-          />
+          <UiTag v-for="tag in tags" :key="tag" :label="tag" variant="auto" />
         </div>
       </div>
 
       <!-- Tech legend -->
-      <div v-if="techStack.length" class="flex flex-wrap gap-x-3 gap-y-1 mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-800/50">
-        <div
-          v-for="tech in techStack"
-          :key="tech.name"
-          class="flex items-center gap-1 text-[10px]"
-        >
+      <div
+        v-if="techStack.length"
+        class="flex flex-wrap gap-x-3 gap-y-1 mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-800/50"
+      >
+        <div v-for="tech in techStack" :key="tech.name" class="flex items-center gap-1 text-[10px]">
           <span class="w-1.5 h-1.5 shrink-0" :style="{ backgroundColor: tech.color }" />
           <span class="text-neutral-400 font-mono">{{ tech.name }} {{ tech.percentage }}%</span>
         </div>

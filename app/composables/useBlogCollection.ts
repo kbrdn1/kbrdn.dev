@@ -8,12 +8,8 @@ type BlogCollection = 'blog_en' | 'blog_fr'
 export function useBlogCollection() {
   const { locale } = useI18n()
 
-  const collection = computed(
-    () => `blog_${locale.value}` as BlogCollection,
-  )
-  const fallback = computed(
-    () => `blog_${locale.value === 'fr' ? 'en' : 'fr'}` as BlogCollection,
-  )
+  const collection = computed(() => `blog_${locale.value}` as BlogCollection)
+  const fallback = computed(() => `blog_${locale.value === 'fr' ? 'en' : 'fr'}` as BlogCollection)
 
   return { locale, collection, fallback }
 }

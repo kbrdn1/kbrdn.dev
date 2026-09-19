@@ -1,11 +1,9 @@
 @theme static {
   /* Typography */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "Monaspace Krypton", "JetBrains Mono", "Courier New", monospace;
-  --font-code:
-    "OperatorMonoLig Nerd Font", "Monaspace Neon", "Monaspace Krypton",
-    monospace;
-  --font-comment: "Monaspace Radon", "Caveat", cursive;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Monaspace Krypton', 'JetBrains Mono', 'Courier New', monospace;
+  --font-code: 'OperatorMonoLig Nerd Font', 'Monaspace Neon', 'Monaspace Krypton', monospace;
+  --font-comment: 'Monaspace Radon', 'Caveat', cursive;
 
   /* ═══════════════════════════════════════════════════
      Dark Mode Colors - Claude Dark (Pure)

@@ -36,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
   duration: 500,
   threshold: 0.1,
   once: true,
-  as: 'div'
+  as: 'div',
 })
 
 const sectionRef = ref<HTMLElement | null>(null)
@@ -70,7 +70,7 @@ const animationStyles = computed(() => {
     transitionDuration: `${effectiveDuration.value}ms`,
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     transitionDelay: `${props.delay}ms`,
-    willChange: isVisible.value ? 'auto' : 'opacity, transform'
+    willChange: isVisible.value ? 'auto' : 'opacity, transform',
   }
 
   if (!isVisible.value) {
@@ -112,7 +112,7 @@ onMounted(() => {
         }
       })
     },
-    { threshold: props.threshold }
+    { threshold: props.threshold },
   )
 
   observer.observe(sectionRef.value)
@@ -124,11 +124,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <component
-    :is="as"
-    ref="sectionRef"
-    :style="animationStyles"
-  >
+  <component :is="as" ref="sectionRef" :style="animationStyles">
     <slot />
   </component>
 </template>

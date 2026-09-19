@@ -27,7 +27,7 @@ const FALLBACK_COLORS = [
 function hashTag(tag: string): number {
   let hash = 0
   for (let i = 0; i < tag.length; i++) {
-    hash = ((hash << 5) - hash) + tag.charCodeAt(i)
+    hash = (hash << 5) - hash + tag.charCodeAt(i)
     hash |= 0
   }
   return Math.abs(hash)
@@ -35,20 +35,26 @@ function hashTag(tag: string): number {
 
 const VARIANT_CLASSES = {
   light: 'border-white/30 text-white/80 bg-white/8',
-  primary: 'border-primary-500/30 text-primary-500 bg-primary-500/10 dark:border-primary-400/30 dark:text-primary-400 dark:bg-primary-400/10',
+  primary:
+    'border-primary-500/30 text-primary-500 bg-primary-500/10 dark:border-primary-400/30 dark:text-primary-400 dark:bg-primary-400/10',
   sky: 'border-sky-400/30 text-sky-400 bg-sky-400/10',
-  status: 'border-primary-500/30 text-primary-500 bg-primary-500/8 dark:border-primary-400/30 dark:text-primary-400 dark:bg-primary-400/8',
-  default: 'border-neutral-300/50 text-neutral-600 bg-neutral-200/30 dark:border-neutral-600/50 dark:text-neutral-400 dark:bg-neutral-800/40',
+  status:
+    'border-primary-500/30 text-primary-500 bg-primary-500/8 dark:border-primary-400/30 dark:text-primary-400 dark:bg-primary-400/8',
+  default:
+    'border-neutral-300/50 text-neutral-600 bg-neutral-200/30 dark:border-neutral-600/50 dark:text-neutral-400 dark:bg-neutral-800/40',
 } as const
 
-const props = withDefaults(defineProps<{
-  label: string
-  variant?: 'default' | 'light' | 'primary' | 'sky' | 'status' | 'auto'
-  tooltip?: boolean
-}>(), {
-  variant: 'default',
-  tooltip: true,
-})
+const props = withDefaults(
+  defineProps<{
+    label: string
+    variant?: 'default' | 'light' | 'primary' | 'sky' | 'status' | 'auto'
+    tooltip?: boolean
+  }>(),
+  {
+    variant: 'default',
+    tooltip: true,
+  },
+)
 
 const variantClasses = computed(() => {
   if (props.variant === 'auto') {
@@ -62,20 +68,24 @@ const variantClasses = computed(() => {
 <template>
   <UTooltip v-if="tooltip" :text="label">
     <span
-      :class="cn(
-        'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
-        variantClasses,
-      )"
+      :class="
+        cn(
+          'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
+          variantClasses,
+        )
+      "
     >
       {{ label }}
     </span>
   </UTooltip>
   <span
     v-else
-    :class="cn(
-      'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
-      variantClasses,
-    )"
+    :class="
+      cn(
+        'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
+        variantClasses,
+      )
+    "
   >
     {{ label }}
   </span>

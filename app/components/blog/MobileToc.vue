@@ -20,10 +20,7 @@ function handleScrollTo(id: string) {
 
 <template>
   <Teleport to="body">
-    <div
-      v-if="items.length > 0"
-      class="lg:hidden fixed bottom-0 left-0 right-0 z-50"
-    >
+    <div v-if="items.length > 0" class="lg:hidden fixed bottom-0 left-0 right-0 z-50">
       <!-- Expanded TOC list -->
       <Transition
         enter-active-class="transition-all duration-200 ease-out"
@@ -38,24 +35,31 @@ function handleScrollTo(id: string) {
           class="border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md px-4 py-3 max-h-64 overflow-y-auto"
         >
           <ul class="space-y-px font-mono">
-            <li
-              v-for="item in items"
-              :key="item.id"
-            >
+            <li v-for="item in items" :key="item.id">
               <button
                 type="button"
-                :class="cn(
-                  'flex items-center w-full text-left text-xs leading-snug py-1.5 px-2 rounded transition-all',
-                  item.level >= 3 && 'ml-4',
-                  activeHeading === item.id
-                    ? 'text-primary-500 bg-primary-500/10'
-                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200',
-                )"
+                :class="
+                  cn(
+                    'flex items-center w-full text-left text-xs leading-snug py-1.5 px-2 rounded transition-all',
+                    item.level >= 3 && 'ml-4',
+                    activeHeading === item.id
+                      ? 'text-primary-500 bg-primary-500/10'
+                      : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200',
+                  )
+                "
                 @click="handleScrollTo(item.id)"
               >
-                <span v-if="activeHeading === item.id" class="shrink-0 text-primary-500 mr-1.5 select-none">▸</span>
+                <span
+                  v-if="activeHeading === item.id"
+                  class="shrink-0 text-primary-500 mr-1.5 select-none"
+                  >▸</span
+                >
                 <span v-else class="shrink-0 mr-1.5 w-2 select-none" />
-                <span v-if="item.level >= 3" class="shrink-0 text-neutral-300 dark:text-neutral-600 mr-1">└</span>
+                <span
+                  v-if="item.level >= 3"
+                  class="shrink-0 text-neutral-300 dark:text-neutral-600 mr-1"
+                  >└</span
+                >
                 {{ item.text }}
               </button>
             </li>
@@ -77,7 +81,9 @@ function handleScrollTo(id: string) {
         class="w-full flex items-center gap-3 px-4 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md"
         @click="mobileTocOpen = !mobileTocOpen"
       >
-        <span class="text-[9px] font-mono uppercase tracking-widest text-neutral-400 shrink-0">Sommaire</span>
+        <span class="text-[9px] font-mono uppercase tracking-widest text-neutral-400 shrink-0"
+          >Sommaire</span
+        >
         <span class="flex-1 text-xs font-mono text-primary-500 truncate text-left">
           {{ activeHeadingText }}
         </span>
@@ -89,7 +95,9 @@ function handleScrollTo(id: string) {
         </span>
         <UIcon
           name="i-heroicons-chevron-up"
-          :class="cn('w-4 h-4 text-neutral-400 transition-transform', mobileTocOpen && 'rotate-180')"
+          :class="
+            cn('w-4 h-4 text-neutral-400 transition-transform', mobileTocOpen && 'rotate-180')
+          "
         />
       </button>
     </div>

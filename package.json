@@ -1,8 +1,8 @@
 {
   "name": "kbrdn-dev-v2",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",

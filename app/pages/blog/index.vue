@@ -75,9 +75,7 @@ watch(activeTag, () => {
 const filteredPosts = computed(() => {
   if (!posts.value) return []
   if (!activeTag.value) return posts.value
-  return posts.value.filter((post) =>
-    post.tags?.includes(activeTag.value!)
-  )
+  return posts.value.filter((post) => post.tags?.includes(activeTag.value!))
 })
 
 // Pagination computed
@@ -121,14 +119,17 @@ const { postUrl } = useBlogUrl()
   <div class="flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1"
+      aria-hidden="true"
       style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
     />
 
     <!-- Main content -->
     <div class="w-full flex flex-col items-center relative z-10">
       <!-- Hero Section -->
-      <section class="p-6 border-dashed-horizontal border-b border-neutral-200 dark:border-neutral-800 w-full">
+      <section
+        class="p-6 border-dashed-horizontal border-b border-neutral-200 dark:border-neutral-800 w-full"
+      >
         <span class="corner-bottom-left" aria-hidden="true" />
         <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
@@ -136,7 +137,10 @@ const { postUrl } = useBlogUrl()
             <span class="block text-[11px] font-mono uppercase tracking-widest text-sky-400 mb-1">
               {{ t('sections.blog') }}
             </span>
-            <h1 class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2" style="font-family: 'Fenix', serif;">
+            <h1
+              class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2"
+              style="font-family: 'Fenix', serif"
+            >
               {{ t('blog.title') }}
             </h1>
             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
@@ -150,12 +154,14 @@ const { postUrl } = useBlogUrl()
                 href="https://github.com/sponsors/kbrdn1"
                 target="_blank"
                 rel="noopener noreferrer"
-                :class="cn(
-                  'inline-flex items-center gap-1.5 px-3 py-1',
-                  'text-[11px] font-mono uppercase tracking-wider',
-                  'text-pink-500 border border-pink-500/30 bg-pink-500/5',
-                  'hover:bg-pink-500/10 hover:border-pink-500/50 transition-colors',
-                )"
+                :class="
+                  cn(
+                    'inline-flex items-center gap-1.5 px-3 py-1',
+                    'text-[11px] font-mono uppercase tracking-wider',
+                    'text-pink-500 border border-pink-500/30 bg-pink-500/5',
+                    'hover:bg-pink-500/10 hover:border-pink-500/50 transition-colors',
+                  )
+                "
               >
                 <UIcon name="i-heroicons-heart" class="w-3 h-3" />
                 Sponsor
@@ -169,11 +175,7 @@ const { postUrl } = useBlogUrl()
       <div ref="blogListRef" class="scroll-mt-20" />
       <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
         <!-- Tag filters + View toggle -->
-        <UiAnimatedSection
-          animation="fadeInUp"
-          :delay="100"
-          :duration="500"
-        >
+        <UiAnimatedSection animation="fadeInUp" :delay="100" :duration="500">
           <div class="flex items-center gap-3">
             <!-- Tags -->
             <div class="flex-1 flex gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-none">
@@ -208,23 +210,39 @@ const { postUrl } = useBlogUrl()
             </div>
 
             <!-- View mode toggle - Desktop -->
-            <div class="hidden sm:flex items-center gap-1 shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3">
+            <div
+              class="hidden sm:flex items-center gap-1 shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3"
+            >
               <UTooltip
-                v-for="mode in (['list', 'cards', 'compact'] as const)"
+                v-for="mode in ['list', 'cards', 'compact'] as const"
                 :key="mode"
-                :text="mode === 'list' ? t('blog.viewList') : mode === 'cards' ? t('blog.viewCards') : t('blog.viewCompact')"
+                :text="
+                  mode === 'list'
+                    ? t('blog.viewList')
+                    : mode === 'cards'
+                      ? t('blog.viewCards')
+                      : t('blog.viewCompact')
+                "
               >
                 <button
-                  :class="cn(
-                    'p-1.5 transition-all cursor-pointer',
-                    viewMode === mode
-                      ? 'text-primary-500 bg-primary-500/10'
-                      : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300',
-                  )"
+                  :class="
+                    cn(
+                      'p-1.5 transition-all cursor-pointer',
+                      viewMode === mode
+                        ? 'text-primary-500 bg-primary-500/10'
+                        : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300',
+                    )
+                  "
                   @click="viewMode = mode"
                 >
                   <UIcon
-                    :name="mode === 'list' ? 'i-heroicons-bars-3' : mode === 'cards' ? 'i-heroicons-squares-2x2' : 'i-heroicons-list-bullet'"
+                    :name="
+                      mode === 'list'
+                        ? 'i-heroicons-bars-3'
+                        : mode === 'cards'
+                          ? 'i-heroicons-squares-2x2'
+                          : 'i-heroicons-list-bullet'
+                    "
                     class="w-4 h-4"
                   />
                 </button>
@@ -232,13 +250,21 @@ const { postUrl } = useBlogUrl()
             </div>
 
             <!-- View mode toggle - Mobile dropdown -->
-            <div class="sm:hidden relative shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3">
+            <div
+              class="sm:hidden relative shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3"
+            >
               <button
                 class="p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-all"
                 @click="showViewDropdown = !showViewDropdown"
               >
                 <UIcon
-                  :name="viewMode === 'list' ? 'i-heroicons-bars-3' : viewMode === 'cards' ? 'i-heroicons-squares-2x2' : 'i-heroicons-list-bullet'"
+                  :name="
+                    viewMode === 'list'
+                      ? 'i-heroicons-bars-3'
+                      : viewMode === 'cards'
+                        ? 'i-heroicons-squares-2x2'
+                        : 'i-heroicons-list-bullet'
+                  "
                   class="w-4 h-4"
                 />
               </button>
@@ -255,21 +281,35 @@ const { postUrl } = useBlogUrl()
                   class="absolute right-0 top-full mt-1 z-20 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
                 >
                   <button
-                    v-for="mode in (['list', 'cards', 'compact'] as const)"
+                    v-for="mode in ['list', 'cards', 'compact'] as const"
                     :key="mode"
-                    :class="cn(
-                      'flex items-center gap-2 w-full px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
-                      viewMode === mode
-                        ? 'text-primary-500 bg-primary-500/10'
-                        : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800',
-                    )"
+                    :class="
+                      cn(
+                        'flex items-center gap-2 w-full px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
+                        viewMode === mode
+                          ? 'text-primary-500 bg-primary-500/10'
+                          : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800',
+                      )
+                    "
                     @click="selectViewMode(mode)"
                   >
                     <UIcon
-                      :name="mode === 'list' ? 'i-heroicons-bars-3' : mode === 'cards' ? 'i-heroicons-squares-2x2' : 'i-heroicons-list-bullet'"
+                      :name="
+                        mode === 'list'
+                          ? 'i-heroicons-bars-3'
+                          : mode === 'cards'
+                            ? 'i-heroicons-squares-2x2'
+                            : 'i-heroicons-list-bullet'
+                      "
                       class="w-4 h-4"
                     />
-                    {{ mode === 'list' ? t('blog.viewList') : mode === 'cards' ? t('blog.viewCards') : t('blog.viewCompact') }}
+                    {{
+                      mode === 'list'
+                        ? t('blog.viewList')
+                        : mode === 'cards'
+                          ? t('blog.viewCards')
+                          : t('blog.viewCompact')
+                    }}
                   </button>
                 </div>
               </Transition>
@@ -279,7 +319,6 @@ const { postUrl } = useBlogUrl()
 
         <!-- Blog posts -->
         <UiAnimatedSection animation="fadeInUp" :delay="150" :duration="500">
-
           <!-- List view (oxc.rs style) -->
           <TransitionGroup
             v-if="viewMode === 'list' && paginatedPosts.length > 0"
@@ -317,28 +356,43 @@ const { postUrl } = useBlogUrl()
               v-for="(post, index) in paginatedPosts"
               :key="post.path"
               :to="postUrl(post)"
-              :class="cn(
-                'relative block p-5 border border-neutral-200 dark:border-neutral-800 overflow-hidden',
-                'hover:border-primary-500/50 transition-all group',
-              )"
+              :class="
+                cn(
+                  'relative block p-5 border border-neutral-200 dark:border-neutral-800 overflow-hidden',
+                  'hover:border-primary-500/50 transition-all group',
+                )
+              "
               :style="{ transitionDelay: `${index * 60}ms` }"
             >
               <!-- Thumbnail fade (if banner) -->
               <ClientOnly v-if="post.banner">
                 <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
                   <NuxtImg
-                    :src="post.bannerImage || ($colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg')"
+                    :src="
+                      post.bannerImage ||
+                      ($colorMode.value === 'dark'
+                        ? '/images/banners/dark.jpg'
+                        : '/images/banners/light.jpg')
+                    "
                     alt=""
                     class="w-full h-full object-cover"
                   />
-                  <div class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950" />
+                  <div
+                    class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950"
+                  />
                 </div>
               </ClientOnly>
               <div class="relative z-10">
-                <span v-if="post.publishedAt" class="block text-[10px] font-mono text-neutral-500 mb-2">
+                <span
+                  v-if="post.publishedAt"
+                  class="block text-[10px] font-mono text-neutral-500 mb-2"
+                >
                   {{ formatDate(post.publishedAt) }}
                 </span>
-                <h3 class="text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors" style="font-family: 'Fenix', serif;">
+                <h3
+                  class="text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors"
+                  style="font-family: 'Fenix', serif"
+                >
                   {{ post.title }}
                 </h3>
                 <p
@@ -378,10 +432,15 @@ const { postUrl } = useBlogUrl()
               :to="postUrl(post)"
               class="flex items-center gap-4 py-2 px-2 -mx-2 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
             >
-              <span v-if="post.publishedAt" class="shrink-0 w-24 text-[10px] font-mono text-neutral-500">
+              <span
+                v-if="post.publishedAt"
+                class="shrink-0 w-24 text-[10px] font-mono text-neutral-500"
+              >
                 {{ formatDate(post.publishedAt) }}
               </span>
-              <span class="text-sm text-primary-500 group-hover:text-primary-400 transition-colors truncate">
+              <span
+                class="text-sm text-primary-500 group-hover:text-primary-400 transition-colors truncate"
+              >
                 {{ post.title }}
               </span>
             </NuxtLink>
@@ -396,13 +455,15 @@ const { postUrl } = useBlogUrl()
             <!-- Prev -->
             <button
               :disabled="currentPage === 1"
-              :class="cn(
-                'px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all',
-                'border border-neutral-200 dark:border-neutral-800',
-                currentPage === 1
-                  ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                  : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
-              )"
+              :class="
+                cn(
+                  'px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all',
+                  'border border-neutral-200 dark:border-neutral-800',
+                  currentPage === 1
+                    ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
+                    : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
+                )
+              "
               @click="goToPage(currentPage - 1)"
             >
               <UIcon name="i-heroicons-chevron-left" class="w-3.5 h-3.5" />
@@ -410,21 +471,20 @@ const { postUrl } = useBlogUrl()
 
             <!-- Page numbers -->
             <template v-for="page in pageNumbers" :key="page">
-              <span
-                v-if="page === '...'"
-                class="px-2 py-1.5 text-xs font-mono text-neutral-400"
-              >
+              <span v-if="page === '...'" class="px-2 py-1.5 text-xs font-mono text-neutral-400">
                 ...
               </span>
               <button
                 v-else
-                :class="cn(
-                  'min-w-[32px] px-2 py-1.5 text-xs font-mono transition-all',
-                  'border',
-                  currentPage === page
-                    ? 'text-primary-500 border-primary-500/50 bg-primary-500/10'
-                    : 'text-neutral-500 border-neutral-200 dark:border-neutral-800 hover:text-primary-500 hover:border-primary-500/50',
-                )"
+                :class="
+                  cn(
+                    'min-w-[32px] px-2 py-1.5 text-xs font-mono transition-all',
+                    'border',
+                    currentPage === page
+                      ? 'text-primary-500 border-primary-500/50 bg-primary-500/10'
+                      : 'text-neutral-500 border-neutral-200 dark:border-neutral-800 hover:text-primary-500 hover:border-primary-500/50',
+                  )
+                "
                 @click="goToPage(page as number)"
               >
                 {{ page }}
@@ -434,13 +494,15 @@ const { postUrl } = useBlogUrl()
             <!-- Next -->
             <button
               :disabled="currentPage === totalPages"
-              :class="cn(
-                'px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all',
-                'border border-neutral-200 dark:border-neutral-800',
-                currentPage === totalPages
-                  ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                  : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
-              )"
+              :class="
+                cn(
+                  'px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all',
+                  'border border-neutral-200 dark:border-neutral-800',
+                  currentPage === totalPages
+                    ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
+                    : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
+                )
+              "
               @click="goToPage(currentPage + 1)"
             >
               <UIcon name="i-heroicons-chevron-right" class="w-3.5 h-3.5" />
@@ -469,7 +531,8 @@ const { postUrl } = useBlogUrl()
 
     <!-- Right stripe zone -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1"
+      aria-hidden="true"
       style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
     />
   </div>

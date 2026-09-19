@@ -38,22 +38,11 @@ const iconColorClasses = {
 </script>
 
 <template>
-  <div
-    class="my-4 rounded-lg border-l-4 p-4"
-    :class="colorClasses[props.color]"
-  >
+  <div class="my-4 rounded-lg border-l-4 p-4" :class="colorClasses[props.color]">
     <div class="flex items-start gap-3">
-      <UIcon
-        :name="props.icon"
-        class="size-6 shrink-0"
-        :class="iconColorClasses[props.color]"
-      />
+      <UIcon :name="props.icon" class="size-6 shrink-0" :class="iconColorClasses[props.color]" />
       <div class="min-w-0 flex-1">
-        <p
-          v-if="props.title"
-          class="mb-2 font-semibold"
-          :class="iconColorClasses[props.color]"
-        >
+        <p v-if="props.title" class="mb-2 font-semibold" :class="iconColorClasses[props.color]">
           {{ props.title }}
         </p>
         <div class="prose prose-sm dark:prose-invert">

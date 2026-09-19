@@ -11,13 +11,16 @@ const emit = defineEmits<{
 
 const tocListRef = ref<HTMLElement | null>(null)
 
-watch(() => props.activeHeading, (id) => {
-  if (!id || !tocListRef.value) return
-  const activeBtn = tocListRef.value.querySelector(`[data-toc-id="${id}"]`) as HTMLElement
-  if (activeBtn) {
-    activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }
-})
+watch(
+  () => props.activeHeading,
+  (id) => {
+    if (!id || !tocListRef.value) return
+    const activeBtn = tocListRef.value.querySelector(`[data-toc-id="${id}"]`) as HTMLElement
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }
+  },
+)
 </script>
 
 <template>
@@ -26,7 +29,9 @@ watch(() => props.activeHeading, (id) => {
     class="w-full min-h-0 flex flex-col"
     aria-label="Table of contents"
   >
-    <div class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono flex flex-col min-h-0">
+    <div
+      class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono flex flex-col min-h-0"
+    >
       <!-- Header with progress -->
       <div class="flex items-center justify-between px-3 py-2 shrink-0">
         <span class="text-[9px] uppercase tracking-widest text-neutral-400">sommaire</span>
@@ -49,24 +54,31 @@ watch(() => props.activeHeading, (id) => {
       <!-- Items (scrollable) -->
       <div ref="tocListRef" class="p-3 overflow-y-auto min-h-0 scrollbar-none">
         <ul class="space-y-px">
-          <li
-            v-for="item in items"
-            :key="item.id"
-          >
+          <li v-for="item in items" :key="item.id">
             <button
               type="button"
               :data-toc-id="item.id"
-              :class="cn(
-                'flex items-center w-full text-left text-[11px] leading-snug py-1 px-1.5 -mx-1.5 transition-all',
-                activeHeading === item.id
-                  ? 'text-primary-500 bg-primary-500/10'
-                  : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
-              )"
+              :class="
+                cn(
+                  'flex items-center w-full text-left text-[11px] leading-snug py-1 px-1.5 -mx-1.5 transition-all',
+                  activeHeading === item.id
+                    ? 'text-primary-500 bg-primary-500/10'
+                    : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
+                )
+              "
               @click="emit('scroll-to', item.id)"
             >
-              <span v-if="activeHeading === item.id" class="shrink-0 text-primary-500 mr-1 select-none">▸</span>
+              <span
+                v-if="activeHeading === item.id"
+                class="shrink-0 text-primary-500 mr-1 select-none"
+                >▸</span
+              >
               <span v-else class="shrink-0 mr-1 w-2 select-none" />
-              <span v-if="item.level >= 3" class="shrink-0 text-neutral-300 dark:text-neutral-600 mr-1">└</span>
+              <span
+                v-if="item.level >= 3"
+                class="shrink-0 text-neutral-300 dark:text-neutral-600 mr-1"
+                >└</span
+              >
               <span :class="item.level >= 3 ? 'text-[10px]' : ''">{{ item.text }}</span>
             </button>
           </li>

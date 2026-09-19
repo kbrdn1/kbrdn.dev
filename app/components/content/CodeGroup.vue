@@ -36,18 +36,24 @@ const tabs = computed(() => {
 </script>
 
 <template>
-  <div class="code-group my-4 overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800">
+  <div
+    class="code-group my-4 overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800"
+  >
     <!-- Tab headers -->
-    <div class="flex border-b border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
+    <div
+      class="flex border-b border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900"
+    >
       <button
         v-for="tab in tabs"
         :key="tab.index"
         class="px-4 py-2 text-sm font-medium transition-colors"
-        :class="cn(
-          activeTab === tab.index
-            ? 'border-b-2 border-primary-500 bg-white text-primary-600 dark:bg-neutral-950 dark:text-primary-400'
-            : 'text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100',
-        )"
+        :class="
+          cn(
+            activeTab === tab.index
+              ? 'border-b-2 border-primary-500 bg-white text-primary-600 dark:bg-neutral-950 dark:text-primary-400'
+              : 'text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100',
+          )
+        "
         @click="activeTab = tab.index"
       >
         {{ tab.label }}
@@ -60,10 +66,7 @@ const tabs = computed(() => {
         <div v-show="activeTab === index" class="code-group-content">
           <slot :name="`tab-${index}`">
             <!-- Render the corresponding slot content -->
-            <component
-              :is="slots.default?.()[index]"
-              v-if="slots.default?.()[index]"
-            />
+            <component :is="slots.default?.()[index]" v-if="slots.default?.()[index]" />
           </slot>
         </div>
       </template>

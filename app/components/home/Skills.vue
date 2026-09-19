@@ -5,7 +5,7 @@ const { t } = useI18n()
 
 function handleTabKeydown(event: KeyboardEvent) {
   const tabs = skills.value
-  const currentIndex = tabs.findIndex(s => s.id === activeTab.value)
+  const currentIndex = tabs.findIndex((s) => s.id === activeTab.value)
   let newIndex = currentIndex
 
   if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
@@ -186,10 +186,7 @@ const activeTab = ref<string>('typescript')
 // Simple syntax highlighter — Claude Dark theme colors
 function highlightCode(code: string, lang: string): string {
   // Escape HTML first
-  let html = code
-    .replace(/&/g, '\u0001amp;')
-    .replace(/</g, '\u0001lt;')
-    .replace(/>/g, '\u0001gt;')
+  let html = code.replace(/&/g, '\u0001amp;').replace(/</g, '\u0001lt;').replace(/>/g, '\u0001gt;')
 
   // Strings (before other replacements to protect string content)
   html = html.replace(/("[^"]*"|'[^']*')/g, '\u0002s$1\u0003')
@@ -199,14 +196,26 @@ function highlightCode(code: string, lang: string): string {
   html = html.replace(/^(\s*#[^[{].*$)/gm, '\u0002c$1\u0003')
 
   if (lang === 'typescript' || lang === 'nuxt') {
-    html = html.replace(/\b(type|interface|const|let|var|function|async|await|return|import|export|from|new|class|extends)\b/g, '\u0002k$1\u0003')
-    html = html.replace(/\b(string|number|boolean|void|Promise|Record|unknown)\b/g, '\u0002t$1\u0003')
+    html = html.replace(
+      /\b(type|interface|const|let|var|function|async|await|return|import|export|from|new|class|extends)\b/g,
+      '\u0002k$1\u0003',
+    )
+    html = html.replace(
+      /\b(string|number|boolean|void|Promise|Record|unknown)\b/g,
+      '\u0002t$1\u0003',
+    )
   } else if (lang === 'laravel') {
     html = html.replace(/\b(class|public|function|return|new|extends|use)\b/g, '\u0002k$1\u0003')
-    html = html.replace(/\b(JsonResponse|Order|StoreOrderRequest|OrderResource|Controller)\b/g, '\u0002t$1\u0003')
+    html = html.replace(
+      /\b(JsonResponse|Order|StoreOrderRequest|OrderResource|Controller)\b/g,
+      '\u0002t$1\u0003',
+    )
     html = html.replace(/(\$\w+)/g, '\u0002v$1\u0003')
   } else if (lang === 'rust') {
-    html = html.replace(/\b(use|fn|let|struct|pub|impl|mod|self|Ok|Err|mut|main)\b/g, '\u0002k$1\u0003')
+    html = html.replace(
+      /\b(use|fn|let|struct|pub|impl|mod|self|Ok|Err|mut|main)\b/g,
+      '\u0002k$1\u0003',
+    )
     html = html.replace(/\b(String|Result|Box|Parser|Cli)\b/g, '\u0002t$1\u0003')
     html = html.replace(/(#\[[^\]]*\])/g, '\u0002a$1\u0003')
   } else if (lang === 'cloud') {
@@ -248,11 +257,13 @@ function highlightCode(code: string, lang: string): string {
 
       <!-- Tab Bar -->
       <div
-        :class="cn(
-          'flex overflow-x-auto scrollbar-hide',
-          'border-b border-neutral-200 dark:border-neutral-800',
-          '-mb-px'
-        )"
+        :class="
+          cn(
+            'flex overflow-x-auto scrollbar-hide',
+            'border-b border-neutral-200 dark:border-neutral-800',
+            '-mb-px',
+          )
+        "
         role="tablist"
         :aria-label="t('skills.ariaLabel')"
       >
@@ -264,24 +275,28 @@ function highlightCode(code: string, lang: string): string {
           :aria-selected="activeTab === skill.id"
           :aria-controls="`panel-${skill.id}`"
           :tabindex="activeTab === skill.id ? 0 : -1"
-          :class="cn(
-            'relative px-5 py-3 text-xs font-mono uppercase tracking-wider whitespace-nowrap',
-            'transition-colors duration-200 flex-shrink-0',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
-            activeTab === skill.id
-              ? 'text-primary-500'
-              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
-          )"
+          :class="
+            cn(
+              'relative px-5 py-3 text-xs font-mono uppercase tracking-wider whitespace-nowrap',
+              'transition-colors duration-200 flex-shrink-0',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50',
+              activeTab === skill.id
+                ? 'text-primary-500'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200',
+            )
+          "
           @click="activeTab = skill.id"
           @keydown="handleTabKeydown"
         >
           {{ skill.label }}
           <!-- Active indicator -->
           <span
-            :class="cn(
-              'absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500',
-              activeTab === skill.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
-            )"
+            :class="
+              cn(
+                'absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500',
+                activeTab === skill.id ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0',
+              )
+            "
             :style="{ transition: 'opacity 300ms ease, transform 300ms ease' }"
             aria-hidden="true"
           />
@@ -330,10 +345,12 @@ function highlightCode(code: string, lang: string): string {
                 >
                   <UIcon
                     name="i-heroicons-check-circle"
-                    :class="cn(
-                      'w-4 h-4 flex-shrink-0 mt-0.5',
-                      'text-primary-500 transition-opacity duration-200 group-hover:opacity-80'
-                    )"
+                    :class="
+                      cn(
+                        'w-4 h-4 flex-shrink-0 mt-0.5',
+                        'text-primary-500 transition-opacity duration-200 group-hover:opacity-80',
+                      )
+                    "
                   />
                   <span class="leading-snug">{{ feature }}</span>
                 </li>
@@ -342,27 +359,36 @@ function highlightCode(code: string, lang: string): string {
 
             <!-- Right: Code Block -->
             <div
-              :class="cn(
-                'bg-neutral-100 dark:bg-neutral-900',
-                'border border-neutral-200 dark:border-neutral-800',
-                'hover:border-neutral-300 dark:hover:border-neutral-700',
-                'p-4 overflow-x-auto',
-                'flex flex-col',
-                'transition-colors duration-200'
-              )"
+              :class="
+                cn(
+                  'bg-neutral-100 dark:bg-neutral-900',
+                  'border border-neutral-200 dark:border-neutral-800',
+                  'hover:border-neutral-300 dark:hover:border-neutral-700',
+                  'p-4 overflow-x-auto',
+                  'flex flex-col',
+                  'transition-colors duration-200',
+                )
+              "
             >
               <!-- Code block header -->
-              <div class="flex items-center gap-1.5 mb-3 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+              <div
+                class="flex items-center gap-1.5 mb-3 pb-3 border-b border-neutral-200 dark:border-neutral-800"
+              >
                 <span class="w-2.5 h-2.5 bg-neutral-300 dark:bg-neutral-700" />
                 <span class="w-2.5 h-2.5 bg-neutral-300 dark:bg-neutral-700" />
                 <span class="w-2.5 h-2.5 bg-neutral-300 dark:bg-neutral-700" />
-                <span class="ml-3 text-[10px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                <span
+                  class="ml-3 text-[10px] font-mono text-neutral-400 dark:text-neutral-500 uppercase tracking-wider"
+                >
                   {{ skill.label }}
                 </span>
               </div>
               <!-- Code content with syntax highlighting -->
               <!-- eslint-disable vue/no-v-html -->
-              <pre class="flex-1 font-mono text-xs leading-relaxed whitespace-pre overflow-x-auto claude-code" v-html="highlightCode(skill.code, skill.id)" />
+              <pre
+                class="flex-1 font-mono text-xs leading-relaxed whitespace-pre overflow-x-auto claude-code"
+                v-html="highlightCode(skill.code, skill.id)"
+              />
             </div>
           </div>
         </Transition>

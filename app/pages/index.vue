@@ -1,43 +1,40 @@
 <script setup lang="ts">
-import { useI18n } from "#imports";
+import { useI18n } from '#imports'
 
-const { t } = useI18n();
-const { locale, collection } = useBlogCollection();
+const { t } = useI18n()
+const { locale, collection } = useBlogCollection()
 
 // Use minimal layout without header/footer
 definePageMeta({
-  layout: "minimal",
-});
+  layout: 'minimal',
+})
 
 // Fetch homepage content from pages collection
-const { data: page } = await useAsyncData("home", () =>
-  queryCollection("pages").path("/").first(),
-);
+const { data: page } = await useAsyncData('home', () => queryCollection('pages').path('/').first())
 
 // Fetch latest blog posts (5 most recent) for the active locale
 const { data: latestPosts } = await useAsyncData(
-  "latest-posts",
-  () => queryCollection(collection.value).order("publishedAt", "DESC").limit(5).all(),
+  'latest-posts',
+  () => queryCollection(collection.value).order('publishedAt', 'DESC').limit(5).all(),
   { watch: [locale] },
-);
+)
 
-const { formatDate } = useFormatDate();
-const { postUrl } = useBlogUrl();
+const { formatDate } = useFormatDate()
+const { postUrl } = useBlogUrl()
 
 // SEO metadata
 useSeoMeta({
   title: page.value?.title
     ? `${page.value.title} - Full Stack Developer`
-    : "Kylian Bardini - Full Stack Developer",
+    : 'Kylian Bardini - Full Stack Developer',
   description:
     page.value?.bio?.[0] ||
-    "Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.",
-  ogTitle: page.value?.title || "Kylian Bardini - Full Stack Developer",
+    'Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.',
+  ogTitle: page.value?.title || 'Kylian Bardini - Full Stack Developer',
   ogDescription:
-    page.value?.bio?.[0] ||
-    "Developer, Designer, Creator. Building things for the web.",
-  twitterCard: "summary_large_image",
-});
+    page.value?.bio?.[0] || 'Developer, Designer, Creator. Building things for the web.',
+  twitterCard: 'summary_large_image',
+})
 
 if (import.meta.server) {
   const requestUrl = useRequestURL()
@@ -52,67 +49,61 @@ if (import.meta.server) {
     avatarUrl: `${siteOrigin}/images/avatar.jpg`,
     bannerText: t('banner.gwm'),
     bannerImage: `${siteOrigin}/images/banners/dark.jpg`,
-  });
+  })
 }
 
 // Default social links with more platforms
 const defaultSocials = [
-  { platform: "github", url: "https://github.com/kbrdn1", label: "GitHub" },
-  { platform: "twitter", url: "https://twitter.com/kbrdn1", label: "Twitter" },
+  { platform: 'github', url: 'https://github.com/kbrdn1', label: 'GitHub' },
+  { platform: 'twitter', url: 'https://twitter.com/kbrdn1', label: 'Twitter' },
   {
-    platform: "linkedin",
-    url: "https://linkedin.com/in/kylian-bardini-aa0528234",
-    label: "LinkedIn",
+    platform: 'linkedin',
+    url: 'https://linkedin.com/in/kylian-bardini-aa0528234',
+    label: 'LinkedIn',
   },
-];
+]
 
 // Default content if not found
 const content = computed(() => {
-  const socials = page.value?.socials;
+  const socials = page.value?.socials
   const socialLinks = socials
     ? [
-        socials.github
-          ? { platform: "github", url: socials.github, label: "GitHub" }
-          : null,
-        socials.twitter
-          ? { platform: "twitter", url: socials.twitter, label: "Twitter" }
-          : null,
+        socials.github ? { platform: 'github', url: socials.github, label: 'GitHub' } : null,
+        socials.twitter ? { platform: 'twitter', url: socials.twitter, label: 'Twitter' } : null,
         socials.linkedin
-          ? { platform: "linkedin", url: socials.linkedin, label: "LinkedIn" }
+          ? { platform: 'linkedin', url: socials.linkedin, label: 'LinkedIn' }
           : null,
-      ].filter(link => link !== null)
-    : defaultSocials;
+      ].filter((link) => link !== null)
+    : defaultSocials
 
   return {
-    name: page.value?.title || "Kylian Bardini",
+    name: page.value?.title || 'Kylian Bardini',
     titles: page.value?.titles || [
-      "TypeScript Expert",
-      "Laravel Developer",
-      "Rust Beginner",
-      "Nuxt Developer",
-      "AWS & Cloud Architecture",
-      "Building Proper & Efficient Architecture",
+      'TypeScript Expert',
+      'Laravel Developer',
+      'Rust Beginner',
+      'Nuxt Developer',
+      'AWS & Cloud Architecture',
+      'Building Proper & Efficient Architecture',
     ],
-    handle: page.value?.handle || "@kbrdn1",
+    handle: page.value?.handle || '@kbrdn1',
     isHirable: page.value?.isHirable ?? true,
-    email: page.value?.email || "hello@kbrdn.dev",
-    calendarLink: page.value?.calendarLink || "https://cal.com",
-    githubUrl: socials?.github || "https://github.com/kbrdn1",
-    bio: page.value?.bio || [
-      t('bio.paragraph1'),
-      t('bio.paragraph2'),
-    ],
+    email: page.value?.email || 'hello@kbrdn.dev',
+    calendarLink: page.value?.calendarLink || 'https://cal.com',
+    githubUrl: socials?.github || 'https://github.com/kbrdn1',
+    bio: page.value?.bio || [t('bio.paragraph1'), t('bio.paragraph2')],
     socials: socialLinks,
-  };
-});
+  }
+})
 </script>
 
 <template>
   <div class="flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
-      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color);"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1"
+      aria-hidden="true"
+      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
     />
 
     <!-- Main content -->
@@ -121,7 +112,9 @@ const content = computed(() => {
       <HomeBanner />
 
       <!-- Hero Section - Full width with horizontal dashed border -->
-      <section class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full ">
+      <section
+        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
+      >
         <span class="corner-bottom-left" aria-hidden="true" />
         <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
@@ -149,23 +142,13 @@ const content = computed(() => {
           <HomeNowPlaying />
         </UiAnimatedSection>
 
-        <UiAnimatedSection
-          as="section"
-          animation="fadeInUp"
-          :delay="150"
-          :duration="500"
-        >
+        <UiAnimatedSection as="section" animation="fadeInUp" :delay="150" :duration="500">
           <HomeSectionLabel :label="t('sections.connect')" />
           <HomeSocials :links="content.socials" />
         </UiAnimatedSection>
 
         <!-- Latest Blog Posts -->
-        <UiAnimatedSection
-          as="section"
-          animation="fadeInUp"
-          :delay="200"
-          :duration="500"
-        >
+        <UiAnimatedSection as="section" animation="fadeInUp" :delay="200" :duration="500">
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
               {{ t('sections.blog') }}
@@ -177,7 +160,10 @@ const content = computed(() => {
               {{ t('blog.viewAll') }} →
             </NuxtLink>
           </div>
-          <div v-if="latestPosts?.length" class="divide-y divide-neutral-200 dark:divide-neutral-800">
+          <div
+            v-if="latestPosts?.length"
+            class="divide-y divide-neutral-200 dark:divide-neutral-800"
+          >
             <NuxtLink
               v-for="post in latestPosts"
               :key="post.path"
@@ -190,7 +176,9 @@ const content = computed(() => {
               >
                 {{ formatDate(post.publishedAt, 'short') }}
               </span>
-              <span class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate">
+              <span
+                class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate"
+              >
                 {{ post.title }}
               </span>
             </NuxtLink>
@@ -199,7 +187,10 @@ const content = computed(() => {
       </main>
 
       <!-- Skills & Stack -->
-      <section id="skills" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+      <section
+        id="skills"
+        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
+      >
         <span class="corner-bottom-left" aria-hidden="true" />
         <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection :delay="0" :duration="500">
@@ -210,7 +201,10 @@ const content = computed(() => {
       </section>
 
       <!-- Featured Projects -->
-      <section id="projects" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+      <section
+        id="projects"
+        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
+      >
         <span class="corner-bottom-left" aria-hidden="true" />
         <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection :delay="0" :duration="500">
@@ -262,7 +256,10 @@ const content = computed(() => {
       </section>
 
       <!-- Parcours (Experience + Education) - Full width -->
-      <section id="experience" class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full">
+      <section
+        id="experience"
+        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
+      >
         <span class="corner-bottom-left" aria-hidden="true" />
         <span class="corner-bottom-right" aria-hidden="true" />
         <UiAnimatedSection :delay="0" :duration="500">
@@ -270,14 +267,18 @@ const content = computed(() => {
             <HomeSectionLabel :label="t('sections.parcours')" />
 
             <div>
-              <h3 class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+              <h3
+                class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2"
+              >
                 {{ t('sections.experience') }}
               </h3>
               <HomeExperiences />
             </div>
 
             <div id="education">
-              <h3 class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
+              <h3
+                class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2"
+              >
                 {{ t('sections.education') }}
               </h3>
               <HomeStudies />
@@ -303,8 +304,9 @@ const content = computed(() => {
 
     <!-- Right stripe zone -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1" aria-hidden="true"
-      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color);"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1"
+      aria-hidden="true"
+      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
     />
   </div>
 </template>

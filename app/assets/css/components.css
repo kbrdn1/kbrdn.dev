@@ -52,7 +52,7 @@
 }
 
 .nav-tab-active::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -111,7 +111,7 @@
 
 /* Corner triangle - top left */
 .border-dashed-horizontal::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: calc(50% - 40rem);
@@ -126,7 +126,7 @@
 
 /* Corner triangle - top right */
 .border-dashed-horizontal::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   right: calc(50% - 40rem);

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 interface Props {
-  label: string;
-  tag?: 'h2' | 'h3' | 'span';
+  label: string
+  tag?: 'h2' | 'h3' | 'span'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   tag: 'h2',
-});
+})
 </script>
 
 <template>
