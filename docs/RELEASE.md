@@ -39,7 +39,7 @@ les deux ne se réveillent jamais ensemble.
 Elle n'est pas dans le protocole générique `me:release` et bloque le premier
 cut si on la découvre en route.
 
-### Toute PR doit fermer une issue — vers `main` comme vers `dev`
+### Toute PR doit porter `Closes #N` — vers `main` comme vers `dev`
 
 Le check `Linked issue` de `validate-pr.yml` tourne sur les PR vers `main`
 **et** vers `dev`, sans condition sur la base, et exige `Closes #N` (ou
@@ -185,10 +185,13 @@ le verrou `vps-deploy-prod` —, et pour une stable l'image du filet porte la
 même version que celle du tag (`APP_VERSION` vide hors release → repli sur
 `package.json`, cf. `nuxt.config.ts`) ; le `sha` aussi est le même. Sur la
 v1.0.1, `/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait
-échoué. La release se vérifie sur le run du tag et sur la release elle-même :
+échoué. La preuve, c'est la release elle-même : le job `release` dépend de
+`deploy` (`needs: [resolve, deploy]`), qui fait le contrôle `/api/health` — une
+release publiée par le bot n'existe donc que si le déploiement a réussi, qu'il
+vienne du push du tag, d'un `rerun --failed` ou d'un `workflow_dispatch` (rangé
+sous `main` dans `gh run list`, d'où l'inutilité d'y chercher le run du tag) :
 
 ```bash
-gh run list --workflow release.yml --branch vX.Y.Z   # le run du tag : vert
 gh release view vX.Y.Z --json author,isDraft -q '.author.login + " " + (.isDraft|tostring)'
 # github-actions[bot] false
 ```
