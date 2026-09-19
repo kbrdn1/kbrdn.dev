@@ -94,7 +94,7 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 ### Lint & format configuration
 `.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). Known gaps in `.vue` files, checked on oxlint 1.83:
 - no template rules at all — broken templates are caught by `vue-tsc` and the build;
-- `no-unused-vars` and `prefer-const` do not run on SFCs. Unused locals and functions are caught instead by `vue-tsc` (`noUnusedLocals` in `nuxt.config.ts`, template usage included); unused **imports** in `<script setup>` are caught by neither, and `prefer-const` is lost.
+- `no-unused-vars` and `prefer-const` do not run on SFCs. Unused imports, locals and functions are caught instead by `vue-tsc` (`noUnusedLocals` in `nuxt.config.ts`, template usage included) — stricter than ESLint was: a `_` prefix does not exempt a local. `prefer-const` is lost.
 
 `.oxfmtrc.json` formats code only, with three deliberate exceptions — the last two break at request time, where lint, typecheck and build cannot see them:
 - Markdown and MDX (blog articles, changelogs, docs) are prose, never reformatted;
