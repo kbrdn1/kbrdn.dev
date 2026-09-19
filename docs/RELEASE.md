@@ -39,11 +39,19 @@ les deux ne se réveillent jamais ensemble.
 Elle n'est pas dans le protocole générique `me:release` et bloque le premier
 cut si on la découvre en route.
 
-### Toute PR vers `main` doit fermer une issue
+### Toute PR doit fermer une issue — vers `main` comme vers `dev`
 
-Le check `Linked issue` de `validate-pr.yml` exige un `Closes #N` dans le corps
-de la PR. **Chaque cut de version a donc besoin de sa propre issue de
-release** — sans elle, la PR `dev → main` reste rouge.
+Le check `Linked issue` de `validate-pr.yml` tourne sur les PR vers `main`
+**et** vers `dev`, sans condition sur la base, et exige `Closes #N` (ou
+`Fixes` / `Resolves`) dans le corps — `Refs #N` ne passe pas. **Chaque cut de
+version a donc besoin de sa propre issue de release**, citée par les deux PR du
+cut : celle qui prépare les notes vers `dev`, puis `dev → main`. Vers `dev`,
+qui n'est pas la branche par défaut, `Closes` ne ferme rien au merge — c'est la
+PR vers `main` qui fermera l'issue.
+
+Corps oublié : l'éditer relance le check (type `edited`). Un `gh run rerun` de
+l'ancien run, lui, échoue encore — il rejoue la charge utile de l'événement
+d'origine, donc l'ancien corps.
 
 Le check `Branch convention`, lui, autorise déjà `dev → main` et `hotfix/* →
 main`, il ne bloque pas.
@@ -100,15 +108,24 @@ repart avec un `[Unreleased]` vide et gagne sa ligne sous `## Past releases`.
 
 ### 4. `dev` → `main`
 
-Ouvrir une PR (obligatoire, cf. contrainte 2), corps contenant `Closes #<issue
-de release>`, titre au format conventionnel :
+Ouvrir une PR (obligatoire, cf. la contrainte ci-dessus), corps contenant
+`Closes #<issue de release>`, titre au format conventionnel :
 
 ```
 🔖 chore(release): v1.1.0
 ```
 
 Attendre les 4 checks verts, puis merger en **merge commit** — jamais squash,
-il écraserait les commits atomiques. `required_linear_history` a été désactivé
+il écraserait les commits atomiques. Les checks ne suffisent pas : `main` exige
+aussi **une approbation**, et la PR reste `BLOCKED` sans elle. Faute de second
+reviewer, le merge passe en admin (`enforce_admins` est à `false`) :
+
+```bash
+gh pr merge <N> --merge --admin
+```
+
+Toutes les promotions l'ont fait (#29, #32, #41) — c'est un contournement
+assumé de la règle d'approbation, pas des checks. `required_linear_history` a été désactivé
 sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
 
 ### 5. Tag, depuis `main`, APRÈS le merge
@@ -137,6 +154,11 @@ GitHub Actions ne garde qu'un job en attente par groupe de concurrence, donc
 trois déploiements qui se chevauchent sur un même environnement peuvent en
 évincer un. Relancer le tag est sans effet de bord.
 
+Même rattrapage si `Deploy prod` **échoue** (vu sur la v1.0.1 : `ssh-keyscan`
+sans réponse, #42) : `gh run rerun <run> --failed` rejoue le déploiement puis la
+release GitHub, sans reconstruire l'image. Établir la cause avant de relancer —
+un job qui échoue sur le code échouera pareil.
+
 Le push du tag suffit — `release.yml` prend la suite : image `:v1.1.0`, deploy
 prod, vérification `/api/health`, puis release GitHub avec
 `--notes-file changelogs/1.1.0.md` et pour titre `v1.1.0` seul.
@@ -153,6 +175,19 @@ curl -s https://kbrdn.dev/api/health | jq
 Le workflow le fait déjà et échoue avant de publier la release si le compte n'y
 est pas — cette commande sert à contrôler après coup, ou à répondre à « quelle
 version est live ».
+
+⚠️ **Elle ne prouve pas que la release a tourné.** Le merge sur `main` a déjà
+déployé la prod par `deploy.yml`, et pour une stable l'image du filet porte la
+même version que celle du tag (`APP_VERSION` vide hors release → repli sur
+`package.json`, cf. `nuxt.config.ts`) ; le `sha` aussi est le même. Sur la
+v1.0.1, `/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait
+échoué. La release se vérifie sur le run du tag et sur la release elle-même :
+
+```bash
+gh run list --workflow release.yml --limit 1   # le run du tag : vert
+gh release view vX.Y.Z --json author,isDraft -q '.author.login + " " + (.isDraft|tostring)'
+# github-actions[bot] false
+```
 
 ## Revenir en arrière
 
@@ -172,7 +207,10 @@ Le second est le seul qui traverse plusieurs versions et le seul qui survive à
 une perte des conteneurs.
 
 Relancer `release.yml` en `workflow_dispatch` sur un ancien tag fonctionne
-aussi, mais reconstruit l'image et tente de recréer une release qui existe déjà.
+aussi, sans effet de bord : l'image existe déjà dans le registre, donc le build
+est sauté (`Image already published?`) et l'artefact d'origine est redéployé ;
+la release existe déjà, donc ses notes sont mises à jour (`gh release edit`) au
+lieu d'échouer sur un `create`.
 
 ## Notes
 
