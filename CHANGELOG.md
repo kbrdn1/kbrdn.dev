@@ -14,6 +14,15 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ## [Unreleased]
 
+### Changed
+
+- **The site no longer says I work at Jewely x Flippad**
+  ([#33](https://github.com/kbrdn1/kbrdn.dev/issues/33)). The contract ended in
+  September 2026, but the hero badge, the footer status and the OG image still
+  read "In contract at Jewely x Flippad", and the experience was still flagged
+  current. The experience now closes on `2026-09` with the role renamed to Full
+  Stack Engineer, and the status reads "Open to opportunities".
+
 ## Past releases
 
 - [1.0.0](changelogs/1.0.0.md) — 2026-08-14
