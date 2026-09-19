@@ -26,7 +26,7 @@ export default {
     defaultTitle: "1/3 Design Engineer",
     viewCount: "views",
     sponsor: "Sponsor",
-    availableForHire: "In contract at Jewely x Flippad",
+    availableForHire: "Open to opportunities",
     bookCall: "Book a Call",
     bookCallTip: "Schedule a 30-min meeting to discuss your project",
     bookCallDisabled: "Booking temporarily unavailable",
@@ -387,7 +387,7 @@ export default {
     },
     availability: {
       title: "Availability",
-      status: "In contract at Jewely x Flippad",
+      status: "Open to opportunities",
     },
     email: {
       title: "Email",
