@@ -22,7 +22,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   lines: 1,
   size: 'base',
-  widthPattern: 'varied'
+  widthPattern: 'varied',
 })
 
 const sizeClasses = {
@@ -30,7 +30,7 @@ const sizeClasses = {
   sm: 'h-3',
   base: 'h-4',
   lg: 'h-5',
-  xl: 'h-6'
+  xl: 'h-6',
 }
 
 const gapClasses = {
@@ -38,7 +38,7 @@ const gapClasses = {
   sm: 'gap-2',
   base: 'gap-2.5',
   lg: 'gap-3',
-  xl: 'gap-3.5'
+  xl: 'gap-3.5',
 }
 
 // Predefined width patterns for natural-looking text
@@ -47,18 +47,14 @@ const widthPatterns = ['w-full', 'w-11/12', 'w-10/12', 'w-9/12', 'w-8/12', 'w-7/
 function getLineWidth(index: number): string {
   if (props.widthPattern === 'full') return 'w-full'
   // Last line is usually shorter
-  if (index === props.lines - 1) return widthPatterns[Math.floor(Math.random() * 3) + 3]
+  if (index === props.lines - 1) return widthPatterns[Math.floor(Math.random() * 3) + 3] ?? 'w-full'
   // Other lines vary between full and 10/12
-  return widthPatterns[Math.floor(Math.random() * 2)]
+  return widthPatterns[Math.floor(Math.random() * 2)] ?? 'w-full'
 }
 </script>
 
 <template>
   <div :class="cn('flex flex-col', gapClasses[size])">
-    <UiSkeleton
-      v-for="i in lines"
-      :key="i"
-      :class="cn(sizeClasses[size], getLineWidth(i))"
-    />
+    <UiSkeleton v-for="i in lines" :key="i" :class="cn(sizeClasses[size], getLineWidth(i))" />
   </div>
 </template>

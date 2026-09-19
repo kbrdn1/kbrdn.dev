@@ -24,7 +24,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   index: 0,
-  as: 'div'
+  as: 'div',
 })
 
 // Try to inject context from StaggerContainer
@@ -41,13 +41,15 @@ const staggerContext = inject<ComputedRef<{
 const standaloneReducedMotion = useReducedMotion()
 
 const isVisible = computed(() => staggerContext?.value?.isVisible?.value ?? true)
-const prefersReducedMotion = computed(() => staggerContext?.value?.prefersReducedMotion ?? standaloneReducedMotion.value)
+const prefersReducedMotion = computed(
+  () => staggerContext?.value?.prefersReducedMotion ?? standaloneReducedMotion.value,
+)
 const staggerDelay = computed(() => staggerContext?.value?.staggerDelay ?? 100)
 const baseDelay = computed(() => staggerContext?.value?.baseDelay ?? 0)
 const animation = computed(() => props.animation ?? staggerContext?.value?.animation ?? 'fadeInUp')
 const duration = computed(() => staggerContext?.value?.duration ?? 400)
 
-const delay = computed(() => baseDelay.value + (props.index * staggerDelay.value))
+const delay = computed(() => baseDelay.value + props.index * staggerDelay.value)
 
 const animationStyles = computed(() => {
   // If reduced motion, show immediately without transitions
@@ -60,7 +62,7 @@ const animationStyles = computed(() => {
     transitionDuration: `${duration.value}ms`,
     transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
     transitionDelay: `${delay.value}ms`,
-    willChange: isVisible.value ? 'auto' : 'opacity, transform'
+    willChange: isVisible.value ? 'auto' : 'opacity, transform',
   }
 
   if (!isVisible.value) {

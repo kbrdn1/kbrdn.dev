@@ -32,8 +32,7 @@
 /* Operator Mono Lig Nerd Font - For code with ligatures */
 @font-face {
   font-family: "OperatorMonoLig Nerd Font";
-  src: url("/fonts/operator-mono/OperatorMonoLigNerdFont.woff2")
-    format("woff2-variations");
+  src: url("/fonts/operator-mono/OperatorMonoLigNerdFont.woff2") format("woff2-variations");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;

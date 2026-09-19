@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
   if (!body.name || !body.email || !body.message) {
     throw createError({
       statusCode: 400,
-      message: 'Missing required fields'
+      message: 'Missing required fields',
     })
   }
 
@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   if (!emailRegex.test(body.email)) {
     throw createError({
       statusCode: 400,
-      message: 'Invalid email format'
+      message: 'Invalid email format',
     })
   }
 
@@ -34,8 +34,8 @@ export default defineEventHandler(async (event) => {
       await $fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${config.resendApiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${config.resendApiKey}`,
+          'Content-Type': 'application/json',
         },
         body: {
           from: 'contact@email.kbrdn.dev',
@@ -47,8 +47,8 @@ export default defineEventHandler(async (event) => {
             <p><strong>Email:</strong> ${body.email}</p>
             <p><strong>Message:</strong></p>
             <p>${body.message.replace(/\n/g, '<br>')}</p>
-          `
-        }
+          `,
+        },
       })
     } else {
       // Log to console if no email service configured
@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
     console.error(`Failed to send contact email (status: ${status ?? 'n/a'}):`, detail)
     throw createError({
       statusCode: 500,
-      message: 'Failed to send message'
+      message: 'Failed to send message',
     })
   }
 })

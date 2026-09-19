@@ -22,9 +22,20 @@ const experiences: Experience[] = [
     company: 'Jewely x Flippad',
     logo: '/images/logos/jewely-x-flippad.png',
     startDate: '2023-10',
-    endDate: null,
-    current: true,
-    technologies: ['Laravel', 'Vue', 'Nuxt', 'AWS', 'React', 'Symfony', 'Redis', 'Stripe', 'Hono.js', 'Prisma'],
+    endDate: '2026-09',
+    current: false,
+    technologies: [
+      'Laravel',
+      'Vue',
+      'Nuxt',
+      'AWS',
+      'React',
+      'Symfony',
+      'Redis',
+      'Stripe',
+      'Hono.js',
+      'Prisma',
+    ],
     tasksCount: 5,
   },
   {
@@ -37,10 +48,10 @@ const experiences: Experience[] = [
     current: false,
     technologies: ['Symfony', 'Laravel', 'React', 'WordPress', 'MySQL', 'Tailwind CSS'],
     tasksCount: 4,
-  }
+  },
 ]
 
-const expandedId = ref<string | null>(experiences[0].id)
+const expandedId = ref<string | null>(experiences[0]?.id ?? null)
 const logoError = ref<Record<string, boolean>>({})
 
 function toggleExpand(id: string) {
@@ -49,22 +60,30 @@ function toggleExpand(id: string) {
 
 function getExperienceContent(exp: Experience) {
   const tasks = Array.from({ length: exp.tasksCount }, (_, i) =>
-    t(`experiences.${exp.key}.tasks.${i}`)
+    t(`experiences.${exp.key}.tasks.${i}`),
   )
   return {
     role: t(`experiences.${exp.key}.role`),
     type: t(`experiences.${exp.key}.type`),
-    tasks
+    tasks,
   }
 }
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)
-  return date.toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', { month: 'short', year: 'numeric' })
+  return date.toLocaleDateString(locale.value === 'fr' ? 'fr-FR' : 'en-US', {
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 function getInitials(name: string): string {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  return name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 }
 </script>
 
@@ -84,12 +103,12 @@ function getInitials(name: string): string {
           type="button"
           :aria-expanded="expandedId === exp.id"
           :aria-controls="'exp-panel-' + exp.id"
-          :class="cn(
-            'group/header w-full flex items-center gap-4 p-5 text-left transition-all duration-300',
-            expandedId === exp.id
-              ? 'bg-primary-500/5 border-b border-primary-500/20'
-              : ''
-          )"
+          :class="
+            cn(
+              'group/header w-full flex items-center gap-4 p-5 text-left transition-all duration-300',
+              expandedId === exp.id ? 'bg-primary-500/5 border-b border-primary-500/20' : '',
+            )
+          "
           @click="toggleExpand(exp.id)"
         >
           <!-- Logo -->
@@ -114,12 +133,10 @@ function getInitials(name: string): string {
           <!-- Company & Role -->
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2.5">
-              <span class="text-lg font-medium text-neutral-900 dark:text-neutral-100">{{ exp.company }}</span>
-              <UiTag
-                v-if="exp.current"
-                :label="t('experiences.current')"
-                variant="primary"
-              />
+              <span class="text-lg font-medium text-neutral-900 dark:text-neutral-100">{{
+                exp.company
+              }}</span>
+              <UiTag v-if="exp.current" :label="t('experiences.current')" variant="primary" />
             </div>
             <p class="text-sm text-neutral-400 truncate">
               {{ getExperienceContent(exp).role }}
@@ -128,10 +145,16 @@ function getInitials(name: string): string {
 
           <!-- Date & Chevron -->
           <div class="flex items-center gap-3">
-            <span class="hidden sm:inline font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ formatDate(exp.startDate) }} - {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
+            <span
+              class="hidden sm:inline font-mono text-xs uppercase tracking-wider text-neutral-500"
+            >
+              {{ formatDate(exp.startDate) }} -
+              {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
             </span>
-            <div class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500" aria-hidden="true">
+            <div
+              class="relative w-5 h-5 text-neutral-400 group-hover/header:text-primary-500"
+              aria-hidden="true"
+            >
               <span class="absolute inset-0 flex items-center justify-center">
                 <span class="block w-3 h-0.5 bg-current" />
               </span>
@@ -158,7 +181,8 @@ function getInitials(name: string): string {
             <div class="p-5 pt-4 space-y-4 bg-primary-500/5">
               <!-- Type & Date (mobile) -->
               <p class="font-mono text-xs uppercase tracking-wider text-neutral-500 sm:hidden">
-                {{ getExperienceContent(exp).type }} · {{ formatDate(exp.startDate) }} - {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
+                {{ getExperienceContent(exp).type }} · {{ formatDate(exp.startDate) }} -
+                {{ exp.current ? t('experiences.present') : formatDate(exp.endDate!) }}
               </p>
 
               <!-- Technologies -->
@@ -166,12 +190,14 @@ function getInitials(name: string): string {
                 <span
                   v-for="tech in exp.technologies"
                   :key="tech"
-                  :class="cn(
-                    'px-2.5 py-1 text-xs font-mono',
-                    'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border border-neutral-300 dark:border-neutral-700',
-                    'hover:bg-primary-500/10 hover:text-primary-400 hover:border-primary-500/30',
-                    'transition-colors duration-150 cursor-default'
-                  )"
+                  :class="
+                    cn(
+                      'px-2.5 py-1 text-xs font-mono',
+                      'bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border border-neutral-300 dark:border-neutral-700',
+                      'hover:bg-primary-500/10 hover:text-primary-400 hover:border-primary-500/30',
+                      'transition-colors duration-150 cursor-default',
+                    )
+                  "
                 >
                   {{ tech }}
                 </span>
@@ -184,7 +210,10 @@ function getInitials(name: string): string {
                   :key="taskIndex"
                   class="flex items-start gap-2.5 text-neutral-600 dark:text-neutral-400"
                 >
-                  <UIcon name="i-heroicons-check" class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5" />
+                  <UIcon
+                    name="i-heroicons-check"
+                    class="w-4 h-4 text-primary-500 flex-shrink-0 mt-0.5"
+                  />
                   <span class="text-sm leading-relaxed">{{ task }}</span>
                 </li>
               </ul>

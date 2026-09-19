@@ -41,13 +41,13 @@
   },
   {
     "label": "lint",
-    "command": "bunx eslint .",
+    "command": "bun run lint",
     "reveal": "always",
     "tags": ["quality"]
   },
   {
     "label": "fmt",
-    "command": "bunx eslint . --fix",
+    "command": "bun run fmt",
     "reveal": "always",
     "tags": ["quality"]
   },

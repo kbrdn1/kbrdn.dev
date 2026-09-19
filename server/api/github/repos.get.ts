@@ -37,22 +37,22 @@ interface RepoStats {
 
 // GitHub language colors
 const languageColors: Record<string, string> = {
-  'TypeScript': '#3178C6',
-  'JavaScript': '#F7DF1E',
-  'Vue': '#42B883',
-  'Go': '#00ADD8',
-  'Rust': '#DEA584',
-  'Python': '#3776AB',
-  'PHP': '#777BB4',
-  'HTML': '#E34C26',
-  'CSS': '#563D7C',
-  'SCSS': '#C6538C',
-  'Shell': '#89E051',
-  'Dockerfile': '#384D54',
-  'Makefile': '#427819',
-  'MDX': '#FCB32C',
-  'Astro': '#FF5D01',
-  'Svelte': '#FF3E00',
+  TypeScript: '#3178C6',
+  JavaScript: '#F7DF1E',
+  Vue: '#42B883',
+  Go: '#00ADD8',
+  Rust: '#DEA584',
+  Python: '#3776AB',
+  PHP: '#777BB4',
+  HTML: '#E34C26',
+  CSS: '#563D7C',
+  SCSS: '#C6538C',
+  Shell: '#89E051',
+  Dockerfile: '#384D54',
+  Makefile: '#427819',
+  MDX: '#FCB32C',
+  Astro: '#FF5D01',
+  Svelte: '#FF3E00',
 }
 
 export default defineEventHandler(async (event) => {
@@ -63,14 +63,15 @@ export default defineEventHandler(async (event) => {
   const repos = (query.repos as string)?.split(',') || []
 
   const token = config.githubToken
-  const isValidToken = token &&
+  const isValidToken =
+    token &&
     !token.includes('xxxx') &&
     (token.startsWith('ghp_') || token.startsWith('github_pat_')) &&
     token.length > 20
 
   const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'kbrdn.dev-portfolio'
+    Accept: 'application/vnd.github.v3+json',
+    'User-Agent': 'kbrdn.dev-portfolio',
   }
 
   if (isValidToken) {
@@ -85,13 +86,13 @@ export default defineEventHandler(async (event) => {
         // Fetch repo info
         const repoResponse = await $fetch<GitHubRepo>(
           `https://api.github.com/repos/${username}/${repoName}`,
-          { headers }
+          { headers },
         )
 
         // Fetch languages
         const languagesResponse = await $fetch<RepoLanguages>(
           `https://api.github.com/repos/${username}/${repoName}/languages`,
-          { headers }
+          { headers },
         )
 
         // Calculate language percentages
@@ -100,9 +101,9 @@ export default defineEventHandler(async (event) => {
           .map(([name, bytes]) => ({
             name,
             percentage: Math.round((bytes / totalBytes) * 100),
-            color: languageColors[name] || '#8B8B8B'
+            color: languageColors[name] || '#8B8B8B',
           }))
-          .filter(lang => lang.percentage >= 5) // Only show languages with >= 5%
+          .filter((lang) => lang.percentage >= 5) // Only show languages with >= 5%
           .sort((a, b) => b.percentage - a.percentage)
           .slice(0, 4) // Max 4 languages
 
@@ -119,7 +120,7 @@ export default defineEventHandler(async (event) => {
           topics: repoResponse.topics || [],
           languages,
           lastPush: repoResponse.pushed_at,
-          createdAt: repoResponse.created_at
+          createdAt: repoResponse.created_at,
         })
       } catch (error) {
         console.error(`Failed to fetch repo ${repoName}:`, error)

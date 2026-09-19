@@ -10,7 +10,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   calendarLink: 'https://cal.com',
-  email: 'hello@kbrdn.dev'
+  email: 'hello@kbrdn.dev',
 })
 </script>
 

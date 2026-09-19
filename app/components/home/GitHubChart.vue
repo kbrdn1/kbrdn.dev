@@ -8,7 +8,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  username: 'kbrdn1'
+  username: 'kbrdn1',
 })
 
 const { data: contributions, status } = useGitHubContributions(props.username, 5)
@@ -30,7 +30,20 @@ const DEFAULT_MONTHS = 3
 const EXPANDED_MONTHS = 12
 
 // Month labels for annual view
-const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const monthLabels = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 // Calculate month positions based on actual week data
 function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
@@ -44,7 +57,7 @@ function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
     const month = date.getMonth()
     if (month !== lastMonth) {
       positions.push({
-        label: monthLabels[month],
+        label: monthLabels[month] ?? '',
         offset: weekIndex,
       })
       lastMonth = month
@@ -65,14 +78,27 @@ const monthlyData = computed(() => {
     days: { contributionCount: number; date: string }[]
   }[] = []
 
-  const monthNames = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER']
+  const monthNames = [
+    'JANUARY',
+    'FEBRUARY',
+    'MARCH',
+    'APRIL',
+    'MAY',
+    'JUNE',
+    'JULY',
+    'AUGUST',
+    'SEPTEMBER',
+    'OCTOBER',
+    'NOVEMBER',
+    'DECEMBER',
+  ]
 
   // Group all days by month from all years
   const grouped = new Map<string, { contributionCount: number; date: string }[]>()
 
-  contributions.value.years.forEach(yearData => {
-    yearData.weeks.forEach(week => {
-      week.contributionDays.forEach(day => {
+  contributions.value.years.forEach((yearData) => {
+    yearData.weeks.forEach((week) => {
+      week.contributionDays.forEach((day) => {
         const date = new Date(day.date)
         const key = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`
         if (!grouped.has(key)) {
@@ -87,16 +113,16 @@ const monthlyData = computed(() => {
   const sortedKeys = Array.from(grouped.keys()).sort((a, b) => b.localeCompare(a))
 
   // Take last 12 months
-  sortedKeys.slice(0, 12).forEach(key => {
-    const [year, month] = key.split('-').map(Number)
+  sortedKeys.slice(0, 12).forEach((key) => {
+    const [year = 0, month = 0] = key.split('-').map(Number)
     const days = grouped.get(key)!
     const total = days.reduce((sum, d) => sum + d.contributionCount, 0)
 
     months.push({
-      name: monthNames[month],
+      name: monthNames[month] ?? '',
       year,
       contributions: total,
-      days: days.sort((a, b) => a.date.localeCompare(b.date))
+      days: days.sort((a, b) => a.date.localeCompare(b.date)),
     })
   })
 
@@ -131,8 +157,8 @@ const stats = computed(() => {
 
   // Calculate total days across all years
   let totalDays = 0
-  contributions.value.years.forEach(year => {
-    year.weeks.forEach(week => {
+  contributions.value.years.forEach((year) => {
+    year.weeks.forEach((week) => {
       totalDays += week.contributionDays.length
     })
   })
@@ -157,10 +183,7 @@ const tooltipData = ref<{
   y: number
 } | null>(null)
 
-function showTooltip(
-  day: { contributionCount: number; date: string },
-  event: MouseEvent
-) {
+function showTooltip(day: { contributionCount: number; date: string }, event: MouseEvent) {
   const rect = (event.target as HTMLElement).getBoundingClientRect()
   tooltipData.value = {
     count: day.contributionCount,
@@ -168,10 +191,10 @@ function showTooltip(
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     }),
     x: rect.left + rect.width / 2,
-    y: rect.top - 8
+    y: rect.top - 8,
   }
 }
 
@@ -192,7 +215,9 @@ function switchTab(tab: 'annual' | 'monthly') {
   <div class="space-y-6">
     <!-- Header with tabs -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">{{ t('github.title') }}</h2>
+      <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
+        {{ t('github.title') }}
+      </h2>
       <div class="flex items-center justify-between sm:justify-end gap-4">
         <!-- Tabs -->
         <div class="flex gap-1 text-xs" role="tablist" aria-label="Contribution view">
@@ -200,12 +225,14 @@ function switchTab(tab: 'annual' | 'monthly') {
             role="tab"
             :aria-selected="activeTab === 'annual'"
             :tabindex="activeTab === 'annual' ? 0 : -1"
-            :class="cn(
-              'px-3 py-1 transition-colors uppercase tracking-wider',
-              activeTab === 'annual'
-                ? 'text-primary-500 bg-primary-500/10'
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-            )"
+            :class="
+              cn(
+                'px-3 py-1 transition-colors uppercase tracking-wider',
+                activeTab === 'annual'
+                  ? 'text-primary-500 bg-primary-500/10'
+                  : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
+              )
+            "
             @click="activeTab = 'annual'"
             @keydown.right.prevent="switchTab('monthly')"
             @keydown.left.prevent="switchTab('monthly')"
@@ -216,12 +243,14 @@ function switchTab(tab: 'annual' | 'monthly') {
             role="tab"
             :aria-selected="activeTab === 'monthly'"
             :tabindex="activeTab === 'monthly' ? 0 : -1"
-            :class="cn(
-              'px-3 py-1 transition-colors uppercase tracking-wider',
-              activeTab === 'monthly'
-                ? 'text-primary-500 bg-primary-500/10'
-                : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-            )"
+            :class="
+              cn(
+                'px-3 py-1 transition-colors uppercase tracking-wider',
+                activeTab === 'monthly'
+                  ? 'text-primary-500 bg-primary-500/10'
+                  : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
+              )
+            "
             @click="activeTab = 'monthly'"
             @keydown.right.prevent="switchTab('annual')"
             @keydown.left.prevent="switchTab('annual')"
@@ -268,7 +297,12 @@ function switchTab(tab: 'annual' | 'monthly') {
           <div class="min-w-max">
             <!-- Month labels skeleton -->
             <div class="flex gap-1 mb-1">
-              <UiSkeleton v-for="i in 12" :key="i" class="h-3" :style="{ width: `${780 / 12}px` }" />
+              <UiSkeleton
+                v-for="i in 12"
+                :key="i"
+                class="h-3"
+                :style="{ width: `${780 / 12}px` }"
+              />
             </div>
 
             <!-- Grid skeleton -->
@@ -287,14 +321,22 @@ function switchTab(tab: 'annual' | 'monthly') {
       <!-- Stats -->
       <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
         <div>
-          <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">{{ t('github.totalContributions') }}</p>
-          <p class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 font-mono">
+          <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">
+            {{ t('github.totalContributions') }}
+          </p>
+          <p
+            class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 font-mono"
+          >
             {{ stats.total.toLocaleString() }}
           </p>
         </div>
         <div>
-          <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">{{ t('github.dailyAverage') }}</p>
-          <p class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 font-mono">
+          <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">
+            {{ t('github.dailyAverage') }}
+          </p>
+          <p
+            class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 font-mono"
+          >
             {{ stats.avgPerDay }}
             <span class="text-primary-500 text-base sm:text-lg">{{ t('github.perDay') }}</span>
           </p>
@@ -354,11 +396,13 @@ function switchTab(tab: 'annual' | 'monthly') {
                   <div
                     v-for="day in week.contributionDays"
                     :key="day.date"
-                    :class="cn(
-                      'w-3 h-3 cursor-pointer transition-all duration-150',
-                      'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
-                      getColor(day.contributionCount)
-                    )"
+                    :class="
+                      cn(
+                        'w-3 h-3 cursor-pointer transition-all duration-150',
+                        'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
+                        getColor(day.contributionCount),
+                      )
+                    "
                     @mouseenter="showTooltip(day, $event)"
                     @mouseleave="hideTooltip"
                   />
@@ -403,11 +447,13 @@ function switchTab(tab: 'annual' | 'monthly') {
             <div
               v-for="day in month.days"
               :key="day.date"
-              :class="cn(
-                'w-3 h-3 cursor-pointer transition-all duration-150',
-                'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
-                getColor(day.contributionCount)
-              )"
+              :class="
+                cn(
+                  'w-3 h-3 cursor-pointer transition-all duration-150',
+                  'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
+                  getColor(day.contributionCount),
+                )
+              "
               @mouseenter="showTooltip(day, $event)"
               @mouseleave="hideTooltip"
             />
@@ -417,14 +463,19 @@ function switchTab(tab: 'annual' | 'monthly') {
 
       <!-- Show more/less button -->
       <button
-        v-if="(activeTab === 'annual' && canExpandYears) || (activeTab === 'monthly' && canExpandMonths)"
+        v-if="
+          (activeTab === 'annual' && canExpandYears) || (activeTab === 'monthly' && canExpandMonths)
+        "
         class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary-500 bg-neutral-100/50 dark:bg-neutral-800/50 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:border-primary-500/30 transition-all uppercase tracking-wider"
         @click="isExpanded = !isExpanded"
       >
         <UIcon
           name="i-heroicons-chevron-down"
           class="w-4 h-4"
-          :style="{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 300ms ease !important' }"
+          :style="{
+            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 300ms ease !important',
+          }"
         />
         {{ isExpanded ? t('common.showLess') : t('common.showMore') }}
       </button>
@@ -445,14 +496,17 @@ function switchTab(tab: 'annual' | 'monthly') {
       >
         <div
           v-if="tooltipData"
-          :class="cn(
-            'fixed z-50 px-2 py-1 text-xs shadow-lg pointer-events-none',
-            'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700',
-            'transform -translate-x-1/2 -translate-y-full'
-          )"
+          :class="
+            cn(
+              'fixed z-50 px-2 py-1 text-xs shadow-lg pointer-events-none',
+              'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700',
+              'transform -translate-x-1/2 -translate-y-full',
+            )
+          "
           :style="{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }"
         >
-          <strong class="text-primary-500">{{ tooltipData.count }}</strong> on {{ tooltipData.date }}
+          <strong class="text-primary-500">{{ tooltipData.count }}</strong> on
+          {{ tooltipData.date }}
         </div>
       </Transition>
     </Teleport>

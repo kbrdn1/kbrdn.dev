@@ -4,8 +4,13 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="relative min-h-screen text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-950">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary-500 focus:text-white focus:rounded">
+  <div
+    class="relative min-h-screen text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-950"
+  >
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary-500 focus:text-white focus:rounded"
+    >
       {{ t('nav.skipToContent') || 'Skip to content' }}
     </a>
     <LayoutDottedBackground />

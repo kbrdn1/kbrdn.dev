@@ -15,13 +15,15 @@ export default defineEventHandler(async () => {
   const results = await Promise.all(
     playlist.map(async (query) => {
       try {
-        const res = await $fetch<{ data: Array<{
-          title: string
-          artist: { name: string }
-          album: { title: string; cover_medium: string }
-          preview: string
-          link: string
-        }> }>(`https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=1`)
+        const res = await $fetch<{
+          data: Array<{
+            title: string
+            artist: { name: string }
+            album: { title: string; cover_medium: string }
+            preview: string
+            link: string
+          }>
+        }>(`https://api.deezer.com/search?q=${encodeURIComponent(query)}&limit=1`)
         if (res.data?.[0]) {
           const track = res.data[0]
           return {
@@ -37,7 +39,7 @@ export default defineEventHandler(async () => {
         // skip failed track
       }
       return null
-    })
+    }),
   )
 
   return results.filter(Boolean)

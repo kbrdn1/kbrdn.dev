@@ -1,21 +1,22 @@
 {
   "name": "kbrdn-dev-v2",
-  "version": "1.0.0",
-  "type": "module",
+  "version": "1.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
     "@nuxt/content": "3.12.0",
-    "@nuxt/eslint": "1.15.2",
     "@nuxt/fonts": "0.14.0",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.5.1",
@@ -24,7 +25,6 @@
     "better-sqlite3": "^12.8.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "eslint": "^10.1.0",
     "nuxt": "^4.4.2",
     "nuxt-component-meta": "^0.17.2",
     "nuxt-studio": "^1.5.1",
@@ -39,6 +39,10 @@
     "@takumi-rs/core": "^0.73.1",
     "baseline-browser-mapping": "^2.10.10",
     "nuxt-og-image": "^6.1.2",
-    "satori": "^0.26.0"
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.83.0",
+    "satori": "^0.26.0",
+    "typescript": "~5.9.3",
+    "vue-tsc": "^3.3.11"
   }
 }

@@ -1,59 +1,58 @@
 <script setup lang="ts">
-import { useI18n } from "#imports";
+import { useI18n } from '#imports'
 
-const { t } = useI18n();
+const { t } = useI18n()
 
 interface Props {
-  name: string;
-  titles: string[];
-  handle?: string;
-  avatarUrl?: string;
-  isHirable?: boolean;
-  githubUrl?: string;
-  calendarLink?: string;
+  name: string
+  titles: string[]
+  handle?: string
+  avatarUrl?: string
+  isHirable?: boolean
+  githubUrl?: string
+  calendarLink?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  avatarUrl: "/images/avatar.jpg",
+  avatarUrl: '/images/avatar.jpg',
   isHirable: true,
-  githubUrl: "https://github.com/kbrdn1",
-  calendarLink: "https://cal.com",
-});
+  githubUrl: 'https://github.com/kbrdn1',
+  calendarLink: 'https://cal.com',
+})
 
 const initials = computed(() => {
   return props.name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .slice(0, 2);
-});
+    .slice(0, 2)
+})
 
-const imageError = ref(false);
+const imageError = ref(false)
 
-const currentTitleIndex = ref(0);
-const isTransitioning = ref(false);
+const currentTitleIndex = ref(0)
+const isTransitioning = ref(false)
 
-const currentTitle = computed(() => props.titles[currentTitleIndex.value] || "");
+const currentTitle = computed(() => props.titles[currentTitleIndex.value] || '')
 
-let interval: ReturnType<typeof setInterval> | undefined;
+let interval: ReturnType<typeof setInterval> | undefined
 
 onMounted(() => {
   if (props.titles.length > 1) {
     interval = setInterval(() => {
-      isTransitioning.value = true;
+      isTransitioning.value = true
       setTimeout(() => {
-        currentTitleIndex.value =
-          (currentTitleIndex.value + 1) % props.titles.length;
-        isTransitioning.value = false;
-      }, 300);
-    }, 3000);
+        currentTitleIndex.value = (currentTitleIndex.value + 1) % props.titles.length
+        isTransitioning.value = false
+      }, 300)
+    }, 3000)
   }
-});
+})
 
 onUnmounted(() => {
-  if (interval) clearInterval(interval);
-});
+  if (interval) clearInterval(interval)
+})
 </script>
 
 <template>
@@ -76,8 +75,14 @@ onUnmounted(() => {
             "
           >
             <span class="relative flex h-2 w-2" aria-hidden="true">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75" aria-hidden="true" />
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500" aria-hidden="true" />
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"
+                aria-hidden="true"
+              />
+              <span
+                class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"
+                aria-hidden="true"
+              />
             </span>
             {{ t('hero.availableForHire') }}
           </span>
@@ -91,7 +96,7 @@ onUnmounted(() => {
         <!-- Rotating title -->
         <p
           class="text-xl sm:text-2xl text-primary-500 mb-6"
-          style="font-family: 'Fenix', serif;"
+          style="font-family: 'Fenix', serif"
           :class="isTransitioning ? 'hero-title-hidden' : 'hero-title-visible'"
         >
           {{ currentTitle }}
@@ -140,7 +145,9 @@ onUnmounted(() => {
 
       <!-- Right side: avatar -->
       <div class="flex-shrink-0 flex justify-center md:justify-end">
-        <div class="relative grid-background border border-neutral-200 dark:border-neutral-800 transition-transform duration-300 hover:scale-105">
+        <div
+          class="relative grid-background border border-neutral-200 dark:border-neutral-800 transition-transform duration-300 hover:scale-105"
+        >
           <div
             v-if="imageError"
             :class="
@@ -150,9 +157,7 @@ onUnmounted(() => {
               )
             "
           >
-            <span class="text-4xl sm:text-5xl font-semibold text-primary-500">{{
-              initials
-            }}</span>
+            <span class="text-4xl sm:text-5xl font-semibold text-primary-500">{{ initials }}</span>
           </div>
           <NuxtImg
             v-else
@@ -160,11 +165,7 @@ onUnmounted(() => {
             :alt="name"
             width="192"
             height="192"
-            :class="
-              cn(
-                'w-40 h-40 sm:w-48 sm:h-48 object-cover',
-              )
-            "
+            :class="cn('w-40 h-40 sm:w-48 sm:h-48 object-cover')"
             format="webp"
             loading="lazy"
             @error="imageError = true"

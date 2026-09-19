@@ -16,13 +16,14 @@ export default defineEventHandler(async (event) => {
   const username = (query.username as string) || 'kbrdn1'
 
   const token = config.githubToken
-  const isValidToken = token &&
+  const isValidToken =
+    token &&
     !token.includes('xxxx') &&
     (token.startsWith('ghp_') || token.startsWith('github_pat_')) &&
     token.length > 20
 
   const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
+    Accept: 'application/vnd.github.v3+json',
     'User-Agent': 'kbrdn.dev-portfolio',
   }
 
@@ -31,10 +32,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const user = await $fetch<GitHubUser>(
-      `https://api.github.com/users/${username}`,
-      { headers },
-    )
+    const user = await $fetch<GitHubUser>(`https://api.github.com/users/${username}`, { headers })
 
     setResponseHeader(event, 'Cache-Control', 'public, max-age=3600, s-maxage=3600')
 

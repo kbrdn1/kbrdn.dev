@@ -32,7 +32,9 @@ const { formatDate } = useFormatDate()
       />
       <ClientOnly v-else>
         <NuxtImg
-          :src="$colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'"
+          :src="
+            $colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'
+          "
           alt=""
           class="w-full h-48 sm:h-64 lg:h-80 object-cover"
         />
@@ -40,7 +42,9 @@ const { formatDate } = useFormatDate()
           <div class="w-full h-48 sm:h-64 lg:h-80 bg-neutral-800" />
         </template>
       </ClientOnly>
-      <div class="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/50 to-neutral-950/20" />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/50 to-neutral-950/20"
+      />
       <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-12">
         <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
           <time
@@ -55,19 +59,20 @@ const { formatDate } = useFormatDate()
             {{ readingTime }} {{ t('blog.readingTime') }}
           </span>
         </div>
-        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2" style="font-family: 'Fenix', serif;">
+        <h1
+          class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-1 sm:mb-2"
+          style="font-family: 'Fenix', serif"
+        >
           {{ post.title }}
         </h1>
-        <p v-if="post.description" class="text-sm sm:text-base text-white/70 mt-1 sm:mt-2 max-w-2xl">
+        <p
+          v-if="post.description"
+          class="text-sm sm:text-base text-white/70 mt-1 sm:mt-2 max-w-2xl"
+        >
           {{ post.description }}
         </p>
         <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-          <UiTag
-            v-for="tag in post.tags"
-            :key="tag"
-            :label="tag"
-            variant="auto"
-          />
+          <UiTag v-for="tag in post.tags" :key="tag" :label="tag" variant="auto" />
         </div>
       </div>
     </div>
@@ -89,19 +94,17 @@ const { formatDate } = useFormatDate()
         {{ readingTime }} {{ t('blog.readingTime') }}
       </span>
     </div>
-    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-950 dark:text-neutral-100 mb-1 sm:mb-2" style="font-family: 'Fenix', serif;">
+    <h1
+      class="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-950 dark:text-neutral-100 mb-1 sm:mb-2"
+      style="font-family: 'Fenix', serif"
+    >
       {{ post.title }}
     </h1>
     <p v-if="post.description" class="text-base sm:text-lg text-neutral-500 mt-1 sm:mt-2">
       {{ post.description }}
     </p>
     <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 sm:gap-2 mt-3 sm:mt-4">
-      <UiTag
-        v-for="tag in post.tags"
-        :key="tag"
-        :label="tag"
-        variant="auto"
-      />
+      <UiTag v-for="tag in post.tags" :key="tag" :label="tag" variant="auto" />
     </div>
     <div class="border-b border-neutral-200 dark:border-neutral-800 mt-4 sm:mt-6 lg:mt-8" />
   </header>

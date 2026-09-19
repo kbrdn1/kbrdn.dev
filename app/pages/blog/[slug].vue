@@ -22,11 +22,8 @@ const { data: post } = await useAsyncData(
 const { data: relatedPosts } = await useAsyncData(
   `blog-related-${slug}`,
   async () => {
-    const all = await queryCollection(collection.value)
-      .order('publishedAt', 'DESC')
-      .limit(7)
-      .all()
-    return all.filter(p => p.path !== `/blogs/${slug}`).slice(0, 6)
+    const all = await queryCollection(collection.value).order('publishedAt', 'DESC').limit(7).all()
+    return all.filter((p) => p.path !== `/blogs/${slug}`).slice(0, 6)
   },
   { watch: [locale] },
 )
@@ -45,7 +42,9 @@ async function copyLink() {
   try {
     await navigator.clipboard.writeText(window.location.href)
     linkCopied.value = true
-    setTimeout(() => { linkCopied.value = false }, 2000)
+    setTimeout(() => {
+      linkCopied.value = false
+    }, 2000)
   } catch {
     const input = document.createElement('input')
     input.value = window.location.href
@@ -54,7 +53,9 @@ async function copyLink() {
     document.execCommand('copy')
     document.body.removeChild(input)
     linkCopied.value = true
-    setTimeout(() => { linkCopied.value = false }, 2000)
+    setTimeout(() => {
+      linkCopied.value = false
+    }, 2000)
   }
 }
 
@@ -93,19 +94,25 @@ onMounted(() => {
     if (!articleRef.value) return
 
     // Extract headings from rendered content
-    const headings = articleRef.value.querySelectorAll('.prose-blog h1, .prose-blog h2, .prose-blog h3')
+    const headings = articleRef.value.querySelectorAll(
+      '.prose-blog h1, .prose-blog h2, .prose-blog h3',
+    )
     const items: TocItem[] = []
 
     headings.forEach((heading) => {
       const el = heading as HTMLElement
       // Generate id if missing
       if (!el.id) {
-        el.id = el.textContent?.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '') || ''
+        el.id =
+          el.textContent
+            ?.toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w-]/g, '') || ''
       }
       items.push({
         id: el.id,
         text: el.textContent || '',
-        level: parseInt(el.tagName[1]),
+        level: parseInt(el.tagName.charAt(1)),
       })
     })
 
@@ -132,13 +139,13 @@ onUnmounted(() => observer?.disconnect())
 // Reading progress based on active heading position in TOC
 const readProgress = computed(() => {
   if (!tocItems.value.length || !activeHeading.value) return 0
-  const idx = tocItems.value.findIndex(i => i.id === activeHeading.value)
+  const idx = tocItems.value.findIndex((i) => i.id === activeHeading.value)
   if (idx < 0) return 0
   return Math.round(((idx + 1) / tocItems.value.length) * 100)
 })
 
 const activeHeadingText = computed(() => {
-  const item = tocItems.value.find(i => i.id === activeHeading.value)
+  const item = tocItems.value.find((i) => i.id === activeHeading.value)
   return item?.text || ''
 })
 
@@ -156,14 +163,15 @@ function scrollToHeading(id: string) {
   <div class="min-h-screen flex justify-center overflow-x-clip">
     <!-- Left stripe zone -->
     <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
-      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color);"
+      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1"
+      aria-hidden="true"
+      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
     />
 
     <!-- Main content -->
     <div ref="articleRef" class="w-full flex flex-col items-center relative z-10">
       <!-- Article found -->
-      <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto;">
+      <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto">
         <BlogArticleHeader :post="post" :reading-time="readingTime" />
 
         <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
@@ -222,11 +230,7 @@ function scrollToHeading(id: string) {
               {{ t('blog.moreArticles') }}
             </h2>
             <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
-              <BlogPostRow
-                v-for="related in relatedPosts"
-                :key="related.path"
-                :post="related"
-              />
+              <BlogPostRow v-for="related in relatedPosts" :key="related.path" :post="related" />
             </div>
           </div>
 
@@ -244,8 +248,9 @@ function scrollToHeading(id: string) {
 
     <!-- Right stripe zone (background) -->
     <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1" aria-hidden="true"
-      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color);"
+      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1"
+      aria-hidden="true"
+      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
     />
 
     <!-- Mobile TOC -->

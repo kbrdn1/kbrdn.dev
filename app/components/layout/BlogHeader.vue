@@ -1,47 +1,48 @@
 <script setup lang="ts">
-import { useI18n } from "#imports";
+import { useI18n } from '#imports'
 
-const { t } = useI18n();
-const route = useRoute();
+const { t } = useI18n()
+const route = useRoute()
 
-const showBrandMenu = ref(false);
+const showBrandMenu = ref(false)
 
 function handleClickOutside(e: MouseEvent) {
-  const target = e.target as HTMLElement;
+  const target = e.target as HTMLElement
   if (!target.closest('.group\\/brand') && !target.closest('.group\\/brand-mobile')) {
-    showBrandMenu.value = false;
+    showBrandMenu.value = false
   }
 }
 
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
-    showBrandMenu.value = false;
-    isMobileMenuOpen.value = false;
+    showBrandMenu.value = false
+    isMobileMenuOpen.value = false
   }
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-  document.addEventListener('keydown', handleKeydown);
-});
+  document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleKeydown)
+})
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-  document.removeEventListener('keydown', handleKeydown);
-});
+  document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleKeydown)
+})
 
-const navLinks = computed(() => [
-  { to: "/blog", label: t("blogNav.articles") },
-]);
+const navLinks = computed(() => [{ to: '/blog', label: t('blogNav.articles') }])
 
 const isActive = (to: string) => {
-  if (to === "/blog") {
-    return route.path === "/blog" || (route.path.startsWith("/blog/") && !route.path.startsWith("/blog/tags"));
+  if (to === '/blog') {
+    return (
+      route.path === '/blog' ||
+      (route.path.startsWith('/blog/') && !route.path.startsWith('/blog/tags'))
+    )
   }
-  return route.path.startsWith(to);
-};
+  return route.path.startsWith(to)
+}
 
-const isMobileMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false)
 </script>
 
 <template>
@@ -54,9 +55,11 @@ const isMobileMenuOpen = ref(false);
       )
     "
   >
-    <div class="mx-auto" style="max-width: 80rem;">
+    <div class="mx-auto" style="max-width: 80rem">
       <!-- Desktop header -->
-      <div class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800">
+      <div
+        class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800"
+      >
         <!-- Brand with dropdown -->
         <div
           class="relative border-r border-neutral-200 dark:border-neutral-700 group/brand"
@@ -72,7 +75,9 @@ const isMobileMenuOpen = ref(false);
             @keydown.escape="showBrandMenu = false"
           >
             <UiLogo class="mr-2 text-neutral-900 dark:text-neutral-100" />
-            <span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+            <span class="text-sky-400">blog</span
+            ><span class="text-neutral-900 dark:text-neutral-100">@</span
+            ><span class="text-primary-500">kbrdn1</span>
           </button>
 
           <Transition
@@ -92,17 +97,17 @@ const isMobileMenuOpen = ref(false);
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
-                <span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span></span>
+                <span
+                  ><span class="text-neutral-900 dark:text-neutral-100">@</span
+                  ><span class="text-primary-500">kbrdn1</span></span
+                >
               </NuxtLink>
             </div>
           </Transition>
         </div>
 
         <!-- Desktop Navigation -->
-        <nav
-          class="flex items-stretch flex-1"
-          aria-label="Blog navigation"
-        >
+        <nav class="flex items-stretch flex-1" aria-label="Blog navigation">
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
@@ -133,7 +138,7 @@ const isMobileMenuOpen = ref(false);
             "
           >
             <UIcon name="i-heroicons-arrow-left" class="w-3 h-3" aria-hidden="true" />
-            {{ t("blogNav.portfolio") }}
+            {{ t('blogNav.portfolio') }}
           </NuxtLink>
         </nav>
 
@@ -167,7 +172,9 @@ const isMobileMenuOpen = ref(false);
             @keydown.escape="showBrandMenu = false"
           >
             <UiLogo class="mr-2 text-neutral-900 dark:text-neutral-100" />
-            <span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+            <span class="text-sky-400">blog</span
+            ><span class="text-neutral-900 dark:text-neutral-100">@</span
+            ><span class="text-primary-500">kbrdn1</span>
           </button>
           <Transition
             enter-active-class="transition-all duration-150 ease-out"
@@ -186,7 +193,10 @@ const isMobileMenuOpen = ref(false);
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
-                <span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span></span>
+                <span
+                  ><span class="text-neutral-900 dark:text-neutral-100">@</span
+                  ><span class="text-primary-500">kbrdn1</span></span
+                >
               </NuxtLink>
             </div>
           </Transition>
@@ -213,11 +223,7 @@ const isMobileMenuOpen = ref(false);
             @click="isMobileMenuOpen = !isMobileMenuOpen"
           >
             <UIcon
-              :name="
-                isMobileMenuOpen
-                  ? 'i-heroicons-x-mark'
-                  : 'i-heroicons-bars-3'
-              "
+              :name="isMobileMenuOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'"
               class="w-4 h-4"
               aria-hidden="true"
             />
@@ -269,7 +275,7 @@ const isMobileMenuOpen = ref(false);
             @click="isMobileMenuOpen = false"
           >
             <UIcon name="i-heroicons-arrow-left" class="w-3 h-3" aria-hidden="true" />
-            {{ t("blogNav.portfolio") }}
+            {{ t('blogNav.portfolio') }}
           </NuxtLink>
         </nav>
       </Transition>

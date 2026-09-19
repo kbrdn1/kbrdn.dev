@@ -17,33 +17,33 @@ const projectConfigs: ProjectConfig[] = [
     repo: 'gwm-cli',
     displayName: 'gwm',
     description: 'Git Worktree Manager',
-    tags: ['rust', 'cli']
+    tags: ['rust', 'cli'],
   },
   {
     repo: 'kbrdn.dev-old',
     displayName: 'Portfolio v1',
     description: 'Previous Website',
     tags: ['astro', 'archive'],
-    demoUrl: 'https://old.kbrdn.dev'
+    demoUrl: 'https://old.kbrdn.dev',
   },
   {
     repo: 'dotfiles',
     displayName: 'Dotfiles',
     description: 'OS X Config',
-    tags: ['config', 'shell']
+    tags: ['config', 'shell'],
   },
   {
     repo: 'poduim',
     displayName: 'Podium',
     description: 'Tournament Manager',
-    tags: ['vue', 'app']
-  }
+    tags: ['vue', 'app'],
+  },
 ]
 
 // Fetch real GitHub data
 const { data: repos, status } = useGitHubRepos(
   'kbrdn1',
-  projectConfigs.map(p => p.repo)
+  projectConfigs.map((p) => p.repo),
 )
 
 // Merge GitHub data with display config
@@ -51,27 +51,25 @@ const projects = computed(() => {
   if (!repos.value) return []
 
   return projectConfigs
-    .map(config => {
-      const repoData = repos.value?.find(
-        r => r.name.toLowerCase() === config.repo.toLowerCase()
-      )
+    .map((config) => {
+      const repoData = repos.value?.find((r) => r.name.toLowerCase() === config.repo.toLowerCase())
       if (!repoData) return null
 
       return {
         name: config.displayName || repoData.name,
         description: config.description || repoData.description,
         tags: config.tags || repoData.topics.slice(0, 2),
-        language: repoData.language,
+        language: repoData.language ?? undefined,
         stats: [
           { label: t('projects.stats.stars'), value: formatNumber(repoData.stars) },
-          { label: t('projects.stats.forks'), value: formatNumber(repoData.forks) }
-        ].filter(s => Number(s.value) > 0 || s.label === t('projects.stats.stars')),
+          { label: t('projects.stats.forks'), value: formatNumber(repoData.forks) },
+        ].filter((s) => Number(s.value) > 0 || s.label === t('projects.stats.stars')),
         techStack: repoData.languages,
         githubUrl: repoData.url,
-        demoUrl: config.demoUrl || repoData.homepage
+        demoUrl: config.demoUrl || repoData.homepage || undefined,
       }
     })
-    .filter(Boolean)
+    .filter((project) => project !== null)
 })
 
 // Format numbers (1000 -> 1k)
@@ -204,7 +202,10 @@ const canExpand = computed(() => projects.value.length > DEFAULT_PROJECTS)
         <UIcon
           name="i-heroicons-chevron-down"
           class="w-4 h-4"
-          :style="{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 300ms ease !important' }"
+          :style="{
+            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 300ms ease !important',
+          }"
         />
         {{ isExpanded ? t('common.showLess') : t('common.showMore') }}
       </button>

@@ -24,20 +24,22 @@ const { postUrl } = useBlogUrl()
     <ClientOnly v-if="post.banner">
       <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
         <NuxtImg
-          :src="post.bannerImage || ($colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg')"
+          :src="
+            post.bannerImage ||
+            ($colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg')
+          "
           alt=""
           class="w-full h-full object-cover"
         />
-        <div class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950" />
+        <div
+          class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950"
+        />
       </div>
     </ClientOnly>
 
     <!-- Date & Author -->
     <div class="shrink-0 w-28 sm:w-36 relative z-10">
-      <span
-        v-if="post.publishedAt"
-        class="block text-[10px] sm:text-xs font-mono text-neutral-500"
-      >
+      <span v-if="post.publishedAt" class="block text-[10px] sm:text-xs font-mono text-neutral-500">
         {{ formatDate(post.publishedAt) }}
       </span>
       <span v-if="showAuthor" class="block text-[10px] font-mono text-neutral-400 mt-0.5">
@@ -47,13 +49,19 @@ const { postUrl } = useBlogUrl()
 
     <!-- Title + Description -->
     <div class="flex-1 min-w-0 relative z-10">
-      <span class="block text-sm sm:text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors" style="font-family: 'Fenix', serif;">
+      <span
+        class="block text-sm sm:text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors"
+        style="font-family: 'Fenix', serif"
+      >
         {{ post.title }}
       </span>
       <span
         v-if="post.description"
         class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1 overflow-hidden whitespace-nowrap"
-        style="mask-image: linear-gradient(to right, black 50%, transparent); -webkit-mask-image: linear-gradient(to right, black 50%, transparent);"
+        style="
+          mask-image: linear-gradient(to right, black 50%, transparent);
+          -webkit-mask-image: linear-gradient(to right, black 50%, transparent);
+        "
       >
         {{ post.description }}
       </span>

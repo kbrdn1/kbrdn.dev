@@ -16,7 +16,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  variant: 'default'
+  variant: 'default',
 })
 </script>
 
@@ -76,10 +76,7 @@ withDefaults(defineProps<Props>(), {
   </div>
 
   <!-- Accordion Card -->
-  <div
-    v-else-if="variant === 'accordion'"
-    class="border border-neutral-800 bg-neutral-900/50"
-  >
+  <div v-else-if="variant === 'accordion'" class="border border-neutral-800 bg-neutral-900/50">
     <div class="flex items-center gap-3 px-4 py-3">
       <UiSkeletonAvatar size="sm" :rounded="false" />
       <div class="flex-1 space-y-1">
@@ -92,10 +89,7 @@ withDefaults(defineProps<Props>(), {
   </div>
 
   <!-- Hero Section -->
-  <div
-    v-else-if="variant === 'hero'"
-    class="flex items-start gap-4"
-  >
+  <div v-else-if="variant === 'hero'" class="flex items-start gap-4">
     <UiSkeletonAvatar size="xl" :rounded="false" />
     <div class="flex-1 space-y-2">
       <div class="flex items-center gap-2">
@@ -113,10 +107,7 @@ withDefaults(defineProps<Props>(), {
   </div>
 
   <!-- Stats Card -->
-  <div
-    v-else-if="variant === 'stats'"
-    class="space-y-4"
-  >
+  <div v-else-if="variant === 'stats'" class="space-y-4">
     <div class="flex flex-col sm:flex-row gap-4 sm:gap-8">
       <div class="space-y-1">
         <UiSkeleton class="h-3 w-24" />
