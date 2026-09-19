@@ -27,7 +27,7 @@ export default {
     defaultTitle: "1/3 Design Engineer",
     viewCount: "vues",
     sponsor: "Sponsoriser",
-    availableForHire: "En contrat chez Jewely x Flippad",
+    availableForHire: "Ouvert aux opportunités",
     bookCall: "Prendre rendez-vous",
     bookCallTip: "Planifier un échange de 30 min pour discuter de votre projet",
     bookCallDisabled: "Prise de rendez-vous temporairement indisponible",
@@ -256,7 +256,7 @@ export default {
     present: "Présent",
     current: "Actuel",
     flippad: {
-      role: "Ingénieur Développeur Web",
+      role: "Développeur Full Stack",
       type: "CDI (anciennement alternance)",
       tasks: [
         "Déploiement production et pré-production sur AWS et Heroku via GitHub Actions (API Gateway, Lambda, EC2, S3, CloudWatch, etc.)",
@@ -389,7 +389,7 @@ export default {
     },
     availability: {
       title: "Disponibilité",
-      status: "En contrat chez Jewely x Flippad",
+      status: "Ouvert aux opportunités",
     },
     email: {
       title: "Email",
