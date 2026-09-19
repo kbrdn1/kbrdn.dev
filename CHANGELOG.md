@@ -27,6 +27,18 @@ migrates `[Unreleased]` into that file and empties this one — see
   `main.css` fail it on the image itself. An intended change to an OG image
   goes through `scripts/og-smoke.sh --update`.
 
+### Fixed
+
+- **`docs/RELEASE.md` described the release it was supposed to guide wrongly**
+  ([#43](https://github.com/kbrdn1/kbrdn.dev/issues/43)). Cutting 1.0.1
+  contradicted four passages: the `Linked issue` check applies to pull requests
+  into `dev` too, not only `main`; `main` also requires an approval, so the
+  promotion is merged with `--admin` — which bypasses the required checks as
+  well, and must only come after they are green; `/api/health` cannot tell the
+  tag's image from the one `deploy.yml` ships on the merge, so the proof of a
+  release is `gh release view`; and re-running an old tag does not rebuild the
+  image, it rewrites the release notes from the tag's tree.
+
 ## Past releases
 
 - [1.0.1](changelogs/1.0.1.md) — 2026-09-19
