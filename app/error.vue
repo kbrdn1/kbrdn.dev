@@ -3,7 +3,7 @@ import { useI18n } from '#imports'
 
 const { t } = useI18n()
 // useError() doit être appelé même si non utilisé directement pour que Nuxt expose l'error context au template
-const _error = useError()
+useError()
 
 // 404 pixel font map — each digit is a 5x7 grid (1 = filled, 0 = empty)
 const DIGITS: Record<string, number[][]> = {

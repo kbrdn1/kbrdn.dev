@@ -5,6 +5,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  // oxlint n'applique pas no-unused-vars aux SFC : vue-tsc le fait, template compris
+  typescript: { tsConfig: { compilerOptions: { noUnusedLocals: true } } },
+
   modules: [
     '@nuxt/ui',
     '@nuxt/content',
