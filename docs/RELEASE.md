@@ -116,17 +116,21 @@ Ouvrir une PR (obligatoire, cf. la contrainte ci-dessus), corps contenant
 ```
 
 Attendre les 4 checks verts, puis merger en **merge commit** — jamais squash,
-il écraserait les commits atomiques. Les checks ne suffisent pas : `main` exige
-aussi **une approbation**, et la PR reste `BLOCKED` sans elle. Faute de second
-reviewer, le merge passe en admin (`enforce_admins` est à `false`) :
+il écraserait les commits atomiques. `required_linear_history` a été désactivé
+sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
+
+Les checks ne suffisent pas : `main` exige aussi **une approbation**, et la PR
+reste `BLOCKED` sans elle. Faute de second reviewer, le merge passe en admin
+(`enforce_admins` est à `false`), comme pour #29, #32 et #41 :
 
 ```bash
 gh pr merge <N> --merge --admin
 ```
 
-Toutes les promotions l'ont fait (#29, #32, #41) — c'est un contournement
-assumé de la règle d'approbation, pas des checks. `required_linear_history` a été désactivé
-sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
+⚠️ `--admin` contourne **toutes** les règles de protection, checks requis
+compris : il mergerait une PR rouge ou en attente, et `deploy.yml` enverrait ce
+code en prod. Seule l'attente des 4 checks verts, juste au-dessus, protège —
+jamais de `--admin` avant.
 
 ### 5. Tag, depuis `main`, APRÈS le merge
 
@@ -207,10 +211,12 @@ Le second est le seul qui traverse plusieurs versions et le seul qui survive à
 une perte des conteneurs.
 
 Relancer `release.yml` en `workflow_dispatch` sur un ancien tag fonctionne
-aussi, sans effet de bord : l'image existe déjà dans le registre, donc le build
-est sauté (`Image already published?`) et l'artefact d'origine est redéployé ;
-la release existe déjà, donc ses notes sont mises à jour (`gh release edit`) au
-lieu d'échouer sur un `create`.
+aussi : l'image existe déjà dans le registre, donc le build est sauté
+(`Image already published?`) et l'artefact d'origine est redéployé ; la release
+existe déjà, donc `gh release edit` remplace ses notes au lieu d'échouer sur un
+`create`. ⚠️ Ces notes viennent de l'arbre **du tag** : si
+`changelogs/X.Y.Z.md` a été corrigé depuis (cf. Notes), le rollback remet la
+version d'origine — refaire le `gh release edit` après.
 
 ## Notes
 
