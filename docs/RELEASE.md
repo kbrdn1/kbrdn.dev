@@ -44,8 +44,8 @@ cut si on la découvre en route.
 Le check `Linked issue` de `validate-pr.yml` tourne sur les PR vers `main`
 **et** vers `dev`, sans condition sur la base, et exige `Closes #N` (ou
 `Fixes` / `Resolves`) dans le corps — `Refs #N` ne passe pas. **Chaque cut de
-version a donc besoin de sa propre issue de release**, citée par les deux PR du
-cut : celle qui prépare les notes vers `dev`, puis `dev → main`. Vers `dev`,
+version a donc besoin de sa propre issue de release**, citée par chaque PR du
+cut, vers `dev` comme `dev → main`. Vers `dev`,
 qui n'est pas la branche par défaut, `Closes` ne ferme rien au merge — c'est la
 PR vers `main` qui fermera l'issue.
 
@@ -127,10 +127,8 @@ reste `BLOCKED` sans elle. Faute de second reviewer, le merge passe en admin
 gh pr merge <N> --merge --admin
 ```
 
-⚠️ `--admin` contourne **toutes** les règles de protection, checks requis
-compris : il mergerait une PR rouge ou en attente, et `deploy.yml` enverrait ce
-code en prod. Seule l'attente des 4 checks verts, juste au-dessus, protège —
-jamais de `--admin` avant.
+⚠️ `--admin` contourne aussi les checks requis : il mergerait une PR rouge,
+que `deploy.yml` enverrait en prod. Il ne vient qu'après les 4 checks verts.
 
 ### 5. Tag, depuis `main`, APRÈS le merge
 
@@ -156,7 +154,8 @@ le tag de registre est mutable, mais l'artefact d'origine est conservé et
 redéployé tel quel. C'est aussi le rattrapage si un run de release est annulé :
 GitHub Actions ne garde qu'un job en attente par groupe de concurrence, donc
 trois déploiements qui se chevauchent sur un même environnement peuvent en
-évincer un. Relancer le tag est sans effet de bord.
+évincer un. Relancer le tag ne reconstruit rien ; seules les notes de la
+release sont réécrites depuis l'arbre du tag (cf. « Revenir en arrière »).
 
 Même rattrapage si `Deploy prod` **échoue** (vu sur la v1.0.1 : `ssh-keyscan`
 sans réponse, #42) : `gh run rerun <run> --failed` rejoue le déploiement puis la
@@ -180,15 +179,16 @@ Le workflow le fait déjà et échoue avant de publier la release si le compte n
 est pas — cette commande sert à contrôler après coup, ou à répondre à « quelle
 version est live ».
 
-⚠️ **Elle ne prouve pas que la release a tourné.** Le merge sur `main` a déjà
-déployé la prod par `deploy.yml`, et pour une stable l'image du filet porte la
+⚠️ **Elle ne prouve pas que la release a tourné.** Le merge sur `main` déploie
+aussi la prod par `deploy.yml` — avant ou après le job du tag, selon qui prend
+le verrou `vps-deploy-prod` —, et pour une stable l'image du filet porte la
 même version que celle du tag (`APP_VERSION` vide hors release → repli sur
 `package.json`, cf. `nuxt.config.ts`) ; le `sha` aussi est le même. Sur la
 v1.0.1, `/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait
 échoué. La release se vérifie sur le run du tag et sur la release elle-même :
 
 ```bash
-gh run list --workflow release.yml --limit 1   # le run du tag : vert
+gh run list --workflow release.yml --branch vX.Y.Z   # le run du tag : vert
 gh release view vX.Y.Z --json author,isDraft -q '.author.login + " " + (.isDraft|tostring)'
 # github-actions[bot] false
 ```
