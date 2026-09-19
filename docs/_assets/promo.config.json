@@ -1,13 +1,16 @@
 {
+  "logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' role='img' aria-label='kbrdn'><g fill='#e0e0e0'><rect x='2' y='2' width='28' height='4'/><rect x='2' y='2' width='4' height='28'/><rect x='26' y='2' width='4' height='14'/><rect x='2' y='26' width='14' height='4'/></g><path d='M19 9 L7 16 L19 23 V19 L14 16 L19 13 Z' fill='#d4825d'/></svg>",
+  "logoLight": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' role='img' aria-label='kbrdn'><g fill='#1a1a1a'><rect x='2' y='2' width='28' height='4'/><rect x='2' y='2' width='4' height='28'/><rect x='26' y='2' width='4' height='14'/><rect x='2' y='26' width='14' height='4'/></g><path d='M19 9 L7 16 L19 23 V19 L14 16 L19 13 Z' fill='#d4825d'/></svg>",
+  "logoSize": 88,
   "eyebrow": "Personal site & portfolio",
-  "version": "v1.0.0",
+  "version": "v1.0.1",
   "wordmark": "kbrdn.dev",
   "wordmarkSize": 104,
   "tagline": "Nuxt 4, file-based content, shipped blue/green on a tag.",
   "chips": ["Nuxt 4 + Nuxt UI v4", "Markdown content", "FR / EN", "OG images", "Blue/green deploy"],
   "install": "bun install && bun run dev",
   "footer": "github.com/kbrdn1/kbrdn.dev · TypeScript · Bun",
-  "motif": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='300' height='300' role='img' aria-label='kbrdn monogram'><g fill='#8a8a8a'><rect x='2' y='2' width='28' height='4'/><rect x='2' y='2' width='4' height='28'/><rect x='26' y='2' width='4' height='14'/><rect x='2' y='26' width='14' height='4'/></g><path d='M19 9 L7 16 L19 23 V19 L14 16 L19 13 Z' fill='#d4825d'/></svg>",
+  "motif": "<div style=\"width:560px;background:#121212;border:1px solid #3a3a3a;font-family:'Krypton',monospace;font-size:17px;line-height:1.65;color:#e0e0e0;\"><div style='display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #2a2a2a;'><span style='width:11px;height:11px;border-radius:50%;background:#3a3a3a;'></span><span style='width:11px;height:11px;border-radius:50%;background:#3a3a3a;'></span><span style='width:11px;height:11px;border-radius:50%;background:#3a3a3a;'></span></div><div style='padding:18px 22px;'><div style='white-space:pre;'><span style='color:#d4825d'>$</span> git tag v1.0.1 &amp;&amp; git push origin v1.0.1</div><div style='white-space:pre;'><span style='color:#777'># release.yml: image :v1.0.1 → prod</span></div><div style='white-space:pre;'><span style='color:#d4825d'>$</span> curl -s kbrdn.dev/api/health \\</div><div style='white-space:pre;'>    | jq '{status, version, env}'</div><div style='white-space:pre;'>{</div><div style='white-space:pre;'>  <span style='color:#7ab8ff'>\"status\"</span>: <span style='color:#6bc97f'>\"ok\"</span>,</div><div style='white-space:pre;'>  <span style='color:#7ab8ff'>\"version\"</span>: <span style='color:#6bc97f'>\"1.0.1\"</span>,</div><div style='white-space:pre;'>  <span style='color:#7ab8ff'>\"env\"</span>: <span style='color:#6bc97f'>\"prod\"</span></div><div style='white-space:pre;'>}</div></div></div>",
   "width": 1600,
   "height": 500
 }
