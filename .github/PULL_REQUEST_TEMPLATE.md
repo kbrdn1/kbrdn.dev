@@ -37,6 +37,7 @@ Which parts are affected?
 - [ ] I have updated the documentation if needed
 - [ ] TypeScript compiles without errors (`make typecheck`)
 - [ ] Linting passes (`make lint`)
+- [ ] Formatting passes (`bun run fmt:check`)
 
 ## Screenshots (if applicable)
 

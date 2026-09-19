@@ -92,7 +92,16 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 ## Important Notes
 
 ### Lint & format configuration
-`.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). oxlint lints the `<script>` of SFCs but has no template rules; broken templates are caught by `vue-tsc` and the build. `.oxfmtrc.json` formats code only — Markdown and MDX (blog articles, changelogs, docs) are excluded on purpose. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
+`.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). Known gaps in `.vue` files, checked on oxlint 1.83:
+- no template rules at all — broken templates are caught by `vue-tsc` and the build;
+- `no-unused-vars` and `prefer-const` do not run on SFCs. Unused locals and functions are caught instead by `vue-tsc` (`noUnusedLocals` in `nuxt.config.ts`, template usage included); unused **imports** in `<script setup>` are caught by neither, and `prefer-const` is lost.
+
+`.oxfmtrc.json` formats code only, with three deliberate exceptions — the last two break at request time, where lint, typecheck and build cannot see them:
+- Markdown and MDX (blog articles, changelogs, docs) are prose, never reformatted;
+- `app/components/OgImage/**` is rendered by satori, whose gradient parser fails on a `style` value split across lines (`/_og/*` returns 500);
+- CSS keeps double quotes (`overrides`): nuxt-og-image does not resolve `font-family: 'Inter'` and falls back to the mono font.
+
+After touching formatting config, compare the OG images, not just the page text. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
 
 ### Content System
 The project uses Nuxt Content v3's collection-based API (not the legacy document-driven mode). Always use `queryCollection()` instead of deprecated content APIs.

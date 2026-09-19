@@ -83,7 +83,8 @@ bun run dev
 make help       # Show all commands
 make dev        # Start development server
 make build      # Build for production
-make lint       # Run linter
+make lint       # Run linter (oxlint)
+make fmt        # Format code (oxfmt) — CI runs `bun run fmt:check`
 make typecheck  # Type checking
 make clean      # Clean build artifacts
 ```
@@ -196,6 +197,7 @@ a **merge commit**, never a squash. Full protocol:
 
 - [ ] Code follows project conventions
 - [ ] Linting passes (`make lint`)
+- [ ] Formatting passes (`bun run fmt:check`, fix with `make fmt`)
 - [ ] TypeScript compiles (`make typecheck`)
 - [ ] Documentation updated if needed
 - [ ] Tested locally
