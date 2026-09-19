@@ -99,9 +99,9 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 `.oxfmtrc.json` formats code only, with three deliberate exceptions — the last two break at request time, where lint, typecheck and build cannot see them:
 - Markdown and MDX (blog articles, changelogs, docs) are prose, never reformatted;
 - `app/components/OgImage/**` is rendered by satori, whose gradient parser fails on a `style` value split across lines (`/_og/*` returns 500);
-- CSS keeps double quotes (`overrides`): nuxt-og-image does not resolve `font-family: 'Inter'` and falls back to the mono font.
+- CSS keeps double quotes (`overrides`): nuxt-og-image 6.1 only recognises the Tailwind entry through `@theme` or a double-quoted `@import "tailwindcss"` (`dist/chunks/tw4.mjs`). `main.css` has no `@theme`, so `@import 'tailwindcss'` turns that resolver off and the OG images fall back to the mono font. `theme.css` quotes alone change nothing.
 
-After touching formatting config, compare the OG images, not just the page text. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
+CI catches both: `scripts/og-smoke.sh` serves the build and compares the OG images of `/`, `/blog` and `/blog/gwm` byte for byte against `scripts/og-smoke/*.png` (rendering is deterministic across platforms). An intended change to an OG image — hero copy, that article, a satori component — needs `scripts/og-smoke.sh --update` after `bun run build`, and the new PNGs committed. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
 
 ### Content System
 The project uses Nuxt Content v3's collection-based API (not the legacy document-driven mode). Always use `queryCollection()` instead of deprecated content APIs.
