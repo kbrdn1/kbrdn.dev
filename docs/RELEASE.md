@@ -39,11 +39,19 @@ les deux ne se réveillent jamais ensemble.
 Elle n'est pas dans le protocole générique `me:release` et bloque le premier
 cut si on la découvre en route.
 
-### Toute PR vers `main` doit fermer une issue
+### Toute PR doit porter `Closes #N` — vers `main` comme vers `dev`
 
-Le check `Linked issue` de `validate-pr.yml` exige un `Closes #N` dans le corps
-de la PR. **Chaque cut de version a donc besoin de sa propre issue de
-release** — sans elle, la PR `dev → main` reste rouge.
+Le check `Linked issue` de `validate-pr.yml` tourne sur les PR vers `main`
+**et** vers `dev`, sans condition sur la base, et exige `Closes #N` (ou
+`Fixes` / `Resolves`) dans le corps — `Refs #N` ne passe pas. **Chaque cut de
+version a donc besoin de sa propre issue de release**, citée par chaque PR du
+cut, vers `dev` comme `dev → main`. Vers `dev`,
+qui n'est pas la branche par défaut, `Closes` ne ferme rien au merge — c'est la
+PR vers `main` qui fermera l'issue.
+
+Corps oublié : l'éditer relance le check (type `edited`). Un `gh run rerun` de
+l'ancien run, lui, échoue encore — il rejoue la charge utile de l'événement
+d'origine, donc l'ancien corps.
 
 Le check `Branch convention`, lui, autorise déjà `dev → main` et `hotfix/* →
 main`, il ne bloque pas.
@@ -100,8 +108,8 @@ repart avec un `[Unreleased]` vide et gagne sa ligne sous `## Past releases`.
 
 ### 4. `dev` → `main`
 
-Ouvrir une PR (obligatoire, cf. contrainte 2), corps contenant `Closes #<issue
-de release>`, titre au format conventionnel :
+Ouvrir une PR (obligatoire, cf. la contrainte ci-dessus), corps contenant
+`Closes #<issue de release>`, titre au format conventionnel :
 
 ```
 🔖 chore(release): v1.1.0
@@ -110,6 +118,17 @@ de release>`, titre au format conventionnel :
 Attendre les 4 checks verts, puis merger en **merge commit** — jamais squash,
 il écraserait les commits atomiques. `required_linear_history` a été désactivé
 sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
+
+Les checks ne suffisent pas : `main` exige aussi **une approbation**, et la PR
+reste `BLOCKED` sans elle. Faute de second reviewer, le merge passe en admin
+(`enforce_admins` est à `false`), comme pour #29, #32 et #41 :
+
+```bash
+gh pr merge <N> --merge --admin
+```
+
+⚠️ `--admin` contourne aussi les checks requis : il mergerait une PR rouge,
+que `deploy.yml` enverrait en prod. Il ne vient qu'après les 4 checks verts.
 
 ### 5. Tag, depuis `main`, APRÈS le merge
 
@@ -135,7 +154,13 @@ le tag de registre est mutable, mais l'artefact d'origine est conservé et
 redéployé tel quel. C'est aussi le rattrapage si un run de release est annulé :
 GitHub Actions ne garde qu'un job en attente par groupe de concurrence, donc
 trois déploiements qui se chevauchent sur un même environnement peuvent en
-évincer un. Relancer le tag est sans effet de bord.
+évincer un. Relancer le tag ne reconstruit rien ; seules les notes de la
+release sont réécrites depuis l'arbre du tag (cf. « Revenir en arrière »).
+
+Même rattrapage si `Deploy prod` **échoue** (vu sur la v1.0.1 : `ssh-keyscan`
+sans réponse, #42) : `gh run rerun <run> --failed` rejoue le déploiement puis la
+release GitHub, sans reconstruire l'image. Établir la cause avant de relancer —
+un job qui échoue sur le code échouera pareil.
 
 Le push du tag suffit — `release.yml` prend la suite : image `:v1.1.0`, deploy
 prod, vérification `/api/health`, puis release GitHub avec
@@ -153,6 +178,23 @@ curl -s https://kbrdn.dev/api/health | jq
 Le workflow le fait déjà et échoue avant de publier la release si le compte n'y
 est pas — cette commande sert à contrôler après coup, ou à répondre à « quelle
 version est live ».
+
+⚠️ **Elle ne prouve pas que la release a tourné.** Le merge sur `main` déploie
+aussi la prod par `deploy.yml` — avant ou après le job du tag, selon qui prend
+le verrou `vps-deploy-prod` —, et pour une stable l'image du filet porte la
+même version que celle du tag (`APP_VERSION` vide hors release → repli sur
+`package.json`, cf. `nuxt.config.ts`) ; le `sha` aussi est le même. Sur la
+v1.0.1, `/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait
+échoué. La preuve, c'est la release elle-même : le job `release` dépend de
+`deploy` (`needs: [resolve, deploy]`), qui fait le contrôle `/api/health` — une
+release publiée par le bot n'existe donc que si le déploiement a réussi, qu'il
+vienne du push du tag, d'un `rerun --failed` ou d'un `workflow_dispatch` (rangé
+sous `main` dans `gh run list`, d'où l'inutilité d'y chercher le run du tag) :
+
+```bash
+gh release view vX.Y.Z --json author,isDraft -q '.author.login + " " + (.isDraft|tostring)'
+# github-actions[bot] false
+```
 
 ## Revenir en arrière
 
@@ -172,7 +214,12 @@ Le second est le seul qui traverse plusieurs versions et le seul qui survive à
 une perte des conteneurs.
 
 Relancer `release.yml` en `workflow_dispatch` sur un ancien tag fonctionne
-aussi, mais reconstruit l'image et tente de recréer une release qui existe déjà.
+aussi : l'image existe déjà dans le registre, donc le build est sauté
+(`Image already published?`) et l'artefact d'origine est redéployé ; la release
+existe déjà, donc `gh release edit` remplace ses notes au lieu d'échouer sur un
+`create`. ⚠️ Ces notes viennent de l'arbre **du tag** : si
+`changelogs/X.Y.Z.md` a été corrigé depuis (cf. Notes), le rollback remet la
+version d'origine — refaire le `gh release edit` après.
 
 ## Notes
 
