@@ -38,6 +38,11 @@ onMounted(() => {
   }
 })
 const showViewDropdown = ref(false)
+
+function selectViewMode(mode: typeof viewMode.value) {
+  viewMode.value = mode
+  showViewDropdown.value = false
+}
 const blogListRef = ref<HTMLElement | null>(null)
 
 function goToPage(page: number) {
@@ -258,7 +263,7 @@ const { postUrl } = useBlogUrl()
                         ? 'text-primary-500 bg-primary-500/10'
                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800',
                     )"
-                    @click="viewMode = mode; showViewDropdown = false"
+                    @click="selectViewMode(mode)"
                   >
                     <UIcon
                       :name="mode === 'list' ? 'i-heroicons-bars-3' : mode === 'cards' ? 'i-heroicons-squares-2x2' : 'i-heroicons-list-bullet'"
