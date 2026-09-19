@@ -4,8 +4,8 @@
 
 /* Monaspace Krypton - Mechanical/industrial for general mono */
 @font-face {
-  font-family: 'Monaspace Krypton';
-  src: url('/fonts/monaspace/MonaspaceKrypton.woff2') format('woff2-variations');
+  font-family: "Monaspace Krypton";
+  src: url("/fonts/monaspace/MonaspaceKrypton.woff2") format("woff2-variations");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;
@@ -13,8 +13,8 @@
 
 /* Monaspace Neon - Clean, modern for code */
 @font-face {
-  font-family: 'Monaspace Neon';
-  src: url('/fonts/monaspace/MonaspaceNeon.woff2') format('woff2-variations');
+  font-family: "Monaspace Neon";
+  src: url("/fonts/monaspace/MonaspaceNeon.woff2") format("woff2-variations");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;
@@ -22,8 +22,8 @@
 
 /* Monaspace Radon - Handwriting style for comments */
 @font-face {
-  font-family: 'Monaspace Radon';
-  src: url('/fonts/monaspace/MonaspaceRadon.woff2') format('woff2-variations');
+  font-family: "Monaspace Radon";
+  src: url("/fonts/monaspace/MonaspaceRadon.woff2") format("woff2-variations");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;
@@ -31,8 +31,8 @@
 
 /* Operator Mono Lig Nerd Font - For code with ligatures */
 @font-face {
-  font-family: 'OperatorMonoLig Nerd Font';
-  src: url('/fonts/operator-mono/OperatorMonoLigNerdFont.woff2') format('woff2-variations');
+  font-family: "OperatorMonoLig Nerd Font";
+  src: url("/fonts/operator-mono/OperatorMonoLigNerdFont.woff2") format("woff2-variations");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;
