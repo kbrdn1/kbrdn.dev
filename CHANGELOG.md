@@ -16,5 +16,6 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ## Past releases
 
+- [1.0.2](changelogs/1.0.2.md) — 2026-09-19
 - [1.0.1](changelogs/1.0.1.md) — 2026-09-19
 - [1.0.0](changelogs/1.0.0.md) — 2026-08-14
