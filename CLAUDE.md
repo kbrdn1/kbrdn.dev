@@ -32,10 +32,12 @@ bun run generate
 bun run postinstall
 ```
 
-### Linting
-ESLint is configured via `@nuxt/eslint` module. Run:
+### Linting & formatting
+[oxlint](https://oxc.rs/docs/guide/usage/linter) and [oxfmt](https://oxc.rs/docs/guide/usage/formatter), both checked in CI:
 ```bash
-bunx eslint .
+bun run lint        # oxlint (.oxlintrc.json)
+bun run fmt         # oxfmt --write (.oxfmtrc.json)
+bun run fmt:check   # what CI runs
 ```
 
 ## Architecture
@@ -43,7 +45,7 @@ bunx eslint .
 ### Nuxt 4 Configuration
 - **Compatibility Date**: 2025-07-15
 - **Devtools**: Enabled
-- **Modules**: @nuxt/content, @nuxt/eslint, @nuxt/fonts, @nuxt/image
+- **Modules**: @nuxt/content, @nuxt/fonts, @nuxt/image
 
 ### Content Management
 Content is managed through `@nuxt/content` with a collection-based approach defined in `content.config.ts`:
@@ -89,8 +91,8 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 
 ## Important Notes
 
-### ESLint Configuration
-ESLint extends from `.nuxt/eslint.config.mjs` (auto-generated). Custom rules should be added to `eslint.config.mjs`.
+### Lint & format configuration
+`.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). oxlint lints the `<script>` of SFCs but has no template rules; broken templates are caught by `vue-tsc` and the build. `.oxfmtrc.json` formats code only — Markdown and MDX (blog articles, changelogs, docs) are excluded on purpose. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
 
 ### Content System
 The project uses Nuxt Content v3's collection-based API (not the legacy document-driven mode). Always use `queryCollection()` instead of deprecated content APIs.

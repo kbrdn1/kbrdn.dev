@@ -38,7 +38,7 @@ Modern portfolio website built with Nuxt 4 and Nuxt UI.
 - [Nuxt Content](https://content.nuxt.com) - File-based CMS
 - [Nuxt Fonts](https://github.com/nuxt/fonts) - Font optimization
 - [Nuxt Image](https://image.nuxt.com) - Image optimization
-- [ESLint](https://eslint.org) - Code linting
+- [oxlint](https://oxc.rs/docs/guide/usage/linter) / [oxfmt](https://oxc.rs/docs/guide/usage/formatter) - Linting and formatting
 
 ## 📦 Setup
 
@@ -80,8 +80,9 @@ bun run preview
 # Generate static site
 bun run generate
 
-# Lint code
-bunx eslint .
+# Lint and check formatting
+bun run lint
+bun run fmt:check
 ```
 
 ### Project Structure

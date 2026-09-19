@@ -45,13 +45,13 @@ typecheck: ## Run TypeScript type checking
 	@echo "Running type check..."
 	bun run typecheck
 
-lint: ## Run ESLint
+lint: ## Run oxlint
 	@echo "Running linter..."
-	bunx eslint .
+	bun run lint
 
-fmt: ## Format code with ESLint --fix
+fmt: ## Format code with oxfmt
 	@echo "Formatting code..."
-	bunx eslint . --fix
+	bun run fmt
 
 # ============================================
 # Git Helpers

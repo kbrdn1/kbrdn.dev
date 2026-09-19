@@ -31,7 +31,7 @@ les deux ne se réveillent jamais ensemble.
 | Branches | `dev` → `main` |
 | `main` protégée | **oui** — PR, 1 approbation, 4 checks. Merge commit autorisé |
 | Qui publie la release | **la CI** (`release.yml` sur le tag) — ne rien créer à la main |
-| Gate de vérif | `bun run lint` + `bun run build` (CI). **Pas de tests** dans ce repo, hors `scripts/*.test.sh` |
+| Gate de vérif | `bun run lint` + `bun run fmt:check` + `bun run typecheck` + `bun run build` (CI, tous bloquants). **Pas de tests** dans ce repo, hors `scripts/*.test.sh` |
 | Post-release | vérification `/api/health` automatique dans le workflow |
 
 ## La contrainte propre à ce repo
