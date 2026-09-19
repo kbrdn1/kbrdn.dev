@@ -10,6 +10,8 @@
     "preview": "nuxt preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
     "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
