@@ -52,7 +52,7 @@
 .prose-blog :deep(h1),
 .prose-blog :deep(h2),
 .prose-blog :deep(h3) {
-  font-family: 'Fenix', serif;
+  font-family: "Fenix", serif;
 }
 
 /* Paragraphs */
@@ -199,6 +199,6 @@
 }
 
 .prose-blog :deep(em) {
-  font-family: 'Fenix', serif;
+  font-family: "Fenix", serif;
   font-style: italic;
 }

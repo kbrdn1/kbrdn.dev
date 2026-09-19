@@ -1,10 +1,10 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    size?: number | string;
+    size?: number | string
   }>(),
   { size: 16 },
-);
+)
 </script>
 
 <template>
@@ -14,13 +14,7 @@ withDefaults(
     La masse neutre suit currentColor — pas de <style> ici, il fuiterait dans le document.
     Version autonome pour le favicon : public/favicon.svg
   -->
-  <svg
-    :width="size"
-    :height="size"
-    viewBox="0 0 32 32"
-    aria-hidden="true"
-    class="shrink-0"
-  >
+  <svg :width="size" :height="size" viewBox="0 0 32 32" aria-hidden="true" class="shrink-0">
     <g fill="currentColor">
       <rect x="2" y="2" width="28" height="4" />
       <rect x="2" y="2" width="4" height="28" />

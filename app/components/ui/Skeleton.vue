@@ -19,23 +19,25 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   circle: false,
-  animation: 'pulse'
+  animation: 'pulse',
 })
 
 const animationClasses = {
   pulse: 'animate-pulse',
   shimmer: 'animate-shimmer',
-  none: ''
+  none: '',
 }
 </script>
 
 <template>
   <div
-    :class="cn(
-      'bg-neutral-200 dark:bg-neutral-800',
-      circle ? 'rounded-full' : 'rounded',
-      animationClasses[animation]
-    )"
+    :class="
+      cn(
+        'bg-neutral-200 dark:bg-neutral-800',
+        circle ? 'rounded-full' : 'rounded',
+        animationClasses[animation],
+      )
+    "
     role="presentation"
     aria-hidden="true"
   />
@@ -64,12 +66,7 @@ const animationClasses = {
 }
 
 :root.dark .animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgb(38 38 38) 0%,
-    rgb(64 64 64) 50%,
-    rgb(38 38 38) 100%
-  );
+  background: linear-gradient(90deg, rgb(38 38 38) 0%, rgb(64 64 64) 50%, rgb(38 38 38) 100%);
   background-size: 200% 100%;
 }
 

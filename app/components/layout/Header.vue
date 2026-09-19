@@ -1,95 +1,95 @@
 <script setup lang="ts">
-import { useI18n } from "#imports";
+import { useI18n } from '#imports'
 
-const { t } = useI18n();
-const route = useRoute();
+const { t } = useI18n()
+const route = useRoute()
 
-const showBrandMenu = ref(false);
+const showBrandMenu = ref(false)
 
 // Close menu on click outside or Escape key
 function handleClickOutside(e: MouseEvent) {
-  const target = e.target as HTMLElement;
+  const target = e.target as HTMLElement
   if (!target.closest('.group\\/brand') && !target.closest('.group\\/brand-mobile')) {
-    showBrandMenu.value = false;
+    showBrandMenu.value = false
   }
 }
 
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
-    showBrandMenu.value = false;
-    isMobileMenuOpen.value = false;
+    showBrandMenu.value = false
+    isMobileMenuOpen.value = false
   }
 }
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-  document.addEventListener('keydown', handleKeydown);
-});
+  document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleKeydown)
+})
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
-  document.removeEventListener('keydown', handleKeydown);
-});
+  document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleKeydown)
+})
 
 const navLinks = computed(() => [
-  { href: "#about", label: t("sections.about") },
-  { href: "#skills", label: t("sections.skills") },
-  { href: "#projects", label: t("sections.projects") },
-  { href: "#experience", label: t("sections.parcours") },
-]);
+  { href: '#about', label: t('sections.about') },
+  { href: '#skills', label: t('sections.skills') },
+  { href: '#projects', label: t('sections.projects') },
+  { href: '#experience', label: t('sections.parcours') },
+])
 
-const activeSection = ref("");
-const isHomepage = computed(() => route.path === "/");
+const activeSection = ref('')
+const isHomepage = computed(() => route.path === '/')
 
 function scrollToSection(event: Event, href: string) {
-  event.preventDefault();
-  const id = href.replace("#", "");
-  const el = document.getElementById(id);
+  event.preventDefault()
+  const id = href.replace('#', '')
+  const el = document.getElementById(id)
   if (el) {
-    const headerOffset = 56; // h-14 = 3.5rem = 56px
-    const elementPosition = el.getBoundingClientRect().top + window.scrollY;
+    const headerOffset = 56 // h-14 = 3.5rem = 56px
+    const elementPosition = el.getBoundingClientRect().top + window.scrollY
     window.scrollTo({
       top: elementPosition - headerOffset,
-      behavior: "smooth",
-    });
+      behavior: 'smooth',
+    })
   }
 }
 
 onMounted(() => {
-  if (!isHomepage.value) return;
+  if (!isHomepage.value) return
 
-  const sectionIds = ["about", "skills", "projects", "experience", "education"];
-  const observers: IntersectionObserver[] = [];
+  const sectionIds = ['about', 'skills', 'projects', 'experience', 'education']
+  const observers: IntersectionObserver[] = []
 
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          activeSection.value = entry.target.id;
+          activeSection.value = entry.target.id
         }
       }
     },
     {
-      rootMargin: "-20% 0px -70% 0px",
+      rootMargin: '-20% 0px -70% 0px',
     },
-  );
+  )
 
   for (const id of sectionIds) {
-    const el = document.getElementById(id);
+    const el = document.getElementById(id)
     if (el) {
-      observer.observe(el);
-      observers.push(observer);
+      observer.observe(el)
+      observers.push(observer)
     }
   }
 
   onUnmounted(() => {
     for (const obs of observers) {
-      obs.disconnect();
+      obs.disconnect()
     }
-  });
-});
+  })
+})
 
-const isMobileMenuOpen = ref(false);
+const isMobileMenuOpen = ref(false)
 </script>
 
 <template>
@@ -102,8 +102,10 @@ const isMobileMenuOpen = ref(false);
       )
     "
   >
-    <div class="mx-auto" style="max-width: 80rem;">
-      <div class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800">
+    <div class="mx-auto" style="max-width: 80rem">
+      <div
+        class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800"
+      >
         <!-- Brand with dropdown -->
         <div
           class="relative border-r border-neutral-200 dark:border-neutral-700 group/brand"
@@ -119,7 +121,8 @@ const isMobileMenuOpen = ref(false);
             @keydown.escape="showBrandMenu = false"
           >
             <UiLogo class="mr-2 text-neutral-900 dark:text-neutral-100" />
-            <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+            <span class="text-neutral-900 dark:text-neutral-100">@</span
+            ><span class="text-primary-500">kbrdn1</span>
           </button>
 
           <!-- Dropdown -->
@@ -140,18 +143,18 @@ const isMobileMenuOpen = ref(false);
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
-                <span><span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span></span>
+                <span
+                  ><span class="text-sky-400">blog</span
+                  ><span class="text-neutral-900 dark:text-neutral-100">@</span
+                  ><span class="text-primary-500">kbrdn1</span></span
+                >
               </NuxtLink>
             </div>
           </Transition>
         </div>
 
         <!-- Desktop Navigation -->
-        <nav
-          v-if="isHomepage"
-          class="flex items-stretch flex-1"
-          aria-label="Section navigation"
-        >
+        <nav v-if="isHomepage" class="flex items-stretch flex-1" aria-label="Section navigation">
           <a
             v-for="link in navLinks"
             :key="link.href"
@@ -174,11 +177,13 @@ const isMobileMenuOpen = ref(false);
           <!-- Blog link -->
           <NuxtLink
             to="/blog"
-            :class="cn(
-              'flex-1 px-6 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
-              'border-r border-neutral-200 dark:border-neutral-700',
-              'text-neutral-500 dark:text-neutral-400 hover:text-sky-400 hover:bg-sky-400/5',
-            )"
+            :class="
+              cn(
+                'flex-1 px-6 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
+                'border-r border-neutral-200 dark:border-neutral-700',
+                'text-neutral-500 dark:text-neutral-400 hover:text-sky-400 hover:bg-sky-400/5',
+              )
+            "
           >
             {{ t('sections.blog') }}
             <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" aria-hidden="true" />
@@ -215,7 +220,8 @@ const isMobileMenuOpen = ref(false);
             @keydown.escape="showBrandMenu = false"
           >
             <UiLogo class="mr-2 text-neutral-900 dark:text-neutral-100" />
-            <span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span>
+            <span class="text-neutral-900 dark:text-neutral-100">@</span
+            ><span class="text-primary-500">kbrdn1</span>
           </button>
           <Transition
             enter-active-class="transition-all duration-150 ease-out"
@@ -234,7 +240,11 @@ const isMobileMenuOpen = ref(false);
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
               >
-                <span><span class="text-sky-400">blog</span><span class="text-neutral-900 dark:text-neutral-100">@</span><span class="text-primary-500">kbrdn1</span></span>
+                <span
+                  ><span class="text-sky-400">blog</span
+                  ><span class="text-neutral-900 dark:text-neutral-100">@</span
+                  ><span class="text-primary-500">kbrdn1</span></span
+                >
               </NuxtLink>
             </div>
           </Transition>
@@ -258,15 +268,15 @@ const isMobileMenuOpen = ref(false);
             "
             :aria-expanded="isMobileMenuOpen"
             :aria-controls="isMobileMenuOpen ? 'mobile-nav' : undefined"
-            :aria-label="isMobileMenuOpen ? t('nav.closeMenu') || 'Close menu' : t('nav.openMenu') || 'Open menu'"
+            :aria-label="
+              isMobileMenuOpen
+                ? t('nav.closeMenu') || 'Close menu'
+                : t('nav.openMenu') || 'Open menu'
+            "
             @click="isMobileMenuOpen = !isMobileMenuOpen"
           >
             <UIcon
-              :name="
-                isMobileMenuOpen
-                  ? 'i-heroicons-x-mark'
-                  : 'i-heroicons-bars-3'
-              "
+              :name="isMobileMenuOpen ? 'i-heroicons-x-mark' : 'i-heroicons-bars-3'"
               class="w-4 h-4"
               aria-hidden="true"
             />
@@ -304,8 +314,8 @@ const isMobileMenuOpen = ref(false);
             "
             @click="
               (e: Event) => {
-                scrollToSection(e, link.href);
-                isMobileMenuOpen = false;
+                scrollToSection(e, link.href)
+                isMobileMenuOpen = false
               }
             "
           >

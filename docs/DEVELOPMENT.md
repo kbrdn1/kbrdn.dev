@@ -41,10 +41,10 @@ Open [http://localhost:3000](http://localhost:3000)
 | `make build` | Build for production |
 | `make preview` | Preview production build |
 | `make generate` | Generate static site |
-| `make lint` | Run ESLint |
+| `make lint` | Run oxlint |
 | `make typecheck` | Run TypeScript check |
 | `make clean` | Clean build artifacts |
-| `make fmt` | Format code |
+| `make fmt` | Format code with oxfmt |
 
 ## Development Workflow
 

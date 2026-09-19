@@ -23,15 +23,16 @@ interface RepoStats {
 export function useGitHubRepos(username: string = 'kbrdn1', repos: string[] = []) {
   return useAsyncData<RepoStats[]>(
     `github-repos-${username}-${repos.join('-')}`,
-    () => $fetch('/api/github/repos', {
-      query: {
-        username,
-        repos: repos.join(',')
-      }
-    }),
+    () =>
+      $fetch('/api/github/repos', {
+        query: {
+          username,
+          repos: repos.join(','),
+        },
+      }),
     {
       default: () => [],
-      server: false
-    }
+      server: false,
+    },
   )
 }

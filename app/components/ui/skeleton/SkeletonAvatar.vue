@@ -19,7 +19,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   size: 'md',
-  rounded: true
+  rounded: true,
 })
 
 const sizeClasses = {
@@ -27,15 +27,10 @@ const sizeClasses = {
   sm: 'w-8 h-8',
   md: 'w-12 h-12',
   lg: 'w-16 h-16',
-  xl: 'w-20 h-20'
+  xl: 'w-20 h-20',
 }
 </script>
 
 <template>
-  <UiSkeleton
-    :class="cn(
-      sizeClasses[size],
-      rounded ? 'rounded-full' : 'rounded-lg'
-    )"
-  />
+  <UiSkeleton :class="cn(sizeClasses[size], rounded ? 'rounded-full' : 'rounded-lg')" />
 </template>

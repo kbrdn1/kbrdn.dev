@@ -19,7 +19,7 @@ export default defineContentConfig({
       type: 'page',
       source: {
         include: '*.{md,mdx}',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: z.object({
         title: z.string(),
@@ -33,11 +33,13 @@ export default defineContentConfig({
         email: z.string().optional(),
         calendarLink: z.string().optional(),
         bio: z.array(z.string()).optional(),
-        socials: z.object({
-          github: z.string().optional(),
-          linkedin: z.string().optional(),
-          twitter: z.string().optional(),
-        }).optional(),
+        socials: z
+          .object({
+            github: z.string().optional(),
+            linkedin: z.string().optional(),
+            twitter: z.string().optional(),
+          })
+          .optional(),
       }),
     }),
     blog_en: defineCollection({
@@ -45,7 +47,7 @@ export default defineContentConfig({
       source: {
         include: 'en/blogs/**/*.{md,mdx}',
         prefix: '/blogs',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: blogSchema,
     }),
@@ -54,7 +56,7 @@ export default defineContentConfig({
       source: {
         include: 'fr/blogs/**/*.{md,mdx}',
         prefix: '/blogs',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: blogSchema,
     }),
@@ -62,7 +64,7 @@ export default defineContentConfig({
       type: 'page',
       source: {
         include: 'projects/**/*.{md,mdx}',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: z.object({
         title: z.string(),
@@ -79,7 +81,7 @@ export default defineContentConfig({
       type: 'page',
       source: {
         include: 'skills/**/*.{md,mdx}',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: z.object({
         title: z.string(),
@@ -92,7 +94,7 @@ export default defineContentConfig({
       type: 'page',
       source: {
         include: 'stacks/**/*.{md,mdx}',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: z.object({
         title: z.string(),
@@ -104,7 +106,7 @@ export default defineContentConfig({
       type: 'page',
       source: {
         include: 'experiences/**/*.{md,mdx}',
-        cwd: contentDir
+        cwd: contentDir,
       },
       schema: z.object({
         title: z.string(),
@@ -119,5 +121,5 @@ export default defineContentConfig({
         logo: z.string().optional(),
       }),
     }),
-  }
+  },
 })

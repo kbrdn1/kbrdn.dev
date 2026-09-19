@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<Props>(), {
   baseDelay: 0,
   animation: 'fadeInUp',
   duration: 400,
-  as: 'div'
+  as: 'div',
 })
 
 const containerRef = ref<HTMLElement | null>(null)
@@ -41,10 +41,10 @@ const isVisible = ref(false)
 const prefersReducedMotion = useReducedMotion()
 
 // Effective values based on reduced motion preference
-const effectiveStaggerDelay = computed(() => prefersReducedMotion.value ? 0 : props.staggerDelay)
-const effectiveBaseDelay = computed(() => prefersReducedMotion.value ? 0 : props.baseDelay)
-const effectiveAnimation = computed(() => prefersReducedMotion.value ? 'fadeIn' : props.animation)
-const effectiveDuration = computed(() => prefersReducedMotion.value ? 0 : props.duration)
+const effectiveStaggerDelay = computed(() => (prefersReducedMotion.value ? 0 : props.staggerDelay))
+const effectiveBaseDelay = computed(() => (prefersReducedMotion.value ? 0 : props.baseDelay))
+const effectiveAnimation = computed(() => (prefersReducedMotion.value ? 'fadeIn' : props.animation))
+const effectiveDuration = computed(() => (prefersReducedMotion.value ? 0 : props.duration))
 
 onMounted(() => {
   if (!containerRef.value) return
@@ -64,7 +64,7 @@ onMounted(() => {
         }
       })
     },
-    { threshold: 0.1 }
+    { threshold: 0.1 },
   )
 
   observer.observe(containerRef.value)
@@ -75,14 +75,17 @@ onMounted(() => {
 })
 
 // Provide animation context to children
-provide('staggerContext', computed(() => ({
-  isVisible,
-  staggerDelay: effectiveStaggerDelay.value,
-  baseDelay: effectiveBaseDelay.value,
-  animation: effectiveAnimation.value,
-  duration: effectiveDuration.value,
-  prefersReducedMotion: prefersReducedMotion.value
-})))
+provide(
+  'staggerContext',
+  computed(() => ({
+    isVisible,
+    staggerDelay: effectiveStaggerDelay.value,
+    baseDelay: effectiveBaseDelay.value,
+    animation: effectiveAnimation.value,
+    duration: effectiveDuration.value,
+    prefersReducedMotion: prefersReducedMotion.value,
+  })),
+)
 </script>
 
 <template>
