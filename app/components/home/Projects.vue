@@ -61,17 +61,17 @@ const projects = computed(() => {
         name: config.displayName || repoData.name,
         description: config.description || repoData.description,
         tags: config.tags || repoData.topics.slice(0, 2),
-        language: repoData.language,
+        language: repoData.language ?? undefined,
         stats: [
           { label: t('projects.stats.stars'), value: formatNumber(repoData.stars) },
           { label: t('projects.stats.forks'), value: formatNumber(repoData.forks) }
         ].filter(s => Number(s.value) > 0 || s.label === t('projects.stats.stars')),
         techStack: repoData.languages,
         githubUrl: repoData.url,
-        demoUrl: config.demoUrl || repoData.homepage
+        demoUrl: config.demoUrl || repoData.homepage || undefined
       }
     })
-    .filter(Boolean)
+    .filter(project => project !== null)
 })
 
 // Format numbers (1000 -> 1k)

@@ -40,7 +40,7 @@ const experiences: Experience[] = [
   }
 ]
 
-const expandedId = ref<string | null>(experiences[0].id)
+const expandedId = ref<string | null>(experiences[0]?.id ?? null)
 const logoError = ref<Record<string, boolean>>({})
 
 function toggleExpand(id: string) {

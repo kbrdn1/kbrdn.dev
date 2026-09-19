@@ -105,7 +105,7 @@ onMounted(() => {
       items.push({
         id: el.id,
         text: el.textContent || '',
-        level: parseInt(el.tagName[1]),
+        level: parseInt(el.tagName.charAt(1)),
       })
     })
 

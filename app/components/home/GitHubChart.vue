@@ -44,7 +44,7 @@ function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
     const month = date.getMonth()
     if (month !== lastMonth) {
       positions.push({
-        label: monthLabels[month],
+        label: monthLabels[month] ?? '',
         offset: weekIndex,
       })
       lastMonth = month
@@ -88,12 +88,12 @@ const monthlyData = computed(() => {
 
   // Take last 12 months
   sortedKeys.slice(0, 12).forEach(key => {
-    const [year, month] = key.split('-').map(Number)
+    const [year = 0, month = 0] = key.split('-').map(Number)
     const days = grouped.get(key)!
     const total = days.reduce((sum, d) => sum + d.contributionCount, 0)
 
     months.push({
-      name: monthNames[month],
+      name: monthNames[month] ?? '',
       year,
       contributions: total,
       days: days.sort((a, b) => a.date.localeCompare(b.date))

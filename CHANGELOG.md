@@ -23,6 +23,19 @@ migrates `[Unreleased]` into that file and empties this one — see
   current. The experience now closes on `2026-09` with the role renamed to Full
   Stack Engineer, and the status reads "Open to opportunities".
 
+### Fixed
+
+- **The typecheck was not running in CI**
+  ([#35](https://github.com/kbrdn1/kbrdn.dev/issues/35)). `vue-tsc` was not a
+  dependency, so `nuxt typecheck` fetched it through `npx`, which resolved its
+  `typescript` peer to `latest` — TypeScript `7.0.2`, which no longer exports
+  `./lib/tsc`. `vue-tsc` died on load, and `continue-on-error: true` on the step
+  kept the job green: the v1.0.0 release run (2026-08-14) already failed on it. `vue-tsc` and
+  `typescript@~5.9` are now pinned devDependencies, the step fails the job
+  again, and the 38 type errors it had been hiding are fixed (mostly unchecked
+  index access; `titles` added to the pages schema, the dead i18n `lazy`
+  option removed).
+
 ## Past releases
 
 - [1.0.0](changelogs/1.0.0.md) — 2026-08-14

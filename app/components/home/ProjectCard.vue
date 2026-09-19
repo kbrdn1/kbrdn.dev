@@ -39,8 +39,7 @@ const techStackTotal = computed(() =>
 
 const primaryLanguage = computed(() => {
   if (props.language) return props.language
-  if (props.techStack.length) return props.techStack[0].name
-  return ''
+  return props.techStack[0]?.name ?? ''
 })
 </script>
 

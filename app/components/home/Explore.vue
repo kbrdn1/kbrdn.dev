@@ -39,6 +39,7 @@ const slides = computed<Slide[]>(() => [
 ])
 
 const currentSlide = ref(0)
+const slide = computed(() => slides.value[currentSlide.value])
 const isTransitioning = ref(false)
 const slideDirection = ref<'left' | 'right'>('left')
 let interval: ReturnType<typeof setInterval> | undefined
@@ -115,26 +116,26 @@ function goToSlide(index: number) {
               currentSlide === 2 ? 'font-mono' : '',
             )"
           >
-            {{ slides[currentSlide].title }}
+            {{ slide?.title }}
           </h2>
 
           <!-- Description -->
           <p class="text-sm sm:text-base text-white/80 max-w-xl leading-relaxed drop-shadow-sm">
-            {{ slides[currentSlide].description }}
+            {{ slide?.description }}
           </p>
 
           <!-- CTA -->
           <UButton
-            v-if="slides[currentSlide].cta"
-            :to="slides[currentSlide].cta!.href"
+            v-if="slide?.cta"
+            :to="slide.cta.href"
             target="_blank"
             color="primary"
             variant="solid"
             size="md"
-            :icon="slides[currentSlide].cta!.icon"
+            :icon="slide.cta.icon"
             class="mt-1"
           >
-            {{ slides[currentSlide].cta!.label }}
+            {{ slide.cta.label }}
           </UButton>
         </div>
 
