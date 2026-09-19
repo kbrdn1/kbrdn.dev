@@ -256,7 +256,7 @@ export default {
     present: "Présent",
     current: "Actuel",
     flippad: {
-      role: "Ingénieur Développeur Web",
+      role: "Développeur Full Stack",
       type: "CDI (anciennement alternance)",
       tasks: [
         "Déploiement production et pré-production sur AWS et Heroku via GitHub Actions (API Gateway, Lambda, EC2, S3, CloudWatch, etc.)",
