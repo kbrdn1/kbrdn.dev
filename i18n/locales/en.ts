@@ -108,6 +108,8 @@ export default {
   // Music Section
   music: {
     listeningTo: 'Listening to',
+    openPlayer: 'Open the player',
+    closePlayer: 'Close the player',
     play: 'Play',
     pause: 'Pause',
     previous: 'Previous track',

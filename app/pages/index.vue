@@ -128,7 +128,6 @@ const content = computed(() => {
         >
           <HomeSectionLabel :label="t('sections.about')" />
           <HomeBio :paragraphs="content.bio" />
-          <HomeNowPlaying />
         </UiAnimatedSection>
 
         <UiAnimatedSection as="section" animation="fadeInUp" :delay="150" :duration="500">

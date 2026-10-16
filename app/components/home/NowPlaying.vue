@@ -195,7 +195,7 @@ function formatTime(seconds: number): string {
 </script>
 
 <template>
-  <div v-if="tracks?.length" class="mt-6">
+  <div v-if="tracks?.length">
     <span
       class="block text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3"
     >
