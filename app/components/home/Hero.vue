@@ -124,7 +124,7 @@ onUnmounted(() => {
 
       <!-- Right side: avatar -->
       <div class="flex-shrink-0 flex justify-center md:justify-end">
-        <div class="relative transition-transform duration-300 hover:scale-105">
+        <div class="relative">
           <div
             v-if="imageError"
             :class="
