@@ -59,7 +59,7 @@ jobs:
       # pas le tag — d'où la préférence donnée à l'input, ici et au checkout.
       # fetch-depth: 0 : le contrôle d'ascendance plus bas a besoin de
       # l'historique, un clone superficiel ne le permet pas.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # `refs/tags/` explicite, et pas le nom nu : `actions/checkout`
           # résout un nom nu comme n'importe quelle ref, donc une branche
@@ -134,7 +134,7 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.value }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ needs.resolve.outputs.tag }}
 
@@ -330,7 +330,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ needs.resolve.outputs.tag }}
 
