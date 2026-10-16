@@ -124,7 +124,7 @@ export default {
     paragraph1:
       "Hey, I'm Kylian, a full stack developer who loves building clean, modern websites and apps where design, functionality, and even the smallest details matter, with a focus on making products that are both practical and visually satisfying.",
     paragraph2:
-      'Currently focused on building solid, scalable architectures. I enjoy exploring new languages and tools — from Rust to cloud infrastructure — always looking for the right solution, not just the trendy one.',
+      'Currently focused on building solid, scalable architectures. I enjoy exploring new languages and tools, from Rust to cloud infrastructure, always looking for the right solution, not just the trendy one.',
   },
 
   // Actions Section

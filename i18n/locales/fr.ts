@@ -124,7 +124,7 @@ export default {
     paragraph1:
       'Salut, je suis Kylian, un développeur full stack qui aime créer des sites web et applications modernes et soignés où le design, la fonctionnalité et même les plus petits détails comptent, avec un focus sur des produits à la fois pratiques et visuellement satisfaisants.',
     paragraph2:
-      "Actuellement concentré sur la construction d'architectures solides et scalables. J'aime explorer de nouveaux langages et outils — de Rust aux infrastructures cloud — toujours à la recherche de la bonne solution, pas seulement de la tendance du moment.",
+      "Actuellement concentré sur la construction d'architectures solides et scalables. J'aime explorer de nouveaux langages et outils, de Rust aux infrastructures cloud, toujours à la recherche de la bonne solution, pas seulement de la tendance du moment.",
   },
 
   // Actions Section
