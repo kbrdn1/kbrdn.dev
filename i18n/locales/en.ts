@@ -184,63 +184,12 @@ export default {
   skills: {
     featured: 'STACK & SKILLS',
     title: 'Tools I work with',
-    ariaLabel: 'Skills categories',
-    items: {
-      typescript: {
-        title: 'TypeScript Expert',
-        description:
-          'Strong typing across every layer of the stack. From frontend components to backend APIs, TypeScript keeps the codebase predictable and maintainable at scale.',
-        features: [
-          '3+ years of daily production use',
-          'Advanced generics, mapped types & utility types',
-          'Strict mode enforcement on all projects',
-          'End-to-end type safety from API to UI',
-        ],
-      },
-      laravel: {
-        title: 'Laravel — Backend APIs',
-        description:
-          'Building robust REST APIs and backend services with Laravel. Eloquent ORM, queues, and the full ecosystem for rapid, reliable delivery.',
-        features: [
-          'RESTful API design with form requests & resources',
-          'Eloquent relationships & query optimization',
-          'Queue workers, jobs & event broadcasting',
-          'Stripe integration, multi-tenancy patterns',
-        ],
-      },
-      nuxt: {
-        title: 'Nuxt — Vue Meta-Framework',
-        description:
-          'Server-side rendering, static generation, and hybrid modes with Nuxt. The framework behind this very portfolio and several production apps.',
-        features: [
-          'SSR, SSG & hybrid rendering strategies',
-          'File-based routing with middleware & layouts',
-          'Nuxt Content for markdown-driven sites',
-          'Auto-imports, composables & server routes',
-        ],
-      },
-      rust: {
-        title: 'Rust — Systems Programming',
-        description:
-          'Exploring systems-level programming through Rust. Currently learning ownership, lifetimes, and building CLI tools with real-world utility.',
-        features: [
-          'Ownership model & borrow checker fundamentals',
-          'CLI tooling with clap & crossterm',
-          'Built gwm — a Rust git worktree manager (CLI + TUI)',
-          'Growing interest in WebAssembly targets',
-        ],
-      },
-      cloud: {
-        title: 'Cloud & DevOps',
-        description:
-          'Containerized deployments, CI/CD pipelines, and cloud infrastructure. From local Docker Compose to production on AWS and self-hosted VPS.',
-        features: [
-          'Docker multi-stage builds & Compose orchestration',
-          'GitHub Actions CI/CD with deploy webhooks',
-          'AWS services — S3, EC2, RDS, CloudFront',
-          'Dokploy self-hosted PaaS on VPS',
-        ],
-      },
+    stack: {
+      languages: 'Languages',
+      frontend: 'Frontend',
+      backend: 'Backend',
+      infrastructure: 'Infrastructure',
+      workflow: 'Workflow',
     },
   },
 

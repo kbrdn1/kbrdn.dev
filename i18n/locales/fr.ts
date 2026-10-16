@@ -184,63 +184,12 @@ export default {
   skills: {
     featured: 'STACK & COMPÉTENCES',
     title: 'Outils avec lesquels je travaille',
-    ariaLabel: 'Catégories de compétences',
-    items: {
-      typescript: {
-        title: 'Expert TypeScript',
-        description:
-          'Typage fort sur chaque couche de la stack. Des composants frontend aux APIs backend, TypeScript rend la base de code prévisible et maintenable à grande échelle.',
-        features: [
-          "3+ ans d'utilisation quotidienne en production",
-          'Génériques avancés, types mappés et utilitaires',
-          'Mode strict appliqué sur tous les projets',
-          "Sécurité de type de bout en bout, de l'API à l'UI",
-        ],
-      },
-      laravel: {
-        title: 'Laravel — APIs Backend',
-        description:
-          "Construction d'APIs REST robustes et de services backend avec Laravel. Eloquent ORM, files d'attente et l'écosystème complet pour une livraison rapide et fiable.",
-        features: [
-          "Conception d'API RESTful avec form requests et resources",
-          'Relations Eloquent et optimisation des requêtes',
-          'Workers de queue, jobs et event broadcasting',
-          'Intégration Stripe, patterns multi-tenant',
-        ],
-      },
-      nuxt: {
-        title: 'Nuxt — Meta-Framework Vue',
-        description:
-          'Rendu côté serveur, génération statique et modes hybrides avec Nuxt. Le framework derrière ce portfolio et plusieurs applications en production.',
-        features: [
-          'Stratégies de rendu SSR, SSG et hybride',
-          'Routage basé sur les fichiers avec middleware et layouts',
-          'Nuxt Content pour les sites pilotés par markdown',
-          'Auto-imports, composables et routes serveur',
-        ],
-      },
-      rust: {
-        title: 'Rust — Programmation Système',
-        description:
-          "Exploration de la programmation bas niveau avec Rust. Apprentissage de l'ownership, des lifetimes, et développement d'outils CLI avec une utilité concrète.",
-        features: [
-          "Modèle d'ownership et fondamentaux du borrow checker",
-          'Outils CLI avec clap et crossterm',
-          'Développement de gwm — un gestionnaire de worktrees Git en Rust (CLI + TUI)',
-          'Intérêt croissant pour les cibles WebAssembly',
-        ],
-      },
-      cloud: {
-        title: 'Cloud & DevOps',
-        description:
-          'Déploiements conteneurisés, pipelines CI/CD et infrastructure cloud. De Docker Compose en local à la production sur AWS et VPS auto-hébergé.',
-        features: [
-          'Builds multi-étapes Docker et orchestration Compose',
-          'CI/CD GitHub Actions avec webhooks de déploiement',
-          'Services AWS — S3, EC2, RDS, CloudFront',
-          'PaaS auto-hébergé Dokploy sur VPS',
-        ],
-      },
+    stack: {
+      languages: 'Langages',
+      frontend: 'Frontend',
+      backend: 'Backend',
+      infrastructure: 'Infrastructure',
+      workflow: 'Workflow',
     },
   },
 
