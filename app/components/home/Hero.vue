@@ -19,8 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
   calendarLink: 'https://cal.com',
 })
 
-const displayName = useScrambleText(props.name)
-
 const initials = computed(() => {
   return props.name
     .split(' ')
@@ -94,7 +92,7 @@ onUnmounted(() => {
           class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2"
           :aria-label="name"
         >
-          <span aria-hidden="true">{{ displayName }}</span>
+          <UiScrambleText :text="name" />
         </h1>
 
         <!-- Rotating title -->
