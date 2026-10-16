@@ -49,6 +49,7 @@ const stack = [
       ['Zed', 'i-simple-icons-zedindustries'],
       ['Ghostty', 'i-simple-icons-ghostty'],
       ['tmux', 'i-simple-icons-tmux'],
+      ['Herdr', 'i-kbrdn-herdr'],
       ['Claude Code', 'i-simple-icons-claude'],
     ],
   },
