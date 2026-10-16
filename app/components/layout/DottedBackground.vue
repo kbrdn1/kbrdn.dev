@@ -5,7 +5,7 @@
 
 <template>
   <div
-    class="fixed inset-0 -z-10 dotted-background bg-[#f0eeeb] dark:bg-neutral-950"
+    class="fixed inset-0 -z-10 dotted-background bg-[#f0eeeb] dark:bg-[#121212]"
     aria-hidden="true"
   />
   <!-- Backdrop and dither are not inside the -z-10 layer: the minimal layout's opaque

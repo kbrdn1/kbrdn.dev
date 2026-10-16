@@ -5,7 +5,7 @@ const { t } = useI18n()
 
 <template>
   <div
-    class="relative min-h-screen text-neutral-900 dark:text-neutral-100 bg-white dark:bg-neutral-950"
+    class="relative min-h-screen text-neutral-900 dark:text-neutral-100 bg-white dark:bg-[#121212]"
   >
     <a
       href="#main-content"
