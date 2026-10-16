@@ -36,13 +36,14 @@ migrates `[Unreleased]` into that file and empties this one — see
 - **A floating "Listening to" player**
   ([#54](https://github.com/kbrdn1/kbrdn.dev/issues/54)). The music player
   leaves the home page's About section for a button in the bottom-right corner
-  of every page, which opens it in a card floating above it (Escape closes
-  it). Mounted outside
+  of every page, which opens it floating at the bottom, centred and as wide as the content
+  (Escape closes it). Mounted outside
   the layouts, so the music keeps playing from the home page to the blog; the
   playlist is only fetched on first open.
-- **A decoding hero title**
-  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). On load, the name
-  resolves left to right out of random glyphs; the server sends the plain
+- **Decoding page titles**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). On load, the main title of
+  every page (home, blog, articles) resolves left to right out of random glyphs,
+  in up to 2.4 s, without shifting the layout; the server sends the plain
   text, screen readers get the real name, and `prefers-reduced-motion` keeps
   it still.
 
