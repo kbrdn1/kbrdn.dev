@@ -9,14 +9,13 @@ interface Props {
   handle?: string
   avatarUrl?: string
   isHirable?: boolean
-  githubUrl?: string
   calendarLink?: string
+  socials: { platform: string; url: string; label: string }[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   avatarUrl: '/images/avatar.jpg',
   isHirable: true,
-  githubUrl: 'https://github.com/kbrdn1',
   calendarLink: 'https://cal.com',
 })
 
@@ -116,30 +115,7 @@ onUnmounted(() => {
               {{ t('hero.bookCall') }}
             </UButton>
           </UTooltip>
-          <UTooltip :text="t('hero.viewOnGithubTip')">
-            <UButton
-              :to="githubUrl"
-              target="_blank"
-              color="neutral"
-              variant="outline"
-              size="md"
-              icon="i-simple-icons-github"
-            >
-              {{ t('hero.viewOnGithub') }}
-            </UButton>
-          </UTooltip>
-          <UTooltip :text="t('hero.readBlogTip')">
-            <UButton
-              to="/blog"
-              color="neutral"
-              variant="outline"
-              size="md"
-              icon="i-heroicons-document-text"
-              class="text-sky-400! border-sky-400/50! hover:bg-sky-400/10! hover:border-sky-400!"
-            >
-              {{ t('hero.readBlog') }}
-            </UButton>
-          </UTooltip>
+          <HomeSocials :links="socials" />
         </div>
       </div>
 

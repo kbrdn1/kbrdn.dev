@@ -90,7 +90,6 @@ const content = computed(() => {
     isHirable: page.value?.isHirable ?? true,
     email: page.value?.email || 'hello@kbrdn.dev',
     calendarLink: page.value?.calendarLink || 'https://cal.com',
-    githubUrl: socials?.github || 'https://github.com/kbrdn1',
     bio: page.value?.bio || [t('bio.paragraph1'), t('bio.paragraph2')],
     socials: socialLinks,
   }
@@ -111,8 +110,8 @@ const content = computed(() => {
             :name="content.name"
             :titles="content.titles"
             :is-hirable="content.isHirable"
-            :github-url="content.githubUrl"
             :calendar-link="content.calendarLink"
+            :socials="content.socials"
           />
         </UiAnimatedSection>
       </section>
@@ -128,11 +127,6 @@ const content = computed(() => {
         >
           <HomeSectionLabel :label="t('sections.about')" />
           <HomeBio :paragraphs="content.bio" />
-        </UiAnimatedSection>
-
-        <UiAnimatedSection as="section" animation="fadeInUp" :delay="150" :duration="500">
-          <HomeSectionLabel :label="t('sections.connect')" />
-          <HomeSocials :links="content.socials" />
         </UiAnimatedSection>
 
         <!-- Latest Blog Posts -->

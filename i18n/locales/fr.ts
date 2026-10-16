@@ -30,10 +30,6 @@ export default {
     bookCall: 'Prendre rendez-vous',
     bookCallTip: 'Planifier un échange de 30 min pour discuter de votre projet',
     bookCallDisabled: 'Prise de rendez-vous temporairement indisponible',
-    viewOnGithub: 'Voir sur GitHub',
-    viewOnGithubTip: 'Explorer mes projets open-source et contributions',
-    readBlog: 'Lire le Blog',
-    readBlogTip: 'Articles sur le dev, les outils et les side projects',
   },
 
   // Navigation
@@ -59,7 +55,6 @@ export default {
     education: 'FORMATION',
     parcours: 'PARCOURS',
     activity: 'ACTIVITE',
-    connect: 'CONTACT',
     blog: 'BLOG',
     sponsor: 'Sponsoriser sur GitHub',
   },
@@ -140,8 +135,6 @@ export default {
 
   // Socials Section
   socials: {
-    intro: 'Voici mes',
-    label: 'réseaux',
     more: 'Plus',
     github: 'GitHub',
     githubDesc: 'Projets open-source & contributions',
