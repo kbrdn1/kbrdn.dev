@@ -134,7 +134,6 @@ export default {
 
   // Socials Section
   socials: {
-    more: 'More',
     github: 'GitHub',
     githubDesc: 'Open-source projects & contributions',
     twitter: 'Twitter',

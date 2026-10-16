@@ -80,17 +80,16 @@ const getDescription = (platform: string): string => {
       class="inline-flex transition-transform duration-200 hover:scale-105 active:scale-95"
     >
       <UPopover mode="hover" :ui="{ content: 'p-0' }">
+        <!-- Icon only: the name stays available to screen readers -->
         <UButton
           :to="link.url"
           target="_blank"
-          variant="soft"
+          variant="ghost"
           color="neutral"
           size="md"
           :icon="link.icon || getIcon(link.platform)"
-          class="hover:border-primary-500/50 transition-all duration-200"
-        >
-          {{ link.label }}
-        </UButton>
+          :aria-label="link.label"
+        />
 
         <template #content>
           <div class="w-72 p-3">
@@ -161,22 +160,6 @@ const getDescription = (platform: string): string => {
           </div>
         </template>
       </UPopover>
-    </UiStaggerItem>
-    <!-- More button -->
-    <UiStaggerItem
-      :index="links.length"
-      as="span"
-      class="inline-flex transition-transform duration-200 hover:scale-105 active:scale-95"
-    >
-      <UButton
-        variant="soft"
-        color="neutral"
-        size="md"
-        icon="i-heroicons-bars-3"
-        class="hover:border-primary-500/50 transition-all duration-200"
-      >
-        {{ t('socials.more') }}
-      </UButton>
     </UiStaggerItem>
   </UiStaggerContainer>
 </template>
