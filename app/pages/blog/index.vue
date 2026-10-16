@@ -117,21 +117,10 @@ const { postUrl } = useBlogUrl()
 
 <template>
   <div class="flex justify-center overflow-x-clip">
-    <!-- Left stripe zone -->
-    <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1"
-      aria-hidden="true"
-      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
-    />
-
     <!-- Main content -->
     <div class="w-full flex flex-col items-center relative z-10">
       <!-- Hero Section -->
-      <section
-        class="p-6 border-dashed-horizontal border-b border-neutral-200 dark:border-neutral-800 w-full"
-      >
-        <span class="corner-bottom-left" aria-hidden="true" />
-        <span class="corner-bottom-right" aria-hidden="true" />
+      <section class="p-6 w-full">
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <span class="block text-[11px] font-mono uppercase tracking-widest text-sky-400 mb-1">
@@ -140,8 +129,9 @@ const { postUrl } = useBlogUrl()
             <h1
               class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2"
               style="font-family: 'Fenix', serif"
+              :aria-label="t('blog.title')"
             >
-              {{ t('blog.title') }}
+              <UiScrambleText :text="t('blog.title')" />
             </h1>
             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
               {{ t('blog.description') }}
@@ -377,8 +367,9 @@ const { postUrl } = useBlogUrl()
                     alt=""
                     class="w-full h-full object-cover"
                   />
+                  <UiDitherCanvas class="absolute inset-0 h-full w-full" />
                   <div
-                    class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950"
+                    class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-[#121212]"
                   />
                 </div>
               </ClientOnly>
@@ -528,12 +519,5 @@ const { postUrl } = useBlogUrl()
       <!-- Explore Section -->
       <HomeExplore />
     </div>
-
-    <!-- Right stripe zone -->
-    <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1"
-      aria-hidden="true"
-      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
-    />
   </div>
 </template>

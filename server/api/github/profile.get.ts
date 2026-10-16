@@ -11,23 +11,17 @@ interface GitHubUser {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const query = getQuery(event)
   const username = (query.username as string) || 'kbrdn1'
 
-  const token = config.githubToken
-  const isValidToken =
-    token &&
-    !token.includes('xxxx') &&
-    (token.startsWith('ghp_') || token.startsWith('github_pat_')) &&
-    token.length > 20
+  const token = githubToken()
 
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.v3+json',
     'User-Agent': 'kbrdn.dev-portfolio',
   }
 
-  if (isValidToken) {
+  if (token) {
     headers['Authorization'] = `Bearer ${token}`
   }
 

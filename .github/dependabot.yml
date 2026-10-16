@@ -1,0 +1,42 @@
+# Dependabot reads this file from the default branch (main) only, but opens its PRs
+# against dev, like every other branch: feature → dev → main.
+# Minor and patch bumps are grouped per ecosystem, since each PR runs the full build
+# and the OG smoke test; majors come one by one. The commit prefix keeps the titles
+# inside validate-pr.yml's "PR title" pattern ("⬆️ chore(deps): …").
+version: 2
+updates:
+  - package-ecosystem: bun
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    labels: [chore]
+    commit-message:
+      prefix: ⬆️ chore
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    labels: [chore]
+    commit-message:
+      prefix: ⬆️ chore
+      include: scope
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    labels: [chore]
+    commit-message:
+      prefix: ⬆️ chore
+      include: scope

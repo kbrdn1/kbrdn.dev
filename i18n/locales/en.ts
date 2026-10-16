@@ -9,7 +9,6 @@ export default {
     showMore: 'Show more',
     showLess: 'Show less',
     loading: 'Loading...',
-    error: 'An error occurred',
   },
 
   // SEO
@@ -30,10 +29,6 @@ export default {
     bookCall: 'Book a Call',
     bookCallTip: 'Schedule a 30-min meeting to discuss your project',
     bookCallDisabled: 'Booking temporarily unavailable',
-    viewOnGithub: 'View on GitHub',
-    viewOnGithubTip: 'Explore my open-source projects and contributions',
-    readBlog: 'Read Blog',
-    readBlogTip: 'Articles about dev, tools and side projects',
   },
 
   // Navigation
@@ -59,7 +54,6 @@ export default {
     education: 'EDUCATION',
     parcours: 'JOURNEY',
     activity: 'ACTIVITY',
-    connect: 'CONNECT',
     blog: 'BLOG',
     sponsor: 'Sponsor on GitHub',
   },
@@ -108,6 +102,8 @@ export default {
   // Music Section
   music: {
     listeningTo: 'Listening to',
+    openPlayer: 'Open the player',
+    closePlayer: 'Close the player',
     play: 'Play',
     pause: 'Pause',
     previous: 'Previous track',
@@ -127,7 +123,7 @@ export default {
     paragraph1:
       "Hey, I'm Kylian, a full stack developer who loves building clean, modern websites and apps where design, functionality, and even the smallest details matter, with a focus on making products that are both practical and visually satisfying.",
     paragraph2:
-      'Currently focused on building solid, scalable architectures. I enjoy exploring new languages and tools — from Rust to cloud infrastructure — always looking for the right solution, not just the trendy one.',
+      'Currently focused on building solid, scalable architectures. I enjoy exploring new languages and tools, from Rust to cloud infrastructure, always looking for the right solution, not just the trendy one.',
   },
 
   // Actions Section
@@ -138,9 +134,6 @@ export default {
 
   // Socials Section
   socials: {
-    intro: 'Here are my',
-    label: 'socials',
-    more: 'More',
     github: 'GitHub',
     githubDesc: 'Open-source projects & contributions',
     twitter: 'Twitter',
@@ -155,6 +148,7 @@ export default {
   // GitHub Chart
   github: {
     title: 'GitHub Activity',
+    lastYear: 'Last 12 months',
     loading: 'Loading contributions...',
     error: 'Unable to load contribution data',
     totalContributions: 'Total Contributions',
@@ -162,6 +156,7 @@ export default {
     perDay: '/ day',
     contributions: 'CONTRIBUTIONS',
     tabs: {
+      recent: 'Recent',
       annual: 'Annual',
       monthly: 'Monthly',
     },
@@ -184,63 +179,12 @@ export default {
   skills: {
     featured: 'STACK & SKILLS',
     title: 'Tools I work with',
-    ariaLabel: 'Skills categories',
-    items: {
-      typescript: {
-        title: 'TypeScript Expert',
-        description:
-          'Strong typing across every layer of the stack. From frontend components to backend APIs, TypeScript keeps the codebase predictable and maintainable at scale.',
-        features: [
-          '3+ years of daily production use',
-          'Advanced generics, mapped types & utility types',
-          'Strict mode enforcement on all projects',
-          'End-to-end type safety from API to UI',
-        ],
-      },
-      laravel: {
-        title: 'Laravel — Backend APIs',
-        description:
-          'Building robust REST APIs and backend services with Laravel. Eloquent ORM, queues, and the full ecosystem for rapid, reliable delivery.',
-        features: [
-          'RESTful API design with form requests & resources',
-          'Eloquent relationships & query optimization',
-          'Queue workers, jobs & event broadcasting',
-          'Stripe integration, multi-tenancy patterns',
-        ],
-      },
-      nuxt: {
-        title: 'Nuxt — Vue Meta-Framework',
-        description:
-          'Server-side rendering, static generation, and hybrid modes with Nuxt. The framework behind this very portfolio and several production apps.',
-        features: [
-          'SSR, SSG & hybrid rendering strategies',
-          'File-based routing with middleware & layouts',
-          'Nuxt Content for markdown-driven sites',
-          'Auto-imports, composables & server routes',
-        ],
-      },
-      rust: {
-        title: 'Rust — Systems Programming',
-        description:
-          'Exploring systems-level programming through Rust. Currently learning ownership, lifetimes, and building CLI tools with real-world utility.',
-        features: [
-          'Ownership model & borrow checker fundamentals',
-          'CLI tooling with clap & crossterm',
-          'Built gwm — a Rust git worktree manager (CLI + TUI)',
-          'Growing interest in WebAssembly targets',
-        ],
-      },
-      cloud: {
-        title: 'Cloud & DevOps',
-        description:
-          'Containerized deployments, CI/CD pipelines, and cloud infrastructure. From local Docker Compose to production on AWS and self-hosted VPS.',
-        features: [
-          'Docker multi-stage builds & Compose orchestration',
-          'GitHub Actions CI/CD with deploy webhooks',
-          'AWS services — S3, EC2, RDS, CloudFront',
-          'Dokploy self-hosted PaaS on VPS',
-        ],
-      },
+    stack: {
+      languages: 'Languages',
+      frontend: 'Frontend',
+      backend: 'Backend',
+      infrastructure: 'Infrastructure',
+      workflow: 'Workflow',
     },
   },
 
@@ -249,7 +193,6 @@ export default {
     title: 'Featured Projects',
     featured: 'FEATURED PROJECTS',
     viewAll: 'View all on GitHub',
-    viewProject: 'View Project',
     demo: 'Demo',
     stats: {
       stars: 'Stars',

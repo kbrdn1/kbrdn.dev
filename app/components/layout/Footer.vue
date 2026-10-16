@@ -86,10 +86,11 @@ const currentYear = new Date().getFullYear()
 
 <template>
   <footer
-    class="w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-100/10 dark:bg-neutral-950/10 backdrop-blur-sm"
+    class="relative w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950"
   >
+    <UiDitherCanvas fade="up" class="absolute inset-0 h-full w-full" />
     <div
-      class="mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40"
+      class="relative mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40 backdrop-blur-sm"
       style="max-width: 80rem"
     >
       <!-- Three-column grid -->
@@ -330,13 +331,15 @@ const currentYear = new Date().getFullYear()
               {{ t('footer.availability.title') }}
             </h3>
             <span
-              class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-primary-500/20 text-primary-400 bg-primary-500/5"
+              class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-green-600/40 dark:border-green-500/30 text-green-700 dark:text-green-500 bg-green-600/5 dark:bg-green-500/5"
             >
               <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
                 />
-                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary-500" />
+                <span
+                  class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600 dark:bg-green-500"
+                />
               </span>
               {{ t('footer.availability.status') }}
             </span>
