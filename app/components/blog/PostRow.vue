@@ -31,6 +31,7 @@ const { postUrl } = useBlogUrl()
           alt=""
           class="w-full h-full object-cover"
         />
+        <UiDitherCanvas class="absolute inset-0 h-full w-full" />
         <div
           class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-neutral-950"
         />
