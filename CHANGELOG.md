@@ -33,8 +33,28 @@ migrates `[Unreleased]` into that file and empties this one — see
   densest level stays at 18% alpha: in dark, text that met the 4.5:1 contrast
   still does over it; in light, small grey labels drop to about 4.0:1 under
   the densest cells, a trade-off kept for a visible field.
+- **A floating "Listening to" player**
+  ([#54](https://github.com/kbrdn1/kbrdn.dev/issues/54)). The music player
+  leaves the home page's About section for a button in the bottom-right corner
+  of every page, which opens it in a bar fixed at the bottom. Mounted outside
+  the layouts, so the music keeps playing from the home page to the blog; the
+  playlist is only fetched on first open.
+- **A decoding hero title**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). On load, the name
+  resolves left to right out of random glyphs; the server sends the plain
+  text, screen readers get the real name, and `prefers-reduced-motion` keeps
+  it still.
 
 ### Changed
+
+- **The home page, reworked**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). The skills tabs
+  give way to a stack list (a column of categories, then each one's tools with
+  their icon). The contact links (GitHub, Twitter, LinkedIn) move into the
+  hero, next to "Book a call", in place of the "View on GitHub" and "Read the
+  blog" buttons; the Contact section goes. The "Open to opportunities" badge
+  turns green, the avatar loses its stripes and border, and the About text
+  loses its em dashes.
 
 - **A cleaner page frame**
   ([#51](https://github.com/kbrdn1/kbrdn.dev/issues/51)). Outside the 80rem
