@@ -5,7 +5,7 @@
 //
 // usage: bun scripts/dither.test.ts
 import assert from 'node:assert/strict'
-import { BAYER_4, NOISE_H, NOISE_W, ditherNoise, noiseTexture } from '../app/utils/dither'
+import { BAYER_4, NOISE_H, NOISE_W, noiseTexture } from '../app/utils/dither'
 
 // Bayer : les 16 seuils k/16, chacun une fois.
 assert.deepEqual(
@@ -55,7 +55,5 @@ for (const [seed, cells] of [
   assert.ok(seamX <= interior * 1.5, `couture verticale ${seamX} > ${interior}`)
   assert.ok(seamY <= interior * 3, `couture horizontale ${seamY} > ${interior}`)
 }
-
-assert.equal(ditherNoise(), ditherNoise(), 'les deux couches sont générées une seule fois')
 
 console.log('dither: ok')

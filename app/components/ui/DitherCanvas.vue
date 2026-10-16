@@ -1,3 +1,32 @@
+<script lang="ts">
+// One noise texture per page load, shared by every canvas. Random seed, so the
+// pattern changes on each load; generated in a worker so it never blocks hydration.
+let sharedNoise: Promise<Float32Array> | undefined
+
+function ditherNoise(): Promise<Float32Array> {
+  return (sharedNoise ??= new Promise((resolve) => {
+    const seed = (Math.random() * 0x100000000) >>> 0
+    const generateHere = () => resolve(noiseTexture(seed, 3))
+    try {
+      const worker = new Worker(new URL('../../workers/dither-noise.ts', import.meta.url), {
+        type: 'module',
+      })
+      worker.onmessage = (e: MessageEvent<Float32Array>) => {
+        resolve(e.data)
+        worker.terminate()
+      }
+      worker.onerror = () => {
+        generateHere()
+        worker.terminate()
+      }
+      worker.postMessage(seed)
+    } catch {
+      generateHere()
+    }
+  }))
+}
+</script>
+
 <script setup lang="ts">
 // Animated ordered-dither field: two scrolling noise layers, thresholded and
 // quantised through a 4×4 Bayer matrix into a few alpha levels of the element's
@@ -28,14 +57,17 @@ const canvas = ref<HTMLCanvasElement>()
 const reducedMotion = useReducedMotion()
 let cleanup: (() => void) | undefined
 
-onMounted(() => {
+onMounted(async () => {
   const el = canvas.value
   const ctx = el?.getContext('2d')
   if (!el || !ctx) return
+  let disposed = false
+  cleanup = () => (disposed = true)
+  const noise = await ditherNoise()
+  if (disposed) return
 
   // Props are fixed for the canvas lifetime; read once, not per cell through the proxy.
   const { interactive, fade } = props
-  const [noiseA, noiseB] = ditherNoise()
   const palette = new Uint32Array(ALPHAS.length)
   const brushSize = 2 * TRAIL_RADIUS + 1
   const brush = Float32Array.from({ length: brushSize * brushSize }, (_, k) => {
@@ -153,10 +185,11 @@ onMounted(() => {
         }
         const ax = ((x + shiftA + dx) | 0) & (NOISE_W - 1)
         const ay = ((y + dy) | 0) & (NOISE_H - 1)
-        const bx = ((x + shiftB + dx) | 0) & (NOISE_W - 1)
-        const by = ((y + liftB + dy) | 0) & (NOISE_H - 1)
+        // Second layer: the same texture at twice the frequency, scrolling the other way.
+        const bx = ((2 * x + shiftB + dx) | 0) & (NOISE_W - 1)
+        const by = ((2 * y + liftB + dy) | 0) & (NOISE_H - 1)
         const value =
-          noiseA[ay * NOISE_W + ax]! * 0.65 + noiseB[by * NOISE_W + bx]! * 0.35 + glow * TRAIL_GLOW
+          noise[ay * NOISE_W + ax]! * 0.65 + noise[by * NOISE_W + bx]! * 0.35 + glow * TRAIL_GLOW
         const u = (value - floor) * GAIN
         pixels[i] =
           u > 0 ? palette[Math.min(3, (u * 3 + BAYER_4[((y & 3) << 2) | (x & 3)]!) | 0)]! : 0
