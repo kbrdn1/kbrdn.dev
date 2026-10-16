@@ -46,8 +46,8 @@ const props = withDefaults(
 const FRAME_MS = 1000 / 24
 const MIN_CELL_PX = 4
 // Top level capped at 0.18: at 0.24 the bio (#999 on dark) drops under the 4.5:1 AA
-// contrast where a dense cell sits behind it. Light pages also scale the canvas to 44%
-// opacity (template): #666 labels on #f0eeeb only hold 4.5:1 up to 0.08.
+// contrast where a dense cell sits behind it. In light, small #666 labels on #f0eeeb
+// fall to ~4.0:1 under a dense cell (4.5:1 needs <= 0.08): accepted for a visible field.
 const ALPHAS = [0, 0.06, 0.12, 0.18]
 const GAIN = 4.2
 const TRAIL_RADIUS = 9 // cells
@@ -327,7 +327,7 @@ onUnmounted(() => cleanup?.())
   <canvas
     ref="canvas"
     aria-hidden="true"
-    class="pointer-events-none block select-none transition-none opacity-[0.44] dark:opacity-100"
+    class="pointer-events-none block select-none transition-none"
     style="image-rendering: pixelated; color: var(--ui-primary)"
   />
 </template>
