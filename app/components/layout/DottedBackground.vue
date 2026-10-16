@@ -13,6 +13,6 @@
   <UiDitherCanvas
     interactive
     fade="down"
-    class="fixed inset-x-0 top-0 z-0 h-[65vh] w-full [mask-image:linear-gradient(to_bottom,#000_60%,transparent)]"
+    class="fixed inset-x-0 top-0 z-0 h-[85vh] w-full [mask-image:linear-gradient(to_bottom,#000_65%,transparent)]"
   />
 </template>

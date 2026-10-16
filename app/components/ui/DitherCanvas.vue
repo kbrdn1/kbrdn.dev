@@ -45,7 +45,10 @@ const props = withDefaults(
 
 const FRAME_MS = 1000 / 24
 const MIN_CELL_PX = 4
-const ALPHAS = [0, 0.07, 0.14, 0.24]
+// Top level capped at 0.18: at 0.24 the bio (#999 on dark) drops under the 4.5:1 AA
+// contrast where a dense cell sits behind it. Light pages also scale the canvas to 44%
+// opacity (template): #666 labels on #f0eeeb only hold 4.5:1 up to 0.08.
+const ALPHAS = [0, 0.06, 0.12, 0.18]
 const GAIN = 4.2
 const TRAIL_RADIUS = 9 // cells
 const TRAIL_STRENGTH = 0.3
@@ -127,7 +130,7 @@ onMounted(async () => {
     threshold = Float32Array.from({ length: rows }, (_, y) => {
       const t = rows > 1 ? y / (rows - 1) : 0
       const depth = fade === 'down' ? t : fade === 'up' ? 1 - t : 0.25
-      return 0.5 + 0.45 * depth * depth
+      return 0.46 + 0.5 * depth * depth
     })
     trailEnd = null
   }
@@ -290,7 +293,7 @@ onUnmounted(() => cleanup?.())
   <canvas
     ref="canvas"
     aria-hidden="true"
-    class="pointer-events-none block select-none transition-none"
+    class="pointer-events-none block select-none transition-none opacity-[0.44] dark:opacity-100"
     style="image-rendering: pixelated; color: var(--ui-primary)"
   />
 </template>
