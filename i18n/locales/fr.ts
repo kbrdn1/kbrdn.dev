@@ -150,6 +150,7 @@ export default {
   // GitHub Chart
   github: {
     title: 'Activité GitHub',
+    lastYear: '12 derniers mois',
     loading: 'Chargement des contributions...',
     error: 'Impossible de charger les données',
     totalContributions: 'Contributions totales',
@@ -157,6 +158,7 @@ export default {
     perDay: '/ jour',
     contributions: 'CONTRIBUTIONS',
     tabs: {
+      recent: 'Récent',
       annual: 'Annuel',
       monthly: 'Mensuel',
     },
