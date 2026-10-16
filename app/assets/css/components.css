@@ -85,17 +85,6 @@
   ) !important;
 }
 
-/* Grid background for featured sections (diagonal stripes) */
-.grid-background {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 10px,
-    var(--stripe-color-alt) 10px,
-    var(--stripe-color-alt) 10.5px
-  );
-}
-
 /* Square grid: page background and side zones (lines at half the stripe colour, muted) */
 .grid-background-blog {
   --grid-line: color-mix(in srgb, var(--stripe-color-alt) 50%, transparent);

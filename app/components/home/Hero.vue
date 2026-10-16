@@ -126,15 +126,13 @@ onUnmounted(() => {
 
       <!-- Right side: avatar -->
       <div class="flex-shrink-0 flex justify-center md:justify-end">
-        <div
-          class="relative grid-background border border-neutral-200 dark:border-neutral-800 transition-transform duration-300 hover:scale-105"
-        >
+        <div class="relative transition-transform duration-300 hover:scale-105">
           <div
             v-if="imageError"
             :class="
               cn(
                 'w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center',
-                'bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700',
+                'bg-neutral-200 dark:bg-neutral-800',
               )
             "
           >
