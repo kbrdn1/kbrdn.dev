@@ -45,6 +45,7 @@ const { formatDate } = useFormatDate()
       <div
         class="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/50 to-neutral-950/20"
       />
+      <UiDitherCanvas class="absolute inset-0 h-full w-full" />
       <div class="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-12">
         <div class="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
           <time

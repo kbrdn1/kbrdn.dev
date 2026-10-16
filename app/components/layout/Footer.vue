@@ -86,10 +86,11 @@ const currentYear = new Date().getFullYear()
 
 <template>
   <footer
-    class="w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-100/10 dark:bg-neutral-950/10 backdrop-blur-sm"
+    class="relative w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950"
   >
+    <UiDitherCanvas fade="up" class="absolute inset-0 h-full w-full" />
     <div
-      class="mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40"
+      class="relative mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40 backdrop-blur-sm"
       style="max-width: 80rem"
     >
       <!-- Three-column grid -->
