@@ -53,10 +53,10 @@ migrates `[Unreleased]` into that file and empties this one — see
   ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). The skills tabs
   give way to a stack list (a column of categories, then each one's tools with
   their icon, linking to its official site). The contact links (GitHub,
-  Twitter, LinkedIn) move into the hero, next to "Book a call", in place of
-  the "View on GitHub" and "Read the blog" buttons; the Contact section goes.
-  The "Open to opportunities" badge turns green, the avatar loses its stripes
-  and border, and the About text loses its em dashes. Featured projects are
+  Twitter, LinkedIn) move into the hero as icon-only ghost buttons, next to
+  "Book a call", in place of the "View on GitHub" and "Read the blog" buttons; the Contact section goes.
+  The "Open to opportunities" badge turns green, the avatar loses its stripes,
+  border and hover zoom, and the About text loses its em dashes. Featured projects are
   now the repositories pinned on GitHub, as compact cards (logo or language
   icon, stars, forks, a language bar along the bottom edge). GitHub activity
   opens on a "Recent" tab, the rolling last 12 months as on the GitHub
