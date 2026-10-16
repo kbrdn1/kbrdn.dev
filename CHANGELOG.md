@@ -30,8 +30,9 @@ migrates `[Unreleased]` into that file and empties this one — see
   the noise is generated in a Web Worker, the colour follows the theme toggle,
   the animation pauses off screen and in hidden tabs, a single frozen frame is
   drawn under `prefers-reduced-motion`, and touch input leaves no trail. The
-  densest level stays at 18% alpha in dark and 8% in light, so text that met
-  the 4.5:1 contrast still does over it.
+  densest level stays at 18% alpha: in dark, text that met the 4.5:1 contrast
+  still does over it; in light, small grey labels drop to about 4.0:1 under
+  the densest cells, a trade-off kept for a visible field.
 
 ### Changed
 
