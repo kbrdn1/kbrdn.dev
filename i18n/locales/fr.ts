@@ -9,7 +9,6 @@ export default {
     showMore: 'Afficher plus',
     showLess: 'Afficher moins',
     loading: 'Chargement...',
-    error: 'Une erreur est survenue',
   },
 
   // SEO
@@ -195,7 +194,6 @@ export default {
     title: 'Projets en vedette',
     featured: 'PROJETS EN VEDETTE',
     viewAll: 'Voir tout sur GitHub',
-    viewProject: 'Voir le projet',
     demo: 'Démo',
     stats: {
       stars: 'Étoiles',

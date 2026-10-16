@@ -9,7 +9,6 @@ export default {
     showMore: 'Show more',
     showLess: 'Show less',
     loading: 'Loading...',
-    error: 'An error occurred',
   },
 
   // SEO
@@ -195,7 +194,6 @@ export default {
     title: 'Featured Projects',
     featured: 'FEATURED PROJECTS',
     viewAll: 'View all on GitHub',
-    viewProject: 'View Project',
     demo: 'Demo',
     stats: {
       stars: 'Stars',

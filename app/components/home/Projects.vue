@@ -3,92 +3,57 @@ import { useI18n } from '#imports'
 
 const { t } = useI18n()
 
-interface ProjectConfig {
-  repo: string
-  displayName?: string
-  description?: string
-  tags?: string[]
-  demoUrl?: string
+interface PinnedRepo {
+  name: string
+  description: string
+  url: string
+  homepage: string | null
+  stars: number
+  forks: number
+  language: string | null
+  languageColor: string | null
+  languages: { name: string; color: string | null; percentage: number }[]
 }
 
-// Configure which repos to show and their display settings
-const projectConfigs: ProjectConfig[] = [
-  {
-    repo: 'gwm-cli',
-    displayName: 'gwm',
-    description: 'Git Worktree Manager',
-    tags: ['rust', 'cli'],
-  },
-  {
-    repo: 'kbrdn.dev-old',
-    displayName: 'Portfolio v1',
-    description: 'Previous Website',
-    tags: ['astro', 'archive'],
-    demoUrl: 'https://old.kbrdn.dev',
-  },
-  {
-    repo: 'dotfiles',
-    displayName: 'Dotfiles',
-    description: 'OS X Config',
-    tags: ['config', 'shell'],
-  },
-  {
-    repo: 'poduim',
-    displayName: 'Podium',
-    description: 'Tournament Manager',
-    tags: ['vue', 'app'],
-  },
-]
-
-// Fetch real GitHub data
-const { data: repos, status } = useGitHubRepos(
-  'kbrdn1',
-  projectConfigs.map((p) => p.repo),
+// The repositories pinned on the GitHub profile, in their pinned order.
+const { data: repos, status } = useAsyncData<PinnedRepo[]>(
+  'github-pinned-kbrdn1',
+  () => $fetch('/api/github/pinned', { query: { username: 'kbrdn1' } }),
+  { default: () => [], server: false },
 )
 
-// Merge GitHub data with display config
-const projects = computed(() => {
-  if (!repos.value) return []
-
-  return projectConfigs
-    .map((config) => {
-      const repoData = repos.value?.find((r) => r.name.toLowerCase() === config.repo.toLowerCase())
-      if (!repoData) return null
-
-      return {
-        name: config.displayName || repoData.name,
-        description: config.description || repoData.description,
-        tags: config.tags || repoData.topics.slice(0, 2),
-        language: repoData.language ?? undefined,
-        stats: [
-          { label: t('projects.stats.stars'), value: formatNumber(repoData.stars) },
-          { label: t('projects.stats.forks'), value: formatNumber(repoData.forks) },
-        ].filter((s) => Number(s.value) > 0 || s.label === t('projects.stats.stars')),
-        techStack: repoData.languages,
-        githubUrl: repoData.url,
-        demoUrl: config.demoUrl || repoData.homepage || undefined,
-      }
-    })
-    .filter((project) => project !== null)
-})
-
-// Format numbers (1000 -> 1k)
-function formatNumber(num: number): string {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
-  }
-  return num.toString()
+// "Rust 99 %, Shell 1 %": what the language bar shows, for screen readers
+function languageSummary(repo: PinnedRepo): string {
+  return repo.languages.map((lang) => `${lang.name} ${Math.round(lang.percentage)} %`).join(', ')
 }
 
-// Expand state
-const isExpanded = ref(false)
-const DEFAULT_PROJECTS = 2
+// Logos of the repositories that ship one, served raw from their default branch, with a
+// light-background variant when the logo needs one. The others show their primary language.
+// ponytail: curated list, one line per newly pinned repo with a logo; detect logo files
+// through the repo tree API if the pinned set starts changing often.
+const LOGOS: Record<string, { dark: string; light?: string }> = {
+  'gwm-cli': { dark: 'docs/_assets/logo.svg', light: 'docs/_assets/logo-light.svg' },
+  'kbrdn.dev': { dark: 'public/favicon.svg' },
+}
+const LANGUAGE_ICONS: Record<string, string> = {
+  Astro: 'i-simple-icons-astro',
+  Go: 'i-simple-icons-go',
+  JavaScript: 'i-simple-icons-javascript',
+  Lua: 'i-simple-icons-lua',
+  PHP: 'i-simple-icons-php',
+  Python: 'i-simple-icons-python',
+  Rust: 'i-simple-icons-rust',
+  Shell: 'i-simple-icons-gnubash',
+  TypeScript: 'i-simple-icons-typescript',
+  Vue: 'i-simple-icons-vuedotjs',
+}
 
-const visibleProjects = computed(() => {
-  return isExpanded.value ? projects.value : projects.value.slice(0, DEFAULT_PROJECTS)
-})
-
-const canExpand = computed(() => projects.value.length > DEFAULT_PROJECTS)
+function logo(repo: PinnedRepo): { dark: string; light: string } | null {
+  const paths = LOGOS[repo.name]
+  if (!paths) return null
+  const raw = (path: string) => `https://raw.githubusercontent.com/kbrdn1/${repo.name}/HEAD/${path}`
+  return { dark: raw(paths.dark), light: raw(paths.light ?? paths.dark) }
+}
 </script>
 
 <template>
@@ -114,106 +79,129 @@ const canExpand = computed(() => projects.value.length > DEFAULT_PROJECTS)
       </a>
     </div>
 
-    <!-- Loading Skeleton -->
-    <div v-if="status === 'pending' || status === 'idle'" class="space-y-4">
-      <div
-        v-for="i in 2"
+    <!-- Loading skeleton: same cards, same grid, same paddings as the loaded list -->
+    <ul
+      v-if="status === 'pending' || status === 'idle'"
+      class="grid gap-3 sm:grid-cols-2"
+      aria-hidden="true"
+    >
+      <li
+        v-for="i in 6"
         :key="i"
-        class="p-6 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50"
+        class="relative flex flex-col gap-2 p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50"
       >
-        <div class="flex flex-col lg:flex-row lg:gap-8">
-          <!-- Left skeleton -->
-          <div class="flex-1 space-y-4">
-            <UiSkeleton class="h-3 w-16" />
-            <UiSkeleton class="h-6 w-32" />
-            <UiSkeleton class="h-4 w-48" />
-            <div class="flex gap-2">
-              <UiSkeleton class="h-7 w-16" />
-              <UiSkeleton class="h-7 w-20" />
-            </div>
-            <div class="flex gap-6">
-              <div class="flex items-baseline gap-2">
-                <UiSkeleton class="h-3 w-10" />
-                <UiSkeleton class="h-5 w-6" />
-              </div>
-              <div class="flex items-baseline gap-2">
-                <UiSkeleton class="h-3 w-10" />
-                <UiSkeleton class="h-5 w-6" />
-              </div>
-            </div>
-          </div>
-          <!-- Right skeleton -->
-          <div class="lg:w-72 mt-6 lg:mt-0 space-y-4">
-            <div class="space-y-2">
-              <UiSkeleton class="h-2 w-full" />
-              <div class="flex gap-3">
-                <UiSkeleton class="h-3 w-20" />
-                <UiSkeleton class="h-3 w-16" />
-              </div>
-            </div>
-            <UiSkeleton class="h-8 w-32" />
-          </div>
+        <!-- Rows sized like the real ones: name 24px, two-line description 32px, footer 16px -->
+        <div class="flex h-6 items-center gap-2">
+          <UiSkeleton class="size-5" />
+          <UiSkeleton class="h-4 w-32" />
         </div>
-      </div>
-    </div>
+        <div>
+          <div class="flex h-4 items-center"><UiSkeleton class="h-3 w-full" /></div>
+          <div class="flex h-4 items-center"><UiSkeleton class="h-3 w-2/3" /></div>
+        </div>
+        <div class="mt-auto flex h-4 items-center gap-4">
+          <UiSkeleton class="h-3 w-16" />
+          <UiSkeleton class="h-3 w-8" />
+        </div>
+        <UiSkeleton class="absolute inset-x-0 bottom-0 h-1" />
+      </li>
+    </ul>
 
-    <!-- Error state -->
-    <div v-else-if="status === 'error'" class="text-sm text-neutral-500">
-      {{ t('common.error') }}
-    </div>
-
-    <!-- Projects List with Stagger Animation -->
-    <template v-else-if="projects.length">
-      <TransitionGroup
-        tag="div"
-        class="space-y-4"
-        enter-active-class="stagger-enter"
-        enter-from-class="stagger-enter-from"
-        enter-to-class="stagger-enter-to"
-        leave-active-class="stagger-leave"
-        leave-from-class="stagger-leave-from"
-        leave-to-class="stagger-leave-to"
-        move-class="stagger-enter"
+    <!-- Pinned repositories, compact like GitHub's own pinned grid -->
+    <ul v-else-if="repos.length" class="grid gap-3 sm:grid-cols-2">
+      <li
+        v-for="repo in repos"
+        :key="repo.name"
+        class="relative flex flex-col gap-2 p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 transition-colors hover:border-primary-500/50"
       >
-        <div
-          v-for="(project, index) in visibleProjects"
-          :key="project.name"
-          :style="{ transitionDelay: `${index * 75}ms` }"
+        <div class="flex items-center justify-between gap-3">
+          <!-- The whole card opens the repository -->
+          <a
+            :href="repo.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex min-w-0 items-center gap-2 font-mono text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-primary-500 transition-colors after:absolute after:inset-0"
+          >
+            <template v-if="logo(repo)">
+              <img
+                :src="logo(repo)!.light"
+                alt=""
+                width="20"
+                height="20"
+                class="size-5 shrink-0 dark:hidden"
+              />
+              <img
+                :src="logo(repo)!.dark"
+                alt=""
+                width="20"
+                height="20"
+                class="hidden size-5 shrink-0 dark:block"
+              />
+            </template>
+            <UIcon
+              v-else
+              :name="LANGUAGE_ICONS[repo.language ?? ''] ?? 'i-lucide-book-marked'"
+              class="size-5 shrink-0 text-neutral-500"
+              aria-hidden="true"
+            />
+            <span class="truncate">{{ repo.name }}</span>
+          </a>
+          <a
+            v-if="repo.homepage"
+            :href="repo.homepage"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="relative z-10 shrink-0 text-neutral-500 hover:text-primary-500 transition-colors"
+            :aria-label="`${t('projects.demo')} — ${repo.name}`"
+          >
+            <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4" aria-hidden="true" />
+          </a>
+        </div>
+        <p
+          v-if="repo.description"
+          class="line-clamp-2 text-xs text-neutral-600 dark:text-neutral-400"
         >
-          <HomeProjectCard
-            :name="project.name"
-            :description="project.description"
-            :tags="project.tags"
-            :stats="project.stats"
-            :tech-stack="project.techStack"
-            :github-url="project.githubUrl"
-            :demo-url="project.demoUrl"
-            :language="project.language"
+          {{ repo.description }}
+        </p>
+        <div class="mt-auto flex items-center gap-4 font-mono text-xs text-neutral-500">
+          <span v-if="repo.language" class="inline-flex items-center gap-1.5">
+            <span
+              class="size-2.5"
+              :style="{ backgroundColor: repo.languageColor ?? undefined }"
+              aria-hidden="true"
+            />
+            {{ repo.language }}
+          </span>
+          <span class="inline-flex items-center gap-1">
+            <UIcon name="i-lucide-star" class="size-3.5" aria-hidden="true" />
+            {{ repo.stars }}
+            <span class="sr-only">{{ t('projects.stats.stars') }}</span>
+          </span>
+          <span v-if="repo.forks" class="inline-flex items-center gap-1">
+            <UIcon name="i-lucide-git-fork" class="size-3.5" aria-hidden="true" />
+            {{ repo.forks }}
+            <span class="sr-only">{{ t('projects.stats.forks') }}</span>
+          </span>
+        </div>
+        <!-- Share of the code by language, GitHub colours, flush against the bottom border.
+             No pointer events: a click there still opens the repository. -->
+        <div
+          v-if="repo.languages.length"
+          class="pointer-events-none absolute inset-x-0 bottom-0 flex h-1 overflow-hidden bg-neutral-200 dark:bg-neutral-800"
+          role="img"
+          :aria-label="languageSummary(repo)"
+        >
+          <span
+            v-for="lang in repo.languages"
+            :key="lang.name"
+            class="h-full"
+            :style="{ width: `${lang.percentage}%`, backgroundColor: lang.color ?? undefined }"
           />
         </div>
-      </TransitionGroup>
+      </li>
+    </ul>
 
-      <!-- Show more/less button -->
-      <button
-        v-if="canExpand"
-        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-mono text-neutral-600 dark:text-neutral-400 hover:text-primary-500 bg-neutral-100/50 dark:bg-neutral-800/50 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:border-primary-500/30 transition-all uppercase tracking-wider"
-        @click="isExpanded = !isExpanded"
-      >
-        <UIcon
-          name="i-heroicons-chevron-down"
-          class="w-4 h-4"
-          :style="{
-            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-            transition: 'transform 300ms ease !important',
-          }"
-        />
-        {{ isExpanded ? t('common.showLess') : t('common.showMore') }}
-      </button>
-    </template>
-
-    <!-- Empty state (no projects found) -->
-    <div v-else class="text-sm text-neutral-500">
-      {{ t('common.error') }}
-    </div>
+    <!-- Error / nothing pinned -->
+    <p v-else class="text-sm text-neutral-500">{{ t('github.error') }}</p>
   </div>
 </template>
