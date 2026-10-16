@@ -34,7 +34,7 @@ const animationClasses = {
     :class="
       cn(
         'bg-neutral-200 dark:bg-neutral-800',
-        circle ? 'rounded-full' : 'rounded',
+        circle && 'rounded-full',
         animationClasses[animation],
       )
     "

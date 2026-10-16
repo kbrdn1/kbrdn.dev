@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 interface Props {
   username?: string
@@ -13,8 +13,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { data: contributions, status } = useGitHubContributions(props.username, 5)
 
-// Tab state
-const activeTab = ref<'annual' | 'monthly'>('annual')
+// Tab state: "recent" is the rolling year ending today, as on a GitHub profile
+const tabs = ['recent', 'annual', 'monthly'] as const
+type Tab = (typeof tabs)[number]
+const activeTab = ref<Tab>('recent')
 
 // Expand state
 const isExpanded = ref(false)
@@ -64,7 +66,9 @@ function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
     }
   })
 
-  return positions
+  // A label only fits if the next one is at least 3 weeks away: the first week of a year
+  // often starts in December, and "Dec" then sat on top of "Jan".
+  return positions.filter((pos, i) => (positions[i + 1]?.offset ?? Infinity) - pos.offset >= 3)
 }
 
 // Group contributions by month for monthly view (last 12 months)
@@ -129,11 +133,38 @@ const monthlyData = computed(() => {
   return months
 })
 
-// Filtered data based on expand state
-const visibleYears = computed(() => {
-  if (!contributions.value?.years) return []
-  const limit = isExpanded.value ? contributions.value.years.length : DEFAULT_YEARS
-  return contributions.value.years.slice(0, limit)
+// Grids to draw: the rolling year for "recent", calendar years (expandable) for "annual"
+const visibleCalendars = computed(() => {
+  const data = contributions.value
+  if (!data?.years) return []
+  if (activeTab.value === 'recent') {
+    // The stat above already says "last 12 months": the header gives the actual span
+    const days = data.recent.weeks.flatMap((week) => week.contributionDays)
+    const format = (date?: string) =>
+      date
+        ? new Date(date).toLocaleDateString(locale.value, {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'UTC',
+          })
+        : ''
+    return [
+      {
+        key: 'recent',
+        label: `${format(days[0]?.date)} — ${format(days.at(-1)?.date)}`,
+        total: data.recent.totalContributions,
+        weeks: data.recent.weeks,
+      },
+    ]
+  }
+  const limit = isExpanded.value ? data.years.length : DEFAULT_YEARS
+  return data.years.slice(0, limit).map((year) => ({
+    key: String(year.year),
+    label: String(year.year),
+    total: year.totalContributions,
+    weeks: year.weeks,
+  }))
 })
 
 const visibleMonths = computed(() => {
@@ -149,23 +180,21 @@ const canExpandMonths = computed(() => {
   return monthlyData.value.length > DEFAULT_MONTHS
 })
 
-// Calculate stats
+// Stats follow the tab: the rolling year for "recent", every fetched year otherwise
 const stats = computed(() => {
-  if (!contributions.value) return { total: 0, avgPerDay: 0 }
+  const data = contributions.value
+  if (!data) return { total: 0, avgPerDay: '0' }
 
-  const total = contributions.value.totalContributions
+  const recent = activeTab.value === 'recent'
+  const total = recent ? data.recent.totalContributions : data.totalContributions
+  const calendars = recent ? [data.recent] : data.years
+  const totalDays = calendars.reduce(
+    (days, calendar) =>
+      days + calendar.weeks.reduce((n, week) => n + week.contributionDays.length, 0),
+    0,
+  )
 
-  // Calculate total days across all years
-  let totalDays = 0
-  contributions.value.years.forEach((year) => {
-    year.weeks.forEach((week) => {
-      totalDays += week.contributionDays.length
-    })
-  })
-
-  const avgPerDay = totalDays > 0 ? (total / totalDays).toFixed(1) : '0'
-
-  return { total, avgPerDay }
+  return { total, avgPerDay: totalDays > 0 ? (total / totalDays).toFixed(1) : '0' }
 })
 
 function getColor(count: number): string {
@@ -202,8 +231,10 @@ function hideTooltip() {
   tooltipData.value = null
 }
 
-function switchTab(tab: 'annual' | 'monthly') {
-  activeTab.value = tab
+// Arrow keys cycle through the tabs
+function switchTab(step: 1 | -1) {
+  const index = tabs.indexOf(activeTab.value)
+  activeTab.value = tabs[(index + step + tabs.length) % tabs.length]!
   nextTick(() => {
     const el = document.querySelector(`[aria-selected="true"]`) as HTMLElement
     el?.focus()
@@ -222,40 +253,24 @@ function switchTab(tab: 'annual' | 'monthly') {
         <!-- Tabs -->
         <div class="flex gap-1 text-xs" role="tablist" aria-label="Contribution view">
           <button
+            v-for="tab in tabs"
+            :key="tab"
             role="tab"
-            :aria-selected="activeTab === 'annual'"
-            :tabindex="activeTab === 'annual' ? 0 : -1"
+            :aria-selected="activeTab === tab"
+            :tabindex="activeTab === tab ? 0 : -1"
             :class="
               cn(
                 'px-3 py-1 transition-colors uppercase tracking-wider',
-                activeTab === 'annual'
+                activeTab === tab
                   ? 'text-primary-500 bg-primary-500/10'
                   : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
               )
             "
-            @click="activeTab = 'annual'"
-            @keydown.right.prevent="switchTab('monthly')"
-            @keydown.left.prevent="switchTab('monthly')"
+            @click="activeTab = tab"
+            @keydown.right.prevent="switchTab(1)"
+            @keydown.left.prevent="switchTab(-1)"
           >
-            {{ t('github.tabs.annual') }}
-          </button>
-          <button
-            role="tab"
-            :aria-selected="activeTab === 'monthly'"
-            :tabindex="activeTab === 'monthly' ? 0 : -1"
-            :class="
-              cn(
-                'px-3 py-1 transition-colors uppercase tracking-wider',
-                activeTab === 'monthly'
-                  ? 'text-primary-500 bg-primary-500/10'
-                  : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
-              )
-            "
-            @click="activeTab = 'monthly'"
-            @keydown.right.prevent="switchTab('annual')"
-            @keydown.left.prevent="switchTab('annual')"
-          >
-            {{ t('github.tabs.monthly') }}
+            {{ t(`github.tabs.${tab}`) }}
           </button>
         </div>
         <!-- External link -->
@@ -271,8 +286,9 @@ function switchTab(tab: 'annual' | 'monthly') {
       </div>
     </div>
 
-    <!-- Loading Skeleton -->
-    <template v-if="status === 'pending'">
+    <!-- Loading skeleton, shaped like the default "recent" view. Also shown while idle: the
+         data is fetched client-side, so the server renders this state. -->
+    <template v-if="status === 'pending' || status === 'idle'">
       <!-- Stats skeleton -->
       <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
         <div class="space-y-2">
@@ -285,29 +301,29 @@ function switchTab(tab: 'annual' | 'monthly') {
         </div>
       </div>
 
-      <!-- Year header skeleton -->
+      <!-- Calendar header skeleton -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <UiSkeleton class="h-3 w-12" />
+          <UiSkeleton class="h-3 w-28" />
           <UiSkeleton class="h-3 w-32" />
         </div>
 
         <!-- Grid skeleton with month labels -->
         <div class="overflow-x-auto">
           <div class="min-w-max">
-            <!-- Month labels skeleton -->
-            <div class="flex gap-1 mb-1">
+            <!-- Month labels skeleton: short labels, one every ~4.3 weeks, like the real ones -->
+            <div class="relative mb-1 h-4">
               <UiSkeleton
                 v-for="i in 12"
                 :key="i"
-                class="h-3"
-                :style="{ width: `${780 / 12}px` }"
+                class="absolute top-0.5 h-3 w-6"
+                :style="{ left: `${Math.round((i - 1) * 4.35) * (12 + 3)}px` }"
               />
             </div>
 
-            <!-- Grid skeleton -->
+            <!-- Grid skeleton: 53 weeks, the rolling year -->
             <div class="flex gap-[3px]">
-              <div v-for="w in 52" :key="w" class="flex flex-col gap-[3px]">
+              <div v-for="w in 53" :key="w" class="flex flex-col gap-[3px]">
                 <UiSkeleton v-for="d in 7" :key="d" class="w-3 h-3" />
               </div>
             </div>
@@ -322,7 +338,7 @@ function switchTab(tab: 'annual' | 'monthly') {
       <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
         <div>
           <p class="text-xs text-neutral-500 uppercase tracking-wider mb-1">
-            {{ t('github.totalContributions') }}
+            {{ activeTab === 'recent' ? t('github.lastYear') : t('github.totalContributions') }}
           </p>
           <p
             class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 font-mono"
@@ -343,9 +359,9 @@ function switchTab(tab: 'annual' | 'monthly') {
         </div>
       </div>
 
-      <!-- Annual View - All years -->
+      <!-- Recent and Annual views: one grid per calendar -->
       <TransitionGroup
-        v-if="activeTab === 'annual'"
+        v-if="activeTab !== 'monthly'"
         tag="div"
         class="space-y-6"
         enter-active-class="stagger-enter"
@@ -356,18 +372,18 @@ function switchTab(tab: 'annual' | 'monthly') {
         leave-to-class="stagger-leave-to"
       >
         <div
-          v-for="(yearData, index) in visibleYears"
-          :key="yearData.year"
+          v-for="(calendar, index) in visibleCalendars"
+          :key="calendar.key"
           class="space-y-2"
           :style="{ transitionDelay: `${index * 100}ms` }"
         >
-          <!-- Year header -->
+          <!-- Calendar header -->
           <div class="flex items-center justify-between">
             <p class="text-xs text-neutral-500 uppercase tracking-wider">
-              {{ yearData.year }}
+              {{ calendar.label }}
             </p>
             <p class="text-xs text-neutral-400 font-mono">
-              {{ yearData.totalContributions.toLocaleString() }} {{ t('github.contributions') }}
+              {{ calendar.total.toLocaleString() }} {{ t('github.contributions') }}
             </p>
           </div>
 
@@ -377,8 +393,8 @@ function switchTab(tab: 'annual' | 'monthly') {
               <!-- Month labels - positioned by actual week offset -->
               <div class="relative text-xs text-neutral-500 mb-1 h-4">
                 <span
-                  v-for="pos in getMonthPositions(yearData.weeks)"
-                  :key="`${yearData.year}-${pos.label}`"
+                  v-for="pos in getMonthPositions(calendar.weeks)"
+                  :key="`${calendar.key}-${pos.offset}`"
                   class="absolute"
                   :style="{ left: `${pos.offset * (12 + 3)}px` }"
                 >
@@ -389,7 +405,7 @@ function switchTab(tab: 'annual' | 'monthly') {
               <!-- Grid -->
               <div class="flex gap-[3px]">
                 <div
-                  v-for="(week, weekIndex) in yearData.weeks"
+                  v-for="(week, weekIndex) in calendar.weeks"
                   :key="weekIndex"
                   class="flex flex-col gap-[3px]"
                 >

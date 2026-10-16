@@ -33,8 +33,35 @@ migrates `[Unreleased]` into that file and empties this one — see
   densest level stays at 18% alpha: in dark, text that met the 4.5:1 contrast
   still does over it; in light, small grey labels drop to about 4.0:1 under
   the densest cells, a trade-off kept for a visible field.
+- **A floating "Listening to" player**
+  ([#54](https://github.com/kbrdn1/kbrdn.dev/issues/54)). The music player
+  leaves the home page's About section for a button in the bottom-right corner
+  of every page, which opens it floating at the bottom, centred and as wide as the content
+  (Escape closes it). Mounted outside
+  the layouts, so the music keeps playing from the home page to the blog; the
+  playlist is only fetched on first open.
+- **Decoding page titles**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). On load, the main title of
+  every page (home, blog, articles) resolves left to right out of random glyphs,
+  in up to 2.4 s, without shifting the layout; the server sends the plain
+  text, screen readers get the real name, and `prefers-reduced-motion` keeps
+  it still.
 
 ### Changed
+
+- **The home page, reworked**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). The skills tabs
+  give way to a stack list (a column of categories, then each one's tools with
+  their icon, linking to its official site). The contact links (GitHub,
+  Twitter, LinkedIn) move into the hero as icon-only ghost buttons, next to
+  "Book a call", in place of the "View on GitHub" and "Read the blog" buttons; the Contact section goes.
+  The "Open to opportunities" badge turns green, the avatar loses its stripes,
+  border and hover zoom, and the About text loses its em dashes. Featured projects are
+  now the repositories pinned on GitHub, as compact cards (logo or language
+  icon, stars, forks, a language bar along the bottom edge). GitHub activity
+  opens on a "Recent" tab, the rolling last 12 months as on the GitHub
+  profile, and its month labels no longer overlap. Loading skeletons now have
+  the shape of what they stand for, one per section.
 
 - **A cleaner page frame**
   ([#51](https://github.com/kbrdn1/kbrdn.dev/issues/51)). Outside the 80rem
@@ -46,6 +73,19 @@ migrates `[Unreleased]` into that file and empties this one — see
   are gone; corners stay sharp. The dark background goes from
   `#1a1a1a` to `#121212`, and the footer gets an opaque background, with the
   blur over its content column.
+
+### Fixed
+
+- **GitHub activity showed made-up numbers in production**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). The token was read
+  from a runtime config frozen at build time, empty in the Docker image, so the
+  API fell back to random data on every request. The server now reads
+  `GITHUB_TOKEN` at request time, and returns an error instead of random data
+  when it cannot reach GitHub.
+- **Contact form messages were most likely never emailed**
+  ([#53](https://github.com/kbrdn1/kbrdn.dev/issues/53)). Same cause with the
+  Resend key: without it, the form only logged the message and reported
+  success. The key is now read at request time too.
 
 ## Past releases
 

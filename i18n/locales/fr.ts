@@ -9,7 +9,6 @@ export default {
     showMore: 'Afficher plus',
     showLess: 'Afficher moins',
     loading: 'Chargement...',
-    error: 'Une erreur est survenue',
   },
 
   // SEO
@@ -30,10 +29,6 @@ export default {
     bookCall: 'Prendre rendez-vous',
     bookCallTip: 'Planifier un échange de 30 min pour discuter de votre projet',
     bookCallDisabled: 'Prise de rendez-vous temporairement indisponible',
-    viewOnGithub: 'Voir sur GitHub',
-    viewOnGithubTip: 'Explorer mes projets open-source et contributions',
-    readBlog: 'Lire le Blog',
-    readBlogTip: 'Articles sur le dev, les outils et les side projects',
   },
 
   // Navigation
@@ -59,7 +54,6 @@ export default {
     education: 'FORMATION',
     parcours: 'PARCOURS',
     activity: 'ACTIVITE',
-    connect: 'CONTACT',
     blog: 'BLOG',
     sponsor: 'Sponsoriser sur GitHub',
   },
@@ -108,6 +102,8 @@ export default {
   // Music Section
   music: {
     listeningTo: "J'écoute",
+    openPlayer: 'Ouvrir le lecteur',
+    closePlayer: 'Fermer le lecteur',
     play: 'Lecture',
     pause: 'Pause',
     previous: 'Piste précédente',
@@ -127,7 +123,7 @@ export default {
     paragraph1:
       'Salut, je suis Kylian, un développeur full stack qui aime créer des sites web et applications modernes et soignés où le design, la fonctionnalité et même les plus petits détails comptent, avec un focus sur des produits à la fois pratiques et visuellement satisfaisants.',
     paragraph2:
-      "Actuellement concentré sur la construction d'architectures solides et scalables. J'aime explorer de nouveaux langages et outils — de Rust aux infrastructures cloud — toujours à la recherche de la bonne solution, pas seulement de la tendance du moment.",
+      "Actuellement concentré sur la construction d'architectures solides et scalables. J'aime explorer de nouveaux langages et outils, de Rust aux infrastructures cloud, toujours à la recherche de la bonne solution, pas seulement de la tendance du moment.",
   },
 
   // Actions Section
@@ -138,9 +134,6 @@ export default {
 
   // Socials Section
   socials: {
-    intro: 'Voici mes',
-    label: 'réseaux',
-    more: 'Plus',
     github: 'GitHub',
     githubDesc: 'Projets open-source & contributions',
     twitter: 'Twitter',
@@ -155,6 +148,7 @@ export default {
   // GitHub Chart
   github: {
     title: 'Activité GitHub',
+    lastYear: '12 derniers mois',
     loading: 'Chargement des contributions...',
     error: 'Impossible de charger les données',
     totalContributions: 'Contributions totales',
@@ -162,6 +156,7 @@ export default {
     perDay: '/ jour',
     contributions: 'CONTRIBUTIONS',
     tabs: {
+      recent: 'Récent',
       annual: 'Annuel',
       monthly: 'Mensuel',
     },
@@ -184,63 +179,12 @@ export default {
   skills: {
     featured: 'STACK & COMPÉTENCES',
     title: 'Outils avec lesquels je travaille',
-    ariaLabel: 'Catégories de compétences',
-    items: {
-      typescript: {
-        title: 'Expert TypeScript',
-        description:
-          'Typage fort sur chaque couche de la stack. Des composants frontend aux APIs backend, TypeScript rend la base de code prévisible et maintenable à grande échelle.',
-        features: [
-          "3+ ans d'utilisation quotidienne en production",
-          'Génériques avancés, types mappés et utilitaires',
-          'Mode strict appliqué sur tous les projets',
-          "Sécurité de type de bout en bout, de l'API à l'UI",
-        ],
-      },
-      laravel: {
-        title: 'Laravel — APIs Backend',
-        description:
-          "Construction d'APIs REST robustes et de services backend avec Laravel. Eloquent ORM, files d'attente et l'écosystème complet pour une livraison rapide et fiable.",
-        features: [
-          "Conception d'API RESTful avec form requests et resources",
-          'Relations Eloquent et optimisation des requêtes',
-          'Workers de queue, jobs et event broadcasting',
-          'Intégration Stripe, patterns multi-tenant',
-        ],
-      },
-      nuxt: {
-        title: 'Nuxt — Meta-Framework Vue',
-        description:
-          'Rendu côté serveur, génération statique et modes hybrides avec Nuxt. Le framework derrière ce portfolio et plusieurs applications en production.',
-        features: [
-          'Stratégies de rendu SSR, SSG et hybride',
-          'Routage basé sur les fichiers avec middleware et layouts',
-          'Nuxt Content pour les sites pilotés par markdown',
-          'Auto-imports, composables et routes serveur',
-        ],
-      },
-      rust: {
-        title: 'Rust — Programmation Système',
-        description:
-          "Exploration de la programmation bas niveau avec Rust. Apprentissage de l'ownership, des lifetimes, et développement d'outils CLI avec une utilité concrète.",
-        features: [
-          "Modèle d'ownership et fondamentaux du borrow checker",
-          'Outils CLI avec clap et crossterm',
-          'Développement de gwm — un gestionnaire de worktrees Git en Rust (CLI + TUI)',
-          'Intérêt croissant pour les cibles WebAssembly',
-        ],
-      },
-      cloud: {
-        title: 'Cloud & DevOps',
-        description:
-          'Déploiements conteneurisés, pipelines CI/CD et infrastructure cloud. De Docker Compose en local à la production sur AWS et VPS auto-hébergé.',
-        features: [
-          'Builds multi-étapes Docker et orchestration Compose',
-          'CI/CD GitHub Actions avec webhooks de déploiement',
-          'Services AWS — S3, EC2, RDS, CloudFront',
-          'PaaS auto-hébergé Dokploy sur VPS',
-        ],
-      },
+    stack: {
+      languages: 'Langages',
+      frontend: 'Frontend',
+      backend: 'Backend',
+      infrastructure: 'Infrastructure',
+      workflow: 'Workflow',
     },
   },
 
@@ -249,7 +193,6 @@ export default {
     title: 'Projets en vedette',
     featured: 'PROJETS EN VEDETTE',
     viewAll: 'Voir tout sur GitHub',
-    viewProject: 'Voir le projet',
     demo: 'Démo',
     stats: {
       stars: 'Étoiles',

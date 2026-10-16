@@ -31,6 +31,11 @@ export default defineNuxtConfig({
     },
   },
 
+  // Brand icons simple-icons does not ship (i-kbrdn-<file name>)
+  icon: {
+    customCollections: [{ prefix: 'kbrdn', dir: './app/assets/icons' }],
+  },
+
   // i18n configuration
   i18n: {
     locales: [

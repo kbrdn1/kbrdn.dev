@@ -129,8 +129,9 @@ const { postUrl } = useBlogUrl()
             <h1
               class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2"
               style="font-family: 'Fenix', serif"
+              :aria-label="t('blog.title')"
             >
-              {{ t('blog.title') }}
+              <UiScrambleText :text="t('blog.title')" />
             </h1>
             <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
               {{ t('blog.description') }}

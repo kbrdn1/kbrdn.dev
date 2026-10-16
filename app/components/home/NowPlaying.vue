@@ -195,19 +195,13 @@ function formatTime(seconds: number): string {
 </script>
 
 <template>
-  <div v-if="tracks?.length" class="mt-6">
-    <span
-      class="block text-[10px] font-mono uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-3"
-    >
-      {{ t('music.listeningTo') }}
-    </span>
-
-    <!-- Player card -->
+  <div v-if="tracks?.length">
+    <!-- Player card: floats over the page (LayoutMusicDock), so near-opaque and blurred -->
     <div
       :class="
         cn(
           'w-full border border-neutral-200 dark:border-neutral-800 overflow-hidden',
-          'bg-neutral-50 dark:bg-neutral-900/50',
+          'bg-neutral-50/95 dark:bg-neutral-900/95 backdrop-blur-md shadow-xl',
           'hover:border-primary-500/50 transition-all',
         )
       "

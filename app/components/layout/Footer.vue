@@ -331,13 +331,15 @@ const currentYear = new Date().getFullYear()
               {{ t('footer.availability.title') }}
             </h3>
             <span
-              class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-primary-500/20 text-primary-400 bg-primary-500/5"
+              class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-green-600/40 dark:border-green-500/30 text-green-700 dark:text-green-500 bg-green-600/5 dark:bg-green-500/5"
             >
               <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
                 />
-                <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary-500" />
+                <span
+                  class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600 dark:bg-green-500"
+                />
               </span>
               {{ t('footer.availability.status') }}
             </span>

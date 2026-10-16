@@ -26,15 +26,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const config = useRuntimeConfig()
+  // runtimeConfig.resendApiKey is frozen at build time (nuxt.config reads process.env then) and
+  // the image is built without it; the container gets RESEND_API_KEY at run time, which Nuxt
+  // only maps from NUXT_RESEND_API_KEY. Read it here too, or every message only gets logged.
+  const resendApiKey = useRuntimeConfig().resendApiKey || process.env.RESEND_API_KEY
 
   try {
     // Send email via Resend if API key is configured
-    if (config.resendApiKey) {
+    if (resendApiKey) {
       await $fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${config.resendApiKey}`,
+          Authorization: `Bearer ${resendApiKey}`,
           'Content-Type': 'application/json',
         },
         body: {
