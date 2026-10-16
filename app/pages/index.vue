@@ -182,46 +182,12 @@ const content = computed(() => {
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <HomeSectionLabel :label="t('sections.projects')" />
-            <ClientOnly>
-              <HomeProjects />
-              <template #fallback>
-                <div class="space-y-4">
-                  <div class="flex items-center justify-between">
-                    <UiSkeleton class="h-6 w-40" />
-                    <UiSkeleton class="h-5 w-5" />
-                  </div>
-                  <div class="space-y-3">
-                    <div
-                      v-for="i in 2"
-                      :key="i"
-                      class="p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 space-y-4"
-                    >
-                      <UiSkeleton class="h-5 w-24" />
-                      <UiSkeleton class="h-2 w-full" />
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </ClientOnly>
+            <HomeProjects />
 
             <!-- GitHub Activity -->
             <div class="mt-8">
               <HomeSectionLabel :label="t('sections.activity')" />
-              <ClientOnly>
-                <HomeGitHubChart username="kbrdn1" />
-                <template #fallback>
-                  <div class="space-y-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <UiSkeleton class="h-6 w-32" />
-                      <UiSkeleton class="h-6 w-32" />
-                    </div>
-                    <div class="flex gap-8">
-                      <UiSkeleton class="h-9 w-20" />
-                      <UiSkeleton class="h-9 w-24" />
-                    </div>
-                  </div>
-                </template>
-              </ClientOnly>
+              <HomeGitHubChart username="kbrdn1" />
             </div>
           </div>
         </UiAnimatedSection>
