@@ -69,19 +69,19 @@ onUnmounted(() => {
               cn(
                 'inline-flex items-center gap-2 px-3 py-1',
                 'text-xs font-mono uppercase tracking-wider',
-                'text-primary-500 dark:text-primary-400',
-                'border border-primary-500/30 dark:border-primary-400/30',
-                'bg-primary-500/5 dark:bg-primary-400/5',
+                'text-green-700 dark:text-green-500',
+                'border border-green-600/40 dark:border-green-500/30',
+                'bg-green-600/5 dark:bg-green-500/5',
               )
             "
           >
             <span class="relative flex h-2 w-2" aria-hidden="true">
               <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
                 aria-hidden="true"
               />
               <span
-                class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"
+                class="relative inline-flex rounded-full h-2 w-2 bg-green-600 dark:bg-green-500"
                 aria-hidden="true"
               />
             </span>
