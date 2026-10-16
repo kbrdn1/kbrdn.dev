@@ -8,8 +8,22 @@
     class="fixed inset-0 -z-10 dotted-background bg-[#f0eeeb] dark:bg-neutral-950"
     aria-hidden="true"
   />
-  <!-- Not inside the -z-10 layer: the minimal layout's opaque root would cover it.
-       Positioned at z-0 it paints above every layout root, under main (z-10). -->
+  <!-- Backdrop and dither are not inside the -z-10 layer: the minimal layout's opaque
+       root would cover them. At z-0 they paint above every layout root and under main
+       (z-10). The backdrop is the space outside the 80rem column: a grid, and a border
+       along the column continuing the header's, both fading out downwards. The +1px
+       puts each border on the header's own. -->
+  <div
+    class="pointer-events-none fixed inset-0 z-0 hidden xl:block [mask-image:linear-gradient(#000,transparent_min(95vh,900px))]"
+    aria-hidden="true"
+  >
+    <div
+      class="absolute inset-y-0 left-0 w-[calc(50%-40rem+1px)] grid-background-blog border-r border-neutral-200 dark:border-neutral-800"
+    />
+    <div
+      class="absolute inset-y-0 right-0 w-[calc(50%-40rem+1px)] grid-background-blog border-l border-neutral-200 dark:border-neutral-800"
+    />
+  </div>
   <UiDitherCanvas
     interactive
     fade="down"

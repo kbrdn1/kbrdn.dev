@@ -96,81 +96,13 @@
   );
 }
 
-/* Grid background for blog pages (square grid) */
+/* Square grid: page background and side zones (lines at half the stripe colour, muted) */
 .grid-background-blog {
+  --grid-line: color-mix(in srgb, var(--stripe-color-alt) 50%, transparent);
   background-image:
-    linear-gradient(var(--stripe-color-alt) 1px, transparent 1px),
-    linear-gradient(90deg, var(--stripe-color-alt) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 24px 24px;
-}
-
-/* Section with corner triangle marks at border intersections */
-.border-dashed-horizontal {
-  position: relative;
-}
-
-/* Corner triangle - top left */
-.border-dashed-horizontal::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: calc(50% - 40rem);
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 6px 6px 0 0;
-  border-color: var(--corner-color) transparent transparent transparent;
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* Corner triangle - top right */
-.border-dashed-horizontal::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: calc(50% - 40rem);
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 6px 0 0 6px;
-  border-color: var(--corner-color) transparent transparent transparent;
-  z-index: 10;
-  pointer-events: none;
-}
-
-/* Bottom corner triangles via inner elements */
-.corner-bottom-left,
-.corner-bottom-right {
-  position: absolute;
-  bottom: 0;
-  width: 0;
-  height: 0;
-  z-index: 10;
-  pointer-events: none;
-}
-
-.corner-bottom-left {
-  left: calc(50% - 40rem);
-  border-style: solid;
-  border-width: 0 6px 6px 0;
-  border-color: transparent transparent var(--corner-color) transparent;
-}
-
-.corner-bottom-right {
-  right: calc(50% - 40rem);
-  border-style: solid;
-  border-width: 0 0 6px 6px;
-  border-color: transparent transparent var(--corner-color) transparent;
-}
-
-@media (max-width: 768px) {
-  .border-dashed-horizontal::before,
-  .border-dashed-horizontal::after,
-  .corner-bottom-left,
-  .corner-bottom-right {
-    display: none;
-  }
 }
 
 /* Code syntax highlighting — Claude Dark theme */

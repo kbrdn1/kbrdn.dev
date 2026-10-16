@@ -161,13 +161,6 @@ function scrollToHeading(id: string) {
 
 <template>
   <div class="min-h-screen flex justify-center overflow-x-clip">
-    <!-- Left stripe zone -->
-    <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background-blog -z-1"
-      aria-hidden="true"
-      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
-    />
-
     <!-- Main content -->
     <div ref="articleRef" class="w-full flex flex-col items-center relative z-10">
       <!-- Article found -->
@@ -245,13 +238,6 @@ function scrollToHeading(id: string) {
         <BlogBackLink />
       </div>
     </div>
-
-    <!-- Right stripe zone (background) -->
-    <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background-blog -z-1"
-      aria-hidden="true"
-      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
-    />
 
     <!-- Mobile TOC -->
     <BlogMobileToc

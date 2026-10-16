@@ -99,24 +99,13 @@ const content = computed(() => {
 
 <template>
   <div class="flex justify-center overflow-x-clip">
-    <!-- Left stripe zone -->
-    <div
-      class="hidden md:block fixed left-0 top-0 bottom-0 grid-background -z-1"
-      aria-hidden="true"
-      style="width: calc(50% - 40rem); border-right: 1px solid var(--border-color)"
-    />
-
     <!-- Main content -->
     <div class="w-full flex flex-col items-center relative z-10">
       <!-- Banner -->
       <HomeBanner />
 
       <!-- Hero Section - Full width with horizontal dashed border -->
-      <section
-        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
-      >
-        <span class="corner-bottom-left" aria-hidden="true" />
-        <span class="corner-bottom-right" aria-hidden="true" />
+      <section class="p-6 w-full">
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
           <HomeHero
             :name="content.name"
@@ -187,12 +176,7 @@ const content = computed(() => {
       </main>
 
       <!-- Skills & Stack -->
-      <section
-        id="skills"
-        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
-      >
-        <span class="corner-bottom-left" aria-hidden="true" />
-        <span class="corner-bottom-right" aria-hidden="true" />
+      <section id="skills" class="p-6 w-full">
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <HomeSkills />
@@ -201,12 +185,7 @@ const content = computed(() => {
       </section>
 
       <!-- Featured Projects -->
-      <section
-        id="projects"
-        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
-      >
-        <span class="corner-bottom-left" aria-hidden="true" />
-        <span class="corner-bottom-right" aria-hidden="true" />
+      <section id="projects" class="p-6 w-full">
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6">
             <HomeSectionLabel :label="t('sections.projects')" />
@@ -256,12 +235,7 @@ const content = computed(() => {
       </section>
 
       <!-- Parcours (Experience + Education) - Full width -->
-      <section
-        id="experience"
-        class="p-6 border-dashed-horizontal border-y border-neutral-200 dark:border-neutral-800 w-full"
-      >
-        <span class="corner-bottom-left" aria-hidden="true" />
-        <span class="corner-bottom-right" aria-hidden="true" />
+      <section id="experience" class="p-6 w-full">
         <UiAnimatedSection :delay="0" :duration="500">
           <div class="max-w-5xl mx-auto min-md:px-6 space-y-8">
             <HomeSectionLabel :label="t('sections.parcours')" />
@@ -301,12 +275,5 @@ const content = computed(() => {
         <LayoutFooter />
       </UiAnimatedSection>
     </div>
-
-    <!-- Right stripe zone -->
-    <div
-      class="hidden md:block fixed right-0 top-0 bottom-0 grid-background -z-1"
-      aria-hidden="true"
-      style="width: calc(50% - 40rem); border-left: 1px solid var(--border-color)"
-    />
   </div>
 </template>
