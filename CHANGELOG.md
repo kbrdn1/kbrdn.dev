@@ -46,6 +46,13 @@ migrates `[Unreleased]` into that file and empties this one — see
   in up to 2.4 s, without shifting the layout; the server sends the plain
   text, screen readers get the real name, and `prefers-reduced-motion` keeps
   it still.
+- **Weekly dependency updates with Dependabot**
+  ([#56](https://github.com/kbrdn1/kbrdn.dev/issues/56)). Bun packages, GitHub
+  Actions and the `oven/bun` base image, as PRs against `dev`, with minor and
+  patch bumps grouped per ecosystem. The PR checks used to fail such PRs by
+  construction (branch name, no linked issue); they now let PRs opened by
+  Dependabot through, the title check still applies. Dependabot reads its
+  config from `main`, so it starts once this version is released.
 
 ### Changed
 
