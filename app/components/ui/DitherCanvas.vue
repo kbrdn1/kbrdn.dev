@@ -51,7 +51,14 @@ const MIN_CELL_PX = 4
 const ALPHAS = [0, 0.06, 0.12, 0.18]
 const GAIN = 4.2
 const TRAIL_RADIUS = 9 // cells
+const TRAIL_SIGMA = TRAIL_RADIUS / 2.5
 const TRAIL_STRENGTH = 0.3
+// Squishy trail: drawn from a spring chasing the pointer (underdamped: it lags, overshoots
+// and wobbles ~0.6 s before settling), its brush stretched along the motion.
+const SPRING = 0.2 // pull toward the pointer, per frame
+const DAMPING = 0.72 // velocity kept per frame
+const STRETCH = 0.15 // brush elongation per cell/frame of speed
+const MAX_STRETCH = 2.2
 const TRAIL_DECAY = 0.86 // per frame
 const TRAIL_GLOW = 0.35
 const TRAIL_PUSH = 6 // cells of noise displacement per unit of heat gradient
@@ -72,12 +79,6 @@ onMounted(async () => {
   // Props are fixed for the canvas lifetime; read once, not per cell through the proxy.
   const { interactive, fade } = props
   const palette = new Uint32Array(ALPHAS.length)
-  const brushSize = 2 * TRAIL_RADIUS + 1
-  const brush = Float32Array.from({ length: brushSize * brushSize }, (_, k) => {
-    const dx = (k % brushSize) - TRAIL_RADIUS
-    const dy = Math.floor(k / brushSize) - TRAIL_RADIUS
-    return Math.exp(-(dx * dx + dy * dy) / (2 * (TRAIL_RADIUS / 2.5) ** 2))
-  })
 
   let cols = 0
   let rows = 0
@@ -90,9 +91,13 @@ onMounted(async () => {
   let lastFrame = 0
   let resizeFrame = 0
   let onScreen = true
-  // Pointer in client coordinates, and the last cell the trail was stamped at.
+  // Last pointer event in client coordinates; then, in cells, where it points and the
+  // spring follower the trail is drawn from.
   let pointer: { x: number; y: number } | null = null
-  let trailEnd: { x: number; y: number } | null = null
+  let target = { x: 0, y: 0 }
+  const follower = { x: 0, y: 0, vx: 0, vy: 0 }
+  let tracked = false // follower holds a position on this field
+  let moving = false // spring not settled yet
 
   // Let the browser parse whatever colour format the CSS resolves to, on a 1×1
   // probe so the drawing canvas never gets read back.
@@ -132,40 +137,69 @@ onMounted(async () => {
       const depth = fade === 'down' ? t : fade === 'up' ? 1 - t : 0.25
       return 0.46 + 0.5 * depth * depth
     })
-    trailEnd = null
+    tracked = false
   }
 
-  function stamp(cx: number, cy: number) {
-    for (let dy = -TRAIL_RADIUS; dy <= TRAIL_RADIUS; dy++) {
-      const y = cy + dy
-      if (y < 0 || y >= rows) continue
-      for (let dx = -TRAIL_RADIUS; dx <= TRAIL_RADIUS; dx++) {
-        const x = cx + dx
-        if (x < 0 || x >= cols) continue
+  // Gaussian brush stretched along the motion (ux, uy) and squashed across it.
+  function stamp(cx: number, cy: number, ux: number, uy: number, stretch: number) {
+    const along = 2 * (TRAIL_SIGMA * stretch) ** 2
+    const across = (2 * TRAIL_SIGMA ** 2) / stretch
+    const reach = Math.ceil(TRAIL_RADIUS * stretch)
+    const x0 = Math.round(cx)
+    const y0 = Math.round(cy)
+    for (let y = Math.max(0, y0 - reach); y <= Math.min(rows - 1, y0 + reach); y++) {
+      for (let x = Math.max(0, x0 - reach); x <= Math.min(cols - 1, x0 + reach); x++) {
+        const a = (x - cx) * ux + (y - cy) * uy
+        const c = (y - cy) * ux - (x - cx) * uy
         const i = y * cols + x
-        const k = (dy + TRAIL_RADIUS) * brushSize + dx + TRAIL_RADIUS
-        heat[i] = Math.min(1, heat[i]! + brush[k]! * TRAIL_STRENGTH)
+        heat[i] = Math.min(
+          1,
+          heat[i]! + Math.exp(-(a * a) / along - (c * c) / across) * TRAIL_STRENGTH,
+        )
       }
     }
   }
 
-  // Stamp the brush along the segment the pointer travelled since the last frame.
+  // Step the spring toward the pointer and stamp the brush along the segment it travelled.
   function followPointer() {
-    if (!pointer) return
-    const rect = el!.getBoundingClientRect()
-    const x = Math.round(((pointer.x - rect.left) / rect.width) * cols)
-    const y = Math.round(((pointer.y - rect.top) / rect.height) * rows)
-    pointer = null
-    const from = trailEnd ?? { x, y }
-    const distance = Math.hypot(x - from.x, y - from.y)
-    const steps = distance > cols / 2 ? 1 : Math.max(1, Math.ceil(distance / (TRAIL_RADIUS / 3)))
+    if (pointer) {
+      const rect = el!.getBoundingClientRect()
+      target = {
+        x: ((pointer.x - rect.left) / rect.width) * cols,
+        y: ((pointer.y - rect.top) / rect.height) * rows,
+      }
+      pointer = null
+      // First move, or back into the window: start on the pointer, not across the field.
+      if (!tracked || Math.hypot(target.x - follower.x, target.y - follower.y) > cols / 2) {
+        Object.assign(follower, { x: target.x, y: target.y, vx: 0, vy: 0 })
+        tracked = true
+      }
+      moving = true
+    }
+    if (!moving) return
+    const fromX = follower.x
+    const fromY = follower.y
+    follower.vx = (follower.vx + (target.x - follower.x) * SPRING) * DAMPING
+    follower.vy = (follower.vy + (target.y - follower.y) * SPRING) * DAMPING
+    follower.x += follower.vx
+    follower.y += follower.vy
+    const speed = Math.hypot(follower.vx, follower.vy)
+    if (speed < 0.05 && Math.hypot(target.x - follower.x, target.y - follower.y) < 0.1) {
+      moving = false
+    }
+    // A wobble too small to see would only pile heat up under a still cursor.
+    if (speed < 0.3) return
+    const stretch = Math.min(MAX_STRETCH, 1 + speed * STRETCH)
+    const steps = Math.ceil(speed / (TRAIL_RADIUS / 3))
     for (let s = 1; s <= steps; s++) {
       stamp(
-        Math.round(from.x + ((x - from.x) * s) / steps),
-        Math.round(from.y + ((y - from.y) * s) / steps),
+        fromX + ((follower.x - fromX) * s) / steps,
+        fromY + ((follower.y - fromY) * s) / steps,
+        follower.vx / speed,
+        follower.vy / speed,
+        stretch,
       )
     }
-    trailEnd = { x, y }
   }
 
   function draw() {
@@ -228,7 +262,7 @@ onMounted(async () => {
   }
   // Leaving the window must not draw a line across the field on the way back in.
   const onPointerOut = (e: PointerEvent) => {
-    if (!e.relatedTarget) trailEnd = null
+    if (!e.relatedTarget) tracked = false
   }
   const onVisibility = () => (document.hidden ? stop() : start())
 
