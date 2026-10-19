@@ -368,6 +368,8 @@ export default {
     },
     apps: {
       gwm: {
+        illustration:
+          "gwm's TUI: the repository's worktrees with their branch and state, the selected worktree's details and its latest commits",
         tagline: 'Git worktree manager for the terminal, CLI and TUI.',
         description:
           'gwm creates the worktree, runs the project setup, links the issue and shows which AI agent is working where. A single binary, no git CLI needed.',
@@ -389,6 +391,7 @@ export default {
         ],
       },
       lazycurl: {
+        illustration: "LazyCurl's interface: collections, request and response side by side",
         tagline: 'TUI HTTP client, between lazygit and Postman.',
         description: "Test an API from the terminal, with lazygit's interface and Postman's tools.",
         features: [

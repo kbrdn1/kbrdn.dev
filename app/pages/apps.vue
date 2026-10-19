@@ -30,7 +30,7 @@ const APPS = [
     name: 'gwm',
     repo: 'gwm-cli',
     language: 'Rust',
-    license: 'Apache-2.0',
+    license: 'MIT OR Apache-2.0',
     status: 'released',
     site: 'https://gwm.kbrdn.dev',
     logo: {
@@ -39,6 +39,9 @@ const APPS = [
     },
     icon: 'i-simple-icons-rust',
     features: 4,
+    // docs/2.tui/_assets/hero.png and docs/_capture/demo.gif of gwm-cli, as webp and mp4
+    image: '/images/apps/gwm.webp',
+    video: '/images/apps/gwm-demo.mp4',
     // From the gwm-cli README's install table
     install: [
       'brew tap kbrdn1/tap && brew install gwm',
@@ -67,6 +70,8 @@ const APPS = [
     status: 'archived',
     icon: 'i-simple-icons-go',
     features: 4,
+    // preview-app.png of LazyCurl, as webp
+    image: '/images/apps/lazycurl.webp',
   },
 ] as const
 
@@ -74,6 +79,24 @@ const { data: releases } = useFetch<Record<string, { version: string } | null>>(
   '/api/github/releases',
   { server: false, lazy: true, default: () => ({}) },
 )
+
+// The demo plays only while on screen, and not at all under prefers-reduced-motion
+// (the screenshot stays as its poster, with the controls to start it by hand).
+const reducedMotion = useReducedMotion()
+let videoObserver: IntersectionObserver | undefined
+onMounted(() => {
+  videoObserver = new IntersectionObserver((entries) => {
+    for (const { target, isIntersecting } of entries) {
+      const video = target as HTMLVideoElement
+      if (isIntersecting && !reducedMotion.value) video.play().catch(() => {})
+      else video.pause()
+    }
+  })
+  document
+    .querySelectorAll<HTMLVideoElement>('video[data-demo]')
+    .forEach((v) => videoObserver!.observe(v))
+})
+onUnmounted(() => videoObserver?.disconnect())
 
 const STATUS_CLASS: Record<string, string> = {
   released:
@@ -199,6 +222,34 @@ const STATUS_CLASS: Record<string, string> = {
             ><code><span v-for="line in app.install" :key="line" class="block"><span class="select-none text-primary-500">$ </span>{{ line }}</span></code></pre>
           </div>
         </div>
+
+        <figure
+          v-if="'image' in app"
+          class="relative z-10 overflow-hidden border border-neutral-200 bg-neutral-950 md:col-span-12 dark:border-neutral-800"
+        >
+          <video
+            v-if="'video' in app"
+            data-demo
+            :poster="app.image"
+            :controls="reducedMotion"
+            :aria-label="t(`appsPage.apps.${app.key}.illustration`)"
+            muted
+            loop
+            playsinline
+            preload="none"
+            class="block w-full"
+          >
+            <source :src="app.video" type="video/mp4" />
+          </video>
+          <NuxtImg
+            v-else
+            :src="app.image"
+            :alt="t(`appsPage.apps.${app.key}.illustration`)"
+            width="1600"
+            loading="lazy"
+            class="block w-full"
+          />
+        </figure>
       </article>
     </div>
   </div>
