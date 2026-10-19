@@ -83,14 +83,9 @@ withDefaults(defineProps<{
           </span>
         </div>
         <div class="flex items-center" style="gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 32 32">
-            <g fill="#e0e0e0">
-              <rect x="2" y="2" width="28" height="4" />
-              <rect x="2" y="2" width="4" height="28" />
-              <rect x="26" y="2" width="4" height="14" />
-              <rect x="2" y="26" width="14" height="4" />
-            </g>
-            <path d="M19 9 L7 16 L19 23 V19 L14 16 L19 13 Z" fill="#d4825d" />
+          <svg width="18" height="18" viewBox="0 0 96 96">
+            <path d="M64 0H96L0 96V64Z" fill="#e0e0e0" />
+            <path d="M0 0L24 24L0 48ZM56 56L96 96H64L40 72Z" fill="#d4825d" />
           </svg>
           <span style="font-family: 'Monaspace Krypton', monospace; font-size: 13px; font-weight: 700;">
             <span style="color: #e0e0e0;">@</span><span style="color: #d4825d;">kbrdn1</span>
