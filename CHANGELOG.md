@@ -14,6 +14,26 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ## [Unreleased]
 
+### Added
+
+- **Four pixel shapes for the dither field**
+  ([#72](https://github.com/kbrdn1/kbrdn.dev/issues/72)). Squares, circles,
+  triangles or diamonds, after codrops' Bayer dithering demo: one shape is
+  picked at random on each load and shared by every field of the page
+  (background, footer, blog banners). Shapes other than squares need bigger
+  cells; the noise and the pointer trail are sampled accordingly, so they keep
+  their size on screen. Each shape covers about half a cell and the alpha
+  ceiling stays at 18%, so text contrast is unchanged. Drawn in two canvas
+  calls per frame whatever the cell count. `localStorage['dither-shape']` pins
+  a shape.
+- **Pixels that spread on hover**
+  ([#72](https://github.com/kbrdn1/kbrdn.dev/issues/72)). After hexagoncircle's
+  `<pixel-canvas>`: hovering or focusing a card (pinned projects, blog posts,
+  the blog sidebar card) or an accordion header (experiences, studies) grows
+  cells of the page's dither shape out from where the pointer came in, which
+  shimmer, then shrink away on leave. Under the content, never in the way of a
+  click; nothing on touch, a still frame under `prefers-reduced-motion`.
+
 ## Past releases
 
 - [1.1.0](changelogs/1.1.0.md) — 2026-10-16
