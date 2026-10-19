@@ -7,8 +7,8 @@ const portfolioLinks = computed(() => [
   { href: '/#about', label: t('footer.nav.about') },
   { href: '/#skills', label: t('footer.nav.skills') },
   { href: '/#projects', label: t('footer.nav.projects') },
-  { href: '/#experience', label: t('footer.nav.experience') },
-  { href: '/#education', label: t('footer.nav.education') },
+  { href: '/experience', label: t('footer.nav.experience') },
+  { href: '/experience#education', label: t('footer.nav.education') },
 ])
 
 const blogLinks = computed(() => [{ href: '/blog', label: t('footer.nav.articles') }])
