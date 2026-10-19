@@ -26,10 +26,11 @@ function dismiss() {
 <template>
   <div v-if="!dismissed" class="w-full">
     <div
-      class="relative overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-all duration-300 hover:border-primary-500/40"
+      class="relative isolate overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-all duration-300 hover:border-primary-500/40"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
     >
+      <UiPixelCanvas />
       <!-- Image -->
       <div v-if="image" class="relative h-36 overflow-hidden">
         <img

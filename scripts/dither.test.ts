@@ -5,7 +5,14 @@
 //
 // usage: bun scripts/dither.test.ts
 import assert from 'node:assert/strict'
-import { BAYER_4, NOISE_H, NOISE_W, noiseTexture } from '../app/utils/dither'
+import {
+  BAYER_4,
+  DITHER_SHAPES,
+  NOISE_H,
+  NOISE_W,
+  noiseTexture,
+  shapeTile,
+} from '../app/utils/dither'
 
 // Bayer : les 16 seuils k/16, chacun une fois.
 assert.deepEqual(
@@ -55,5 +62,28 @@ for (const [seed, cells] of [
   assert.ok(seamX <= interior * 1.5, `couture verticale ${seamX} > ${interior}`)
   assert.ok(seamY <= interior * 3, `couture horizontale ${seamY} > ${interior}`)
 }
+
+// Formes : chacune couvre environ la moitié d'une cellule (le carré, toute), sinon la
+// densité du fond change d'une forme à l'autre ; le triangle alterne en damier.
+const coverage = { square: 1, circle: Math.PI * 0.4 ** 2, triangle: 0.5, diamond: 0.5 }
+for (const shape of DITHER_SHAPES) {
+  const size = 16
+  const { span, alpha } = shapeTile(shape, size)
+  assert.equal(span, shape === 'triangle' ? 2 * size : size, `${shape} : taille de tuile`)
+  assert.equal(alpha.length, span * span)
+  assert.ok(
+    alpha.every((a) => a >= 0 && a <= 1),
+    `${shape} : alpha hors [0, 1]`,
+  )
+  const mean = alpha.reduce((sum, a) => sum + a, 0) / alpha.length
+  assert.ok(
+    Math.abs(mean - coverage[shape]) < 0.02,
+    `${shape} : couverture ${mean}, attendu ${coverage[shape]}`,
+  )
+}
+const { alpha: tri } = shapeTile('triangle', 4)
+const at = (x: number, y: number) => tri[y * 8 + x]!
+assert.notEqual(at(0, 0), at(4, 0), 'triangle : deux cellules voisines orientées pareil')
+assert.equal(at(0, 0), at(4, 4), 'triangle : le damier ne se répète pas en diagonale')
 
 console.log('dither: ok')
