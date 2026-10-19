@@ -2,7 +2,7 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
-const route = useRoute()
+const { links, isActive } = useSiteNav()
 
 const showBrandMenu = ref(false)
 
@@ -29,64 +29,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   document.removeEventListener('keydown', handleKeydown)
-})
-
-const navLinks = computed(() => [
-  { href: '#about', label: t('sections.about') },
-  { href: '#skills', label: t('sections.skills') },
-  { href: '#projects', label: t('sections.projects') },
-  { href: '#experience', label: t('sections.parcours') },
-])
-
-const activeSection = ref('')
-const isHomepage = computed(() => route.path === '/')
-
-function scrollToSection(event: Event, href: string) {
-  event.preventDefault()
-  const id = href.replace('#', '')
-  const el = document.getElementById(id)
-  if (el) {
-    const headerOffset = 56 // h-14 = 3.5rem = 56px
-    const elementPosition = el.getBoundingClientRect().top + window.scrollY
-    window.scrollTo({
-      top: elementPosition - headerOffset,
-      behavior: 'smooth',
-    })
-  }
-}
-
-onMounted(() => {
-  if (!isHomepage.value) return
-
-  const sectionIds = ['about', 'skills', 'projects', 'experience', 'education']
-  const observers: IntersectionObserver[] = []
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          activeSection.value = entry.target.id
-        }
-      }
-    },
-    {
-      rootMargin: '-20% 0px -70% 0px',
-    },
-  )
-
-  for (const id of sectionIds) {
-    const el = document.getElementById(id)
-    if (el) {
-      observer.observe(el)
-      observers.push(observer)
-    }
-  }
-
-  onUnmounted(() => {
-    for (const obs of observers) {
-      obs.disconnect()
-    }
-  })
 })
 
 const isMobileMenuOpen = ref(false)
@@ -153,40 +95,24 @@ const isMobileMenuOpen = ref(false)
           </Transition>
         </div>
 
-        <!-- Desktop Navigation -->
-        <nav v-if="isHomepage" class="flex items-stretch flex-1" aria-label="Section navigation">
-          <a
-            v-for="link in navLinks"
-            :key="link.href"
-            :href="link.href"
-            :aria-current="activeSection === link.href.replace('#', '') ? 'true' : undefined"
+        <!-- Desktop Navigation: the site's pages -->
+        <nav class="flex items-stretch flex-1" aria-label="Site navigation">
+          <NuxtLink
+            v-for="link in links"
+            :key="link.to"
+            :to="link.to"
+            :aria-current="isActive(link.to) ? 'page' : undefined"
             :class="
               cn(
                 'flex-1 px-6 flex items-center justify-center text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
                 'border-r border-neutral-200 dark:border-neutral-700',
-                activeSection === link.href.replace('#', '')
+                isActive(link.to)
                   ? 'text-primary-500 bg-primary-500/5 nav-tab-active'
                   : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50',
               )
             "
-            @click="scrollToSection($event, link.href)"
           >
             <UiScrambleText :text="link.label" effect="link" />
-          </a>
-
-          <!-- Blog link -->
-          <NuxtLink
-            to="/blog"
-            :class="
-              cn(
-                'flex-1 px-6 flex items-center justify-center gap-1.5 text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
-                'border-r border-neutral-200 dark:border-neutral-700',
-                'text-neutral-500 dark:text-neutral-400 hover:text-sky-400 hover:bg-sky-400/5',
-              )
-            "
-          >
-            <UiScrambleText :text="t('sections.blog')" effect="link" />
-            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" aria-hidden="true" />
           </NuxtLink>
         </nav>
 
@@ -255,7 +181,6 @@ const isMobileMenuOpen = ref(false)
 
           <!-- Mobile menu toggle -->
           <button
-            v-if="isHomepage"
             type="button"
             :class="
               cn(
@@ -294,41 +219,27 @@ const isMobileMenuOpen = ref(false)
         leave-to-class="opacity-0 -translate-y-2"
       >
         <nav
-          v-if="isMobileMenuOpen && isHomepage"
+          v-if="isMobileMenuOpen"
           id="mobile-nav"
           class="md:hidden py-3 border-t border-neutral-200 dark:border-neutral-800"
-          aria-label="Mobile section navigation"
+          aria-label="Mobile site navigation"
         >
-          <a
-            v-for="link in navLinks"
-            :key="link.href"
-            :href="link.href"
-            :aria-current="activeSection === link.href.replace('#', '') ? 'true' : undefined"
+          <NuxtLink
+            v-for="link in links"
+            :key="link.to"
+            :to="link.to"
+            :aria-current="isActive(link.to) ? 'page' : undefined"
             :class="
               cn(
                 'flex items-center px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
-                activeSection === link.href.replace('#', '')
+                isActive(link.to)
                   ? 'text-primary-500 bg-neutral-100 dark:bg-neutral-900'
                   : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50',
               )
             "
-            @click="
-              (e: Event) => {
-                scrollToSection(e, link.href)
-                isMobileMenuOpen = false
-              }
-            "
-          >
-            {{ link.label }}
-          </a>
-          <!-- Blog link mobile -->
-          <NuxtLink
-            to="/blog"
-            class="flex items-center gap-1.5 px-3 py-2 text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 hover:text-sky-400 hover:bg-sky-400/5 transition-colors"
             @click="isMobileMenuOpen = false"
           >
-            {{ t('sections.blog') }}
-            <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" aria-hidden="true" />
+            {{ link.label }}
           </NuxtLink>
         </nav>
       </Transition>
