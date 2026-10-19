@@ -498,7 +498,8 @@ function switchTab(step: 1 | -1) {
     </template>
 
     <!-- Error -->
-    <div v-else class="text-sm text-neutral-500">
+    <div v-else class="flex items-center gap-3 text-sm text-neutral-500">
+      <UiMascot mood="sad" :size="40" />
       {{ t('github.error') }}
     </div>
 

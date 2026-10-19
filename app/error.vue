@@ -168,6 +168,7 @@ onUnmounted(() => {
 
       <!-- Text content -->
       <div class="text-center flex flex-col items-center gap-6 mt-4">
+        <UiMascot mood="shocked" :size="96" />
         <p class="text-neutral-400 text-base" style="font-family: 'Monaspace Krypton', monospace">
           {{ t('error.subtitle') }}
         </p>

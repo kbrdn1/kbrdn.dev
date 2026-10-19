@@ -203,6 +203,9 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
     </ul>
 
     <!-- Error / nothing pinned -->
-    <p v-else class="text-sm text-neutral-500">{{ t('github.error') }}</p>
+    <p v-else class="flex items-center gap-3 text-sm text-neutral-500">
+      <UiMascot mood="sad" :size="40" />
+      {{ t('github.error') }}
+    </p>
   </div>
 </template>

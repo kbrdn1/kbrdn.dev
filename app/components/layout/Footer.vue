@@ -220,15 +220,17 @@ const currentYear = new Date().getFullYear()
                 <p
                   v-if="submitStatus === 'success'"
                   role="status"
-                  class="text-sm text-green-600 dark:text-green-400"
+                  class="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
                 >
+                  <UiMascot mood="clap" :size="32" />
                   {{ t('footer.contact.success') }}
                 </p>
                 <p
                   v-if="submitStatus === 'error'"
                   role="alert"
-                  class="text-sm text-red-600 dark:text-red-400"
+                  class="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
                 >
+                  <UiMascot mood="nervous" :size="32" />
                   {{ t('footer.contact.error') }}
                 </p>
               </div>
@@ -364,7 +366,8 @@ const currentYear = new Date().getFullYear()
       <div
         class="mt-12 pt-6 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-center"
       >
-        <p class="text-xs text-neutral-500 text-center">
+        <p class="flex items-center gap-2 text-xs text-neutral-500 text-center">
+          <UiMascot mood="hoodie-cool" :size="28" />
           &copy; {{ currentYear }} Kylian Bardini. {{ t('footer.copyright') }}
         </p>
       </div>
