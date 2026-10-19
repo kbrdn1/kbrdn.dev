@@ -87,6 +87,15 @@ migrates `[Unreleased]` into that file and empties this one — see
   own transparent character, so nothing reflows; screen readers get the plain
   text, and nothing moves under `prefers-reduced-motion`.
 
+- **The pointer ripples the background and leaves a trail of pixels**
+  ([#72](https://github.com/kbrdn1/kbrdn.dev/issues/72)). After the
+  CursorRipples filter of safzan.dev's hero, with its settings: a damped wave
+  field splashed where the pointer moves, harder the faster it goes, displaces
+  the dither pattern like water. Cells along the pointer's path light up
+  gradually, filled in pixel by pixel by the Bayer matrix, and fade out in
+  under a second. 60 fps while something moves, 24 at rest. Replaces 1.1.0's
+  spring trail.
+
 ## Past releases
 
 - [1.1.0](changelogs/1.1.0.md) — 2026-10-16
