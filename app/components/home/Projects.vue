@@ -65,7 +65,7 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
           {{ t('projects.featured') }}
         </span>
         <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
-          {{ t('projects.title') }}
+          <UiScrambleText :text="t('projects.title')" />
         </h2>
       </div>
       <a
@@ -74,7 +74,7 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
         rel="noopener noreferrer"
         class="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-neutral-500 hover:text-primary-500 transition-colors"
       >
-        {{ t('projects.viewAll') }}
+        <UiScrambleText :text="t('projects.viewAll')" effect="link" />
         <UIcon name="i-heroicons-arrow-top-right-on-square" class="w-3.5 h-3.5" />
       </a>
     </div>

@@ -247,7 +247,7 @@ function switchTab(step: 1 | -1) {
     <!-- Header with tabs -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
-        {{ t('github.title') }}
+        <UiScrambleText :text="t('github.title')" />
       </h2>
       <div class="flex items-center justify-between sm:justify-end gap-4">
         <!-- Tabs -->

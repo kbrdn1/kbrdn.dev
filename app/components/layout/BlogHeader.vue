@@ -123,7 +123,7 @@ const isMobileMenuOpen = ref(false)
               )
             "
           >
-            {{ link.label }}
+            <UiScrambleText :text="link.label" effect="link" />
           </NuxtLink>
 
           <!-- Portfolio link -->
@@ -138,7 +138,7 @@ const isMobileMenuOpen = ref(false)
             "
           >
             <UIcon name="i-heroicons-arrow-left" class="w-3 h-3" aria-hidden="true" />
-            {{ t('blogNav.portfolio') }}
+            <UiScrambleText :text="t('blogNav.portfolio')" effect="link" />
           </NuxtLink>
         </nav>
 
