@@ -30,9 +30,11 @@ function ditherNoise(): Promise<Float32Array> {
 <script setup lang="ts">
 // Animated ordered-dither field: two scrolling noise layers, thresholded and
 // quantised through a 4×4 Bayer matrix into a few alpha levels of the element's
-// CSS `color` (--ui-primary). Drawn at cell resolution, upscaled by the browser
-// with `image-rendering: pixelated`. Decorative only — positioning, size and
-// opacity come from the parent's classes.
+// CSS `color` (--ui-primary). Each cell is drawn as the page's pixel shape
+// (ditherShape()): squares at cell resolution, upscaled by the browser with
+// `image-rendering: pixelated`; other shapes at device resolution, the cell map
+// scaled up then cut out by a repeating tile of the shape. Decorative only —
+// positioning, size and opacity come from the parent's classes.
 const props = withDefaults(
   defineProps<{
     /** The pointer leaves a decaying trail that lights up and pushes the noise. */
@@ -50,8 +52,9 @@ const MIN_CELL_PX = 4
 // fall to ~4.0:1 under a dense cell (4.5:1 needs <= 0.08): accepted for a visible field.
 const ALPHAS = [0, 0.06, 0.12, 0.18]
 const GAIN = 4.2
-const TRAIL_RADIUS = 9 // cells
-const TRAIL_SIGMA = TRAIL_RADIUS / 2.5
+// Trail sizes are in 4px cells; a field with bigger cells (non-square shapes) scales
+// them down by its stride, so the trail keeps its size on screen.
+const TRAIL_RADIUS = 9
 const TRAIL_STRENGTH = 0.3
 // Squishy trail: drawn from a spring chasing the pointer (underdamped: it lags, overshoots
 // and wobbles ~0.6 s before settling), its brush stretched along the motion.
@@ -79,9 +82,21 @@ onMounted(async () => {
   // Props are fixed for the canvas lifetime; read once, not per cell through the proxy.
   const { interactive, fade } = props
   const palette = new Uint32Array(ALPHAS.length)
+  const shape = ditherShape()
+  const shaped = shape !== 'square'
+  // Shaped fields: the cell map goes to this canvas, then scaled up into `el`.
+  const levels = shaped ? document.createElement('canvas') : undefined
+  const levelsCtx = levels?.getContext('2d')
+  let pattern: CanvasPattern | null = null
 
   let cols = 0
   let rows = 0
+  let deviceCell = 1 // cell size in backing px (shaped fields)
+  // Noise texels per cell: 1 on a 4px grid, more when the shape needs bigger cells,
+  // so the blobs, the scroll speed and the trail keep their size on screen.
+  let stride = 1
+  let trailRadius = TRAIL_RADIUS
+  let trailSigma = TRAIL_RADIUS / 2.5
   let image = new ImageData(1, 1)
   let pixels = new Uint32Array(image.data.buffer)
   let threshold = new Float32Array(0)
@@ -121,14 +136,37 @@ onMounted(async () => {
   function resize() {
     const width = el!.clientWidth
     const height = el!.clientHeight
-    const cell = Math.max(MIN_CELL_PX, Math.ceil(width / NOISE_W), Math.ceil(height / NOISE_H))
+    const base = Math.max(MIN_CELL_PX, Math.ceil(width / NOISE_W), Math.ceil(height / NOISE_H))
+    const cell = Math.max(SHAPE_CELL_PX[shape], base)
     const nextCols = Math.max(1, Math.ceil(width / cell))
     const nextRows = Math.max(1, Math.ceil(height / cell))
-    if (nextCols === cols && nextRows === rows) return
+    const dpr = Math.min(2, window.devicePixelRatio || 1)
+    const backingW = shaped ? Math.round(width * dpr) : nextCols
+    const backingH = shaped ? Math.round(height * dpr) : nextRows
+    if (
+      nextCols === cols &&
+      nextRows === rows &&
+      backingW === el!.width &&
+      backingH === el!.height
+    ) {
+      return
+    }
     cols = nextCols
     rows = nextRows
-    el!.width = cols
-    el!.height = rows
+    stride = cell / base
+    trailRadius = TRAIL_RADIUS / stride
+    trailSigma = trailRadius / 2.5
+    el!.width = backingW
+    el!.height = backingH
+    if (levels) {
+      levels.width = cols
+      levels.height = rows
+      const nextDeviceCell = Math.max(1, Math.round(cell * dpr))
+      if (nextDeviceCell !== deviceCell || !pattern) {
+        deviceCell = nextDeviceCell
+        pattern = shapePattern(ctx!, shape, deviceCell)
+      }
+    }
     image = new ImageData(cols, rows)
     pixels = new Uint32Array(image.data.buffer)
     if (interactive) heat = new Float32Array(cols * rows)
@@ -142,9 +180,9 @@ onMounted(async () => {
 
   // Gaussian brush stretched along the motion (ux, uy) and squashed across it.
   function stamp(cx: number, cy: number, ux: number, uy: number, stretch: number) {
-    const along = 2 * (TRAIL_SIGMA * stretch) ** 2
-    const across = (2 * TRAIL_SIGMA ** 2) / stretch
-    const reach = Math.ceil(TRAIL_RADIUS * stretch)
+    const along = 2 * (trailSigma * stretch) ** 2
+    const across = (2 * trailSigma ** 2) / stretch
+    const reach = Math.ceil(trailRadius * stretch)
     const x0 = Math.round(cx)
     const y0 = Math.round(cy)
     for (let y = Math.max(0, y0 - reach); y <= Math.min(rows - 1, y0 + reach); y++) {
@@ -184,13 +222,15 @@ onMounted(async () => {
     follower.x += follower.vx
     follower.y += follower.vy
     const speed = Math.hypot(follower.vx, follower.vy)
-    if (speed < 0.05 && Math.hypot(target.x - follower.x, target.y - follower.y) < 0.1) {
+    // Thresholds and stretch are tuned in 4px cells.
+    const speed4 = speed * stride
+    if (speed4 < 0.05 && Math.hypot(target.x - follower.x, target.y - follower.y) * stride < 0.1) {
       moving = false
     }
     // A wobble too small to see would only pile heat up under a still cursor.
-    if (speed < 0.3) return
-    const stretch = Math.min(MAX_STRETCH, 1 + speed * STRETCH)
-    const steps = Math.ceil(speed / (TRAIL_RADIUS / 3))
+    if (speed4 < 0.3) return
+    const stretch = Math.min(MAX_STRETCH, 1 + speed4 * STRETCH)
+    const steps = Math.ceil(speed / (trailRadius / 3))
     for (let s = 1; s <= steps; s++) {
       stamp(
         fromX + ((follower.x - fromX) * s) / steps,
@@ -220,11 +260,13 @@ onMounted(async () => {
             dy = ((heat[i + cols] ?? 0) - (heat[i - cols] ?? 0)) * TRAIL_PUSH
           }
         }
-        const ax = ((x + shiftA + dx) | 0) & (NOISE_W - 1)
-        const ay = ((y + dy) | 0) & (NOISE_H - 1)
+        const tx = x * stride
+        const ty = y * stride
+        const ax = ((tx + shiftA + dx) | 0) & (NOISE_W - 1)
+        const ay = ((ty + dy) | 0) & (NOISE_H - 1)
         // Second layer: the same texture at twice the frequency, scrolling the other way.
-        const bx = ((2 * x + shiftB + dx) | 0) & (NOISE_W - 1)
-        const by = ((2 * y + liftB + dy) | 0) & (NOISE_H - 1)
+        const bx = ((2 * tx + shiftB + dx) | 0) & (NOISE_W - 1)
+        const by = ((2 * ty + liftB + dy) | 0) & (NOISE_H - 1)
         const value =
           noise[ay * NOISE_W + ax]! * 0.65 + noise[by * NOISE_W + bx]! * 0.35 + glow * TRAIL_GLOW
         const u = (value - floor) * GAIN
@@ -232,7 +274,20 @@ onMounted(async () => {
           u > 0 ? palette[Math.min(3, (u * 3 + BAYER_4[((y & 3) << 2) | (x & 3)]!) | 0)]! : 0
       }
     }
-    ctx!.putImageData(image, 0, 0)
+    if (!levels || !levelsCtx || !pattern) {
+      ctx!.putImageData(image, 0, 0)
+      return
+    }
+    // Two draws whatever the cell count: the cell map scaled up by an integer factor
+    // without smoothing, then its alpha multiplied by the shape tile.
+    levelsCtx.putImageData(image, 0, 0)
+    ctx!.clearRect(0, 0, el!.width, el!.height)
+    ctx!.imageSmoothingEnabled = false
+    ctx!.drawImage(levels, 0, 0, cols * deviceCell, rows * deviceCell)
+    ctx!.globalCompositeOperation = 'destination-in'
+    ctx!.fillStyle = pattern
+    ctx!.fillRect(0, 0, el!.width, el!.height)
+    ctx!.globalCompositeOperation = 'source-over'
   }
 
   function tick(now: number) {
