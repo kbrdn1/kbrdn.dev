@@ -46,6 +46,8 @@ const props = withDefaults(
 )
 
 const FRAME_MS = 1000 / 24
+// While a trail or a ripple is alive: smooth motion under the pointer.
+const ACTIVE_FRAME_MS = 1000 / 60
 const MIN_CELL_PX = 4
 // Top level capped at 0.18: at 0.24 the bio (#999 on dark) drops under the 4.5:1 AA
 // contrast where a dense cell sits behind it. In light, small #666 labels on #f0eeeb
@@ -55,15 +57,21 @@ const GAIN = 4.2
 // Cursor ripples, after the CursorRipples filter of safzan.dev's hero (shaders.com, set to
 // intensity 4, decay 6, radius 0.6): a damped 2D wave field 128 columns wide, splashed
 // where the pointer moves, harder the faster it goes. Its gradient displaces the noise,
-// so the pattern ripples like water under the cursor, and its crests light up: a wake
-// that trails the pointer and spreads out in rings.
+// so the pattern ripples like water under the cursor.
 const SIM_COLS = 128
-const WAVE_STEPS = 2 // per frame: waves travel ~2 sim cells per frame
+const WAVE_RATE = 48 // wave steps per second, whatever the frame rate
 const WAVE_DAMPING = 0.955 // per step
 const SPLASH_RADIUS = 3.6 // sim cells
 const SPLASH_MAX = 2 // pointer speed cap, in sim cells per frame
 const RIPPLE_INTENSITY = 16 // noise texels of displacement per unit of wave slope
-const RIPPLE_GLOW = 0.3 // brightness added per unit of crest height
+// The trail: cells lit along the pointer's path, fading out in under a second. Each
+// stamp adds a little light, so a cell brightens as the pointer passes over it and the
+// Bayer matrix fills it in pixel by pixel. Sizes in 4px cells, scaled down by the stride
+// of bigger-celled shapes.
+const TRAIL_RADIUS = 4
+const TRAIL_STAMP = 0.3 // light added by one stamp at the centre
+const TRAIL_FADE = 3.6 // per second: e^-3.6 ≈ 3% left after one second
+const TRAIL_GLOW = 0.6 // brightness of a fully lit cell
 
 const canvas = ref<HTMLCanvasElement>()
 const reducedMotion = useReducedMotion()
@@ -110,7 +118,11 @@ onMounted(async () => {
   let simX = new Int32Array(0)
   let simY = new Int32Array(0)
   let rippling = false
-  // Last pointer event in client coordinates, then the previous position in sim cells.
+  let waveClock = 0 // wave steps owed to elapsed time
+  let heat = new Float32Array(0) // trail, one value per field cell
+  let trailing = false
+  // Last pointer event in client coordinates, then the previous position as a fraction
+  // of the canvas (shared by the wave grid and the field grid).
   let pointer: { x: number; y: number } | null = null
   let last: { x: number; y: number } | null = null
 
@@ -177,6 +189,8 @@ onMounted(async () => {
       simX = Int32Array.from({ length: cols }, (_, x) => toSim(x, cols, simCols))
       simY = Int32Array.from({ length: rows }, (_, y) => toSim(y, rows, simRows))
       rippling = false
+      heat = new Float32Array(cols * rows)
+      trailing = false
     }
     threshold = Float32Array.from({ length: rows }, (_, y) => {
       const t = rows > 1 ? y / (rows - 1) : 0
@@ -205,45 +219,84 @@ onMounted(async () => {
     }
   }
 
-  // Splash along the segment the pointer travelled since the last frame. A jump (first
-  // move, back into the window) is not a stroke: it only sets where the next one starts.
+  // Light the cells within the trail radius of (cx, cy), in field cells.
+  function light(cx: number, cy: number) {
+    const radius = TRAIL_RADIUS / stride
+    const reach = Math.ceil(radius)
+    for (
+      let y = Math.max(0, Math.round(cy) - reach);
+      y <= Math.min(rows - 1, Math.round(cy) + reach);
+      y++
+    ) {
+      for (
+        let x = Math.max(0, Math.round(cx) - reach);
+        x <= Math.min(cols - 1, Math.round(cx) + reach);
+        x++
+      ) {
+        const d = Math.hypot(x - cx, y - cy) / radius
+        if (d < 1) heat[y * cols + x] = Math.min(1, heat[y * cols + x]! + (1 - d * d) * TRAIL_STAMP)
+      }
+    }
+  }
+
+  // Splash the wave field and light the trail along the segment the pointer travelled
+  // since the last frame. A jump (first move, back into the window) is not a stroke: it
+  // only sets where the next one starts.
   function applyPointer() {
     if (!pointer) return
     const rect = el!.getBoundingClientRect()
-    const at = {
-      x: ((pointer.x - rect.left) / rect.width) * simCols,
-      y: ((pointer.y - rect.top) / rect.height) * simRows,
-    }
+    const at = { x: (pointer.x - rect.left) / rect.width, y: (pointer.y - rect.top) / rect.height }
     pointer = null
     const from = last
     last = at
     if (!from) return
-    const distance = Math.hypot(at.x - from.x, at.y - from.y)
+    const distance = Math.hypot((at.x - from.x) * simCols, (at.y - from.y) * simRows)
     if (distance < 0.05 || distance > simCols / 4) return
-    const steps = Math.ceil(distance / (SPLASH_RADIUS / 2))
-    const amount = Math.min(SPLASH_MAX, distance) / steps
-    for (let s = 1; s <= steps; s++) {
-      splash(from.x + ((at.x - from.x) * s) / steps, from.y + ((at.y - from.y) * s) / steps, amount)
+    const splashes = Math.ceil(distance / (SPLASH_RADIUS / 2))
+    const amount = Math.min(SPLASH_MAX, distance) / splashes
+    for (let s = 1; s <= splashes; s++) {
+      const t = s / splashes
+      splash(
+        (from.x + (at.x - from.x) * t) * simCols,
+        (from.y + (at.y - from.y) * t) * simRows,
+        amount,
+      )
     }
     rippling = true
+    // One stamp per field cell travelled, so the trail has no gaps.
+    const cells = Math.ceil(Math.hypot((at.x - from.x) * cols, (at.y - from.y) * rows))
+    for (let s = 1; s <= cells; s++) {
+      const t = s / cells
+      light((from.x + (at.x - from.x) * t) * cols, (from.y + (at.y - from.y) * t) * rows)
+    }
+    trailing = true
   }
 
-  // Damped wave equation, written into the older buffer, then the buffers swap.
+  function fadeTrail(dt: number) {
+    const keep = Math.exp(-TRAIL_FADE * dt)
+    let peak = 0
+    for (let k = 0; k < heat.length; k++) {
+      heat[k] = heat[k]! * keep
+      peak = Math.max(peak, heat[k]!)
+    }
+    trailing = peak > 0.01
+  }
+
+  // One step of the damped wave equation, written into the older buffer, then the
+  // buffers swap.
   function stepWave() {
     let energy = 0
-    for (let step = 0; step < WAVE_STEPS; step++) {
-      for (let y = 1; y < simRows - 1; y++) {
-        for (let x = 1, i = y * simCols + 1; x < simCols - 1; x++, i++) {
-          const next =
-            ((wave[i - 1]! + wave[i + 1]! + wave[i - simCols]! + wave[i + simCols]!) * 0.5 -
-              wavePrev[i]!) *
-            WAVE_DAMPING
-          wavePrev[i] = next
-          energy = Math.max(energy, Math.abs(next))
-        }
+    for (let y = 1; y < simRows - 1; y++) {
+      for (let x = 1, i = y * simCols + 1; x < simCols - 1; x++, i++) {
+        const next =
+          ((wave[i - 1]! + wave[i + 1]! + wave[i - simCols]! + wave[i + simCols]!) * 0.5 -
+            wavePrev[i]!) *
+          WAVE_DAMPING
+        wavePrev[i] = next
+        energy = Math.max(energy, Math.abs(next))
       }
-      ;[wave, wavePrev] = [wavePrev, wave]
     }
+    ;[wave, wavePrev] = [wavePrev, wave]
     // Settled: skip the field and the per-cell displacement until the next splash.
     rippling = energy > 1e-3
   }
@@ -259,13 +312,12 @@ onMounted(async () => {
       for (let x = 0; x < cols; x++, i++) {
         let dx = 0
         let dy = 0
-        let glow = 0
         if (rippling) {
           const si = simRow + simX[x]!
           dx = (wave[si + 1]! - wave[si - 1]!) * RIPPLE_INTENSITY
           dy = (wave[si + simCols]! - wave[si - simCols]!) * RIPPLE_INTENSITY
-          glow = Math.max(0, wave[si]!) * RIPPLE_GLOW
         }
+        const glow = trailing ? heat[i]! * TRAIL_GLOW : 0
         const tx = x * stride
         const ty = y * stride
         const ax = ((tx + shiftA + dx) | 0) & (NOISE_W - 1)
@@ -297,15 +349,23 @@ onMounted(async () => {
 
   function tick(now: number) {
     frame = requestAnimationFrame(tick)
-    const elapsed = lastFrame ? now - lastFrame : FRAME_MS
-    if (elapsed < FRAME_MS) return
-    lastFrame = now - (elapsed % FRAME_MS)
-    time += Math.min(elapsed, 250) / 1000
+    const active = interactive && (trailing || rippling || pointer !== null)
+    const interval = active ? ACTIVE_FRAME_MS : FRAME_MS
+    const elapsed = lastFrame ? now - lastFrame : interval
+    if (elapsed < interval) return
+    lastFrame = now - (elapsed % interval)
+    const dt = Math.min(elapsed, 250) / 1000
+    time += dt
     if (interactive) {
       applyPointer()
-      if (rippling) stepWave()
+      waveClock = rippling ? waveClock + dt * WAVE_RATE : 0
+      while (rippling && waveClock >= 1) {
+        stepWave()
+        waveClock--
+      }
     }
     draw()
+    if (trailing) fadeTrail(dt)
   }
 
   function start() {
