@@ -38,25 +38,14 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="h-full w-full flex relative overflow-hidden" style="background: #1a1a1a;">
-    <!-- Grid background zones (left side) - square grid like blog page -->
-    <div
-      class="absolute top-0 bottom-0 left-0"
-      style="width: 80px; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 24px 24px; opacity: 0.6;"
-    />
-    <!-- Grid background zones (right side) -->
-    <div
-      class="absolute top-0 bottom-0 right-0"
-      style="width: 80px; background-image: linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px); background-size: 24px 24px; opacity: 0.6;"
-    />
-
-    <!-- Side border lines -->
-    <div class="absolute top-0 bottom-0" style="left: 80px; width: 1px; background: #2a2a2a;" />
-    <div class="absolute top-0 bottom-0" style="right: 80px; width: 1px; background: #2a2a2a;" />
-
-    <!-- Top/bottom horizontal borders -->
-    <div class="absolute h-px" style="top: 48px; left: 80px; right: 80px; background: #2a2a2a;" />
-    <div class="absolute h-px" style="bottom: 48px; left: 80px; right: 80px; background: #2a2a2a;" />
+  <div class="h-full w-full flex relative overflow-hidden" style="background: #121212;">
+    <!-- Outside the column: a muted grid and a border along the column, fading out downwards, like the pages -->
+    <div class="absolute top-0 bottom-0 left-0" style="width: 80px; background-image: linear-gradient(#232323 1px, transparent 1px), linear-gradient(90deg, #232323 1px, transparent 1px); background-size: 24px 24px;" />
+    <div class="absolute top-0 bottom-0 right-0" style="width: 80px; background-image: linear-gradient(#232323 1px, transparent 1px), linear-gradient(90deg, #232323 1px, transparent 1px); background-size: 24px 24px;" />
+    <div class="absolute top-0 bottom-0 left-0" style="width: 80px; background: linear-gradient(to bottom, rgba(18,18,18,0) 0%, #121212 90%);" />
+    <div class="absolute top-0 bottom-0 right-0" style="width: 80px; background: linear-gradient(to bottom, rgba(18,18,18,0) 0%, #121212 90%);" />
+    <div class="absolute top-0 bottom-0" style="left: 80px; width: 1px; background: linear-gradient(to bottom, #262626 0%, rgba(38,38,38,0) 90%);" />
+    <div class="absolute top-0 bottom-0" style="right: 80px; width: 1px; background: linear-gradient(to bottom, #262626 0%, rgba(38,38,38,0) 90%);" />
 
     <!-- Banner image fading from right -->
     <div class="absolute right-0 top-0 bottom-0" style="width: 450px;">
@@ -67,9 +56,11 @@ withDefaults(defineProps<{
       />
       <div
         class="absolute inset-0"
-        style="background: linear-gradient(to right, #1a1a1a 0%, rgba(26,26,26,0.95) 25%, rgba(26,26,26,0.5) 100%);"
+        style="background: linear-gradient(to right, #121212 0%, rgba(18,18,18,0.95) 25%, rgba(18,18,18,0.5) 100%);"
       />
     </div>
+    <!-- The site's dither field, frozen (scripts/og-dither.ts) -->
+    <img src="/images/og/dither.png" alt="" style="position: absolute; top: 0; left: 0; width: 1200px; height: 630px;" />
 
     <!-- Content zone -->
     <div class="absolute flex flex-col justify-between" style="top: 48px; bottom: 48px; left: 80px; right: 80px; padding: 32px 40px;">

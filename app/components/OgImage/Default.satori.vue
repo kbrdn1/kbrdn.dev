@@ -23,21 +23,17 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="h-full w-full flex relative overflow-hidden" style="background: #1a1a1a;">
-    <!-- Diagonal stripes on left side zone -->
-    <div
-      class="absolute top-0 bottom-0 left-0"
-      style="width: 80px; background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, #333 10px, #333 10.5px); opacity: 0.6;"
-    />
-    <!-- Diagonal stripes on right side zone -->
-    <div
-      class="absolute top-0 bottom-0 right-0"
-      style="width: 80px; background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, #333 10px, #333 10.5px); opacity: 0.6;"
-    />
+  <div class="h-full w-full flex relative overflow-hidden" style="background: #121212;">
+    <!-- The site's dither field, frozen (scripts/og-dither.ts) -->
+    <img src="/images/og/dither.png" alt="" style="position: absolute; top: 0; left: 0; width: 1200px; height: 630px;" />
 
-    <!-- Vertical border lines -->
-    <div class="absolute top-0 bottom-0" style="left: 80px; width: 1px; background: #2a2a2a;" />
-    <div class="absolute top-0 bottom-0" style="right: 80px; width: 1px; background: #2a2a2a;" />
+    <!-- Outside the column: a muted grid and a border along the column, fading out downwards, like the pages -->
+    <div class="absolute top-0 bottom-0 left-0" style="width: 80px; background-image: linear-gradient(#232323 1px, transparent 1px), linear-gradient(90deg, #232323 1px, transparent 1px); background-size: 24px 24px;" />
+    <div class="absolute top-0 bottom-0 right-0" style="width: 80px; background-image: linear-gradient(#232323 1px, transparent 1px), linear-gradient(90deg, #232323 1px, transparent 1px); background-size: 24px 24px;" />
+    <div class="absolute top-0 bottom-0 left-0" style="width: 80px; background: linear-gradient(to bottom, rgba(18,18,18,0) 0%, #121212 90%);" />
+    <div class="absolute top-0 bottom-0 right-0" style="width: 80px; background: linear-gradient(to bottom, rgba(18,18,18,0) 0%, #121212 90%);" />
+    <div class="absolute top-0 bottom-0" style="left: 80px; width: 1px; background: linear-gradient(to bottom, #262626 0%, rgba(38,38,38,0) 90%);" />
+    <div class="absolute top-0 bottom-0" style="right: 80px; width: 1px; background: linear-gradient(to bottom, #262626 0%, rgba(38,38,38,0) 90%);" />
 
     <!-- Banner announcement bar at bottom (like HomeBanner) -->
     <div v-if="bannerText" class="absolute left-0 right-0 bottom-0 flex items-center justify-center" style="height: 40px; overflow: hidden;">
@@ -46,8 +42,8 @@ withDefaults(defineProps<{
         alt=""
         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: top;"
       />
-      <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent, rgba(26,26,26,0.5));" />
-      <div class="absolute inset-0" style="background: linear-gradient(to right, rgba(26,26,26,0.5), transparent, rgba(26,26,26,0.5));" />
+      <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent, rgba(18,18,18,0.5));" />
+      <div class="absolute inset-0" style="background: linear-gradient(to right, rgba(18,18,18,0.5), transparent, rgba(18,18,18,0.5));" />
       <div class="flex items-center gap-2" style="position: relative;">
         <!-- Rocket icon SVG -->
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -64,11 +60,6 @@ withDefaults(defineProps<{
       </div>
     </div>
 
-    <!-- Horizontal border lines -->
-    <div class="absolute h-px" style="top: 60px; left: 80px; right: 80px; background: #2a2a2a;" />
-    <div v-if="bannerText" class="absolute h-px" style="bottom: 40px; left: 80px; right: 80px; background: #2a2a2a;" />
-    <div v-else class="absolute h-px" style="bottom: 60px; left: 80px; right: 80px; background: #2a2a2a;" />
-
     <!-- Content zone -->
     <div class="absolute flex flex-col justify-between" :style="{ top: '60px', bottom: bannerText ? '40px' : '60px', left: '80px', right: '80px', padding: '36px 48px' }">
       <!-- Top row: status badge + handle -->
@@ -76,9 +67,9 @@ withDefaults(defineProps<{
         <div v-if="isHirable" class="flex items-center">
           <span
             class="flex items-center gap-2"
-            style="padding: 6px 14px; font-family: 'Monaspace Krypton', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #e8a573; border: 1px solid rgba(232, 165, 115, 0.4); background: rgba(212, 130, 93, 0.15);"
+            style="padding: 6px 14px; font-family: 'Monaspace Krypton', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.05);"
           >
-            <div class="w-2 h-2 rounded-full" style="background: #e8a573;" />
+            <div class="w-2 h-2 rounded-full" style="background: #22c55e;" />
             {{ statusText }}
           </span>
         </div>
@@ -105,11 +96,7 @@ withDefaults(defineProps<{
         </div>
 
         <!-- Avatar -->
-        <div class="flex-shrink-0 flex items-center justify-center" style="width: 180px; height: 180px; border: 1px solid #3a3a3a; position: relative; overflow: hidden;">
-          <div
-            class="absolute inset-0"
-            style="background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, #2a2a2a 10px, #2a2a2a 10.5px); opacity: 0.5;"
-          />
+        <div class="flex-shrink-0 flex items-center justify-center" style="width: 200px; height: 200px; position: relative;">
           <img
             v-if="avatarUrl"
             :src="avatarUrl"

@@ -23,6 +23,9 @@ if (import.meta.server) {
   defineOgImage('Default', {
     title: t('blog.title'),
     description: t('blog.description'),
+    // Same badge and avatar as the home page's image, instead of the defaults
+    statusText: t('hero.availableForHire'),
+    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
   })
 }
 
