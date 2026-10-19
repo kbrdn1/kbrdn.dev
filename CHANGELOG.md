@@ -34,6 +34,15 @@ migrates `[Unreleased]` into that file and empties this one — see
   shimmer, then shrink away on leave. Under the content, never in the way of a
   click; nothing on touch, a still frame under `prefers-reduced-motion`.
 
+### Changed
+
+- **The pointer ripples the background like water**
+  ([#72](https://github.com/kbrdn1/kbrdn.dev/issues/72)). After the
+  CursorRipples filter of safzan.dev's hero, with its settings: a damped wave
+  field splashed where the pointer moves, harder the faster it goes, displaces
+  the dither pattern, and its crests light up into a wake that trails the
+  cursor and spreads out in rings. Replaces 1.1.0's spring trail.
+
 ## Past releases
 
 - [1.1.0](changelogs/1.1.0.md) — 2026-10-16
