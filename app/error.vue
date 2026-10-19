@@ -108,9 +108,31 @@ function handleBackHome() {
   clearError({ redirect: '/' })
 }
 
+// Intro: the server renders the pixels hidden; once mounted, each gets a random
+// scatter offset (client only, so no hydration mismatch), then the next frame
+// lets them fly home, staggered. The same per-pixel delays stagger a reset.
+const phase = ref<'hidden' | 'scattered' | 'assembled'>('hidden')
+const scatter = ref<Record<number, Record<string, string>>>({})
+
 onMounted(() => {
   window.addEventListener('mousemove', onMouseMove)
   window.addEventListener('mouseup', onMouseUp)
+  const spread = Math.max(window.innerWidth, window.innerHeight) * 0.6
+  scatter.value = Object.fromEntries(
+    pixels.value.map((p) => [
+      p.id,
+      {
+        '--dx': `${(Math.random() - 0.5) * spread}px`,
+        '--dy': `${(Math.random() - 0.5) * spread}px`,
+        '--rot': `${(Math.random() - 0.5) * 360}deg`,
+        '--delay': `${Math.round(Math.random() * 500)}ms`,
+        '--flicker-delay': `${(1.5 + Math.random() * 8).toFixed(2)}s`,
+        '--flicker-duration': `${(5 + Math.random() * 7).toFixed(2)}s`,
+      },
+    ]),
+  )
+  phase.value = 'scattered'
+  requestAnimationFrame(() => requestAnimationFrame(() => (phase.value = 'assembled')))
 })
 
 onUnmounted(() => {
@@ -124,19 +146,11 @@ onUnmounted(() => {
     class="min-h-screen flex flex-col items-center justify-center relative overflow-hidden select-none"
     style="background-color: #1a1a1a"
   >
-    <!-- Diagonal stripe sides -->
-    <div
-      class="absolute inset-0 pointer-events-none"
-      style="
-        background-image: repeating-linear-gradient(
-          -45deg,
-          transparent,
-          transparent 10px,
-          rgba(212, 130, 93, 0.04) 10px,
-          rgba(212, 130, 93, 0.04) 10.5px
-        );
-      "
-      aria-hidden="true"
+    <!-- The site's dither field, interactive like on every other page -->
+    <UiDitherCanvas
+      interactive
+      fade="down"
+      class="absolute inset-0 h-full w-full [mask-image:linear-gradient(to_bottom,#000_60%,transparent)]"
     />
 
     <!-- Main content -->
@@ -144,13 +158,15 @@ onUnmounted(() => {
       <!-- Pixel canvas -->
       <div
         class="relative"
+        :data-phase="phase"
         :style="{ width: canvasWidth + 'px', height: canvasHeight + 'px' }"
         aria-label="404"
       >
         <div
           v-for="pixel in pixels"
           :key="pixel.id"
-          class="absolute cursor-grab active:cursor-grabbing transition-shadow"
+          class="pixel absolute cursor-grab active:cursor-grabbing"
+          :class="{ 'is-dragging': dragging?.id === pixel.id }"
           :style="{
             width: PIXEL_SIZE + 'px',
             height: PIXEL_SIZE + 'px',
@@ -161,6 +177,7 @@ onUnmounted(() => {
               dragging?.id === pixel.id
                 ? '0 0 8px rgba(212, 130, 93, 0.6)'
                 : '0 0 2px rgba(212, 130, 93, 0.3)',
+            ...scatter[pixel.id],
           }"
           @mousedown="onMouseDown($event, pixel)"
         />
@@ -168,9 +185,9 @@ onUnmounted(() => {
 
       <!-- Text content -->
       <div class="text-center flex flex-col items-center gap-6 mt-4">
-        <UiMascot mood="shocked" :size="96" />
+        <UiMascot :mood="dragging ? 'dizzy' : 'shocked'" :size="96" class="mascot-bob" />
         <p class="text-neutral-400 text-base" style="font-family: 'Monaspace Krypton', monospace">
-          {{ t('error.subtitle') }}
+          <UiScrambleText :text="t('error.subtitle')" />
         </p>
 
         <!-- Action buttons -->
@@ -212,3 +229,77 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Hidden on the server, scattered for one frame once mounted, then each pixel flies
+   home with a little overshoot. Reset reuses the transition, staggered the same way. */
+.pixel {
+  opacity: 0;
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--rot, 0deg)) scale(0.4);
+}
+
+[data-phase='assembled'] .pixel {
+  opacity: 1;
+  transform: none;
+  transition:
+    transform 900ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 400ms ease-out,
+    left 700ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    top 700ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 200ms;
+  transition-delay: var(--delay, 0ms);
+  /* A pixel slips out of place now and then: on `translate`, which composes with the
+     intro's `transform` instead of overriding it. */
+  animation: pixel-glitch var(--flicker-duration, 8s) steps(1) var(--flicker-delay, 3s) infinite;
+}
+
+/* The dragged pixel follows the pointer without lag. */
+[data-phase='assembled'] .pixel.is-dragging {
+  transition: box-shadow 200ms;
+  animation: none;
+}
+
+@keyframes pixel-glitch {
+  0%,
+  92%,
+  100% {
+    translate: 0 0;
+    filter: none;
+  }
+  93% {
+    translate: 3px -4px;
+    filter: brightness(1.5);
+  }
+  95% {
+    translate: -2px 2px;
+  }
+}
+
+.mascot-bob {
+  animation: mascot-bob 2.6s ease-in-out infinite;
+}
+
+@keyframes mascot-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-phase] .pixel,
+  [data-phase='assembled'] .pixel {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+
+  .mascot-bob {
+    animation: none;
+  }
+}
+</style>
