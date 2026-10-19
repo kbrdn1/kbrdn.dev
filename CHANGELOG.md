@@ -51,8 +51,6 @@ migrates `[Unreleased]` into that file and empties this one — see
   own transparent character, so nothing reflows; screen readers get the plain
   text, and nothing moves under `prefers-reduced-motion`.
 
-### Changed
-
 - **The pointer ripples the background and leaves a trail of pixels**
   ([#72](https://github.com/kbrdn1/kbrdn.dev/issues/72)). After the
   CursorRipples filter of safzan.dev's hero, with its settings: a damped wave
