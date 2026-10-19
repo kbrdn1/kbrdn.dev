@@ -171,7 +171,7 @@ const isMobileMenuOpen = ref(false)
             "
             @click="scrollToSection($event, link.href)"
           >
-            {{ link.label }}
+            <UiScrambleText :text="link.label" effect="link" />
           </a>
 
           <!-- Blog link -->
@@ -185,7 +185,7 @@ const isMobileMenuOpen = ref(false)
               )
             "
           >
-            {{ t('sections.blog') }}
+            <UiScrambleText :text="t('sections.blog')" effect="link" />
             <UIcon name="i-heroicons-arrow-right-20-solid" class="w-3 h-3" aria-hidden="true" />
           </NuxtLink>
         </nav>

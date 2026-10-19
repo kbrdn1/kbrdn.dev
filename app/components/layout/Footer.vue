@@ -250,7 +250,7 @@ const currentYear = new Date().getFullYear()
                 :href="link.href"
                 class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
               >
-                {{ link.label }}
+                <UiScrambleText :text="link.label" effect="link" />
               </a>
             </nav>
           </div>
@@ -267,7 +267,7 @@ const currentYear = new Date().getFullYear()
                 :href="link.href"
                 class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
               >
-                {{ link.label }}
+                <UiScrambleText :text="link.label" effect="link" />
               </a>
             </nav>
           </div>
@@ -287,7 +287,7 @@ const currentYear = new Date().getFullYear()
                 class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
               >
                 <UIcon :name="social.icon" class="w-4 h-4" />
-                {{ social.label }}
+                <UiScrambleText :text="social.label" effect="link" />
               </a>
             </nav>
           </div>
@@ -307,7 +307,7 @@ const currentYear = new Date().getFullYear()
                 class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
               >
                 <UIcon :name="link.icon" class="w-4 h-4" />
-                {{ link.label }}
+                <UiScrambleText :text="link.label" effect="link" />
               </a>
             </nav>
           </div>

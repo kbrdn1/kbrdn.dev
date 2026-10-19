@@ -33,8 +33,23 @@ migrates `[Unreleased]` into that file and empties this one — see
   cells of the page's dither shape out from where the pointer came in, which
   shimmer, then shrink away on leave. Under the content, never in the way of a
   click; nothing on touch, a still frame under `prefers-reduced-motion`.
+- **Text links retype on hover**
+  ([#73](https://github.com/kbrdn1/kbrdn.dev/issues/73)). After effect 1 of
+  codrops' Line Text Hover Animations: a block cursor runs along the label as
+  each character retypes through random glyphs, on hover or keyboard focus of
+  the header and blog navigation (desktop), the footer lists and the projects'
+  "view all".
 
 ### Changed
+
+- **Titles retype on appearance and on hover**
+  ([#73](https://github.com/kbrdn1/kbrdn.dev/issues/73)). After effect 4 of the
+  same demo, in place of the left-to-right decode of 1.1.0: every character of
+  a page or section title vanishes, then retypes left to right through a few
+  random glyphs when the title first scrolls into view, and again on hover
+  while a tinted block rises behind it. No GSAP: each glyph is drawn over its
+  own transparent character, so nothing reflows; screen readers get the plain
+  text, and nothing moves under `prefers-reduced-motion`.
 
 - **The pointer ripples the background and leaves a trail of pixels**
   ([#72](https://github.com/kbrdn1/kbrdn.dev/issues/72)). After the

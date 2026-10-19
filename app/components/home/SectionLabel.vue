@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
         )
       "
     >
-      {{ label }}
+      <UiScrambleText :text="label" />
     </component>
   </div>
 </template>

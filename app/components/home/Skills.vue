@@ -66,7 +66,7 @@ const stack = [
           {{ t('skills.featured') }}
         </span>
         <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
-          {{ t('skills.title') }}
+          <UiScrambleText :text="t('skills.title')" />
         </h2>
       </div>
 
