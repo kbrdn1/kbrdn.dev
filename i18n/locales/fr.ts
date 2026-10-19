@@ -191,7 +191,6 @@ export default {
   // Projects Section
   projects: {
     title: 'Projets en vedette',
-    featured: 'PROJETS EN VEDETTE',
     viewAll: 'Voir tout sur GitHub',
     demo: 'Démo',
     stats: {

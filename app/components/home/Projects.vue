@@ -61,9 +61,6 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
     <!-- Header -->
     <div class="flex items-end justify-between">
       <div>
-        <span class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2">
-          {{ t('projects.featured') }}
-        </span>
         <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
           <UiScrambleText :text="t('projects.title')" />
         </h2>
@@ -112,7 +109,7 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
       <li
         v-for="repo in repos"
         :key="repo.name"
-        class="relative isolate flex flex-col gap-2 overflow-hidden p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 transition-colors hover:border-primary-500/50"
+        class="group/card relative isolate flex flex-col gap-2 overflow-hidden p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 transition-colors hover:border-primary-500/50"
       >
         <UiPixelCanvas />
         <div class="flex items-center justify-between gap-3">
@@ -147,16 +144,28 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
             />
             <span class="truncate">{{ repo.name }}</span>
           </a>
-          <a
-            v-if="repo.homepage"
-            :href="repo.homepage"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="relative z-10 shrink-0 text-neutral-500 hover:text-primary-500 transition-colors"
-            :aria-label="`${t('projects.demo')} — ${repo.name}`"
-          >
-            <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4" aria-hidden="true" />
-          </a>
+          <div class="flex shrink-0 items-center gap-3 text-neutral-500">
+            <a
+              v-if="repo.homepage"
+              :href="repo.homepage"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="relative z-10 hover:text-primary-500 transition-colors"
+              :aria-label="`${t('projects.demo')} — ${repo.name}`"
+            >
+              <UIcon
+                name="i-heroicons-arrow-top-right-on-square"
+                class="size-4"
+                aria-hidden="true"
+              />
+            </a>
+            <!-- The whole card is the repository link: this mark only says so -->
+            <UIcon
+              name="i-simple-icons-github"
+              class="size-4 transition-colors group-hover/card:text-primary-500"
+              aria-hidden="true"
+            />
+          </div>
         </div>
         <p
           v-if="repo.description"
@@ -203,6 +212,9 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
     </ul>
 
     <!-- Error / nothing pinned -->
-    <p v-else class="text-sm text-neutral-500">{{ t('github.error') }}</p>
+    <p v-else class="flex items-center gap-3 text-sm text-neutral-500">
+      <UiMascot mood="sad" :size="40" />
+      {{ t('github.error') }}
+    </p>
   </div>
 </template>

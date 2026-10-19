@@ -23,6 +23,9 @@ if (import.meta.server) {
   defineOgImage('Default', {
     title: t('blog.title'),
     description: t('blog.description'),
+    // Same badge and avatar as the home page's image, instead of the defaults
+    statusText: t('hero.availableForHire'),
+    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
   })
 }
 
@@ -506,10 +509,7 @@ const { postUrl } = useBlogUrl()
             v-if="filteredPosts.length === 0"
             class="flex flex-col items-center justify-center py-20 text-center"
           >
-            <UIcon
-              name="i-heroicons-document-text"
-              class="w-10 h-10 text-neutral-400 dark:text-neutral-600 mb-4"
-            />
+            <UiMascot mood="thinking" :size="80" class="mb-4" />
             <p class="text-sm text-neutral-500 font-mono">
               {{ t('blog.noArticles') }}
             </p>

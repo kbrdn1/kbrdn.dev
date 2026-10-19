@@ -14,7 +14,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  avatarUrl: '/images/avatar.jpg',
+  avatarUrl: '/images/avatar.png',
   isHirable: true,
   calendarLink: 'https://cal.com',
 })

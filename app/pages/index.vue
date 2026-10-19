@@ -46,7 +46,7 @@ if (import.meta.server) {
     handle: page.value?.handle || '@kbrdn1',
     isHirable: page.value?.isHirable ?? true,
     statusText: t('hero.availableForHire'),
-    avatarUrl: `${siteOrigin}/images/avatar.jpg`,
+    avatarUrl: `${siteOrigin}/images/avatar.png`,
     bannerText: t('banner.gwm'),
     bannerImage: `${siteOrigin}/images/banners/dark.jpg`,
   })
