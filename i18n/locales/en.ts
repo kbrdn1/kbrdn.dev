@@ -346,6 +346,61 @@ export default {
     teaserCta: 'See the journey',
   },
 
+  // /apps
+  appsPage: {
+    seoTitle: 'Apps · Kylian Bardini',
+    seoDescription:
+      "Kylian Bardini's terminal apps: gwm (git worktree manager), vellum (TUI SQL client, in development) and LazyCurl (TUI HTTP client, archived).",
+    ogTitle: 'Apps',
+    ogSubtitle: 'gwm, vellum and LazyCurl',
+    eyebrow: 'APPS',
+    title: 'Tools for the terminal.',
+    intro:
+      "What I ship, what I'm building and what I've put away. All open source, the code is on GitHub.",
+    site: 'Site',
+    repo: 'Repository',
+    releases: 'Releases',
+    install: 'Install',
+    status: {
+      released: 'Available',
+      inDevelopment: 'In development',
+      archived: 'Archived',
+    },
+    apps: {
+      gwm: {
+        tagline: 'Git worktree manager for the terminal, CLI and TUI.',
+        description:
+          'gwm creates the worktree, runs the project setup, links the issue and shows which AI agent is working where. A single binary, no git CLI needed.',
+        features: [
+          'One command to create the worktree, set the project up and link its issue.',
+          'Knows which AI agent works where: Claude Code, Codex, opencode and Mistral Vibe.',
+          'A machine surface: JSON output, a JSON-RPC daemon and a statusline for your prompt.',
+          'gwm undo and gwm history recover a worktree removed by mistake.',
+        ],
+      },
+      vellum: {
+        tagline: 'TUI SQL client, with a diff for every write.',
+        description:
+          'Browse, query and edit a database from the terminal, seeing every write as a GitHub-like diff before it applies. Pre-0.1: not usable yet.',
+        features: [
+          'Browse, query and edit a database without leaving the terminal.',
+          'A GitHub-like diff before every write.',
+          'Rust and ratatui: a single binary, no account, no telemetry.',
+        ],
+      },
+      lazycurl: {
+        tagline: 'TUI HTTP client, between lazygit and Postman.',
+        description: "Test an API from the terminal, with lazygit's interface and Postman's tools.",
+        features: [
+          'Lazygit-style interface: multiple panels and vim motions.',
+          'JavaScript pre- and post-request scripts, and 16 test assertions.',
+          'Request collections and environment variables.',
+          'cURL, OpenAPI 3 and Postman import and export.',
+        ],
+      },
+    },
+  },
+
   blogNav: {
     articles: 'Articles',
     tags: 'Tags',
