@@ -37,7 +37,7 @@ function ditherNoise(): Promise<Float32Array> {
 // positioning, size and opacity come from the parent's classes.
 const props = withDefaults(
   defineProps<{
-    /** The pointer leaves a decaying trail that lights up and pushes the noise. */
+    /** The pointer ripples the field like water, as on safzan.dev's hero. */
     interactive?: boolean
     /** Where the field thins out: `down` is dense at the top and gone at the bottom. */
     fade?: 'down' | 'up' | 'none'
@@ -52,19 +52,18 @@ const MIN_CELL_PX = 4
 // fall to ~4.0:1 under a dense cell (4.5:1 needs <= 0.08): accepted for a visible field.
 const ALPHAS = [0, 0.06, 0.12, 0.18]
 const GAIN = 4.2
-// Trail sizes are in 4px cells; a field with bigger cells (non-square shapes) scales
-// them down by its stride, so the trail keeps its size on screen.
-const TRAIL_RADIUS = 9
-const TRAIL_STRENGTH = 0.3
-// Squishy trail: drawn from a spring chasing the pointer (underdamped: it lags, overshoots
-// and wobbles ~0.6 s before settling), its brush stretched along the motion.
-const SPRING = 0.2 // pull toward the pointer, per frame
-const DAMPING = 0.72 // velocity kept per frame
-const STRETCH = 0.15 // brush elongation per cell/frame of speed
-const MAX_STRETCH = 2.2
-const TRAIL_DECAY = 0.86 // per frame
-const TRAIL_GLOW = 0.35
-const TRAIL_PUSH = 6 // cells of noise displacement per unit of heat gradient
+// Cursor ripples, after the CursorRipples filter of safzan.dev's hero (shaders.com, set to
+// intensity 4, decay 6, radius 0.6): a damped 2D wave field 128 columns wide, splashed
+// where the pointer moves, harder the faster it goes. Its gradient displaces the noise,
+// so the pattern ripples like water under the cursor, and its crests light up: a wake
+// that trails the pointer and spreads out in rings.
+const SIM_COLS = 128
+const WAVE_STEPS = 2 // per frame: waves travel ~2 sim cells per frame
+const WAVE_DAMPING = 0.955 // per step
+const SPLASH_RADIUS = 3.6 // sim cells
+const SPLASH_MAX = 2 // pointer speed cap, in sim cells per frame
+const RIPPLE_INTENSITY = 16 // noise texels of displacement per unit of wave slope
+const RIPPLE_GLOW = 0.3 // brightness added per unit of crest height
 
 const canvas = ref<HTMLCanvasElement>()
 const reducedMotion = useReducedMotion()
@@ -95,24 +94,25 @@ onMounted(async () => {
   // Noise texels per cell: 1 on a 4px grid, more when the shape needs bigger cells,
   // so the blobs, the scroll speed and the trail keep their size on screen.
   let stride = 1
-  let trailRadius = TRAIL_RADIUS
-  let trailSigma = TRAIL_RADIUS / 2.5
   let image = new ImageData(1, 1)
   let pixels = new Uint32Array(image.data.buffer)
   let threshold = new Float32Array(0)
-  let heat = new Float32Array(0)
   let time = 0
   let frame = 0
   let lastFrame = 0
   let resizeFrame = 0
   let onScreen = true
-  // Last pointer event in client coordinates; then, in cells, where it points and the
-  // spring follower the trail is drawn from.
+  // Wave field: heights now and one step back; each field cell reads the sim cell above it.
+  let simCols = 0
+  let simRows = 0
+  let wave = new Float32Array(0)
+  let wavePrev = new Float32Array(0)
+  let simX = new Int32Array(0)
+  let simY = new Int32Array(0)
+  let rippling = false
+  // Last pointer event in client coordinates, then the previous position in sim cells.
   let pointer: { x: number; y: number } | null = null
-  let target = { x: 0, y: 0 }
-  const follower = { x: 0, y: 0, vx: 0, vy: 0 }
-  let tracked = false // follower holds a position on this field
-  let moving = false // spring not settled yet
+  let last: { x: number; y: number } | null = null
 
   // Let the browser parse whatever colour format the CSS resolves to, on a 1×1
   // probe so the drawing canvas never gets read back.
@@ -154,8 +154,6 @@ onMounted(async () => {
     cols = nextCols
     rows = nextRows
     stride = cell / base
-    trailRadius = TRAIL_RADIUS / stride
-    trailSigma = trailRadius / 2.5
     el!.width = backingW
     el!.height = backingH
     if (levels) {
@@ -169,77 +167,85 @@ onMounted(async () => {
     }
     image = new ImageData(cols, rows)
     pixels = new Uint32Array(image.data.buffer)
-    if (interactive) heat = new Float32Array(cols * rows)
+    if (interactive) {
+      simCols = SIM_COLS
+      simRows = Math.max(3, Math.round((SIM_COLS * height) / Math.max(1, width)))
+      wave = new Float32Array(simCols * simRows)
+      wavePrev = new Float32Array(simCols * simRows)
+      const toSim = (i: number, n: number, sim: number) =>
+        Math.min(sim - 2, Math.max(1, Math.floor(((i + 0.5) / n) * sim)))
+      simX = Int32Array.from({ length: cols }, (_, x) => toSim(x, cols, simCols))
+      simY = Int32Array.from({ length: rows }, (_, y) => toSim(y, rows, simRows))
+      rippling = false
+    }
     threshold = Float32Array.from({ length: rows }, (_, y) => {
       const t = rows > 1 ? y / (rows - 1) : 0
       const depth = fade === 'down' ? t : fade === 'up' ? 1 - t : 0.25
       return 0.46 + 0.5 * depth * depth
     })
-    tracked = false
+    last = null
   }
 
-  // Gaussian brush stretched along the motion (ux, uy) and squashed across it.
-  function stamp(cx: number, cy: number, ux: number, uy: number, stretch: number) {
-    const along = 2 * (trailSigma * stretch) ** 2
-    const across = (2 * trailSigma ** 2) / stretch
-    const reach = Math.ceil(trailRadius * stretch)
-    const x0 = Math.round(cx)
-    const y0 = Math.round(cy)
-    for (let y = Math.max(0, y0 - reach); y <= Math.min(rows - 1, y0 + reach); y++) {
-      for (let x = Math.max(0, x0 - reach); x <= Math.min(cols - 1, x0 + reach); x++) {
-        const a = (x - cx) * ux + (y - cy) * uy
-        const c = (y - cy) * ux - (x - cx) * uy
-        const i = y * cols + x
-        heat[i] = Math.min(
-          1,
-          heat[i]! + Math.exp(-(a * a) / along - (c * c) / across) * TRAIL_STRENGTH,
-        )
+  // Add a gaussian bump of height `amount` to the wave field around (cx, cy).
+  function splash(cx: number, cy: number, amount: number) {
+    const reach = Math.ceil(SPLASH_RADIUS)
+    const sigma2 = 2 * (SPLASH_RADIUS / 2) ** 2
+    for (
+      let y = Math.max(1, Math.round(cy) - reach);
+      y <= Math.min(simRows - 2, Math.round(cy) + reach);
+      y++
+    ) {
+      for (
+        let x = Math.max(1, Math.round(cx) - reach);
+        x <= Math.min(simCols - 2, Math.round(cx) + reach);
+        x++
+      ) {
+        wave[y * simCols + x]! += amount * Math.exp(-((x - cx) ** 2 + (y - cy) ** 2) / sigma2)
       }
     }
   }
 
-  // Step the spring toward the pointer and stamp the brush along the segment it travelled.
-  function followPointer() {
-    if (pointer) {
-      const rect = el!.getBoundingClientRect()
-      target = {
-        x: ((pointer.x - rect.left) / rect.width) * cols,
-        y: ((pointer.y - rect.top) / rect.height) * rows,
-      }
-      pointer = null
-      // First move, or back into the window: start on the pointer, not across the field.
-      if (!tracked || Math.hypot(target.x - follower.x, target.y - follower.y) > cols / 2) {
-        Object.assign(follower, { x: target.x, y: target.y, vx: 0, vy: 0 })
-        tracked = true
-      }
-      moving = true
+  // Splash along the segment the pointer travelled since the last frame. A jump (first
+  // move, back into the window) is not a stroke: it only sets where the next one starts.
+  function applyPointer() {
+    if (!pointer) return
+    const rect = el!.getBoundingClientRect()
+    const at = {
+      x: ((pointer.x - rect.left) / rect.width) * simCols,
+      y: ((pointer.y - rect.top) / rect.height) * simRows,
     }
-    if (!moving) return
-    const fromX = follower.x
-    const fromY = follower.y
-    follower.vx = (follower.vx + (target.x - follower.x) * SPRING) * DAMPING
-    follower.vy = (follower.vy + (target.y - follower.y) * SPRING) * DAMPING
-    follower.x += follower.vx
-    follower.y += follower.vy
-    const speed = Math.hypot(follower.vx, follower.vy)
-    // Thresholds and stretch are tuned in 4px cells.
-    const speed4 = speed * stride
-    if (speed4 < 0.05 && Math.hypot(target.x - follower.x, target.y - follower.y) * stride < 0.1) {
-      moving = false
-    }
-    // A wobble too small to see would only pile heat up under a still cursor.
-    if (speed4 < 0.3) return
-    const stretch = Math.min(MAX_STRETCH, 1 + speed4 * STRETCH)
-    const steps = Math.ceil(speed / (trailRadius / 3))
+    pointer = null
+    const from = last
+    last = at
+    if (!from) return
+    const distance = Math.hypot(at.x - from.x, at.y - from.y)
+    if (distance < 0.05 || distance > simCols / 4) return
+    const steps = Math.ceil(distance / (SPLASH_RADIUS / 2))
+    const amount = Math.min(SPLASH_MAX, distance) / steps
     for (let s = 1; s <= steps; s++) {
-      stamp(
-        fromX + ((follower.x - fromX) * s) / steps,
-        fromY + ((follower.y - fromY) * s) / steps,
-        follower.vx / speed,
-        follower.vy / speed,
-        stretch,
-      )
+      splash(from.x + ((at.x - from.x) * s) / steps, from.y + ((at.y - from.y) * s) / steps, amount)
     }
+    rippling = true
+  }
+
+  // Damped wave equation, written into the older buffer, then the buffers swap.
+  function stepWave() {
+    let energy = 0
+    for (let step = 0; step < WAVE_STEPS; step++) {
+      for (let y = 1; y < simRows - 1; y++) {
+        for (let x = 1, i = y * simCols + 1; x < simCols - 1; x++, i++) {
+          const next =
+            ((wave[i - 1]! + wave[i + 1]! + wave[i - simCols]! + wave[i + simCols]!) * 0.5 -
+              wavePrev[i]!) *
+            WAVE_DAMPING
+          wavePrev[i] = next
+          energy = Math.max(energy, Math.abs(next))
+        }
+      }
+      ;[wave, wavePrev] = [wavePrev, wave]
+    }
+    // Settled: skip the field and the per-cell displacement until the next splash.
+    rippling = energy > 1e-3
   }
 
   function draw() {
@@ -249,16 +255,16 @@ onMounted(async () => {
     let i = 0
     for (let y = 0; y < rows; y++) {
       const floor = threshold[y]!
+      const simRow = rippling ? simY[y]! * simCols : 0
       for (let x = 0; x < cols; x++, i++) {
-        let glow = 0
         let dx = 0
         let dy = 0
-        if (interactive) {
-          glow = heat[i]!
-          if (glow > 0.01) {
-            dx = ((heat[i + 1] ?? 0) - (heat[i - 1] ?? 0)) * TRAIL_PUSH
-            dy = ((heat[i + cols] ?? 0) - (heat[i - cols] ?? 0)) * TRAIL_PUSH
-          }
+        let glow = 0
+        if (rippling) {
+          const si = simRow + simX[x]!
+          dx = (wave[si + 1]! - wave[si - 1]!) * RIPPLE_INTENSITY
+          dy = (wave[si + simCols]! - wave[si - simCols]!) * RIPPLE_INTENSITY
+          glow = Math.max(0, wave[si]!) * RIPPLE_GLOW
         }
         const tx = x * stride
         const ty = y * stride
@@ -267,8 +273,7 @@ onMounted(async () => {
         // Second layer: the same texture at twice the frequency, scrolling the other way.
         const bx = ((2 * tx + shiftB + dx) | 0) & (NOISE_W - 1)
         const by = ((2 * ty + liftB + dy) | 0) & (NOISE_H - 1)
-        const value =
-          noise[ay * NOISE_W + ax]! * 0.65 + noise[by * NOISE_W + bx]! * 0.35 + glow * TRAIL_GLOW
+        const value = noise[ay * NOISE_W + ax]! * 0.65 + noise[by * NOISE_W + bx]! * 0.35 + glow
         const u = (value - floor) * GAIN
         pixels[i] =
           u > 0 ? palette[Math.min(3, (u * 3 + BAYER_4[((y & 3) << 2) | (x & 3)]!) | 0)]! : 0
@@ -296,9 +301,11 @@ onMounted(async () => {
     if (elapsed < FRAME_MS) return
     lastFrame = now - (elapsed % FRAME_MS)
     time += Math.min(elapsed, 250) / 1000
-    if (interactive) followPointer()
+    if (interactive) {
+      applyPointer()
+      if (rippling) stepWave()
+    }
     draw()
-    for (let k = 0; k < heat.length; k++) heat[k] = heat[k]! * TRAIL_DECAY
   }
 
   function start() {
@@ -315,9 +322,9 @@ onMounted(async () => {
   const onPointerMove = (e: PointerEvent) => {
     if (e.pointerType !== 'touch') pointer = { x: e.clientX, y: e.clientY }
   }
-  // Leaving the window must not draw a line across the field on the way back in.
+  // Leaving the window must not splash a line across the field on the way back in.
   const onPointerOut = (e: PointerEvent) => {
-    if (!e.relatedTarget) tracked = false
+    if (!e.relatedTarget) last = null
   }
   const onVisibility = () => (document.hidden ? stop() : start())
 
