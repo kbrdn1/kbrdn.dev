@@ -33,6 +33,10 @@ export default {
 
   // Navigation
   nav: {
+    home: 'Home',
+    experience: 'Journey',
+    apps: 'Apps',
+    blog: 'Blog',
     skipToContent: 'Skip to content',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
@@ -405,7 +409,6 @@ export default {
   },
 
   blogNav: {
-    articles: 'Articles',
     tags: 'Tags',
     portfolio: 'Portfolio',
     sponsor: 'Sponsor',
@@ -442,11 +445,6 @@ export default {
   // Footer Section
   footer: {
     nav: {
-      about: 'About',
-      skills: 'Stack & Skills',
-      projects: 'Projects',
-      experience: 'Experience',
-      education: 'Education',
       articles: 'Articles',
       tags: 'Tags',
     },

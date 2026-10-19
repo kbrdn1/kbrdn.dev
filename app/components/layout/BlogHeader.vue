@@ -2,7 +2,6 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
-const route = useRoute()
 
 const showBrandMenu = ref(false)
 
@@ -30,17 +29,8 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
 })
 
-const navLinks = computed(() => [{ to: '/blog', label: t('blogNav.articles') }])
-
-const isActive = (to: string) => {
-  if (to === '/blog') {
-    return (
-      route.path === '/blog' ||
-      (route.path.startsWith('/blog/') && !route.path.startsWith('/blog/tags'))
-    )
-  }
-  return route.path.startsWith(to)
-}
+// The site's pages, shared with the portfolio header and the footer
+const { links: navLinks, isActive } = useSiteNav()
 
 const isMobileMenuOpen = ref(false)
 </script>
@@ -107,7 +97,7 @@ const isMobileMenuOpen = ref(false)
         </div>
 
         <!-- Desktop Navigation -->
-        <nav class="flex items-stretch flex-1" aria-label="Blog navigation">
+        <nav class="flex items-stretch flex-1" aria-label="Site navigation">
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
@@ -244,7 +234,7 @@ const isMobileMenuOpen = ref(false)
           v-if="isMobileMenuOpen"
           id="blog-mobile-nav"
           class="md:hidden py-3 border-t border-neutral-200 dark:border-neutral-800"
-          aria-label="Mobile blog navigation"
+          aria-label="Mobile site navigation"
         >
           <NuxtLink
             v-for="link in navLinks"

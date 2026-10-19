@@ -75,6 +75,13 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ### Changed
 
+- **The navigation leads to pages**
+  ([#80](https://github.com/kbrdn1/kbrdn.dev/issues/80)). Journey, Apps and
+  Blog, on every page and on mobile, instead of the home page's anchors; one
+  list shared by the header, the blog header and the footer, with the current
+  page marked. On wide screens (1700px and up), the home page gets a table of
+  contents in the margin, like an article's, following the section being read.
+
 - **A new logo**
   ([#74](https://github.com/kbrdn1/kbrdn.dev/issues/74)). A K drawn from a
   rising bar and two orange pieces, redrawn as SVG on a 45° grid, replaces the

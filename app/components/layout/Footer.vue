@@ -2,13 +2,11 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
-// Categorized navigation links
+// Categorized navigation links: the home page and the site's pages, the blog apart
+const { links } = useSiteNav()
 const portfolioLinks = computed(() => [
-  { href: '/#about', label: t('footer.nav.about') },
-  { href: '/#skills', label: t('footer.nav.skills') },
-  { href: '/#projects', label: t('footer.nav.projects') },
-  { href: '/experience', label: t('footer.nav.experience') },
-  { href: '/experience#education', label: t('footer.nav.education') },
+  { href: '/', label: t('nav.home') },
+  ...links.value.filter((l) => l.to !== '/blog').map((l) => ({ href: l.to, label: l.label })),
 ])
 
 const blogLinks = computed(() => [{ href: '/blog', label: t('footer.nav.articles') }])
