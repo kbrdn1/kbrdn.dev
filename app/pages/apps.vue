@@ -133,7 +133,9 @@ const STATUS_CLASS: Record<string, string> = {
       >
         <UiPixelCanvas />
 
-        <header class="md:col-span-5">
+        <!-- min-w-0 on every grid child: a grid item defaults to min-width: auto, so the
+             longest install line would widen its column instead of scrolling in its block. -->
+        <header class="min-w-0 md:col-span-5">
           <div class="flex items-center gap-3">
             <template v-if="'logo' in app">
               <img
@@ -203,7 +205,7 @@ const STATUS_CLASS: Record<string, string> = {
           </div>
         </header>
 
-        <div class="space-y-6 md:col-span-7">
+        <div class="min-w-0 space-y-6 md:col-span-7">
           <p class="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
             {{ t(`appsPage.apps.${app.key}.description`) }}
           </p>
@@ -225,7 +227,7 @@ const STATUS_CLASS: Record<string, string> = {
 
         <figure
           v-if="'image' in app"
-          class="relative z-10 overflow-hidden border border-neutral-200 bg-neutral-950 md:col-span-12 dark:border-neutral-800"
+          class="relative z-10 min-w-0 overflow-hidden border border-neutral-200 bg-neutral-950 md:col-span-12 dark:border-neutral-800"
         >
           <video
             v-if="'video' in app"

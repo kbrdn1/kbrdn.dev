@@ -121,6 +121,13 @@ migrates `[Unreleased]` into that file and empties this one — see
   under a second. 60 fps while something moves, 24 at rest. Replaces 1.1.0's
   spring trail.
 
+### Fixed
+
+- **The gwm card on `/apps` overflowed on mobile**
+  ([#84](https://github.com/kbrdn1/kbrdn.dev/issues/84)). Its longest install
+  line set the width of the whole column, and the card clipped the text and the
+  video on the right; the line now scrolls inside its code block.
+
 ## Past releases
 
 - [1.1.0](changelogs/1.1.0.md) — 2026-10-16
