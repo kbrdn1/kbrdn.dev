@@ -55,6 +55,17 @@ migrates `[Unreleased]` into that file and empties this one — see
   diagonal stripes and the subtitle retypes like the titles. Still under
   `prefers-reduced-motion`.
 
+- **A journey page, `/experience`**
+  ([#78](https://github.com/kbrdn1/kbrdn.dev/issues/78)). Laid out like an
+  editorial spread (after isrod.eu): an intro, a strip of every role and
+  degree, then one spread each, the story on the left and the stack and
+  missions on the right, with "show more". Then the open source work, every
+  item linked to its pull request or issue: the projects I maintain (gwm,
+  vellum, LazyCurl, herdr-plugin-gwm, claude-crosstalk, kbrdn-docs), the
+  contributions (winget, aqua-registry and awesome-ratatui merged, nixpkgs in
+  review) and the bugs reported upstream. On the home page, the Parcours
+  accordions give way to a one-line-per-role teaser linking to it.
+
 ### Changed
 
 - **A new logo**

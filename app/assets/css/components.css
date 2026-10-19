@@ -61,19 +61,6 @@
   background-color: var(--color-primary-500);
 }
 
-/* Accordion +/- icon animation */
-.accordion-icon-bar {
-  transition: transform 300ms ease !important;
-}
-
-.accordion-icon-bar.is-collapsed {
-  transform: rotate(90deg);
-}
-
-.accordion-icon-bar.is-expanded {
-  transform: rotate(0deg);
-}
-
 /* Disabled button with subtle diagonal striped background */
 .btn-disabled-striped {
   background-image: repeating-linear-gradient(

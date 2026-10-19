@@ -50,8 +50,6 @@ export default {
     about: 'A PROPOS',
     projects: 'PROJETS',
     skills: 'STACK & COMPÉTENCES',
-    experience: 'EXPERIENCE',
-    education: 'FORMATION',
     parcours: 'PARCOURS',
     activity: 'ACTIVITE',
     blog: 'BLOG',
@@ -267,6 +265,87 @@ export default {
   },
 
   // Blog Navigation
+  // /experience
+  experiencePage: {
+    seoTitle: 'Parcours et open source · Kylian Bardini',
+    seoDescription:
+      "Le parcours de Kylian Bardini, développeur full stack : Jewely x Flippad, Virtual Immersion, Metz Numeric School, et les outils open source qu'il publie (gwm, vellum, LazyCurl).",
+    ogTitle: 'Parcours',
+    ogSubtitle: 'Expériences, formations et open source',
+    eyebrow: 'PARCOURS',
+    title: 'Développeur full stack, du code à la production.',
+    intro:
+      "Près de quatre ans en entreprise, d'abord en alternance : un ERP et des back-offices en Laravel et Symfony, des fronts en Vue, Nuxt et React, déployés sur AWS et Heroku. À côté, des outils open source pour le terminal, en Rust et en Go.",
+    ctaOpenSource: "Voir l'open source",
+    ctaBlog: 'Lire le blog',
+    timeline: 'Postes et formations',
+    experienceLabel: 'EXPÉRIENCE',
+    educationLabel: 'FORMATION',
+    stack: 'Stack',
+    missions: 'Missions',
+    skills: 'Acquis',
+    more: 'En savoir plus',
+    less: 'Réduire',
+    summaries: {
+      flippad:
+        "Trois ans chez Jewely x Flippad, d'abord en alternance puis en CDI : un ERP pour les bijouteries de luxe, un configurateur de bijoux multi-marques, le back-office d'Assmat-Facile et la refonte de Fiches Pédagogiques, déployés sur AWS et Heroku par GitHub Actions.",
+      virtualImmersion:
+        "Un an d'alternance chez Virtual Immersion : une API de gestion de fichiers en Symfony, de la réalité mixte sur WordPress et la navigation sur la carte d'un parc animalier en React.",
+      mnsMaster:
+        'Ingénierie informatique : architecture logicielle avancée et micro-services, tests à tous les niveaux, intégration et déploiement continus, et deux ans de gestion de projet pour le diplôme.',
+      mnsLicence:
+        "Développeur full stack : UI et UX avec Figma, frameworks web, mobile et desktop, principes d'architecture logicielle, et un an de gestion de projet pour le diplôme.",
+      cciBac2:
+        'Développeur web et web mobile : bases de la programmation et du web, architecture MVC, UI et UX avec la suite Adobe, et un stage chez House & Garden.',
+    },
+    openSource: {
+      eyebrow: 'OPEN SOURCE',
+      title: 'Des outils pour le terminal, publiés et maintenus.',
+      intro:
+        "Ce que je publie sur GitHub, et ce que je remonte aux projets que j'utilise : des paquets pour distribuer gwm, et des bugs signalés en amont.",
+      projectsLabel: 'Projets maintenus',
+      upstreamLabel: 'Contributions',
+      reportsLabel: 'Signalements',
+      lot: 'LOT',
+      install: 'Installation :',
+      site: 'Site',
+      repo: 'Dépôt',
+      viewAll: 'Tout voir sur GitHub',
+      status: {
+        released: 'Publié',
+        inDevelopment: 'En développement',
+        archived: 'Archivé',
+        merged: 'Fusionnée',
+        review: 'En revue',
+        report: 'Issue',
+      },
+      projects: {
+        gwm: "Gestionnaire de worktrees git pour le terminal, CLI et TUI en Rust : il crée le worktree, lance l'installation du projet, relie l'issue et montre quel agent IA travaille où. Un seul binaire, sans la CLI git.",
+        vellum:
+          "Client SQL en TUI : parcourir, requêter et éditer une base dans le terminal, avec un diff à la GitHub pour chaque écriture. Rust et ratatui, local d'abord.",
+        lazycurl: "Client HTTP en TUI, en Go, dans l'esprit de lazygit.",
+        herdrPluginGwm:
+          'Plugin herdr qui pilote gwm pour gérer les worktrees : gwm reste la source de vérité, herdr suit.',
+        claudeCrosstalk:
+          'Un mod Claude pour lire et rejoindre les conversations entre plusieurs sessions Claude Code.',
+        kbrdnDocs: 'Monorepo de documentation multi-produits, Astro Starlight et Bun workspaces.',
+      },
+      upstream: {
+        winget: 'Le manifeste de gwm dans le dépôt winget',
+        aqua: 'gwm ajouté au registre aqua',
+        awesomeRatatui: 'gwm dans la liste awesome-ratatui',
+        nixpkgs: 'Le paquet gwm pour nixpkgs',
+        snacks: 'gh_start_review échoue en HTTP 422 quand headRefOid est vide',
+        codexbar: 'Les cookies du navigateur Helium ne sont pas trouvés',
+        terminalBrowser: "Laisser un hôte TUI fournir un rectangle cible plutôt qu'un pane entier",
+        elasticlens: 'Le support de Laravel 13 bloqué par une contrainte de pdphilip/omniterm',
+      },
+    },
+    availability: 'Un projet, un poste, une question : un message suffit.',
+    teaser: 'Expériences, formations et open source : le détail est sur la page parcours.',
+    teaserCta: 'Voir le parcours',
+  },
+
   blogNav: {
     articles: 'Articles',
     tags: 'Tags',

@@ -196,26 +196,9 @@ const content = computed(() => {
       <!-- Parcours (Experience + Education) - Full width -->
       <section id="experience" class="p-6 w-full">
         <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6 space-y-8">
+          <div class="max-w-5xl mx-auto min-md:px-6">
             <HomeSectionLabel :label="t('sections.parcours')" />
-
-            <div>
-              <h3
-                class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2"
-              >
-                {{ t('sections.experience') }}
-              </h3>
-              <HomeExperiences />
-            </div>
-
-            <div id="education">
-              <h3
-                class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2"
-              >
-                {{ t('sections.education') }}
-              </h3>
-              <HomeStudies />
-            </div>
+            <HomeParcours />
           </div>
         </UiAnimatedSection>
       </section>
