@@ -348,12 +348,13 @@ const { postUrl } = useBlogUrl()
               :to="postUrl(post)"
               :class="
                 cn(
-                  'relative block p-5 border border-neutral-200 dark:border-neutral-800 overflow-hidden',
+                  'relative isolate block p-5 border border-neutral-200 dark:border-neutral-800 overflow-hidden',
                   'hover:border-primary-500/50 transition-all group',
                 )
               "
               :style="{ transitionDelay: `${index * 60}ms` }"
             >
+              <UiPixelCanvas />
               <!-- Thumbnail fade (if banner) -->
               <ClientOnly v-if="post.banner">
                 <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">

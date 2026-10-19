@@ -112,8 +112,9 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
       <li
         v-for="repo in repos"
         :key="repo.name"
-        class="relative flex flex-col gap-2 p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 transition-colors hover:border-primary-500/50"
+        class="relative isolate flex flex-col gap-2 overflow-hidden p-4 border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 transition-colors hover:border-primary-500/50"
       >
+        <UiPixelCanvas />
         <div class="flex items-center justify-between gap-3">
           <!-- The whole card opens the repository -->
           <a

@@ -105,12 +105,13 @@ function getInitials(name: string): string {
           :aria-controls="'exp-panel-' + exp.id"
           :class="
             cn(
-              'group/header w-full flex items-center gap-4 p-5 text-left transition-all duration-300',
+              'group/header relative isolate w-full flex items-center gap-4 overflow-hidden p-5 text-left transition-all duration-300',
               expandedId === exp.id ? 'bg-primary-500/5 border-b border-primary-500/20' : '',
             )
           "
           @click="toggleExpand(exp.id)"
         >
+          <UiPixelCanvas />
           <!-- Logo -->
           <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center">
             <NuxtImg

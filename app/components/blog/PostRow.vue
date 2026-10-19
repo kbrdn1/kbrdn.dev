@@ -18,8 +18,9 @@ const { postUrl } = useBlogUrl()
 <template>
   <NuxtLink
     :to="postUrl(post)"
-    class="relative flex items-center gap-6 py-5 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3 overflow-hidden"
+    class="relative isolate flex items-center gap-6 py-5 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3 overflow-hidden"
   >
+    <UiPixelCanvas />
     <!-- Thumbnail fade (if banner) -->
     <ClientOnly v-if="post.banner">
       <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
