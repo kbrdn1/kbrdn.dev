@@ -66,6 +66,13 @@ migrates `[Unreleased]` into that file and empties this one — see
   review) and the bugs reported upstream. On the home page, the Parcours
   accordions give way to a one-line-per-role teaser linking to it.
 
+- **An apps page, `/apps`**
+  ([#79](https://github.com/kbrdn1/kbrdn.dev/issues/79)). gwm (available),
+  vellum (in development) and LazyCurl (archived), each with its features and
+  licence, links to its site, repository and releases, and for gwm the install
+  commands of its README. The latest release is read from GitHub instead of
+  written down.
+
 ### Changed
 
 - **A new logo**

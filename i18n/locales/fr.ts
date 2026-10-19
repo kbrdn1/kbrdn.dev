@@ -346,6 +346,65 @@ export default {
     teaserCta: 'Voir le parcours',
   },
 
+  // /apps
+  appsPage: {
+    seoTitle: 'Apps · Kylian Bardini',
+    seoDescription:
+      'Les apps pour le terminal de Kylian Bardini : gwm (gestionnaire de worktrees git), vellum (client SQL en TUI, en développement) et LazyCurl (client HTTP en TUI, archivé).',
+    ogTitle: 'Apps',
+    ogSubtitle: 'gwm, vellum et LazyCurl',
+    eyebrow: 'APPS',
+    title: 'Des outils pour le terminal.',
+    intro:
+      "Ce que je publie, ce que je construis et ce que j'ai rangé. Tout est open source, le code est sur GitHub.",
+    site: 'Site',
+    repo: 'Dépôt',
+    releases: 'Versions',
+    install: 'Installer',
+    status: {
+      released: 'Disponible',
+      inDevelopment: 'En développement',
+      archived: 'Archivé',
+    },
+    apps: {
+      gwm: {
+        illustration:
+          'La TUI de gwm : les worktrees du dépôt avec leur branche et leur état, le détail du worktree sélectionné et ses derniers commits',
+        tagline: 'Gestionnaire de worktrees git pour le terminal, CLI et TUI.',
+        description:
+          "gwm crée le worktree, lance l'installation du projet, relie l'issue et montre quel agent IA travaille où. Un seul binaire, sans la CLI git.",
+        features: [
+          'Une commande pour créer le worktree, installer le projet et relier son issue.',
+          'Sait quel agent IA travaille où : Claude Code, Codex, opencode et Mistral Vibe.',
+          'Une surface machine : sortie JSON, un daemon JSON-RPC et une ligne de statut pour le prompt.',
+          'gwm undo et gwm history rattrapent un worktree supprimé par erreur.',
+        ],
+      },
+      vellum: {
+        tagline: 'Client SQL en TUI, avec un diff pour chaque écriture.',
+        description:
+          "Parcourir, requêter et éditer une base depuis le terminal, en voyant chaque écriture comme un diff GitHub avant de l'appliquer. Pré-0.1 : pas encore utilisable.",
+        features: [
+          'Parcourir, requêter et éditer une base sans quitter le terminal.',
+          'Un diff à la GitHub avant chaque écriture.',
+          'Rust et ratatui : un seul binaire, sans compte ni télémétrie.',
+        ],
+      },
+      lazycurl: {
+        illustration: "L'interface de LazyCurl : collections, requête et réponse côte à côte",
+        tagline: 'Client HTTP en TUI, entre lazygit et Postman.',
+        description:
+          "Tester une API depuis le terminal, avec l'interface de lazygit et les outils de Postman.",
+        features: [
+          'Interface à la lazygit : panneaux multiples et déplacements vim.',
+          'Scripts JavaScript avant et après chaque requête, et 16 assertions de test.',
+          "Collections de requêtes et variables d'environnement.",
+          'Import et export cURL, OpenAPI 3 et Postman.',
+        ],
+      },
+    },
+  },
+
   blogNav: {
     articles: 'Articles',
     tags: 'Tags',
