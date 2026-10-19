@@ -40,7 +40,22 @@ migrates `[Unreleased]` into that file and empties this one — see
   the header and blog navigation (desktop), the footer lists and the projects'
   "view all".
 
+- **A mascot**
+  ([#74](https://github.com/kbrdn1/kbrdn.dev/issues/74)). A monkey in a
+  backwards cap, in 31 moods, shows up where something did not go as planned:
+  shocked on the 404 page, thinking when no blog post matches, sad when GitHub
+  does not answer, clapping or nervous after sending the contact form, and
+  quietly next to the copyright. Small and decorative, always next to text that
+  already says what happened; 384px webp, 616 KB for the whole set.
+
 ### Changed
+
+- **A new logo**
+  ([#74](https://github.com/kbrdn1/kbrdn.dev/issues/74)). A K drawn from a
+  rising bar and two orange pieces, redrawn as SVG on a 45° grid, replaces the
+  bracket monogram everywhere: header, favicon (`.svg` that follows the system
+  theme, all-orange `.ico` from 16 to 256 px), OG images and the README banner.
+  The five colour variants are in `public/images/logo/`.
 
 - **Titles retype on appearance and on hover**
   ([#73](https://github.com/kbrdn1/kbrdn.dev/issues/73)). After effect 4 of the
