@@ -98,6 +98,9 @@ const content = computed(() => {
 
 <template>
   <div class="flex justify-center overflow-x-clip">
+    <!-- Table of contents, in the margin outside the column (wide screens only) -->
+    <HomeToc />
+
     <!-- Main content -->
     <div class="w-full flex flex-col items-center relative z-10">
       <!-- Banner -->
@@ -130,7 +133,13 @@ const content = computed(() => {
         </UiAnimatedSection>
 
         <!-- Latest Blog Posts -->
-        <UiAnimatedSection as="section" animation="fadeInUp" :delay="200" :duration="500">
+        <UiAnimatedSection
+          id="latest-posts"
+          as="section"
+          animation="fadeInUp"
+          :delay="200"
+          :duration="500"
+        >
           <div class="flex items-center justify-between mb-3">
             <h2 class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
               {{ t('sections.blog') }}
@@ -185,7 +194,7 @@ const content = computed(() => {
             <HomeProjects />
 
             <!-- GitHub Activity -->
-            <div class="mt-8">
+            <div id="activity" class="mt-8 scroll-mt-20">
               <HomeSectionLabel :label="t('sections.activity')" />
               <HomeGitHubChart username="kbrdn1" />
             </div>
