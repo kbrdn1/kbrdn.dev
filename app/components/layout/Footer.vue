@@ -83,21 +83,18 @@ const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-  <footer
-    class="relative w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950"
-  >
+  <!-- A panel over the dither, as wide as the navbar: the three columns in one card,
+       the copyright in the panel's footer -->
+  <footer class="relative w-full px-4 pt-6 pb-6 sm:px-6">
     <UiDitherCanvas fade="up" class="absolute inset-0 h-full w-full" />
-    <div
-      class="relative mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40 backdrop-blur-sm"
-      style="max-width: 80rem"
-    >
+    <UiPanel class="relative mx-auto max-w-[61rem]">
       <!-- Three-column grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+      <div class="panel-card grid grid-cols-1 gap-12 p-5 sm:p-8 md:grid-cols-3">
         <!-- Left Column: Contact Form -->
         <div
-          class="space-y-5 md:col-span-1 md:pr-12 md:border-r md:border-neutral-200 dark:md:border-neutral-800"
+          class="space-y-5 md:col-span-1 md:pr-12 md:border-r md:border-dashed md:border-neutral-200 dark:md:border-neutral-800"
         >
-          <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+          <h3 class="eyebrow">
             {{ t('footer.contact.title') }}
           </h3>
           <p class="text-sm text-neutral-500 dark:text-neutral-400">
@@ -108,10 +105,7 @@ const currentYear = new Date().getFullYear()
             <form class="space-y-4" @submit.prevent="handleSubmit">
               <!-- Name -->
               <div class="space-y-1.5">
-                <label
-                  for="footer-name"
-                  class="block font-mono text-xs uppercase tracking-wider text-neutral-500"
-                >
+                <label for="footer-name" class="eyebrow block">
                   {{ t('footer.contact.name') }}
                 </label>
                 <input
@@ -120,26 +114,13 @@ const currentYear = new Date().getFullYear()
                   type="text"
                   required
                   :placeholder="t('footer.contact.namePlaceholder')"
-                  :class="
-                    cn(
-                      'w-full px-3 py-2 text-sm rounded-none',
-                      'bg-white dark:bg-neutral-900',
-                      'border border-neutral-300 dark:border-neutral-700',
-                      'text-neutral-900 dark:text-neutral-100',
-                      'placeholder:text-neutral-400 dark:placeholder:text-neutral-600',
-                      'focus:outline-none focus:ring-2 focus:ring-[#d4825d]/50 focus:border-[#d4825d]',
-                      'transition-colors duration-200',
-                    )
-                  "
+                  class="field"
                 />
               </div>
 
               <!-- Email -->
               <div class="space-y-1.5">
-                <label
-                  for="footer-email"
-                  class="block font-mono text-xs uppercase tracking-wider text-neutral-500"
-                >
+                <label for="footer-email" class="eyebrow block">
                   {{ t('footer.contact.email') }}
                 </label>
                 <input
@@ -148,26 +129,13 @@ const currentYear = new Date().getFullYear()
                   type="email"
                   required
                   :placeholder="t('footer.contact.emailPlaceholder')"
-                  :class="
-                    cn(
-                      'w-full px-3 py-2 text-sm rounded-none',
-                      'bg-white dark:bg-neutral-900',
-                      'border border-neutral-300 dark:border-neutral-700',
-                      'text-neutral-900 dark:text-neutral-100',
-                      'placeholder:text-neutral-400 dark:placeholder:text-neutral-600',
-                      'focus:outline-none focus:ring-2 focus:ring-[#d4825d]/50 focus:border-[#d4825d]',
-                      'transition-colors duration-200',
-                    )
-                  "
+                  class="field"
                 />
               </div>
 
               <!-- Message -->
               <div class="space-y-1.5">
-                <label
-                  for="footer-message"
-                  class="block font-mono text-xs uppercase tracking-wider text-neutral-500"
-                >
+                <label for="footer-message" class="eyebrow block">
                   {{ t('footer.contact.message') }}
                 </label>
                 <textarea
@@ -176,17 +144,7 @@ const currentYear = new Date().getFullYear()
                   required
                   rows="4"
                   :placeholder="t('footer.contact.messagePlaceholder')"
-                  :class="
-                    cn(
-                      'w-full px-3 py-2 text-sm resize-none rounded-none',
-                      'bg-white dark:bg-neutral-900',
-                      'border border-neutral-300 dark:border-neutral-700',
-                      'text-neutral-900 dark:text-neutral-100',
-                      'placeholder:text-neutral-400 dark:placeholder:text-neutral-600',
-                      'focus:outline-none focus:ring-2 focus:ring-[#d4825d]/50 focus:border-[#d4825d]',
-                      'transition-colors duration-200',
-                    )
-                  "
+                  class="field resize-none"
                 />
               </div>
 
@@ -195,16 +153,7 @@ const currentYear = new Date().getFullYear()
                 type="submit"
                 :disabled="isSubmitting"
                 :aria-busy="isSubmitting"
-                :class="
-                  cn(
-                    'w-full px-4 py-2.5 text-sm font-mono uppercase tracking-wider rounded-none',
-                    'bg-[#d4825d] text-white',
-                    'hover:bg-[#c0714e]',
-                    'active:scale-[0.98]',
-                    'disabled:opacity-50 disabled:cursor-not-allowed',
-                    'transition-all duration-200',
-                  )
-                "
+                class="btn btn-primary w-full"
               >
                 <span v-if="isSubmitting" class="flex items-center justify-center gap-2">
                   <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
@@ -240,7 +189,7 @@ const currentYear = new Date().getFullYear()
         <div class="grid grid-cols-2 gap-6 md:col-span-1">
           <!-- Portfolio -->
           <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('blogNav.portfolio') }}
             </h3>
             <nav :aria-label="t('blogNav.portfolio')" class="flex flex-col space-y-2">
@@ -248,7 +197,7 @@ const currentYear = new Date().getFullYear()
                 v-for="link in portfolioLinks"
                 :key="link.href"
                 :href="link.href"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
+                class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
               >
                 <UiScrambleText :text="link.label" effect="link" />
               </a>
@@ -257,7 +206,7 @@ const currentYear = new Date().getFullYear()
 
           <!-- Blog -->
           <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('sections.blog') }}
             </h3>
             <nav :aria-label="t('sections.blog')" class="flex flex-col space-y-2">
@@ -265,7 +214,7 @@ const currentYear = new Date().getFullYear()
                 v-for="link in blogLinks"
                 :key="link.href"
                 :href="link.href"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
+                class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
               >
                 <UiScrambleText :text="link.label" effect="link" />
               </a>
@@ -274,7 +223,7 @@ const currentYear = new Date().getFullYear()
 
           <!-- Socials -->
           <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('footer.links.title') }}
             </h3>
             <nav :aria-label="t('footer.links.title')" class="flex flex-col space-y-2">
@@ -284,7 +233,7 @@ const currentYear = new Date().getFullYear()
                 :href="social.href"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
+                class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
               >
                 <UIcon :name="social.icon" class="w-4 h-4" />
                 <UiScrambleText :text="social.label" effect="link" />
@@ -294,7 +243,7 @@ const currentYear = new Date().getFullYear()
 
           <!-- Other -->
           <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('footer.links.other') }}
             </h3>
             <nav :aria-label="t('footer.links.other')" class="flex flex-col space-y-2">
@@ -304,7 +253,7 @@ const currentYear = new Date().getFullYear()
                 :href="link.href"
                 :target="link.external ? '_blank' : undefined"
                 :rel="link.external ? 'noopener noreferrer' : undefined"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
+                class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
               >
                 <UIcon :name="link.icon" class="w-4 h-4" />
                 <UiScrambleText :text="link.label" effect="link" />
@@ -317,29 +266,25 @@ const currentYear = new Date().getFullYear()
         <div class="space-y-6 md:col-span-1">
           <!-- Location -->
           <div class="space-y-2">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('footer.location.title') }}
             </h3>
-            <p class="text-sm text-neutral-300">
+            <p class="text-sm text-neutral-900 dark:text-neutral-300">
               {{ t('footer.location.city') }}
             </p>
           </div>
 
           <!-- Status -->
           <div class="space-y-2">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('footer.availability.title') }}
             </h3>
-            <span
-              class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-green-600/40 dark:border-green-500/30 text-green-700 dark:text-green-500 bg-green-600/5 dark:bg-green-500/5"
-            >
-              <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
+            <span class="tag text-green-700 dark:text-green-500">
+              <span class="relative flex size-1.5" aria-hidden="true">
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
+                  class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"
                 />
-                <span
-                  class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600 dark:bg-green-500"
-                />
+                <span class="relative inline-flex size-1.5 rounded-full bg-current" />
               </span>
               {{ t('footer.availability.status') }}
             </span>
@@ -347,12 +292,12 @@ const currentYear = new Date().getFullYear()
 
           <!-- Email -->
           <div class="space-y-2">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <h3 class="eyebrow">
               {{ t('footer.email.title') }}
             </h3>
             <a
               href="mailto:hello@kbrdn.dev"
-              class="text-sm text-neutral-300 hover:text-[#d4825d] transition-colors duration-200"
+              class="text-sm text-neutral-900 dark:text-neutral-300 hover:text-[#d4825d] transition-colors duration-200"
             >
               hello@kbrdn.dev
             </a>
@@ -360,15 +305,12 @@ const currentYear = new Date().getFullYear()
         </div>
       </div>
 
-      <!-- Bottom Bar -->
-      <div
-        class="mt-12 pt-6 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-center"
-      >
-        <p class="flex items-center gap-2 text-xs text-neutral-500 text-center">
-          <UiMascot mood="hoodie-cool" :size="28" />
-          &copy; {{ currentYear }} Kylian Bardini. {{ t('footer.copyright') }}
-        </p>
-      </div>
-    </div>
+      <template #meta>
+        &copy; {{ currentYear }} Kylian Bardini · {{ t('footer.copyright') }}
+      </template>
+      <template #footer>
+        <UiMascot mood="hoodie-cool" :size="28" />
+      </template>
+    </UiPanel>
   </footer>
 </template>

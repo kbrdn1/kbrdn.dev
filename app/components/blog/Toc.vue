@@ -29,9 +29,7 @@ watch(
     class="w-full min-h-0 flex flex-col"
     aria-label="Table of contents"
   >
-    <div
-      class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono flex flex-col min-h-0"
-    >
+    <div class="panel-card font-mono flex flex-col min-h-0">
       <!-- Header with progress -->
       <div class="flex items-center justify-between px-3 py-2 shrink-0">
         <span class="text-[9px] uppercase tracking-widest text-neutral-400">sommaire</span>

@@ -196,16 +196,8 @@ function formatTime(seconds: number): string {
 
 <template>
   <div v-if="tracks?.length">
-    <!-- Player card: floats over the page (LayoutMusicDock), so near-opaque and blurred -->
-    <div
-      :class="
-        cn(
-          'w-full border border-neutral-200 dark:border-neutral-800 overflow-hidden',
-          'bg-neutral-50/95 dark:bg-neutral-900/95 backdrop-blur-md shadow-xl',
-          'hover:border-primary-500/50 transition-all',
-        )
-      "
-    >
+    <!-- Player card: a panel floating over the page (LayoutMusicDock) -->
+    <div class="panel w-full overflow-hidden transition-all hover:border-primary-500/50">
       <div
         class="flex items-center gap-4 p-3"
         :class="{
@@ -215,7 +207,7 @@ function formatTime(seconds: number): string {
         }"
       >
         <!-- Album art -->
-        <div class="relative shrink-0 group/cover">
+        <div class="relative shrink-0 overflow-hidden rounded-[0.625rem] group/cover">
           <img
             v-if="track"
             :src="track.cover"

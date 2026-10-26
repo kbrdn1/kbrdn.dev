@@ -46,7 +46,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <button
     ref="toggleButton"
     type="button"
-    class="fixed bottom-4 right-4 z-50 flex size-11 items-center justify-center border border-neutral-200 dark:border-neutral-800 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md text-neutral-600 dark:text-neutral-300 transition-colors hover:text-primary-500 hover:border-primary-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50"
+    class="fixed bottom-4 right-4 z-50 flex size-11 items-center justify-center rounded-full border border-(--panel-border) bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md text-neutral-600 dark:text-neutral-300 transition-colors hover:text-primary-500 hover:border-primary-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50"
     :aria-label="open ? t('music.closePlayer') : t('music.openPlayer')"
     :aria-expanded="open"
     aria-controls="music-dock"
