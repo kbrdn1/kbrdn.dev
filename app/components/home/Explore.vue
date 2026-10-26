@@ -154,18 +154,15 @@ function goToSlide(index: number) {
           </p>
 
           <!-- CTA -->
-          <UButton
+          <NuxtLink
             v-if="slide?.cta"
             :to="slide.cta.href"
             target="_blank"
-            color="primary"
-            variant="solid"
-            size="md"
-            :icon="slide.cta.icon"
-            class="mt-1"
+            class="btn btn-primary mt-1"
           >
+            <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
             {{ slide.cta.label }}
-          </UButton>
+          </NuxtLink>
         </div>
 
         <!-- Controls -->

@@ -14,6 +14,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  handle: '@kbrdn1',
   avatarUrl: '/images/avatar.png',
   isHirable: true,
   calendarLink: 'https://cal.com',
@@ -55,41 +56,24 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
-    <!-- Split layout: text left, avatar right -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-12">
-      <!-- Left side: text content -->
-      <div class="flex-1 min-w-0">
-        <!-- Available badge -->
-        <div v-if="isHirable" class="mb-4">
-          <span
-            :class="
-              cn(
-                'inline-flex items-center gap-2 rounded-full px-3 py-1',
-                'text-xs font-mono uppercase tracking-wider',
-                'text-green-700 dark:text-green-500',
-                'border border-green-600/40 dark:border-green-500/30',
-                'bg-green-600/5 dark:bg-green-500/5',
-              )
-            "
-          >
-            <span class="relative flex h-2 w-2" aria-hidden="true">
-              <span
-                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
-                aria-hidden="true"
-              />
-              <span
-                class="relative inline-flex rounded-full h-2 w-2 bg-green-600 dark:bg-green-500"
-                aria-hidden="true"
-              />
-            </span>
-            {{ t('hero.availableForHire') }}
+  <UiPanel>
+    <!-- The card: status, name and rotating title on the left, avatar on the right -->
+    <div
+      class="panel-card flex flex-col gap-8 p-5 sm:p-8 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="min-w-0 flex-1">
+        <span v-if="isHirable" class="tag mb-4 text-green-700 dark:text-green-500">
+          <span class="relative flex size-1.5" aria-hidden="true">
+            <span
+              class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"
+            />
+            <span class="relative inline-flex size-1.5 rounded-full bg-current" />
           </span>
-        </div>
+          {{ t('hero.availableForHire') }}
+        </span>
 
-        <!-- Name -->
         <h1
-          class="text-4xl sm:text-5xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2"
+          class="mb-2 text-4xl tracking-tight text-neutral-900 sm:text-5xl dark:text-neutral-100"
           :aria-label="name"
         >
           <UiScrambleText :text="name" />
@@ -97,58 +81,45 @@ onUnmounted(() => {
 
         <!-- Rotating title -->
         <p
-          class="text-xl sm:text-2xl text-primary-500 mb-6"
+          class="text-xl text-primary-500 sm:text-2xl"
           style="font-family: 'Fenix', serif"
           :class="isTransitioning ? 'hero-title-hidden' : 'hero-title-visible'"
         >
           {{ currentTitle }}
         </p>
-
-        <!-- CTA Buttons -->
-        <div class="flex flex-wrap items-center gap-3">
-          <UTooltip :text="t('hero.bookCallDisabled')">
-            <UButton
-              color="primary"
-              variant="solid"
-              size="md"
-              icon="i-heroicons-calendar-days"
-              class="btn-disabled-striped rounded-full"
-              disabled
-            >
-              {{ t('hero.bookCall') }}
-            </UButton>
-          </UTooltip>
-          <HomeSocials :links="socials" />
-        </div>
       </div>
 
-      <!-- Right side: avatar -->
-      <div class="flex-shrink-0 flex justify-center md:justify-end">
-        <div class="relative">
-          <div
-            v-if="imageError"
-            :class="
-              cn(
-                'w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center rounded-2xl',
-                'bg-neutral-200 dark:bg-neutral-800',
-              )
-            "
-          >
-            <span class="text-4xl sm:text-5xl font-semibold text-primary-500">{{ initials }}</span>
-          </div>
-          <NuxtImg
-            v-else
-            :src="avatarUrl"
-            :alt="name"
-            width="192"
-            height="192"
-            :class="cn('w-40 h-40 sm:w-48 sm:h-48 object-cover')"
-            format="webp"
-            loading="lazy"
-            @error="imageError = true"
-          />
+      <div class="flex shrink-0 justify-center md:justify-end">
+        <div
+          v-if="imageError"
+          class="flex size-40 items-center justify-center rounded-2xl bg-neutral-200 sm:size-48 dark:bg-neutral-800"
+        >
+          <span class="text-4xl font-semibold text-primary-500 sm:text-5xl">{{ initials }}</span>
         </div>
+        <NuxtImg
+          v-else
+          :src="avatarUrl"
+          :alt="name"
+          width="192"
+          height="192"
+          class="size-40 object-cover sm:size-48"
+          format="webp"
+          loading="lazy"
+          @error="imageError = true"
+        />
       </div>
     </div>
-  </div>
+
+    <!-- Footer: handle and city in mono, then the socials and the call to action -->
+    <template #meta>{{ handle }} · {{ t('footer.location.city') }}</template>
+    <template #footer>
+      <HomeSocials :links="socials" />
+      <UTooltip :text="t('hero.bookCallDisabled')">
+        <button type="button" class="btn btn-primary btn-sm btn-disabled-striped" disabled>
+          <UIcon name="i-heroicons-calendar-days" class="size-4" aria-hidden="true" />
+          {{ t('hero.bookCall') }}
+        </button>
+      </UTooltip>
+    </template>
+  </UiPanel>
 </template>

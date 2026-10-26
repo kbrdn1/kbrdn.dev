@@ -103,22 +103,17 @@ const content = computed(() => {
 
     <!-- Main content -->
     <div class="w-full flex flex-col items-center relative z-10">
-      <!-- Banner -->
-      <HomeBanner />
-
       <!-- Panels, in one column -->
       <div class="w-full max-w-5xl space-y-8 px-4 py-10 sm:px-6">
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
-          <UiPanel>
-            <HomeHero
-              class="panel-card p-5 sm:p-8"
-              :name="content.name"
-              :titles="content.titles"
-              :is-hirable="content.isHirable"
-              :calendar-link="content.calendarLink"
-              :socials="content.socials"
-            />
-          </UiPanel>
+          <HomeHero
+            :name="content.name"
+            :titles="content.titles"
+            :handle="content.handle"
+            :is-hirable="content.isHirable"
+            :calendar-link="content.calendarLink"
+            :socials="content.socials"
+          />
         </UiAnimatedSection>
 
         <UiAnimatedSection
@@ -128,12 +123,12 @@ const content = computed(() => {
           :delay="100"
           :duration="500"
         >
-          <UiPanel :label="t('sections.about')">
+          <UiPanel :title="t('bio.title')">
             <HomeBio :paragraphs="content.bio" class="panel-card p-5 sm:p-6" />
           </UiPanel>
         </UiAnimatedSection>
 
-        <!-- Latest Blog Posts -->
+        <!-- Latest Blog Posts: a list, dashed rows, the date in mono -->
         <UiAnimatedSection
           id="latest-posts"
           as="section"
@@ -141,78 +136,84 @@ const content = computed(() => {
           :delay="200"
           :duration="500"
         >
-          <UiPanel :label="t('sections.blog')">
-            <template #actions>
-              <NuxtLink to="/blog" class="pill">{{ t('blog.viewAll') }} →</NuxtLink>
-            </template>
-            <div
+          <UiPanel :title="t('blog.title')">
+            <ul
               v-if="latestPosts?.length"
-              class="panel-card divide-y divide-dashed divide-neutral-200 px-2 dark:divide-neutral-800"
+              class="panel-card divide-y divide-dashed divide-neutral-200 px-5 dark:divide-neutral-800"
             >
-              <NuxtLink
-                v-for="post in latestPosts"
-                :key="post.path"
-                :to="postUrl(post)"
-                class="flex items-center gap-6 px-3 py-3.5 group"
-              >
-                <span
-                  v-if="post.publishedAt"
-                  class="shrink-0 w-28 text-xs font-mono text-neutral-500"
-                >
-                  {{ formatDate(post.publishedAt, 'short') }}
-                </span>
-                <span
-                  class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate"
-                >
-                  {{ post.title }}
-                </span>
+              <li v-for="post in latestPosts" :key="post.path">
+                <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+                  <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
+                    {{ formatDate(post.publishedAt, 'short') }}
+                  </span>
+                  <span
+                    class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
+                  >
+                    {{ post.title }}
+                  </span>
+                </NuxtLink>
+              </li>
+            </ul>
+            <template #footer>
+              <NuxtLink to="/blog" class="btn btn-outline btn-sm">
+                {{ t('blog.viewAll') }}
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
               </NuxtLink>
-            </div>
+            </template>
           </UiPanel>
         </UiAnimatedSection>
 
         <!-- Skills & Stack -->
         <UiAnimatedSection id="skills" as="section" :delay="0" :duration="500">
-          <UiPanel :label="t('sections.skills')">
+          <UiPanel :title="t('skills.title')">
             <HomeSkills class="panel-card p-5 sm:p-6" />
           </UiPanel>
         </UiAnimatedSection>
 
         <!-- Featured Projects -->
         <UiAnimatedSection id="projects" as="section" :delay="0" :duration="500">
-          <UiPanel :label="t('sections.projects')">
-            <template #actions>
+          <UiPanel :title="t('projects.title')">
+            <HomeProjects />
+            <template #meta>github.com/kbrdn1</template>
+            <template #footer>
               <a
                 href="https://github.com/kbrdn1?tab=repositories"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="pill"
+                class="btn btn-outline btn-sm"
               >
                 <UiScrambleText :text="t('projects.viewAll')" effect="link" />
-                <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-3.5" />
+                <UIcon
+                  name="i-heroicons-arrow-top-right-on-square"
+                  class="size-4"
+                  aria-hidden="true"
+                />
               </a>
             </template>
-            <HomeProjects />
           </UiPanel>
         </UiAnimatedSection>
 
-        <!-- GitHub Activity -->
+        <!-- GitHub Activity: the chart is its own panel, its tabs in the header -->
         <UiAnimatedSection
           id="activity"
           as="section"
-          class="scroll-mt-20"
+          class="scroll-mt-24"
           :delay="0"
           :duration="500"
         >
-          <UiPanel :label="t('sections.activity')">
-            <HomeGitHubChart username="kbrdn1" class="panel-card p-5 sm:p-6" />
-          </UiPanel>
+          <HomeGitHubChart username="kbrdn1" />
         </UiAnimatedSection>
 
         <!-- Parcours (Experience + Education) -->
         <UiAnimatedSection id="experience" as="section" :delay="0" :duration="500">
-          <UiPanel :label="t('sections.parcours')">
+          <UiPanel :title="t('nav.experience')">
             <HomeParcours class="panel-card p-5 sm:p-6" />
+            <template #footer>
+              <NuxtLink to="/experience" class="btn btn-outline btn-sm">
+                <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </NuxtLink>
+            </template>
           </UiPanel>
         </UiAnimatedSection>
 

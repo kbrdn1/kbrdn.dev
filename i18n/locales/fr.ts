@@ -119,6 +119,7 @@ export default {
 
   // Bio Section
   bio: {
+    title: 'À propos',
     defaultParagraphs: [
       'Salut, je suis Kylian, un développeur full stack qui aime créer des sites web et applications modernes et soignés où le design, la fonctionnalité et même les plus petits détails comptent, avec un focus sur des produits à la fois pratiques et visuellement satisfaisants.',
       "La stack technique n'est pas ma préoccupation, je m'adapte à ce dont le projet a besoin, bien que je préfère les frameworks et outils modernes. Je suis toujours ouvert à de nouvelles opportunités pour apprendre et évoluer.",

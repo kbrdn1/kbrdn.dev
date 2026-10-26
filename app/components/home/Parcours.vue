@@ -33,9 +33,9 @@ const rows = computed(() => [
           class="group relative isolate -mx-3 flex items-center gap-6 overflow-hidden px-3 py-3 transition-colors"
         >
           <UiPixelCanvas />
-          <span class="w-24 shrink-0 font-mono text-xs text-neutral-500">{{ row.years }}</span>
+          <span class="eyebrow w-24 shrink-0">{{ row.years }}</span>
           <span
-            class="min-w-0 truncate text-sm font-medium text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100"
+            class="min-w-0 truncate text-sm text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100"
           >
             {{ row.name }}
           </span>
@@ -45,8 +45,5 @@ const rows = computed(() => [
         </NuxtLink>
       </li>
     </ul>
-    <NuxtLink to="/experience" class="pill mt-5">
-      <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" /> →
-    </NuxtLink>
   </div>
 </template>

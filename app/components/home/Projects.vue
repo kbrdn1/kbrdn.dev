@@ -66,10 +66,10 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
       aria-hidden="true"
     >
       <li v-for="i in 6" :key="i" class="panel-card flex flex-col gap-2 p-4">
-        <!-- Rows sized like the real ones: name 24px, two-line description 32px, footer 16px,
+        <!-- Rows sized like the real ones: name 32px, two-line description 32px, footer 16px,
              language ticks 12px -->
-        <div class="flex h-6 items-center gap-2">
-          <UiSkeleton class="size-5" />
+        <div class="flex h-8 items-center gap-3">
+          <UiSkeleton class="size-8 rounded-[0.625rem]" />
           <UiSkeleton class="h-4 w-32" />
         </div>
         <div>
@@ -98,30 +98,32 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
             :href="repo.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex min-w-0 items-center gap-2 font-mono text-sm font-medium text-neutral-900 dark:text-neutral-100 hover:text-primary-500 transition-colors after:absolute after:inset-0"
+            class="flex min-w-0 items-center gap-3 text-[15px] text-neutral-900 dark:text-neutral-100 hover:text-primary-500 transition-colors after:absolute after:inset-0"
           >
-            <template v-if="logo(repo)">
-              <img
-                :src="logo(repo)!.light"
-                alt=""
-                width="20"
-                height="20"
-                class="size-5 shrink-0 dark:hidden"
+            <span class="icon-box size-8">
+              <template v-if="logo(repo)">
+                <img
+                  :src="logo(repo)!.light"
+                  alt=""
+                  width="20"
+                  height="20"
+                  class="size-5 shrink-0 dark:hidden"
+                />
+                <img
+                  :src="logo(repo)!.dark"
+                  alt=""
+                  width="20"
+                  height="20"
+                  class="hidden size-5 shrink-0 dark:block"
+                />
+              </template>
+              <UIcon
+                v-else
+                :name="LANGUAGE_ICONS[repo.language ?? ''] ?? 'i-lucide-book-marked'"
+                class="size-4 shrink-0 text-neutral-500"
+                aria-hidden="true"
               />
-              <img
-                :src="logo(repo)!.dark"
-                alt=""
-                width="20"
-                height="20"
-                class="hidden size-5 shrink-0 dark:block"
-              />
-            </template>
-            <UIcon
-              v-else
-              :name="LANGUAGE_ICONS[repo.language ?? ''] ?? 'i-lucide-book-marked'"
-              class="size-5 shrink-0 text-neutral-500"
-              aria-hidden="true"
-            />
+            </span>
             <span class="truncate">{{ repo.name }}</span>
           </a>
           <div class="flex shrink-0 items-center gap-3 text-neutral-500">
