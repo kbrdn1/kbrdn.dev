@@ -61,6 +61,10 @@
   --card-bg: #fff;
   --card-border: color-mix(in srgb, var(--color-neutral-200) 70%, transparent);
   --glass: none;
+  /* Controls inside cards: active segments, outlined buttons, hovered rows */
+  --control-bg: #fff;
+  --control-border: var(--color-neutral-300);
+  --row-hover: rgb(0 0 0 / 0.03);
 
   /* Layout variables */
   --stripe-color: #e8e8e8;
@@ -109,6 +113,9 @@
   --panel-shadow: 0 16px 32px -20px rgb(0 0 0 / 0.6);
   --card-bg: #191919;
   --card-border: var(--color-neutral-800);
+  --control-bg: rgb(255 255 255 / 0.08);
+  --control-border: rgb(255 255 255 / 0.14);
+  --row-hover: rgb(255 255 255 / 0.04);
 
   --stripe-color: #2a2a2a;
   --stripe-color-alt: #333;
