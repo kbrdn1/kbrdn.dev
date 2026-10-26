@@ -180,7 +180,6 @@ export default {
 
   // Skills Section
   skills: {
-    featured: 'STACK & COMPÉTENCES',
     title: 'Outils avec lesquels je travaille',
     stack: {
       languages: 'Langages',

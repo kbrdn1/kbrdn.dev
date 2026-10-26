@@ -61,20 +61,17 @@ const stack = [
   <UiAnimatedSection animation="fadeInUp">
     <div class="space-y-6">
       <!-- Section Header -->
-      <div class="space-y-1">
-        <span class="text-[11px] font-mono uppercase tracking-widest text-primary-500">
-          {{ t('skills.featured') }}
-        </span>
-        <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
+      <div>
+        <h2 class="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
           <UiScrambleText :text="t('skills.title')" />
         </h2>
       </div>
 
-      <dl class="space-y-4">
+      <dl class="divide-y divide-dashed divide-neutral-200 dark:divide-neutral-800">
         <div
           v-for="group in stack"
           :key="group.key"
-          class="grid gap-2 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4"
+          class="grid gap-2 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4"
         >
           <dt class="text-sm text-neutral-500 dark:text-neutral-400">
             {{ t(`skills.stack.${group.key}`) }}

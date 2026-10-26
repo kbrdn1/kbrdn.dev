@@ -26,7 +26,7 @@ const rows = computed(() => [
     <p class="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
       {{ t('experiencePage.teaser') }}
     </p>
-    <ul class="mt-4 divide-y divide-neutral-200 dark:divide-neutral-800">
+    <ul class="mt-4 divide-y divide-dashed divide-neutral-200 dark:divide-neutral-800">
       <li v-for="row in rows" :key="row.id">
         <NuxtLink
           :to="`/experience#${row.id}`"
@@ -45,10 +45,7 @@ const rows = computed(() => [
         </NuxtLink>
       </li>
     </ul>
-    <NuxtLink
-      to="/experience"
-      class="mt-5 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-primary-500 hover:text-primary-400"
-    >
+    <NuxtLink to="/experience" class="pill mt-5">
       <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" /> →
     </NuxtLink>
   </div>

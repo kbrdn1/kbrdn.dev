@@ -260,7 +260,7 @@ function switchTab(step: 1 | -1) {
             :tabindex="activeTab === tab ? 0 : -1"
             :class="
               cn(
-                'px-3 py-1 transition-colors uppercase tracking-wider',
+                'rounded-full px-3 py-1 transition-colors uppercase tracking-wider',
                 activeTab === tab
                   ? 'text-primary-500 bg-primary-500/10'
                   : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
@@ -482,7 +482,7 @@ function switchTab(step: 1 | -1) {
         v-if="
           (activeTab === 'annual' && canExpandYears) || (activeTab === 'monthly' && canExpandMonths)
         "
-        class="w-full flex items-center justify-center gap-2 px-4 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary-500 bg-neutral-100/50 dark:bg-neutral-800/50 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:border-primary-500/30 transition-all uppercase tracking-wider"
+        class="w-full flex items-center justify-center gap-2 rounded-full px-4 py-2 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary-500 bg-neutral-100/50 dark:bg-neutral-800/50 hover:bg-neutral-200 dark:hover:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:border-primary-500/30 transition-all uppercase tracking-wider"
         @click="isExpanded = !isExpanded"
       >
         <UIcon

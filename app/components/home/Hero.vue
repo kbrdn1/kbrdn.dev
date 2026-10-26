@@ -55,7 +55,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto w-full min-md:px-6">
+  <div>
     <!-- Split layout: text left, avatar right -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-12">
       <!-- Left side: text content -->
@@ -65,7 +65,7 @@ onUnmounted(() => {
           <span
             :class="
               cn(
-                'inline-flex items-center gap-2 px-3 py-1',
+                'inline-flex items-center gap-2 rounded-full px-3 py-1',
                 'text-xs font-mono uppercase tracking-wider',
                 'text-green-700 dark:text-green-500',
                 'border border-green-600/40 dark:border-green-500/30',
@@ -89,7 +89,7 @@ onUnmounted(() => {
 
         <!-- Name -->
         <h1
-          class="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-2"
+          class="text-4xl sm:text-5xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100 mb-2"
           :aria-label="name"
         >
           <UiScrambleText :text="name" />
@@ -112,7 +112,7 @@ onUnmounted(() => {
               variant="solid"
               size="md"
               icon="i-heroicons-calendar-days"
-              class="btn-disabled-striped"
+              class="btn-disabled-striped rounded-full"
               disabled
             >
               {{ t('hero.bookCall') }}
@@ -129,7 +129,7 @@ onUnmounted(() => {
             v-if="imageError"
             :class="
               cn(
-                'w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center',
+                'w-40 h-40 sm:w-48 sm:h-48 flex items-center justify-center rounded-2xl',
                 'bg-neutral-200 dark:bg-neutral-800',
               )
             "

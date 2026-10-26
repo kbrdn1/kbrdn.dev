@@ -106,21 +106,21 @@ const content = computed(() => {
       <!-- Banner -->
       <HomeBanner />
 
-      <!-- Hero Section - Full width with horizontal dashed border -->
-      <section class="p-6 w-full">
+      <!-- Panels, in one column -->
+      <div class="w-full max-w-5xl space-y-8 px-4 py-10 sm:px-6">
         <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
-          <HomeHero
-            :name="content.name"
-            :titles="content.titles"
-            :is-hirable="content.isHirable"
-            :calendar-link="content.calendarLink"
-            :socials="content.socials"
-          />
+          <UiPanel>
+            <HomeHero
+              class="panel-card p-5 sm:p-8"
+              :name="content.name"
+              :titles="content.titles"
+              :is-hirable="content.isHirable"
+              :calendar-link="content.calendarLink"
+              :socials="content.socials"
+            />
+          </UiPanel>
         </UiAnimatedSection>
-      </section>
 
-      <!-- About section -->
-      <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
         <UiAnimatedSection
           id="about"
           as="section"
@@ -128,8 +128,9 @@ const content = computed(() => {
           :delay="100"
           :duration="500"
         >
-          <HomeSectionLabel :label="t('sections.about')" />
-          <HomeBio :paragraphs="content.bio" />
+          <UiPanel :label="t('sections.about')">
+            <HomeBio :paragraphs="content.bio" class="panel-card p-5 sm:p-6" />
+          </UiPanel>
         </UiAnimatedSection>
 
         <!-- Latest Blog Posts -->
@@ -140,80 +141,88 @@ const content = computed(() => {
           :delay="200"
           :duration="500"
         >
-          <div class="flex items-center justify-between mb-3">
-            <h2 class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
-              {{ t('sections.blog') }}
-            </h2>
-            <NuxtLink
-              to="/blog"
-              class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-sky-400 transition-colors"
+          <UiPanel :label="t('sections.blog')">
+            <template #actions>
+              <NuxtLink to="/blog" class="pill">{{ t('blog.viewAll') }} →</NuxtLink>
+            </template>
+            <div
+              v-if="latestPosts?.length"
+              class="panel-card divide-y divide-dashed divide-neutral-200 px-2 dark:divide-neutral-800"
             >
-              {{ t('blog.viewAll') }} →
-            </NuxtLink>
-          </div>
-          <div
-            v-if="latestPosts?.length"
-            class="divide-y divide-neutral-200 dark:divide-neutral-800"
-          >
-            <NuxtLink
-              v-for="post in latestPosts"
-              :key="post.path"
-              :to="postUrl(post)"
-              class="flex items-center gap-6 py-3 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3"
-            >
-              <span
-                v-if="post.publishedAt"
-                class="shrink-0 w-28 text-xs font-mono text-neutral-500"
+              <NuxtLink
+                v-for="post in latestPosts"
+                :key="post.path"
+                :to="postUrl(post)"
+                class="flex items-center gap-6 px-3 py-3.5 group"
               >
-                {{ formatDate(post.publishedAt, 'short') }}
-              </span>
-              <span
-                class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate"
-              >
-                {{ post.title }}
-              </span>
-            </NuxtLink>
-          </div>
-        </UiAnimatedSection>
-      </main>
-
-      <!-- Skills & Stack -->
-      <section id="skills" class="p-6 w-full">
-        <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6">
-            <HomeSkills />
-          </div>
-        </UiAnimatedSection>
-      </section>
-
-      <!-- Featured Projects -->
-      <section id="projects" class="p-6 w-full">
-        <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6">
-            <HomeSectionLabel :label="t('sections.projects')" />
-            <HomeProjects />
-
-            <!-- GitHub Activity -->
-            <div id="activity" class="mt-8 scroll-mt-20">
-              <HomeSectionLabel :label="t('sections.activity')" />
-              <HomeGitHubChart username="kbrdn1" />
+                <span
+                  v-if="post.publishedAt"
+                  class="shrink-0 w-28 text-xs font-mono text-neutral-500"
+                >
+                  {{ formatDate(post.publishedAt, 'short') }}
+                </span>
+                <span
+                  class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate"
+                >
+                  {{ post.title }}
+                </span>
+              </NuxtLink>
             </div>
-          </div>
+          </UiPanel>
         </UiAnimatedSection>
-      </section>
 
-      <!-- Parcours (Experience + Education) - Full width -->
-      <section id="experience" class="p-6 w-full">
-        <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6">
-            <HomeSectionLabel :label="t('sections.parcours')" />
-            <HomeParcours />
-          </div>
+        <!-- Skills & Stack -->
+        <UiAnimatedSection id="skills" as="section" :delay="0" :duration="500">
+          <UiPanel :label="t('sections.skills')">
+            <HomeSkills class="panel-card p-5 sm:p-6" />
+          </UiPanel>
         </UiAnimatedSection>
-      </section>
 
-      <!-- Explore Section -->
-      <HomeExplore />
+        <!-- Featured Projects -->
+        <UiAnimatedSection id="projects" as="section" :delay="0" :duration="500">
+          <UiPanel :label="t('sections.projects')">
+            <template #actions>
+              <a
+                href="https://github.com/kbrdn1?tab=repositories"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="pill"
+              >
+                <UiScrambleText :text="t('projects.viewAll')" effect="link" />
+                <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-3.5" />
+              </a>
+            </template>
+            <HomeProjects />
+          </UiPanel>
+        </UiAnimatedSection>
+
+        <!-- GitHub Activity -->
+        <UiAnimatedSection
+          id="activity"
+          as="section"
+          class="scroll-mt-20"
+          :delay="0"
+          :duration="500"
+        >
+          <UiPanel :label="t('sections.activity')">
+            <HomeGitHubChart username="kbrdn1" class="panel-card p-5 sm:p-6" />
+          </UiPanel>
+        </UiAnimatedSection>
+
+        <!-- Parcours (Experience + Education) -->
+        <UiAnimatedSection id="experience" as="section" :delay="0" :duration="500">
+          <UiPanel :label="t('sections.parcours')">
+            <HomeParcours class="panel-card p-5 sm:p-6" />
+          </UiPanel>
+        </UiAnimatedSection>
+
+        <!-- Explore: the carousel as an image card; its own top border goes -->
+        <UiPanel>
+          <div class="overflow-hidden rounded-2xl [&>section]:border-t-0">
+            <HomeExplore />
+          </div>
+        </UiPanel>
+      </div>
 
       <!-- Footer -->
       <UiAnimatedSection
