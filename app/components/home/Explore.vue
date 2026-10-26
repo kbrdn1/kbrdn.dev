@@ -48,6 +48,16 @@ const slides = computed<Slide[]>(() => [
 
 const currentSlide = ref(0)
 const slide = computed(() => slides.value[currentSlide.value])
+
+// One voxel scene per slide (public/images/scenes): the dark ones in dark and glass mode
+const SCENES = {
+  dark: ['city-gate', 'circuit-red'],
+  light: ['city-peach', 'city-domes', 'city-marble', 'village'],
+}
+const scene = computed(() => {
+  const list = SCENES[isDark.value ? 'dark' : 'light']
+  return `/images/scenes/${list[currentSlide.value % list.length]}.webp`
+})
 const isTransitioning = ref(false)
 const slideDirection = ref<'left' | 'right'>('left')
 let interval: ReturnType<typeof setInterval> | undefined
@@ -91,12 +101,10 @@ function goToSlide(index: number) {
   >
     <!-- Background image -->
     <ClientOnly>
-      <NuxtImg
-        :src="isDark ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'"
-        alt=""
-        class="absolute inset-0 w-full h-full object-cover"
-        loading="lazy"
-      />
+      <!-- Seen through the pixel layer, in the page's pixel shape -->
+      <div class="absolute inset-0">
+        <UiPixelImage :src="scene" class="size-full" />
+      </div>
       <template #fallback>
         <div class="absolute inset-0 bg-neutral-200 dark:bg-neutral-800" />
       </template>
