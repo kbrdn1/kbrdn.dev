@@ -13,7 +13,7 @@ defineProps<{ title?: string; subtitle?: string }>()
     >
       <h2 v-if="title" class="text-[17px] text-neutral-900 dark:text-neutral-100">
         <UiScrambleText :text="title" />
-        <span v-if="subtitle" class="ml-1.5 text-neutral-500">{{ subtitle }}</span>
+        <span v-if="subtitle" class="ml-1.5 text-(--label)">{{ subtitle }}</span>
       </h2>
       <div v-if="$slots.actions" class="flex items-center gap-1.5">
         <slot name="actions" />

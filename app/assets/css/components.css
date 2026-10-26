@@ -137,7 +137,7 @@
     line-height: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--color-neutral-500);
+    color: var(--label);
   }
 
   /* Pill segmented control: the active segment (aria-selected, aria-current) is filled
@@ -165,7 +165,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     white-space: nowrap;
-    color: var(--color-neutral-500);
+    color: var(--label);
     transition:
       color 0.2s ease,
       background-color 0.2s ease,
@@ -247,7 +247,7 @@
   }
 
   .field::placeholder {
-    color: var(--color-neutral-500);
+    color: var(--label);
   }
 
   .field:focus {
@@ -264,7 +264,7 @@
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 9999px;
-    color: var(--color-neutral-500);
+    color: var(--label);
     transition:
       color 0.2s ease,
       background-color 0.2s ease;
