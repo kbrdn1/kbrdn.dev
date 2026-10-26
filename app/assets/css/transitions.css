@@ -12,8 +12,10 @@
   }
 }
 
+/* backwards, not both: a filled opacity animation keeps the header a backdrop root, and the
+   glass navbar inside it would blur nothing (blur mode) */
 .nav-entrance {
-  animation: nav-fade-in 0.6s ease both !important;
+  animation: nav-fade-in 0.6s ease backwards !important;
 }
 
 /* Page transition (fade + slide up) */
