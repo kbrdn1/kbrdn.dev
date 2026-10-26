@@ -80,3 +80,53 @@
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 24px 24px;
 }
+
+/* ═══════════════════════════════════════════════════
+   Panels — rounded surfaces holding cards. Layered so utilities override them.
+   ═══════════════════════════════════════════════════ */
+@layer components {
+  /* Outer surface: 4px of padding, so the cards inside keep concentric corners (20 - 4) */
+  .panel {
+    border: 1px solid var(--panel-border);
+    border-radius: 1.25rem;
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
+    padding: 0.25rem;
+  }
+
+  .panel-card {
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    background: var(--card-bg);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.75rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--panel-border);
+    border-radius: 9999px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-neutral-500);
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .pill:hover {
+    color: var(--ui-primary);
+    border-color: color-mix(in srgb, var(--ui-primary) 50%, transparent);
+  }
+
+  /* Cuts whatever it covers into 2px ticks, 4px apart: meters and bars */
+  .ticks {
+    mask-image: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 6px);
+  }
+}

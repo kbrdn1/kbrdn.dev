@@ -49,8 +49,18 @@
 }
 
 :root {
-  /* Sharp corners */
-  --ui-radius: 0;
+  /* Rounded corners: Nuxt UI components; panels and cards set their own radii */
+  --ui-radius: 0.375rem;
+
+  /* Surfaces: panels holding cards */
+  --panel-bg: var(--color-neutral-50);
+  --panel-border: color-mix(in srgb, var(--color-neutral-200) 70%, transparent);
+  --panel-shadow:
+    0 80px 80px rgb(0 0 0 / 0.06), 0 16px 24px rgb(0 0 0 / 0.04), 0 8px 12px rgb(0 0 0 / 0.03),
+    0 3px 4px rgb(0 0 0 / 0.02);
+  --card-bg: #fff;
+  --card-border: color-mix(in srgb, var(--color-neutral-200) 70%, transparent);
+  --glass: none;
 
   /* Layout variables */
   --stripe-color: #e8e8e8;
@@ -94,6 +104,12 @@
    ═══════════════════════════════════════════════════ */
 .dark,
 .blur {
+  --panel-bg: #0f0f0f;
+  --panel-border: var(--color-neutral-800);
+  --panel-shadow: 0 16px 32px -20px rgb(0 0 0 / 0.6);
+  --card-bg: #191919;
+  --card-border: var(--color-neutral-800);
+
   --stripe-color: #2a2a2a;
   --stripe-color-alt: #333;
   --border-color: #2a2a2a;
@@ -123,4 +139,25 @@
   --ui-border-muted: var(--corner-color);
   --ui-border-accented: var(--color-neutral-700);
   --ui-border-inverted: var(--color-neutral-100);
+}
+
+/* ═══════════════════════════════════════════════════
+   Blur Mode - the dark tokens above, with glass panels over the dither
+   ═══════════════════════════════════════════════════ */
+.blur {
+  --panel-bg: rgb(255 255 255 / 0.04);
+  --panel-border: rgb(255 255 255 / 0.09);
+  --panel-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.7), inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --card-bg: rgb(16 16 16 / 0.6);
+  --card-border: rgb(255 255 255 / 0.07);
+  --glass: blur(24px) saturate(150%);
+}
+
+/* Asked for less transparency: the glass turns back into the dark surfaces */
+@media (prefers-reduced-transparency: reduce) {
+  .blur {
+    --panel-bg: #0f0f0f;
+    --card-bg: #191919;
+    --glass: none;
+  }
 }
