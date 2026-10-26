@@ -14,7 +14,7 @@ const { t } = useI18n()
     <LayoutDottedBackground />
     <LayoutBlogHeader />
 
-    <main id="main-content" tabindex="-1" class="flex-1 relative z-10 pt-14">
+    <main id="main-content" tabindex="-1" class="flex-1 relative z-10 pt-20">
       <HomeBanner />
       <slot />
     </main>

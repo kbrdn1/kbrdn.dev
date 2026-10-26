@@ -36,20 +36,11 @@ const isMobileMenuOpen = ref(false)
 </script>
 
 <template>
-  <header
-    :class="
-      cn(
-        'fixed top-0 left-0 right-0 z-50',
-        'bg-white/80 dark:bg-neutral-950/80 backdrop-blur-sm border-b border-neutral-200 dark:border-neutral-800',
-        'nav-entrance',
-      )
-    "
-  >
-    <div class="mx-auto" style="max-width: 80rem">
+  <header :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')">
+    <!-- Detached from the top: a panel as wide as the home's panels -->
+    <div class="panel mx-auto max-w-[61rem] p-0">
       <!-- Desktop header -->
-      <div
-        class="hidden md:flex items-stretch h-14 border-x border-neutral-200 dark:border-neutral-800"
-      >
+      <div class="hidden md:flex items-stretch h-14">
         <!-- Brand with dropdown -->
         <div
           class="relative border-r border-neutral-200 dark:border-neutral-700 group/brand"
@@ -80,7 +71,7 @@ const isMobileMenuOpen = ref(false)
           >
             <div
               v-if="showBrandMenu"
-              class="absolute left-0 top-full z-50 mt-px min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
+              class="absolute left-0 top-full z-50 mt-px min-w-full w-max overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
             >
               <NuxtLink
                 to="/"
@@ -132,8 +123,8 @@ const isMobileMenuOpen = ref(false)
           </NuxtLink>
         </nav>
 
-        <!-- Right side: controls -->
-        <div class="flex items-stretch">
+        <!-- Right side: controls, clipped to the panel's rounded corners on hover -->
+        <div class="flex items-stretch overflow-hidden rounded-r-[19px]">
           <UTooltip :text="t('hero.sponsor')">
             <a
               href="https://github.com/sponsors/kbrdn1"
