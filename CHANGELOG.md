@@ -73,6 +73,13 @@ migrates `[Unreleased]` into that file and empties this one — see
   commands of its README. The latest release is read from GitHub instead of
   written down.
 
+- **A third theme, glass**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The theme button now
+  cycles light, dark and glass. Glass is the dark theme with translucent panels
+  blurred over the dither field, which then fills the whole screen, unfaded;
+  everything styled for dark applies to it. Under
+  `prefers-reduced-transparency` the panels turn opaque again.
+
 ### Changed
 
 - **The navigation leads to pages**
@@ -120,6 +127,22 @@ migrates `[Unreleased]` into that file and empties this one — see
   gradually, filled in pixel by pixel by the Bayer matrix, and fade out in
   under a second. 60 fps while something moves, 24 at rest. Replaces 1.1.0's
   spring trail.
+
+- **The home page in panels, after disarto**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Each section is a
+  rounded panel holding cards, with disarto.co's own radii (20 px, 4 px of
+  padding, concentric 16 px cards): a title in Inter, mono eyebrows over large
+  Inter figures, a footer with mono meta and pill buttons. The GitHub chart's
+  views are a segmented control, availability a status tag, and the pinned
+  repositories' languages are cut into ticks. Corners are no longer sharp
+  (`--ui-radius`), and the orange buttons get dark text: white on `#d4825d`
+  fails AA.
+- **A floating navbar, the announcement as a notch under it**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The navbar is
+  detached from the top, a panel as wide as the home page's, its pages a
+  segmented control; the announcement banner hangs under it as a notch with
+  concave shoulders, on every page. The footer, the music player and the table
+  of contents take the panel surfaces too.
 
 ### Fixed
 
