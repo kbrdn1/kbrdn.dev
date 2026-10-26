@@ -47,6 +47,7 @@ export default {
   themeSwitch: {
     toLight: 'Switch to light mode',
     toDark: 'Switch to dark mode',
+    toBlur: 'Switch to glass mode',
   },
 
   // Section Labels
