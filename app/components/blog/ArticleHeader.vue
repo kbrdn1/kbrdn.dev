@@ -33,7 +33,7 @@ const { formatDate } = useFormatDate()
       <ClientOnly v-else>
         <NuxtImg
           :src="
-            $colorMode.value === 'dark' ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'
+            isDarkMode($colorMode.value) ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'
           "
           alt=""
           class="w-full h-48 sm:h-64 lg:h-80 object-cover"

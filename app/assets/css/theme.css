@@ -90,9 +90,10 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   Dark Mode - Claude Dark (Pure)
+   Dark Mode - Claude Dark (Pure), shared by the blur mode
    ═══════════════════════════════════════════════════ */
-.dark {
+.dark,
+.blur {
   --stripe-color: #2a2a2a;
   --stripe-color-alt: #333;
   --border-color: #2a2a2a;

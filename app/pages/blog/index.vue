@@ -364,7 +364,7 @@ const { postUrl } = useBlogUrl()
                   <NuxtImg
                     :src="
                       post.bannerImage ||
-                      ($colorMode.value === 'dark'
+                      (isDarkMode($colorMode.value)
                         ? '/images/banners/dark.jpg'
                         : '/images/banners/light.jpg')
                     "

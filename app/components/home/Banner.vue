@@ -3,7 +3,7 @@ import { useI18n } from '#imports'
 
 const { t } = useI18n()
 const colorMode = useColorMode()
-const isDark = computed(() => colorMode.value === 'dark')
+const isDark = computed(() => isDarkMode(colorMode.value))
 </script>
 
 <template>

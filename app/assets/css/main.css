@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/* Blur is dark with glass surfaces: every dark: utility applies to it as well.
+   Redeclares Nuxt UI's own variant, so it stays after the @nuxt/ui import. */
+@custom-variant dark (&:where(.dark, .dark *, .blur, .blur *));
+@custom-variant blur (&:where(.blur, .blur *));
+/* "blur" is also a Tailwind utility (filter: blur), generated as soon as the word shows up
+   in a source file: through <html class="blur"> it would blur the whole page. */
+@source not inline("blur");
+
 /* Scan content directory for Tailwind classes in markdown */
 @source "../../../app/content/**/*.{md,mdx}";
 
