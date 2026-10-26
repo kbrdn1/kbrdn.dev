@@ -72,7 +72,6 @@
 @layer components {
   /* The announcement hanging under the floating navbar: the panel's surface, open at the top */
   .notch {
-    --shoulder: 0.75rem;
     margin-top: -1px;
     border: 1px solid var(--panel-border);
     border-top: 0;
@@ -80,6 +79,31 @@
     background: var(--panel-bg);
     -webkit-backdrop-filter: var(--glass);
     backdrop-filter: var(--glass);
+  }
+
+  /* The notch's width, shared with the navbar that opens for it (.notched). The two
+     resolve 100% against widths that match: the header's content, or the navbar which
+     fills it up to 61rem, past which both stay at 31rem */
+  .notch,
+  .notched {
+    --notch-w: min(31rem, 100% - 4rem);
+    --shoulder: 0.75rem;
+  }
+
+  /* Glass only: a translucent notch does not cover the navbar's bottom border, so the
+     navbar opens there, over the notch and its shoulders. Not in light and dark, where
+     the opaque notch covers it and the mask would also clip the light panel's shadow. */
+  .blur .notched {
+    --notch-cut: calc(var(--notch-w) + 2 * var(--shoulder));
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - 1px) no-repeat,
+      linear-gradient(
+          to right,
+          #000 calc(50% - var(--notch-cut) / 2),
+          transparent 0 calc(50% + var(--notch-cut) / 2),
+          #000 0
+        )
+        bottom / 100% 1px no-repeat;
   }
 
   /* Concave shoulders, after disarto's sheet tabs: each fills the corner between the

@@ -37,7 +37,7 @@ const isMobileMenuOpen = ref(false)
 <template>
   <header :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')">
     <!-- Detached from the top: a panel as wide as the home's panels -->
-    <div class="panel mx-auto max-w-[61rem] p-0">
+    <div class="panel notched mx-auto max-w-[61rem] p-0">
       <div class="hidden md:flex items-center h-12 gap-2 px-1.5">
         <!-- Brand with dropdown -->
         <div
