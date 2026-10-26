@@ -15,7 +15,7 @@ const { t } = useI18n()
     </a>
     <LayoutDottedBackground />
     <LayoutHeader />
-    <main id="main-content" tabindex="-1" class="relative z-10 pt-20">
+    <main id="main-content" tabindex="-1" class="relative z-10 pt-24">
       <slot />
     </main>
   </div>

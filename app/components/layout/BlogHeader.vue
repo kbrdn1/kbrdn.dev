@@ -40,16 +40,16 @@ const isMobileMenuOpen = ref(false)
     <!-- Detached from the top: a panel as wide as the home's panels -->
     <div class="panel mx-auto max-w-[61rem] p-0">
       <!-- Desktop header -->
-      <div class="hidden md:flex items-stretch h-14">
+      <div class="hidden md:flex items-center h-12 gap-2 px-1.5">
         <!-- Brand with dropdown -->
         <div
-          class="relative border-r border-neutral-200 dark:border-neutral-700 group/brand"
+          class="relative group/brand"
           @mouseenter="showBrandMenu = true"
           @mouseleave="showBrandMenu = false"
         >
           <button
             type="button"
-            class="flex items-center px-6 h-full font-mono font-bold text-sm tracking-tight transition-colors"
+            class="flex items-center h-9 px-3 rounded-full font-mono font-bold text-sm tracking-tight transition-colors hover:bg-(--control-bg)"
             :aria-expanded="showBrandMenu"
             aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
@@ -69,80 +69,68 @@ const isMobileMenuOpen = ref(false)
             leave-from-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-95"
           >
-            <div
-              v-if="showBrandMenu"
-              class="absolute left-0 top-full z-50 mt-px min-w-full w-max overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
-            >
-              <NuxtLink
-                to="/"
-                class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                @click="showBrandMenu = false"
+            <div v-if="showBrandMenu" class="absolute left-0 top-full z-50 min-w-full w-max pt-2.5">
+              <div
+                class="overflow-hidden rounded-xl border border-(--panel-border) bg-white dark:bg-neutral-900 shadow-lg"
               >
-                <span
-                  ><span class="text-neutral-900 dark:text-neutral-100">@</span
-                  ><span class="text-primary-500">kbrdn1</span></span
+                <NuxtLink
+                  to="/"
+                  class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                  @click="showBrandMenu = false"
                 >
-              </NuxtLink>
+                  <span
+                    ><span class="text-neutral-900 dark:text-neutral-100">@</span
+                    ><span class="text-primary-500">kbrdn1</span></span
+                  >
+                </NuxtLink>
+              </div>
             </div>
           </Transition>
         </div>
 
+        <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />
+
         <!-- Desktop Navigation -->
-        <nav class="flex items-stretch flex-1" aria-label="Site navigation">
+        <nav class="segmented mx-auto" aria-label="Site navigation">
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
             :to="link.to"
             :aria-current="isActive(link.to) ? 'page' : undefined"
-            :class="
-              cn(
-                'flex-1 px-6 flex items-center justify-center text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
-                'border-r border-neutral-200 dark:border-neutral-700',
-                isActive(link.to)
-                  ? 'text-primary-500 bg-primary-500/5 nav-tab-active'
-                  : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50',
-              )
-            "
+            class="segment"
           >
             <UiScrambleText :text="link.label" effect="link" />
           </NuxtLink>
 
           <!-- Portfolio link -->
-          <NuxtLink
-            to="/"
-            :class="
-              cn(
-                'flex-1 px-6 flex items-center justify-center gap-2 text-[10px] font-mono uppercase tracking-wider transition-all whitespace-nowrap',
-                'border-r border-neutral-200 dark:border-neutral-700',
-                'text-neutral-500 dark:text-neutral-400 hover:text-primary-500 hover:bg-primary-500/5',
-              )
-            "
-          >
-            <UIcon name="i-heroicons-arrow-left" class="w-3 h-3" aria-hidden="true" />
+          <NuxtLink to="/" class="segment">
+            <UIcon name="i-heroicons-arrow-left" class="size-3" aria-hidden="true" />
             <UiScrambleText :text="t('blogNav.portfolio')" effect="link" />
           </NuxtLink>
         </nav>
 
-        <!-- Right side: controls, clipped to the panel's rounded corners on hover -->
-        <div class="flex items-stretch overflow-hidden rounded-r-[19px]">
+        <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />
+
+        <!-- Right side: controls -->
+        <div class="flex items-center gap-0.5">
           <UTooltip :text="t('hero.sponsor')">
             <a
               href="https://github.com/sponsors/kbrdn1"
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="t('hero.sponsor')"
-              class="flex items-center justify-center px-6 h-full border-r border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-pink-500 hover:bg-pink-500/5 transition-all"
+              class="icon-btn hover:text-pink-500"
             >
               <UIcon name="i-heroicons-heart" class="w-4 h-4" aria-hidden="true" />
             </a>
           </UTooltip>
-          <UiLanguageSwitcher class="border-r border-neutral-200 dark:border-neutral-700" />
+          <UiLanguageSwitcher />
           <UiThemeToggle />
         </div>
       </div>
 
       <!-- Mobile header -->
-      <div class="flex md:hidden items-center justify-between h-14 px-4">
+      <div class="flex md:hidden items-center justify-between h-12 pl-3.5 pr-1.5">
         <div class="relative group/brand-mobile">
           <button
             type="button"
@@ -167,7 +155,7 @@ const isMobileMenuOpen = ref(false)
           >
             <div
               v-if="showBrandMenu"
-              class="absolute left-0 top-full z-50 mt-2 min-w-full w-max border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
+              class="absolute left-0 top-full z-50 mt-2 min-w-full w-max overflow-hidden rounded-xl border border-(--panel-border) bg-white dark:bg-neutral-900 shadow-lg"
             >
               <NuxtLink
                 to="/"
@@ -189,15 +177,7 @@ const isMobileMenuOpen = ref(false)
           <!-- Mobile menu toggle -->
           <button
             type="button"
-            :class="
-              cn(
-                'md:hidden flex items-center justify-center w-8 h-8',
-                'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100',
-                'bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-800',
-                'border border-transparent hover:border-neutral-200 dark:hover:border-neutral-700',
-                'transition-all',
-              )
-            "
+            class="icon-btn md:hidden"
             :aria-expanded="isMobileMenuOpen"
             :aria-controls="isMobileMenuOpen ? 'blog-mobile-nav' : undefined"
             :aria-label="isMobileMenuOpen ? 'Close menu' : 'Open menu'"
@@ -224,7 +204,7 @@ const isMobileMenuOpen = ref(false)
         <nav
           v-if="isMobileMenuOpen"
           id="blog-mobile-nav"
-          class="md:hidden py-3 border-t border-neutral-200 dark:border-neutral-800"
+          class="md:hidden py-2 border-t border-(--panel-border)"
           aria-label="Mobile site navigation"
         >
           <NuxtLink
@@ -234,7 +214,7 @@ const isMobileMenuOpen = ref(false)
             :aria-current="isActive(link.to) ? 'page' : undefined"
             :class="
               cn(
-                'flex items-center px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
+                'mx-1.5 flex items-center rounded-lg px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
                 isActive(link.to)
                   ? 'text-primary-500 bg-neutral-100 dark:bg-neutral-900'
                   : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-100/50 dark:hover:bg-neutral-900/50',
@@ -261,5 +241,7 @@ const isMobileMenuOpen = ref(false)
         </nav>
       </Transition>
     </div>
+    <!-- The announcement, as a notch under the navbar -->
+    <HomeBanner />
   </header>
 </template>

@@ -46,21 +46,6 @@
   background-repeat: no-repeat;
 }
 
-/* Nav tab active indicator */
-.nav-tab-active {
-  position: relative;
-}
-
-.nav-tab-active::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--color-primary-500);
-}
-
 /* Disabled button with subtle diagonal striped background */
 .btn-disabled-striped {
   background-image: repeating-linear-gradient(
@@ -85,6 +70,49 @@
    Panels — rounded surfaces holding cards. Layered so utilities override them.
    ═══════════════════════════════════════════════════ */
 @layer components {
+  /* The announcement hanging under the floating navbar: the panel's surface, open at the top */
+  .notch {
+    --shoulder: 0.75rem;
+    margin-top: -1px;
+    border: 1px solid var(--panel-border);
+    border-top: 0;
+    border-radius: 0 0 0.875rem 0.875rem;
+    background: var(--panel-bg);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
+  }
+
+  /* Concave shoulders, after disarto's sheet tabs: each fills the corner between the
+     navbar's edge and the notch's side, its arc drawn in the border colour */
+  .notch::before,
+  .notch::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: var(--shoulder);
+    height: var(--shoulder);
+  }
+
+  .notch::before {
+    right: 100%;
+    background: radial-gradient(
+      circle at 0 100%,
+      transparent calc(var(--shoulder) - 1px),
+      var(--panel-border) calc(var(--shoulder) - 1px) var(--shoulder),
+      var(--panel-bg) var(--shoulder)
+    );
+  }
+
+  .notch::after {
+    left: 100%;
+    background: radial-gradient(
+      circle at 100% 100%,
+      transparent calc(var(--shoulder) - 1px),
+      var(--panel-border) calc(var(--shoulder) - 1px) var(--shoulder),
+      var(--panel-bg) var(--shoulder)
+    );
+  }
+
   /* Outer surface: 4px of padding, so the cards inside keep concentric corners (20 - 4) */
   .panel {
     border: 1px solid var(--panel-border);

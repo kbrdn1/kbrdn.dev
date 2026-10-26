@@ -19,7 +19,7 @@ const items = computed(() => [
 
 const active = ref('')
 const progress = ref(0)
-const HEADER_OFFSET = 84 // floating header (ends at 70px) and some air
+const HEADER_OFFSET = 100 // floating header and its notch (end at 90px), and some air
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id)
