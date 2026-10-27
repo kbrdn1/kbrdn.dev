@@ -531,8 +531,14 @@ export default {
 
   // Error Page
   error: {
-    title: 'Page not found',
-    subtitle: 'Looks like this page got lost in the pixels',
+    eyebrow: 'ERROR {code}',
+    title: 'Page not found.',
+    subtitle: 'Looks like this page got lost in the pixels.',
+    titleOther: 'Something broke.',
+    subtitleOther: 'Something went wrong on my side. Try again in a moment.',
+    playTitle: 'The pixels',
+    playSubtitle: 'Drag them around, put them back',
+    inPlace: 'in place',
     backHome: 'Back to home',
     reset: 'Reset pixels',
   },

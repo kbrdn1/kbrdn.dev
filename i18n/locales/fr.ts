@@ -532,8 +532,14 @@ export default {
 
   // Error Page
   error: {
-    title: 'Page introuvable',
-    subtitle: "On dirait que cette page s'est perdue dans les pixels",
+    eyebrow: 'ERREUR {code}',
+    title: 'Page introuvable.',
+    subtitle: "On dirait que cette page s'est perdue dans les pixels.",
+    titleOther: 'Quelque chose a cassé.',
+    subtitleOther: 'Une erreur est survenue de mon côté. Réessayez dans un instant.',
+    playTitle: 'Les pixels',
+    playSubtitle: 'Déplacez-les, remettez-les en place',
+    inPlace: 'en place',
     backHome: "Retour à l'accueil",
     reset: 'Réinitialiser',
   },
