@@ -36,6 +36,7 @@ export default {
     home: 'Accueil',
     experience: 'Parcours',
     apps: 'Apps',
+    activity: 'Activité',
     blog: 'Blog',
     skipToContent: 'Aller au contenu',
     openMenu: 'Ouvrir le menu',
@@ -319,6 +320,9 @@ export default {
       site: 'Site',
       repo: 'Dépôt',
       viewAll: 'Tout voir sur GitHub',
+      search: 'Rechercher…',
+      noResults: 'Aucun résultat',
+      view: 'Voir',
       status: {
         released: 'Publié',
         inDevelopment: 'En développement',
@@ -355,6 +359,58 @@ export default {
   },
 
   // /apps
+  activityPage: {
+    seoTitle: 'Activité · Kylian Bardini',
+    seoDescription:
+      "L'open source de Kylian Bardini et son activité GitHub récente, lue en direct depuis ses dépôts publics.",
+    ogTitle: 'Activité',
+    ogSubtitle: 'Open source et activité GitHub',
+    eyebrow: 'ACTIVITÉ',
+    title: 'Ce qui bouge en ce moment.',
+    intro:
+      "Les outils que je maintiens, ce que je renvoie aux projets que j'utilise, et l'activité récente de mes dépôts GitHub publics, lue en direct.",
+    lastActivity: 'dernière activité publique {ago}',
+    checked: 'GitHub vérifié à {time}',
+    feedTitle: 'Activité GitHub récente',
+    feedCount: '{count} entrées',
+    more: 'Plus sur GitHub',
+    showMore: 'Afficher plus',
+    today: "Aujourd'hui",
+    yesterday: 'Hier',
+    types: {
+      push: 'push',
+      pr: 'pr',
+      issue: 'issue',
+      comment: 'commentaire',
+      release: 'version',
+      create: 'création',
+      star: 'étoile',
+      fork: 'fork',
+    },
+    events: {
+      push: 'poussé sur {ref}',
+      pushes: '{count} pushs sur {ref}',
+      pr: {
+        opened: 'PR #{number} ouverte',
+        merged: 'PR #{number} fusionnée',
+        closed: 'PR #{number} fermée',
+        reopened: 'PR #{number} rouverte',
+      },
+      issue: {
+        opened: 'issue #{number} ouverte',
+        closed: 'issue #{number} fermée',
+        reopened: 'issue #{number} rouverte',
+      },
+      comment: 'commentaire sur #{number}',
+      comments: '{count} commentaires sur #{number}',
+      release: 'version {ref} publiée',
+      repository: 'dépôt créé',
+      tag: 'tag {ref} créé',
+      star: 'étoilé',
+      fork: 'forké',
+    },
+  },
+
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:

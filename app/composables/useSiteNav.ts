@@ -13,6 +13,7 @@ export function useSiteNav() {
     { to: '/', label: t('nav.home') },
     { to: '/experience', label: t('nav.experience') },
     { to: '/apps', label: t('nav.apps') },
+    { to: '/activity', label: t('nav.activity') },
     { to: '/blog', label: t('nav.blog') },
   ])
 
