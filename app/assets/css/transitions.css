@@ -2,6 +2,49 @@
    Animations & Transitions
    ═══════════════════════════════════════════════════ */
 
+/* Page navigation (Nuxt view transitions): a focus pull. The old page blurs and fades out
+   quickly, the new one comes into focus as it rises. The navbar and its notch are left out
+   of it, captured on their own, so they stay sharp and still; named on the glass panels
+   themselves, never on the header: an ancestor with a name is a backdrop root, and the
+   navbar's glass would blur nothing. */
+header .panel.notched {
+  view-transition-name: site-nav;
+}
+
+header .notch {
+  view-transition-name: site-notch;
+}
+
+::view-transition-old(root) {
+  animation: page-out 0.22s ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: page-in 0.55s var(--ease-out-quint) both;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(0.985);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(14px);
+  }
+}
+
+/* The theme switch reveals the whole screen at once, navbar included */
+html[data-theme-switch] header .panel.notched,
+html[data-theme-switch] header .notch {
+  view-transition-name: none;
+}
+
 /* Theme switch (ThemeToggle): the new mode spreads from the button in a circle over a still
    snapshot of the old one, a halo in the new mode's colour along the edge. No cross-fade,
    and no colour transitions: the new page is live, they would tween behind the circle. */
