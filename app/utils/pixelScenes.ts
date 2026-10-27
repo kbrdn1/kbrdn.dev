@@ -83,6 +83,8 @@ export const SCENE_FILL: Record<string, string> = {
   P: 'fill-neutral-500 dark:fill-neutral-700',
   R: 'fill-neutral-400 dark:fill-neutral-600',
   S: 'fill-neutral-600 dark:fill-neutral-800',
+  // An empty cell of the contribution graph
+  Z: 'fill-neutral-200 dark:fill-neutral-800',
   // In the window: the sky (day, night), the city, its lit windows, the rain
   V: 'fill-primary-100 dark:fill-neutral-950',
   W: 'fill-neutral-300 dark:fill-neutral-800',
@@ -487,7 +489,8 @@ const terminal: Scene = {
 // falls and raises a cell a level; a full graph flashes, confetti, and it starts again
 const COLS = 13
 const ROWS = 5
-const LEVEL = ['3', 'n', 'o', 'u', 't'] as const
+// No contribution, then four levels of green
+const LEVEL = ['Z', 'n', 'o', 'u', 't'] as const
 const START = [
   1, 0, 2, 3, 1, 0, 2, 4, 1, 2, 0, 3, 1, 0, 2, 1, 3, 2, 0, 1, 4, 2, 1, 0, 3, 2, 1, 0, 2, 1, 3, 1, 2,
   0, 1, 2, 4, 1, 0, 2, 1, 3, 2, 1, 0, 2, 1, 0, 3, 2, 1, 2, 0, 1, 3, 1, 2, 0, 1, 2, 2, 1, 0, 3, 1,
@@ -528,10 +531,11 @@ const DROPS = (() => {
 })()
 const commits: Scene = {
   still: flatten([
-    // The card
-    box(2, 13, 60, 33, '2'),
-    box(3, 14, 58, 31, '1'),
-    box(3, 14, 58, 1, '3'),
+    // The card, outlined only: the page shows through
+    box(2, 13, 60, 1, 'R'),
+    box(2, 45, 60, 1, 'R'),
+    box(2, 14, 1, 31, 'R'),
+    box(61, 14, 1, 31, 'R'),
     // Month marks and weekday ticks
     ...Array.from({ length: 4 }, (_, i) => box(6 + i * 14, 17, 4, 1, '5')),
     ...[0, 2, 4].map((r) => box(3, cellY(r) + 1, 1, 1, '5')),
