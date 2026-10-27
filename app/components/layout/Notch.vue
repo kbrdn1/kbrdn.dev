@@ -134,7 +134,8 @@ const menus = computed<Record<string, Menu>>(() => ({
 const menu = computed(() => (active.value ? menus.value[active.value] : undefined))
 const pageLabel = computed(() => pages.value.find((page) => page.to === active.value)?.label)
 
-// The illustration follows the link under the pointer, the menu's own otherwise
+// The illustration follows the link under the pointer, the menu's own until one is hovered.
+// It stays on the last link once the pointer leaves it, so it can reach the picture.
 const hovered = ref<string>()
 const image = computed(() => hovered.value ?? menu.value?.image)
 watch(active, () => (hovered.value = undefined))
@@ -183,7 +184,7 @@ watch(
               <p class="px-2 text-[13px] leading-snug text-neutral-600 dark:text-neutral-400">
                 {{ menu.text }}
               </p>
-              <ul class="mt-2" @mouseleave="hovered = undefined">
+              <ul class="mt-2">
                 <li v-for="link in menu.links" :key="link.to">
                   <NuxtLink
                     :to="link.to"
