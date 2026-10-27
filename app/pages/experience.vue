@@ -195,18 +195,20 @@ const list = (key: string, count: number) =>
     </div>
 
     <!-- The same strip, compact and fixed under the navbar once the full one has scrolled
-         away, while a role or degree is being read -->
-    <Transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="-translate-y-2 opacity-0"
-      leave-active-class="transition duration-150 ease-in"
-      leave-to-class="-translate-y-2 opacity-0"
-    >
-      <div v-if="stripGone && activeId" class="fixed inset-x-0 top-24 z-40 px-4 sm:px-6">
+         away, while a role or degree is being read. The transition is on the panel itself:
+         on the fixed wrapper, its opacity would turn the glass off until the end. -->
+    <div class="pointer-events-none fixed inset-x-0 top-24 z-40 px-4 sm:px-6">
+      <Transition
+        enter-active-class="transition duration-300 ease-out-quint"
+        enter-from-class="-translate-y-3 opacity-0"
+        leave-active-class="transition duration-200 ease-in"
+        leave-to-class="-translate-y-3 opacity-0"
+      >
         <nav
+          v-if="stripGone && activeId"
           ref="compactNav"
           :aria-label="t('experiencePage.timeline')"
-          class="panel mx-auto max-w-[61rem] overflow-x-auto scrollbar-none"
+          class="pointer-events-auto panel mx-auto max-w-[61rem] overflow-x-auto scrollbar-none"
         >
           <div ref="compactList" class="relative flex w-max gap-1">
             <a
@@ -232,8 +234,8 @@ const list = (key: string, count: number) =>
             <span v-if="compactInk" class="ink" :style="compactInk" aria-hidden="true" />
           </div>
         </nav>
-      </div>
-    </Transition>
+      </Transition>
+    </div>
 
     <!-- Experience -->
     <section id="experience" aria-labelledby="experience-heading" class="scroll-mt-28">

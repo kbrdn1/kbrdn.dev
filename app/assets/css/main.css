@@ -21,13 +21,17 @@
 @import "./accessibility.css";
 
 /* ═══════════════════════════════════════════════════
-   Global Transition (theme switching)
+   Global Transition (colours ease on hover, and on a theme switch without view transitions)
    ═══════════════════════════════════════════════════ */
-*:not([class*="transition-"]) {
-  transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease;
+/* In the base layer: unlayered, it beat every transition of components.css (the ink, the
+   field focus ring), whatever their specificity */
+@layer base {
+  * {
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
 }
 
 /* In-page anchors scroll smoothly; accessibility.css turns it off under reduced motion */

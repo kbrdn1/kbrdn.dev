@@ -105,37 +105,23 @@ const content = computed(() => {
     <div class="w-full flex flex-col items-center relative z-10">
       <!-- Panels, in one column -->
       <div class="w-full max-w-5xl space-y-8 px-4 py-10 sm:px-6">
-        <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
-          <HomeHero
-            :name="content.name"
-            :titles="content.titles"
-            :handle="content.handle"
-            :is-hirable="content.isHirable"
-            :calendar-link="content.calendarLink"
-            :socials="content.socials"
-          />
-        </UiAnimatedSection>
+        <HomeHero
+          :name="content.name"
+          :titles="content.titles"
+          :handle="content.handle"
+          :is-hirable="content.isHirable"
+          :calendar-link="content.calendarLink"
+          :socials="content.socials"
+        />
 
-        <UiAnimatedSection
-          id="about"
-          as="section"
-          animation="fadeInUp"
-          :delay="100"
-          :duration="500"
-        >
+        <section id="about">
           <UiPanel :title="t('bio.title')">
             <HomeBio :paragraphs="content.bio" class="panel-card p-5 sm:p-6" />
           </UiPanel>
-        </UiAnimatedSection>
+        </section>
 
         <!-- Latest Blog Posts: a list, dashed rows, the date in mono -->
-        <UiAnimatedSection
-          id="latest-posts"
-          as="section"
-          animation="fadeInUp"
-          :delay="200"
-          :duration="500"
-        >
+        <section id="latest-posts">
           <UiPanel :title="t('blog.title')">
             <ul
               v-if="latestPosts?.length"
@@ -161,17 +147,17 @@ const content = computed(() => {
               </NuxtLink>
             </template>
           </UiPanel>
-        </UiAnimatedSection>
+        </section>
 
         <!-- Skills & Stack -->
-        <UiAnimatedSection id="skills" as="section" :delay="0" :duration="500">
+        <section id="skills">
           <UiPanel :title="t('skills.title')">
             <HomeSkills class="panel-card p-5 sm:p-6" />
           </UiPanel>
-        </UiAnimatedSection>
+        </section>
 
         <!-- Featured Projects -->
-        <UiAnimatedSection id="projects" as="section" :delay="0" :duration="500">
+        <section id="projects">
           <UiPanel :title="t('projects.title')">
             <HomeProjects />
             <template #meta>github.com/kbrdn1</template>
@@ -191,21 +177,15 @@ const content = computed(() => {
               </a>
             </template>
           </UiPanel>
-        </UiAnimatedSection>
+        </section>
 
         <!-- GitHub Activity: the chart is its own panel, its tabs in the header -->
-        <UiAnimatedSection
-          id="activity"
-          as="section"
-          class="scroll-mt-24"
-          :delay="0"
-          :duration="500"
-        >
+        <section id="activity" class="scroll-mt-24">
           <HomeGitHubChart username="kbrdn1" />
-        </UiAnimatedSection>
+        </section>
 
         <!-- Parcours (Experience + Education) -->
-        <UiAnimatedSection id="experience" as="section" :delay="0" :duration="500">
+        <section id="experience">
           <UiPanel :title="t('nav.experience')">
             <HomeParcours class="panel-card p-5 sm:p-6" />
             <template #footer>
@@ -215,22 +195,14 @@ const content = computed(() => {
               </NuxtLink>
             </template>
           </UiPanel>
-        </UiAnimatedSection>
+        </section>
 
         <!-- Explore: a carousel, its own panel -->
         <HomeExplore />
       </div>
 
       <!-- Footer -->
-      <UiAnimatedSection
-        as="section"
-        animation="fadeInUp"
-        :delay="0"
-        :duration="500"
-        class="w-full"
-      >
-        <LayoutFooter />
-      </UiAnimatedSection>
+      <LayoutFooter />
     </div>
   </div>
 </template>

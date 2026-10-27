@@ -105,16 +105,16 @@ export default defineNuxtConfig({
     appEnv: process.env.APP_ENV || 'local',
   },
 
-  // Page transition
   app: {
     head: {
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
-    pageTransition: {
-      name: 'page',
-      mode: 'out-in',
-    },
   },
+
+  // Pages cross-fade through view transitions: snapshots keep the glass panels blurred, where
+  // a Vue page transition put the page under an opacity that turned their blur off. Skipped
+  // under reduced motion; browsers without them just swap the page.
+  experimental: { viewTransition: true },
 
   // Content configuration (collections defined in content.config.ts)
   content: {},

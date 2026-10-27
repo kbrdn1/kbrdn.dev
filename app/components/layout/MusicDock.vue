@@ -26,11 +26,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
+  <!-- Slides up from under the viewport's edge, without a fade: opacity on this wrapper
+       would turn the player's glass off for the whole transition -->
   <Transition
-    enter-from-class="opacity-0 translate-y-4"
-    leave-to-class="opacity-0 translate-y-4"
-    enter-active-class="transition duration-300 ease-out motion-reduce:transition-none"
-    leave-active-class="transition duration-200 ease-in motion-reduce:transition-none"
+    enter-from-class="translate-y-[calc(100%+5rem)]"
+    leave-to-class="translate-y-[calc(100%+5rem)]"
+    enter-active-class="transition-transform duration-500 ease-out-quint motion-reduce:transition-none"
+    leave-active-class="transition-transform duration-300 ease-in motion-reduce:transition-none"
   >
     <!-- Above the toggle until xl, where the centred column no longer reaches it. -->
     <section

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 // A rounded panel holding .panel-card surfaces, after disarto's widgets: a header (title,
 // a grey subtitle, actions on the right), the cards, then an optional footer (mono meta on
-// the left, buttons on the right).
+// the left, buttons on the right). Below the fold, it comes in as it is scrolled to.
 defineProps<{ title?: string; subtitle?: string }>()
+
+const root = ref<HTMLElement>()
+const hidden = useReveal(root)
 </script>
 
 <template>
-  <div class="panel">
+  <div ref="root" class="panel" :data-hidden="hidden || undefined">
     <div
       v-if="title || $slots.actions"
       class="flex min-h-12 flex-wrap items-center justify-between gap-x-4 gap-y-2 py-2 pr-2 pl-4"

@@ -58,36 +58,34 @@ const stack = [
 </script>
 
 <template>
-  <UiAnimatedSection animation="fadeInUp">
-    <div class="space-y-6">
-      <dl class="divide-y divide-dashed divide-neutral-200 dark:divide-neutral-800">
-        <div
-          v-for="group in stack"
-          :key="group.key"
-          class="grid gap-2 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4"
-        >
-          <dt class="eyebrow pt-0.5">
-            {{ t(`skills.stack.${group.key}`) }}
-          </dt>
-          <dd class="flex flex-wrap gap-x-5 gap-y-2.5">
-            <a
-              v-for="[name, icon, url] in group.tools"
-              :key="name"
-              :href="url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group inline-flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200 transition-colors hover:text-primary-500"
-            >
-              <UIcon
-                :name="icon"
-                class="size-4 shrink-0 text-neutral-500 dark:text-neutral-400 transition-colors group-hover:text-primary-500"
-                aria-hidden="true"
-              />
-              {{ name }}
-            </a>
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </UiAnimatedSection>
+  <div class="space-y-6">
+    <dl class="divide-y divide-dashed divide-neutral-200 dark:divide-neutral-800">
+      <div
+        v-for="group in stack"
+        :key="group.key"
+        class="grid gap-2 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4"
+      >
+        <dt class="eyebrow pt-0.5">
+          {{ t(`skills.stack.${group.key}`) }}
+        </dt>
+        <dd class="flex flex-wrap gap-x-5 gap-y-2.5">
+          <a
+            v-for="[name, icon, url] in group.tools"
+            :key="name"
+            :href="url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group inline-flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200 transition-colors hover:text-primary-500"
+          >
+            <UIcon
+              :name="icon"
+              class="size-4 shrink-0 text-neutral-500 dark:text-neutral-400 transition-colors group-hover:text-primary-500"
+              aria-hidden="true"
+            />
+            {{ name }}
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </div>
 </template>

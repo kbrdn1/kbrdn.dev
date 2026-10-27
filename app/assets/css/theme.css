@@ -5,6 +5,9 @@
   --font-code: "OperatorMonoLig Nerd Font", "Monaspace Neon", "Monaspace Krypton", monospace;
   --font-comment: "Monaspace Radon", "Caveat", cursive;
 
+  /* Motion: one easing for what comes in or moves (panels, halo, ink), quick out, soft end */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+
   /* ═══════════════════════════════════════════════════
      Dark Mode Colors - Claude Dark (Pure)
      ═══════════════════════════════════════════════════ */

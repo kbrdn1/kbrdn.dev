@@ -146,6 +146,18 @@
     -webkit-backdrop-filter: var(--glass);
     backdrop-filter: var(--glass);
     padding: 0.25rem;
+    transition:
+      opacity 0.6s var(--ease-out-quint),
+      translate 0.6s var(--ease-out-quint),
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  /* Below the fold, waiting to be scrolled to (useReveal). On the panel itself, not a
+     wrapper: an ancestor's opacity would turn its glass off until the end */
+  .panel[data-hidden] {
+    opacity: 0;
+    translate: 0 1.5rem;
   }
 
   .panel-card {
