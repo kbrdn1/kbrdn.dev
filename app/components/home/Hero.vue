@@ -19,7 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const currentTitleIndex = ref(0)
-const isTransitioning = ref(false)
 
 const currentTitle = computed(() => props.titles[currentTitleIndex.value] || '')
 
@@ -39,11 +38,7 @@ let moodInterval: ReturnType<typeof setInterval> | undefined
 onMounted(() => {
   if (props.titles.length > 1) {
     interval = setInterval(() => {
-      isTransitioning.value = true
-      setTimeout(() => {
-        currentTitleIndex.value = (currentTitleIndex.value + 1) % props.titles.length
-        isTransitioning.value = false
-      }, 300)
+      currentTitleIndex.value = (currentTitleIndex.value + 1) % props.titles.length
     }, 3000)
   }
   if (!reducedMotion.value) moodInterval = setInterval(nextMood, 4000)
@@ -79,13 +74,11 @@ onUnmounted(() => {
         <UiScrambleText :text="name" />
       </h1>
 
-      <!-- Rotating title -->
-      <p
-        class="text-xl text-primary-500 sm:text-2xl"
-        style="font-family: 'Fenix', serif"
-        :class="isTransitioning ? 'hero-title-hidden' : 'hero-title-visible'"
-      >
-        {{ currentTitle }}
+      <!-- Rotating title: the old one rises out, the next comes up from below -->
+      <p class="text-xl text-primary-500 sm:text-2xl" style="font-family: 'Fenix', serif">
+        <Transition name="swap-up" mode="out-in">
+          <span :key="currentTitle" class="inline-block">{{ currentTitle }}</span>
+        </Transition>
       </p>
 
       <p class="eyebrow mt-5">{{ handle }} · {{ t('footer.location.city') }}</p>

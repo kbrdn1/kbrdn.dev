@@ -195,6 +195,7 @@ const { postUrl } = useBlogUrl()
               <UIcon :name="view.icon" class="size-4" aria-hidden="true" />
             </button>
           </UTooltip>
+          <UiSegmentInk />
         </div>
       </div>
 
@@ -203,19 +204,14 @@ const { postUrl } = useBlogUrl()
         v-if="viewMode === 'list' && paginatedPosts.length > 0"
         tag="div"
         class="mt-1 space-y-1"
-        enter-active-class="blog-item-enter"
-        leave-active-class="blog-item-leave"
-        enter-from-class="blog-item-from"
-        enter-to-class="blog-item-to"
-        leave-from-class="blog-item-to"
-        leave-to-class="blog-item-from"
+        name="list"
       >
         <BlogPostRow
           v-for="(post, index) in paginatedPosts"
           :key="post.path"
           :post="post"
           :show-author="true"
-          :style="{ transitionDelay: `${index * 50}ms` }"
+          :style="{ '--i': index }"
         />
       </TransitionGroup>
 
@@ -224,12 +220,7 @@ const { postUrl } = useBlogUrl()
         v-else-if="viewMode === 'cards' && paginatedPosts.length > 0"
         tag="div"
         class="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2"
-        enter-active-class="blog-item-enter"
-        leave-active-class="blog-item-leave"
-        enter-from-class="blog-item-from"
-        enter-to-class="blog-item-to"
-        leave-from-class="blog-item-to"
-        leave-to-class="blog-item-from"
+        name="list"
       >
         <!-- After disarto's event card: the banner full width on top, the card over its
                bottom edge (tag and reading time, title, summary, then date, author and tags
@@ -239,7 +230,7 @@ const { postUrl } = useBlogUrl()
           :key="post.path"
           :to="postUrl(post)"
           class="panel group relative isolate flex flex-col overflow-hidden p-0 transition-colors hover:border-primary-500/50"
-          :style="{ transitionDelay: `${index * 60}ms` }"
+          :style="{ '--i': index }"
         >
           <ClientOnly v-if="post.banner">
             <div class="-mb-5 h-44 overflow-hidden">
@@ -298,21 +289,8 @@ const { postUrl } = useBlogUrl()
         v-else-if="viewMode === 'compact' && paginatedPosts.length > 0"
         class="panel-card mt-1 px-5"
       >
-        <TransitionGroup
-          tag="ul"
-          class="divide-y divide-dashed divide-(--card-border)"
-          enter-active-class="blog-item-enter"
-          leave-active-class="blog-item-leave"
-          enter-from-class="blog-item-from"
-          enter-to-class="blog-item-to"
-          leave-from-class="blog-item-to"
-          leave-to-class="blog-item-from"
-        >
-          <li
-            v-for="(post, index) in paginatedPosts"
-            :key="post.path"
-            :style="{ transitionDelay: `${index * 40}ms` }"
-          >
+        <TransitionGroup tag="ul" class="divide-y divide-dashed divide-(--card-border)" name="list">
+          <li v-for="(post, index) in paginatedPosts" :key="post.path" :style="{ '--i': index }">
             <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
               <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
                 {{ formatDate(post.publishedAt) }}

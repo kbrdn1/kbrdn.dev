@@ -65,19 +65,15 @@ const scene = computed(() => {
   return `/images/scenes/${list[currentSlide.value % list.length]}.webp`
 })
 
-const isTransitioning = ref(false)
-const slideDirection = ref<'left' | 'right'>('left')
+// Next slides in from the right, previous from the left (the timer always goes next)
+const direction = ref<'next' | 'prev'>('next')
 const pad = (n: number) => String(n).padStart(2, '0')
 
 function goToSlide(index: number) {
   const target = (index + slides.value.length) % slides.value.length
   if (target === currentSlide.value) return
-  slideDirection.value = index > currentSlide.value ? 'left' : 'right'
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentSlide.value = target
-    isTransitioning.value = false
-  }, 400)
+  direction.value = index > currentSlide.value ? 'next' : 'prev'
+  currentSlide.value = target
 }
 
 // Autoplay: the footer's tick timer fills in 5s (CSS), and its end moves to the next slide.
@@ -120,28 +116,23 @@ const reducedMotion = useReducedMotion()
 
       <div class="grid gap-1 md:grid-cols-2">
         <div class="panel-card flex min-h-80 flex-col p-6 sm:p-8">
-          <div
-            class="flex flex-1 flex-col"
-            :class="{
-              'carousel-hidden-left': isTransitioning && slideDirection === 'left',
-              'carousel-hidden-right': isTransitioning && slideDirection === 'right',
-              'carousel-visible': !isTransitioning,
-            }"
-          >
-            <p class="eyebrow">{{ slide?.label }}</p>
-            <h3 class="mt-3 text-3xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              {{ slide?.title }}
-            </h3>
-            <p class="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-              {{ slide?.description }}
-            </p>
-            <div v-if="slide?.cta" class="mt-auto pt-6">
-              <NuxtLink :to="slide.cta.href" target="_blank" class="btn btn-primary">
-                <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
-                {{ slide.cta.label }}
-              </NuxtLink>
+          <Transition :name="`swap-${direction}`" mode="out-in">
+            <div :key="currentSlide" class="flex flex-1 flex-col">
+              <p class="eyebrow">{{ slide?.label }}</p>
+              <h3 class="mt-3 text-3xl tracking-tight text-neutral-900 dark:text-neutral-100">
+                {{ slide?.title }}
+              </h3>
+              <p class="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                {{ slide?.description }}
+              </p>
+              <div v-if="slide?.cta" class="mt-auto pt-6">
+                <NuxtLink :to="slide.cta.href" target="_blank" class="btn btn-primary">
+                  <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
+                  {{ slide.cta.label }}
+                </NuxtLink>
+              </div>
             </div>
-          </div>
+          </Transition>
         </div>
 
         <!-- Client only: the scene follows the colour mode, unknown to the server. Hovered,

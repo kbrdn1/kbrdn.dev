@@ -15,7 +15,6 @@ interface Track {
 const { data: tracks } = await useFetch<Track[]>('/api/music')
 
 const currentIndex = ref(0)
-const isTransitioning = ref(false)
 const track = computed(() => tracks.value?.[currentIndex.value] || null)
 
 const audio = ref<HTMLAudioElement | null>(null)
@@ -44,71 +43,44 @@ function onTimeUpdate() {
 }
 
 function onAudioEnded() {
-  slideDirection.value = 'left'
   shouldAutoPlay.value = true
   isPlaying.value = false
-  currentTime.value = 0
   if (!tracks.value?.length) return
-  const nextIdx = pickNextIndex('next')
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = nextIdx
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  showTrack(pickNextIndex('next'), 'next')
 }
 
 const shouldAutoPlay = ref(false)
-const slideDirection = ref<'left' | 'right'>('left')
+// The cover and the title swap sideways, the way the track went; the controls stay put
+const direction = ref<'next' | 'prev'>('next')
 
-function nextTrack() {
-  slideDirection.value = 'left'
-  if (!tracks.value?.length) return
+function showTrack(index: number, towards: 'next' | 'prev') {
+  direction.value = towards
+  currentIndex.value = index
+  currentTime.value = 0
+}
+
+function switchTrack(index: number, towards: 'next' | 'prev') {
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) {
     audio.value.pause()
     isPlaying.value = false
   }
-  const nextIdx = pickNextIndex('next')
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = nextIdx
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  showTrack(index, towards)
+}
+
+function nextTrack() {
+  if (!tracks.value?.length) return
+  switchTrack(pickNextIndex('next'), 'next')
 }
 
 function prevTrack() {
-  slideDirection.value = 'right'
   if (!tracks.value?.length) return
-  shouldAutoPlay.value = isPlaying.value
-  if (audio.value) {
-    audio.value.pause()
-    isPlaying.value = false
-  }
-  const prevIdx = pickNextIndex('prev')
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = prevIdx
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  switchTrack(pickNextIndex('prev'), 'prev')
 }
 
 function goToTrack(index: number) {
   if (index === currentIndex.value) return
-  slideDirection.value = index > currentIndex.value ? 'left' : 'right'
-  shouldAutoPlay.value = isPlaying.value
-  if (audio.value) {
-    audio.value.pause()
-    isPlaying.value = false
-  }
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = index
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  switchTrack(index, index > currentIndex.value ? 'next' : 'prev')
 }
 
 function onCanPlay() {
@@ -198,25 +170,22 @@ function formatTime(seconds: number): string {
   <div v-if="tracks?.length">
     <!-- Player card: a panel floating over the page (LayoutMusicDock) -->
     <div class="panel w-full overflow-hidden transition-all hover:border-primary-500/50">
-      <div
-        class="flex items-center gap-4 p-3"
-        :class="{
-          'player-hidden-left': isTransitioning && slideDirection === 'left',
-          'player-hidden-right': isTransitioning && slideDirection === 'right',
-          'player-visible': !isTransitioning,
-        }"
-      >
+      <div class="flex items-center gap-4 p-3">
         <!-- Album art -->
         <div class="relative shrink-0 overflow-hidden rounded-[0.625rem] group/cover">
-          <img
-            v-if="track"
-            :src="track.cover"
-            :alt="track?.album"
-            width="56"
-            height="56"
-            class="object-cover"
-            style="width: 56px; height: 56px"
-          />
+          <div class="size-14">
+            <Transition :name="`swap-${direction}`" mode="out-in">
+              <img
+                v-if="track"
+                :key="track.cover"
+                :src="track.cover"
+                :alt="track?.album"
+                width="56"
+                height="56"
+                class="size-14 object-cover"
+              />
+            </Transition>
+          </div>
           <!-- Play overlay on cover -->
           <button
             type="button"
@@ -263,22 +232,24 @@ function formatTime(seconds: number): string {
         <!-- Track info + controls -->
         <div class="flex-1 min-w-0">
           <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <a
-                :href="track?.link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate hover:text-primary-500 transition-colors"
-              >
-                {{ track?.title }}
-              </a>
-              <span class="block text-xs text-neutral-500 truncate mt-0.5">
-                {{ track?.artist }} · {{ track?.album }}
-              </span>
-            </div>
+            <Transition :name="`swap-${direction}`" mode="out-in">
+              <div :key="currentIndex" class="min-w-0">
+                <a
+                  :href="track?.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate hover:text-primary-500 transition-colors"
+                >
+                  {{ track?.title }}
+                </a>
+                <span class="block text-xs text-neutral-500 truncate mt-0.5">
+                  {{ track?.artist }} · {{ track?.album }}
+                </span>
+              </div>
+            </Transition>
 
             <!-- Controls: prev / play / next + shuffle & listing grouped -->
-            <div class="flex items-center gap-0.5 shrink-0">
+            <div class="ml-auto flex items-center gap-0.5 shrink-0">
               <UTooltip :text="t('music.previous')">
                 <button
                   type="button"

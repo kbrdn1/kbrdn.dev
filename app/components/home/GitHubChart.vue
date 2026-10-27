@@ -260,6 +260,7 @@ function switchTab(step: 1 | -1) {
         >
           {{ t(`github.tabs.${tab}`) }}
         </button>
+        <UiSegmentInk />
       </div>
       <!-- External link -->
       <a
@@ -344,22 +345,12 @@ function switchTab(step: 1 | -1) {
         </div>
 
         <!-- Recent and Annual views: one grid per calendar -->
-        <TransitionGroup
-          v-if="activeTab !== 'monthly'"
-          tag="div"
-          class="space-y-6"
-          enter-active-class="stagger-enter"
-          enter-from-class="stagger-enter-from"
-          enter-to-class="stagger-enter-to"
-          leave-active-class="stagger-leave"
-          leave-from-class="stagger-leave-from"
-          leave-to-class="stagger-leave-to"
-        >
+        <TransitionGroup v-if="activeTab !== 'monthly'" tag="div" class="space-y-6" name="list">
           <div
             v-for="(calendar, index) in visibleCalendars"
             :key="calendar.key"
             class="space-y-2"
-            :style="{ transitionDelay: `${index * 100}ms` }"
+            :style="{ '--i': index }"
           >
             <!-- Calendar header -->
             <div class="flex items-center justify-between">
@@ -414,22 +405,12 @@ function switchTab(step: 1 | -1) {
         </TransitionGroup>
 
         <!-- Monthly View - Last 12 months -->
-        <TransitionGroup
-          v-else
-          tag="div"
-          class="space-y-4"
-          enter-active-class="stagger-enter"
-          enter-from-class="stagger-enter-from"
-          enter-to-class="stagger-enter-to"
-          leave-active-class="stagger-leave"
-          leave-from-class="stagger-leave-from"
-          leave-to-class="stagger-leave-to"
-        >
+        <TransitionGroup v-else tag="div" class="space-y-4" name="list">
           <div
             v-for="(month, index) in visibleMonths"
             :key="`${month.year}-${month.name}`"
             class="space-y-2"
-            :style="{ transitionDelay: `${index * 75}ms` }"
+            :style="{ '--i': index }"
           >
             <!-- Month header -->
             <div class="flex items-center justify-between">
