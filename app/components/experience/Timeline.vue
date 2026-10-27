@@ -29,7 +29,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <ol ref="list" class="panel-card relative px-4 pt-6 pb-1 sm:px-6 sm:pt-8">
+  <div ref="list" class="panel-card relative px-4 pt-6 pb-1 sm:px-6 sm:pt-8">
     <!-- Lined up with the points: the padding, the years column, the gap, half the rail -->
     <span
       class="pointer-events-none absolute top-8 bottom-8 left-[6.75rem] hidden w-px -translate-x-1/2 bg-(--card-border) md:block"
@@ -40,6 +40,8 @@ onBeforeUnmount(() => {
         :style="{ transform: `scaleY(${progress})` }"
       />
     </span>
-    <slot />
-  </ol>
+    <ol>
+      <slot />
+    </ol>
+  </div>
 </template>

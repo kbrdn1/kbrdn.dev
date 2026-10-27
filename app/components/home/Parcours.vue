@@ -58,61 +58,63 @@ const rows = computed<Row[]>(() => [
     </p>
 
     <!-- The rail runs behind the points, as on /experience -->
-    <ol class="relative mt-3">
+    <div class="relative mt-3">
       <span
         class="absolute top-4 bottom-4 left-[7.375rem] hidden w-px -translate-x-1/2 bg-(--card-border) sm:block"
         aria-hidden="true"
       />
-      <li v-for="row in rows" :key="row.id">
-        <NuxtLink
-          :to="`/experience#${row.id}`"
-          class="group relative isolate -mx-3 flex items-center gap-4 overflow-hidden px-3 py-2.5 transition-colors"
-        >
-          <UiPixelCanvas />
-          <span class="eyebrow hidden w-24 shrink-0 tabular-nums sm:block">{{ row.years }}</span>
-          <span class="hidden w-3 shrink-0 justify-center sm:flex" aria-hidden="true">
-            <span
-              :class="
-                cn(
-                  'shrink-0',
-                  row.kind === 'role' && 'size-3 rounded-full bg-primary-500',
-                  row.kind === 'project' &&
-                    'size-2 rounded-full border border-primary-500 bg-(--card-bg)',
-                  row.kind === 'degree' &&
-                    'size-2.5 rotate-45 border border-(--label) bg-(--card-bg)',
-                )
-              "
-            />
-          </span>
-          <NuxtImg
-            v-if="row.logo"
-            :src="row.logo"
-            alt=""
-            width="28"
-            height="28"
-            class="size-7 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
-          />
-          <span v-else class="w-7 shrink-0 text-center text-sm text-(--label)" aria-hidden="true">
-            ↳
-          </span>
-          <span class="min-w-0">
-            <span
-              :class="
-                cn(
-                  'block truncate text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100',
-                  row.kind === 'project' ? 'text-[13px]' : 'text-sm',
-                )
-              "
-            >
-              {{ row.name }}
+      <ol>
+        <li v-for="row in rows" :key="row.id">
+          <NuxtLink
+            :to="`/experience#${row.id}`"
+            class="group relative isolate -mx-3 flex items-center gap-4 overflow-hidden px-3 py-2.5 transition-colors"
+          >
+            <UiPixelCanvas />
+            <span class="eyebrow hidden w-24 shrink-0 tabular-nums sm:block">{{ row.years }}</span>
+            <span class="hidden w-3 shrink-0 justify-center sm:flex" aria-hidden="true">
+              <span
+                :class="
+                  cn(
+                    'shrink-0',
+                    row.kind === 'role' && 'size-3 rounded-full bg-primary-500',
+                    row.kind === 'project' &&
+                      'size-2 rounded-full border border-primary-500 bg-(--card-bg)',
+                    row.kind === 'degree' &&
+                      'size-2.5 rotate-45 border border-(--label) bg-(--card-bg)',
+                  )
+                "
+              />
             </span>
-            <span class="eyebrow block truncate sm:hidden">{{ row.years }}</span>
-          </span>
-          <span class="ml-auto hidden truncate text-xs text-neutral-500 md:block">
-            {{ row.detail }}
-          </span>
-        </NuxtLink>
-      </li>
-    </ol>
+            <NuxtImg
+              v-if="row.logo"
+              :src="row.logo"
+              alt=""
+              width="28"
+              height="28"
+              class="size-7 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
+            />
+            <span v-else class="w-7 shrink-0 text-center text-sm text-(--label)" aria-hidden="true">
+              ↳
+            </span>
+            <span class="min-w-0">
+              <span
+                :class="
+                  cn(
+                    'block truncate text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100',
+                    row.kind === 'project' ? 'text-[13px]' : 'text-sm',
+                  )
+                "
+              >
+                {{ row.name }}
+              </span>
+              <span class="eyebrow block truncate sm:hidden">{{ row.years }}</span>
+            </span>
+            <span class="ml-auto hidden truncate text-xs text-neutral-500 md:block">
+              {{ row.detail }}
+            </span>
+          </NuxtLink>
+        </li>
+      </ol>
+    </div>
   </div>
 </template>
