@@ -26,9 +26,8 @@ export default {
     viewCount: 'vues',
     sponsor: 'Sponsoriser',
     availableForHire: 'Ouvert aux opportunités',
-    bookCall: 'Prendre rendez-vous',
+    contact: 'Prendre contact',
     bookCallTip: 'Planifier un échange de 30 min pour discuter de votre projet',
-    bookCallDisabled: 'Prise de rendez-vous temporairement indisponible',
   },
 
   // Navigation

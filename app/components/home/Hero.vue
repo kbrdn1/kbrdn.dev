@@ -116,12 +116,10 @@ onUnmounted(() => {
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
-        <UTooltip :text="t('hero.bookCallDisabled')">
-          <button type="button" class="btn btn-primary btn-disabled-striped" disabled>
-            <UIcon name="i-heroicons-calendar-days" class="size-4" aria-hidden="true" />
-            {{ t('hero.bookCall') }}
-          </button>
-        </UTooltip>
+        <NuxtLink to="/contact" class="btn btn-primary">
+          <UIcon name="i-heroicons-paper-airplane" class="size-4" aria-hidden="true" />
+          {{ t('hero.contact') }}
+        </NuxtLink>
         <HomeSocials :links="socials" />
       </div>
     </div>

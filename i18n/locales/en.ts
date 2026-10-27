@@ -26,9 +26,8 @@ export default {
     viewCount: 'views',
     sponsor: 'Sponsor',
     availableForHire: 'Open to opportunities',
-    bookCall: 'Book a Call',
+    contact: 'Get in touch',
     bookCallTip: 'Schedule a 30-min meeting to discuss your project',
-    bookCallDisabled: 'Booking temporarily unavailable',
   },
 
   // Navigation
