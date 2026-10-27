@@ -69,6 +69,14 @@
 /* ═══════════════════════════════════════════════════
    Panels — rounded surfaces holding cards. Layered so utilities override them.
    ═══════════════════════════════════════════════════ */
+/* The notch's width at rest, 31rem: an initial value must be computationally independent,
+   and rem is not (it follows the root's font size), which voids the whole rule */
+@property --notch-max {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 496px;
+}
+
 @layer components {
   /* The announcement hanging under the floating navbar: the panel's surface, open at the top */
   .notch {
@@ -86,8 +94,19 @@
      fills it up to 61rem, past which both stay at 31rem */
   .notch,
   .notched {
-    --notch-w: min(31rem, 100% - 4rem);
+    --notch-w: min(var(--notch-max), 100% - 4rem);
     --shoulder: 0.75rem;
+  }
+
+  /* Wider while a menu is open (useNavMenu): --notch-max is a registered length animated on
+     the header, so the notch and the navbar's cut for it (glass) widen frame by frame
+     together */
+  header:has(> .notch) {
+    transition: --notch-max 0.5s var(--ease-out-quint);
+  }
+
+  header[data-menu] {
+    --notch-max: 46rem;
   }
 
   /* Glass only: a translucent notch does not cover the navbar's bottom border, so the

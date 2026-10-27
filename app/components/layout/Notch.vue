@@ -1,88 +1,124 @@
 <script setup lang="ts">
 // The notch hanging under the floating navbar (both headers): the gwm announcement at
-// rest, a menu once a nav item or the announcement is hovered or focused. It opens on its
-// height like the site's collapses, the line on top turning into the page's name, and
-// holds what the page has (its sections, the latest posts for the blog), a line of
-// context and an illustration through the pixel layer.
+// rest, a menu once a nav item or the announcement is hovered or focused. It widens and
+// opens on its height like the site's collapses, the line on top turning into the page's
+// name, and holds what the page has (its sections, the latest posts for the blog), a line
+// of context and an illustration through the pixel layer, which follows the link under
+// the pointer.
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
 const { active, open, keep, close } = useNavMenu()
 const { links: pages } = useSiteNav()
 const cvUrl = useCvUrl()
+const $img = useImage()
 
+interface MenuLink {
+  label: string
+  to: string
+  external?: boolean
+  /** The illustration while this link is hovered or focused */
+  image?: string
+}
 interface Menu {
   text: string
-  links: { label: string; to: string; external?: boolean }[]
+  links: MenuLink[]
   image: string
 }
 
-// The blog's menu lists its latest posts, fetched the first time it opens
+const SCENES = '/images/scenes'
+const ME = '/images/me/portrait.webp'
+const GWM = '/images/apps/gwm.webp'
+
+// The blog's menu lists its latest posts, fetched the first time it opens; each shows its
+// banner, through IPX (the originals weigh megabytes)
 const { collection } = useBlogCollection()
 const { postUrl } = useBlogUrl()
-const posts = ref<{ title: string; path: string }[]>([])
+const posts = ref<{ title: string; path: string; bannerImage?: string }[]>([])
 watch(active, async (key) => {
   if (key !== '/blog' || posts.value.length) return
   posts.value = await queryCollection(collection.value)
     .order('publishedAt', 'DESC')
-    .select('title', 'path')
+    .select('title', 'path', 'bannerImage')
     .limit(3)
     .all()
 })
+const banner = (src?: string) => (src ? $img(src, { width: 480, format: 'webp' }) : undefined)
 
 const menus = computed<Record<string, Menu>>(() => ({
   '/': {
     text: t('navMenu.home'),
     links: [
-      { label: t('bio.title'), to: '/#about' },
-      { label: t('blog.title'), to: '/#latest-posts' },
-      { label: t('skills.title'), to: '/#skills' },
-      { label: t('projects.title'), to: '/#projects' },
+      { label: t('bio.title'), to: '/#about', image: ME },
+      { label: t('blog.title'), to: '/#latest-posts', image: `${SCENES}/village.webp` },
+      { label: t('skills.title'), to: '/#skills', image: `${SCENES}/circuit-red.webp` },
+      { label: t('projects.title'), to: '/#projects', image: GWM },
     ],
-    image: '/images/scenes/city-gate.webp',
+    image: `${SCENES}/city-gate.webp`,
   },
   '/experience': {
     text: t('navMenu.experience'),
     links: [
-      { label: t('experiencePage.experienceLabel'), to: '/experience#experience' },
-      { label: t('experiencePage.educationLabel'), to: '/experience#education' },
-      { label: 'Open source', to: '/experience#open-source' },
+      {
+        label: t('experiencePage.experienceLabel'),
+        to: '/experience#experience',
+        image: '/images/projects/jewely-x-flippad.webp',
+      },
+      {
+        label: t('experiencePage.educationLabel'),
+        to: '/experience#education',
+        image: `${SCENES}/city-marble.webp`,
+      },
+      { label: 'Open source', to: '/experience#open-source', image: GWM },
     ],
-    image: '/images/projects/jewely-x-flippad.webp',
+    image: '/images/projects/fiches-pedagogiques.webp',
   },
   '/apps': {
     text: t('navMenu.apps'),
     links: [
-      { label: 'gwm', to: '/apps#gwm' },
-      { label: 'vellum', to: '/apps#vellum' },
-      { label: 'LazyCurl', to: '/apps#lazycurl' },
+      { label: 'gwm', to: '/apps#gwm', image: GWM },
+      { label: 'vellum', to: '/apps#vellum', image: `${SCENES}/circuit-red.webp` },
+      { label: 'LazyCurl', to: '/apps#lazycurl', image: '/images/apps/lazycurl.webp' },
     ],
-    image: '/images/apps/gwm.webp',
+    image: GWM,
   },
   '/activity': {
     text: t('navMenu.activity'),
     links: [
-      { label: 'Open source', to: '/activity#activity-open-source-heading' },
-      { label: t('activityPage.feedTitle'), to: '/activity#activity-feed-heading' },
+      { label: 'Open source', to: '/activity#activity-open-source-heading', image: GWM },
+      {
+        label: t('activityPage.feedTitle'),
+        to: '/activity#activity-feed-heading',
+        image: `${SCENES}/city-domes.webp`,
+      },
     ],
-    image: '/images/scenes/circuit-red.webp',
+    image: `${SCENES}/circuit-red.webp`,
   },
   '/blog': {
     text: t('navMenu.blog'),
     links: [
-      ...posts.value.map((post) => ({ label: post.title, to: postUrl(post) })),
+      ...posts.value.map((post) => ({
+        label: post.title,
+        to: postUrl(post),
+        image: banner(post.bannerImage),
+      })),
       { label: t('blog.viewAll'), to: '/blog' },
     ],
-    image: '/images/scenes/village.webp',
+    image: banner(posts.value[0]?.bannerImage) ?? `${SCENES}/village.webp`,
   },
   '/contact': {
     text: t('navMenu.contact'),
     links: [
-      { label: t('contactPage.write'), to: '/contact' },
-      { label: 'hello@kbrdn.dev', to: 'mailto:hello@kbrdn.dev', external: true },
+      { label: t('contactPage.write'), to: '/contact', image: ME },
+      {
+        label: 'hello@kbrdn.dev',
+        to: 'mailto:hello@kbrdn.dev',
+        external: true,
+        image: '/images/me/avatar.webp',
+      },
       ...(cvUrl.value ? [{ label: t('contactPage.cv'), to: cvUrl.value, external: true }] : []),
     ],
-    image: '/images/scenes/city-domes.webp',
+    image: ME,
   },
   gwm: {
     text: t('navMenu.gwm'),
@@ -91,11 +127,17 @@ const menus = computed<Record<string, Menu>>(() => ({
       { label: 'GitHub', to: 'https://github.com/kbrdn1/gwm-cli', external: true },
       { label: t('navMenu.gwmApps'), to: '/apps#gwm' },
     ],
-    image: '/images/apps/gwm.webp',
+    image: GWM,
   },
 }))
 
 const menu = computed(() => (active.value ? menus.value[active.value] : undefined))
+const pageLabel = computed(() => pages.value.find((page) => page.to === active.value)?.label)
+
+// The illustration follows the link under the pointer, the menu's own otherwise
+const hovered = ref<string>()
+const image = computed(() => hovered.value ?? menu.value?.image)
+watch(active, () => (hovered.value = undefined))
 
 // A new page closes it
 const route = useRoute()
@@ -103,7 +145,6 @@ watch(
   () => route.path,
   () => close(0),
 )
-const pageLabel = computed(() => pages.value.find((page) => page.to === active.value)?.label)
 </script>
 
 <template>
@@ -136,23 +177,21 @@ const pageLabel = computed(() => pages.value.find((page) => page.to === active.v
 
     <UiExpand :open="!!menu">
       <div class="border-t border-dashed border-(--card-border) p-2">
-        <Transition name="swap-up" mode="out-in">
-          <div
-            v-if="menu"
-            :key="active ?? ''"
-            class="grid grid-cols-[minmax(0,1fr)_9.5rem] items-start gap-3"
-          >
-            <div class="min-w-0 py-1">
+        <div v-if="menu" class="grid grid-cols-[minmax(0,1fr)_17rem] items-start gap-3">
+          <Transition name="swap-up" mode="out-in">
+            <div :key="active ?? ''" class="min-w-0 py-1">
               <p class="px-2 text-[13px] leading-snug text-neutral-600 dark:text-neutral-400">
                 {{ menu.text }}
               </p>
-              <ul class="mt-2">
+              <ul class="mt-2" @mouseleave="hovered = undefined">
                 <li v-for="link in menu.links" :key="link.to">
                   <NuxtLink
                     :to="link.to"
                     :target="link.external ? '_blank' : undefined"
                     :rel="link.external ? 'noopener noreferrer' : undefined"
                     class="row group flex items-center gap-2 px-2 py-1.5 text-sm text-neutral-900 dark:text-neutral-100"
+                    @mouseenter="hovered = link.image"
+                    @focus="hovered = link.image"
                     @click="close(0)"
                   >
                     <span class="truncate group-hover:text-(--accent-text)">{{ link.label }}</span>
@@ -163,15 +202,17 @@ const pageLabel = computed(() => pages.value.find((page) => page.to === active.v
                 </li>
               </ul>
             </div>
-            <div
-              class="aspect-[4/5] overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) dark:bg-neutral-900"
-            >
-              <ClientOnly>
-                <UiPixelImage :src="menu.image" alt="" class="size-full" reveal />
-              </ClientOnly>
-            </div>
+          </Transition>
+          <!-- One picture for the whole menu: changing it sweeps the new one in, block by
+               block, instead of the picture leaving with the links -->
+          <div
+            class="aspect-[16/11] overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) dark:bg-neutral-900"
+          >
+            <ClientOnly>
+              <UiPixelImage v-if="image" :src="image" alt="" class="size-full" reveal />
+            </ClientOnly>
           </div>
-        </Transition>
+        </div>
       </div>
     </UiExpand>
   </div>

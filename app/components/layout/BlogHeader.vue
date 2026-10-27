@@ -6,6 +6,7 @@ const { t } = useI18n()
 const showBrandMenu = ref(false)
 // The notch's menus: opened from the nav items, closed once the pointer leaves the header
 const menu = useNavMenu()
+const menuOpen = computed(() => !!menu.active.value)
 // The focus leaving the header (navbar and notch) closes the menu too
 function onFocusOut(event: FocusEvent) {
   const header = event.currentTarget as HTMLElement
@@ -47,6 +48,7 @@ const isMobileMenuOpen = ref(false)
     :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')"
     @mouseenter="menu.keep"
     @mouseleave="menu.close()"
+    :data-menu="menuOpen || undefined"
     @focusout="onFocusOut"
     @keydown.esc="menu.close(0)"
   >
@@ -116,7 +118,7 @@ const isMobileMenuOpen = ref(false)
           >
             <UiScrambleText :text="link.label" effect="link" />
           </NuxtLink>
-          <UiSegmentInk />
+          <UiSegmentInk :preview="menu.active.value" />
         </nav>
 
         <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />
