@@ -79,6 +79,14 @@ migrates `[Unreleased]` into that file and empties this one — see
   blurred over the dither field, which then fills the whole screen, unfaded;
   everything styled for dark applies to it. Under
   `prefers-reduced-transparency` the panels turn opaque again.
+- **Pictures seen through a pixel layer**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Banners, app
+  screenshots and the carousel's voxel scenes are redrawn as a grid of the
+  page's pixel shape, the one of the dither field, each cell the picture's
+  colour there. Hovering clears the layer block by block from the pointer down
+  to the crisp picture, and a new picture sweeps in block by block; at once
+  under `prefers-reduced-motion`. Banners go through IPX at a few hundred pixels
+  instead of the 11 MB originals.
 
 ### Changed
 
@@ -134,9 +142,20 @@ migrates `[Unreleased]` into that file and empties this one — see
   padding, concentric 16 px cards): a title in Inter, mono eyebrows over large
   Inter figures, a footer with mono meta and pill buttons. The GitHub chart's
   views are a segmented control, availability a status tag, and the pinned
-  repositories' languages are cut into ticks. Corners are no longer sharp
-  (`--ui-radius`), and the orange buttons get dark text: white on `#d4825d`
-  fails AA.
+  repositories' languages are cut into ticks. The hero sits open on the page,
+  its mascot floating and changing expression; the carousel becomes a panel,
+  its slide in a card beside its scene, moved on by a tick timer that pauses
+  on hover and focus and is gone under `prefers-reduced-motion`. Corners are no
+  longer sharp (`--ui-radius`), and the orange buttons get dark text: white on
+  `#d4825d` fails AA.
+- **The other pages in panels too**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). `/apps`: one card per
+  app, its features ticked, then its install commands and its demo after
+  dashed rules. `/experience`: a card per role and degree, company logos as
+  rounded tiles, and the open source work as a card of figures (a tick bar per
+  group, coloured by status) over its lists, one at a time behind a segmented
+  control. `/blog`: a filter bar, the posts as cards, the pages in the panel's
+  footer. Articles: the header is a card, the banner inset at its top.
 - **A floating navbar, the announcement as a notch under it**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The navbar is
   detached from the top, a panel as wide as the home page's, its pages a
