@@ -328,7 +328,7 @@ const list = (key: string, count: number) =>
           <UiScrambleText :text="t('experiencePage.experienceLabel')" />
         </h2>
         <!-- A vertical timeline: each role, its projects under it -->
-        <ol class="panel-card px-3 pt-6 pb-1 sm:px-6 sm:pt-8">
+        <ExperienceTimeline>
           <template v-for="exp in EXPERIENCES" :key="exp.id">
             <ExperienceEntry
               :id="exp.id"
@@ -366,7 +366,7 @@ const list = (key: string, count: number) =>
               :active="activeId === project.id"
             />
           </template>
-        </ol>
+        </ExperienceTimeline>
       </UiPanel>
     </section>
 
@@ -380,7 +380,7 @@ const list = (key: string, count: number) =>
           <UiScrambleText :text="t('experiencePage.educationLabel')" />
         </h2>
         <!-- The same timeline, a diamond per degree -->
-        <ol class="panel-card px-3 pt-6 pb-1 sm:px-6 sm:pt-8">
+        <ExperienceTimeline>
           <ExperienceEntry
             v-for="study in STUDIES"
             :id="study.id"
@@ -398,7 +398,7 @@ const list = (key: string, count: number) =>
             :items="list(`studies.${study.key}.skills`, study.skillsCount)"
             :active="activeId === study.id"
           />
-        </ol>
+        </ExperienceTimeline>
       </UiPanel>
     </section>
 

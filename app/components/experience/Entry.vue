@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// One stop on /experience's vertical timeline: the years on the left (the end over the
-// start), a point on the rail, then the entry. A role gets a large point and its logo, its
+// One stop on /experience's vertical timeline (ExperienceTimeline draws the rail): the
+// years on the left (the end over the start), a point on the rail, then the entry; on a
+// phone, the entry alone. A role gets a large point and its logo, its
 // projects a small one under it, a degree a diamond. The title is a disclosure (heading
 // around a button, the accordion pattern): the stack, what was done and the links unfold
 // on their height. The entry being read in the strip lights its point.
@@ -35,15 +36,12 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
 
 <template>
   <!-- scroll-mt-40: an anchor lands under the navbar, its notch and the compact strip -->
-  <li
-    :id="id"
-    class="grid scroll-mt-40 grid-cols-[2.75rem_1.25rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[3.5rem_1.5rem_minmax(0,1fr)] sm:gap-x-4"
-  >
+  <li :id="id" class="scroll-mt-40 md:grid md:grid-cols-[3.5rem_1.5rem_minmax(0,1fr)] md:gap-x-4">
     <!-- The years, the end first: the timeline reads from now backwards -->
     <p
       :class="
         cn(
-          'eyebrow pt-1 text-right tabular-nums transition-colors',
+          'eyebrow hidden pt-1 text-right tabular-nums transition-colors md:block',
           kind === 'project' && 'pt-0.5',
           active && 'text-(--accent-text)',
         )
@@ -54,8 +52,7 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
     </p>
 
     <!-- The rail and its point -->
-    <div class="relative flex justify-center" aria-hidden="true">
-      <span class="absolute inset-y-0 w-px bg-(--card-border)" />
+    <div class="relative hidden justify-center md:flex" aria-hidden="true">
       <span
         :class="
           cn(
