@@ -24,9 +24,25 @@ const STEP = 110
 const delay = (el: HTMLElement) =>
   Math.min(Number(el.style.getPropertyValue('--i')) || 0, 10) * STEP
 
+// In a grid (the blog's cards), the grid places the rows: no height to open or close, and
+// a card's height is not even known when it comes in (its banner mounts after it)
+const inGrid = (row: HTMLElement) =>
+  !!row.parentElement && getComputedStyle(row.parentElement).display.includes('grid')
+
 export function rowEnter(el: Element, done: () => void) {
   const row = el as HTMLElement
   if (still()) return done()
+  const wait = delay(row) + (performance.now() - leftAt < 100 ? HANDOFF : 0)
+  if (inGrid(row)) {
+    row.animate(
+      [
+        { opacity: 0, translate: '0 1rem', filter: BLUR },
+        { opacity: 1, translate: '0 0', filter: 'blur(0px)' },
+      ],
+      { duration: 520, easing: EASE_IN, delay: wait, fill: 'backwards' },
+    ).onfinish = () => done()
+    return
+  }
   const height = row.offsetHeight
   row.animate(
     [
@@ -43,7 +59,7 @@ export function rowEnter(el: Element, done: () => void) {
     {
       duration: timeFor(height),
       easing: EASE_IN,
-      delay: delay(row) + (performance.now() - leftAt < 100 ? HANDOFF : 0),
+      delay: wait,
       fill: 'backwards',
     },
   ).onfinish = () => done()
@@ -57,6 +73,16 @@ function closeLeaving() {
   const rows = leaving.reverse()
   leaving = []
   rows.forEach(({ row, done }, order) => {
+    if (row.style.position === 'absolute') {
+      // A grid card, lifted out in rowLeave: it fades where it stands
+      row.animate([{ opacity: 1 }, { opacity: 0, filter: BLUR, translate: '0 -0.5rem' }], {
+        duration: 560,
+        easing: EASE_OUT,
+        delay: Math.min(order, 10) * STEP,
+        fill: 'forwards',
+      }).onfinish = () => done()
+      return
+    }
     const height = row.offsetHeight
     row.animate(
       [
@@ -83,6 +109,20 @@ function closeLeaving() {
 export function rowLeave(el: Element, done: () => void) {
   if (still()) return done()
   leftAt = performance.now()
+  const row = el as HTMLElement
+  if (inGrid(row)) {
+    // Lifted out of the grid where it stands (the grid is the offset parent, relative), so
+    // the cards that stay or come take their places while it fades
+    const { offsetTop, offsetLeft, offsetWidth, offsetHeight } = row
+    Object.assign(row.style, {
+      position: 'absolute',
+      top: `${offsetTop}px`,
+      left: `${offsetLeft}px`,
+      width: `${offsetWidth}px`,
+      height: `${offsetHeight}px`,
+      margin: '0',
+    })
+  }
   if (!leaving.length) queueMicrotask(closeLeaving)
-  leaving.push({ row: el as HTMLElement, done })
+  leaving.push({ row, done })
 }

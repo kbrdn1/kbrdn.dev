@@ -222,7 +222,7 @@ const { postUrl } = useBlogUrl()
         <!-- Cards view: the banner on top, through the pixel layer -->
         <TransitionGroup
           tag="div"
-          class="mt-1 grid grid-cols-1 gap-1 empty:hidden sm:grid-cols-2"
+          class="relative mt-1 grid grid-cols-1 gap-1 empty:hidden sm:grid-cols-2"
           :css="false"
           @enter="rowEnter"
           @leave="rowLeave"
