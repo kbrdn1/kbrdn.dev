@@ -377,6 +377,42 @@
       width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* Expand (collapses): the height grows on the grid's row, and the content fades and
+     unblurs in proportion to it, same time, same curve (the time set by the height) */
+  .expand {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--expand-duration, 0.45s) var(--ease-out-quint);
+  }
+
+  .expand[data-open] {
+    grid-template-rows: 1fr;
+  }
+
+  .expand-content {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    filter: blur(8px);
+    transition:
+      opacity var(--expand-duration, 0.45s) var(--ease-out-quint),
+      filter var(--expand-duration, 0.45s) var(--ease-out-quint);
+  }
+
+  /* none, not blur(0): any filter would keep the content a backdrop root */
+  .expand[data-open] > .expand-content {
+    opacity: 1;
+    filter: none;
+  }
+
+  /* AutoHeight (lists): the measured height, eased; clipped with a margin, so focus rings
+     at the edges still show */
+  .auto-height {
+    overflow: clip;
+    overflow-clip-margin: 0.5rem;
+    transition: height 0.5s var(--ease-out-quint);
+  }
+
   /* RollingNumber: one reel per digit, a column 0-9 twice, moved a line at a time. Equal
      digit widths, so the reels line up and nothing shifts as they turn. */
   .rolling-number {

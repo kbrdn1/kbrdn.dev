@@ -344,103 +344,119 @@ function switchTab(step: 1 | -1) {
           </div>
         </div>
 
-        <!-- Recent and Annual views: one grid per calendar -->
-        <TransitionGroup v-if="activeTab !== 'monthly'" tag="div" class="space-y-6" name="list">
-          <div
-            v-for="(calendar, index) in visibleCalendars"
-            :key="calendar.key"
-            class="space-y-2"
-            :style="{ '--i': index }"
+        <UiAutoHeight>
+          <!-- Recent and Annual views: one grid per calendar -->
+          <TransitionGroup
+            v-if="activeTab !== 'monthly'"
+            tag="div"
+            class="space-y-6"
+            :css="false"
+            @enter="rowEnter"
+            @leave="rowLeave"
           >
-            <!-- Calendar header -->
-            <div class="flex items-center justify-between">
-              <p class="eyebrow">
-                {{ calendar.label }}
-              </p>
-              <p class="text-xs text-neutral-400 font-mono">
-                {{ calendar.total.toLocaleString() }} {{ t('github.contributions') }}
-              </p>
-            </div>
+            <div
+              v-for="(calendar, index) in visibleCalendars"
+              :key="calendar.key"
+              class="space-y-2"
+              :style="{ '--i': index }"
+            >
+              <!-- Calendar header -->
+              <div class="flex items-center justify-between">
+                <p class="eyebrow">
+                  {{ calendar.label }}
+                </p>
+                <p class="text-xs text-neutral-400 font-mono">
+                  {{ calendar.total.toLocaleString() }} {{ t('github.contributions') }}
+                </p>
+              </div>
 
-            <!-- Contribution grid with month labels -->
-            <div class="overflow-x-auto">
-              <div class="min-w-max">
-                <!-- Month labels - positioned by actual week offset -->
-                <div class="relative text-xs text-neutral-500 mb-1 h-4">
-                  <span
-                    v-for="pos in getMonthPositions(calendar.weeks)"
-                    :key="`${calendar.key}-${pos.offset}`"
-                    class="absolute"
-                    :style="{ left: `${pos.offset * (12 + 3)}px` }"
-                  >
-                    {{ pos.label }}
-                  </span>
-                </div>
+              <!-- Contribution grid with month labels -->
+              <div class="overflow-x-auto">
+                <div class="min-w-max">
+                  <!-- Month labels - positioned by actual week offset -->
+                  <div class="relative text-xs text-neutral-500 mb-1 h-4">
+                    <span
+                      v-for="pos in getMonthPositions(calendar.weeks)"
+                      :key="`${calendar.key}-${pos.offset}`"
+                      class="absolute"
+                      :style="{ left: `${pos.offset * (12 + 3)}px` }"
+                    >
+                      {{ pos.label }}
+                    </span>
+                  </div>
 
-                <!-- Grid -->
-                <div class="flex gap-[3px]">
-                  <div
-                    v-for="(week, weekIndex) in calendar.weeks"
-                    :key="weekIndex"
-                    class="flex flex-col gap-[3px]"
-                  >
+                  <!-- Grid -->
+                  <div class="flex gap-[3px]">
                     <div
-                      v-for="day in week.contributionDays"
-                      :key="day.date"
-                      :class="
-                        cn(
-                          'w-3 h-3 rounded-[3px] cursor-pointer transition-all duration-150',
-                          'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
-                          getColor(day.contributionCount),
-                        )
-                      "
-                      @mouseenter="showTooltip(day, $event)"
-                      @mouseleave="hideTooltip"
-                    />
+                      v-for="(week, weekIndex) in calendar.weeks"
+                      :key="weekIndex"
+                      class="flex flex-col gap-[3px]"
+                    >
+                      <div
+                        v-for="day in week.contributionDays"
+                        :key="day.date"
+                        :class="
+                          cn(
+                            'w-3 h-3 rounded-[3px] cursor-pointer transition-all duration-150',
+                            'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
+                            getColor(day.contributionCount),
+                          )
+                        "
+                        @mouseenter="showTooltip(day, $event)"
+                        @mouseleave="hideTooltip"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </TransitionGroup>
+          </TransitionGroup>
 
-        <!-- Monthly View - Last 12 months -->
-        <TransitionGroup v-else tag="div" class="space-y-4" name="list">
-          <div
-            v-for="(month, index) in visibleMonths"
-            :key="`${month.year}-${month.name}`"
-            class="space-y-2"
-            :style="{ '--i': index }"
+          <!-- Monthly View - Last 12 months -->
+          <TransitionGroup
+            v-else
+            tag="div"
+            class="space-y-4"
+            :css="false"
+            @enter="rowEnter"
+            @leave="rowLeave"
           >
-            <!-- Month header -->
-            <div class="flex items-center justify-between">
-              <p class="eyebrow">
-                {{ month.name }}
-                <span class="text-neutral-600">/ {{ month.year }}</span>
-              </p>
-              <p class="text-xs text-neutral-400 font-mono">
-                {{ month.contributions.toLocaleString() }} {{ t('github.contributions') }}
-              </p>
-            </div>
+            <div
+              v-for="(month, index) in visibleMonths"
+              :key="`${month.year}-${month.name}`"
+              class="space-y-2"
+              :style="{ '--i': index }"
+            >
+              <!-- Month header -->
+              <div class="flex items-center justify-between">
+                <p class="eyebrow">
+                  {{ month.name }}
+                  <span class="text-neutral-600">/ {{ month.year }}</span>
+                </p>
+                <p class="text-xs text-neutral-400 font-mono">
+                  {{ month.contributions.toLocaleString() }} {{ t('github.contributions') }}
+                </p>
+              </div>
 
-            <!-- Month grid -->
-            <div class="flex gap-[3px] flex-wrap">
-              <div
-                v-for="day in month.days"
-                :key="day.date"
-                :class="
-                  cn(
-                    'w-3 h-3 rounded-[3px] cursor-pointer transition-all duration-150',
-                    'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
-                    getColor(day.contributionCount),
-                  )
-                "
-                @mouseenter="showTooltip(day, $event)"
-                @mouseleave="hideTooltip"
-              />
+              <!-- Month grid -->
+              <div class="flex gap-[3px] flex-wrap">
+                <div
+                  v-for="day in month.days"
+                  :key="day.date"
+                  :class="
+                    cn(
+                      'w-3 h-3 rounded-[3px] cursor-pointer transition-all duration-150',
+                      'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
+                      getColor(day.contributionCount),
+                    )
+                  "
+                  @mouseenter="showTooltip(day, $event)"
+                  @mouseleave="hideTooltip"
+                />
+              </div>
             </div>
-          </div>
-        </TransitionGroup>
+          </TransitionGroup>
+        </UiAutoHeight>
 
         <!-- Show more/less button -->
         <button

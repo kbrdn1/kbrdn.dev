@@ -174,7 +174,7 @@ const isMobileMenuOpen = ref(false)
             type="button"
             class="icon-btn md:hidden"
             :aria-expanded="isMobileMenuOpen"
-            :aria-controls="isMobileMenuOpen ? 'blog-mobile-nav' : undefined"
+            aria-controls="blog-mobile-nav"
             :aria-label="isMobileMenuOpen ? 'Close menu' : 'Open menu'"
             @click="isMobileMenuOpen = !isMobileMenuOpen"
           >
@@ -187,19 +187,11 @@ const isMobileMenuOpen = ref(false)
         </div>
       </div>
 
-      <!-- Mobile Navigation -->
-      <Transition
-        enter-active-class="transition-all duration-200 ease-out"
-        enter-from-class="opacity-0 -translate-y-2"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-150 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 -translate-y-2"
-      >
+      <!-- Mobile Navigation: unfolds on its height under the bar -->
+      <UiExpand :open="isMobileMenuOpen" class="md:hidden">
         <nav
-          v-if="isMobileMenuOpen"
           id="blog-mobile-nav"
-          class="md:hidden py-2 border-t border-(--panel-border)"
+          class="py-2 border-t border-(--panel-border)"
           aria-label="Mobile site navigation"
         >
           <NuxtLink
@@ -220,7 +212,7 @@ const isMobileMenuOpen = ref(false)
             {{ link.label }}
           </NuxtLink>
         </nav>
-      </Transition>
+      </UiExpand>
     </div>
     <!-- The announcement, as a notch under the navbar -->
     <HomeBanner />

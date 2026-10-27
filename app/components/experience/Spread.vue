@@ -30,7 +30,6 @@ const props = withDefaults(
 const { t } = useI18n()
 const open = ref(false)
 const hasMore = computed(() => props.items.length > props.preview)
-const shown = computed(() => (open.value ? props.items : props.items.slice(0, props.preview)))
 </script>
 
 <template>
@@ -96,15 +95,29 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
         <h4 class="eyebrow">
           {{ itemsLabel }}
         </h4>
-        <ul
+        <!-- The first ones, then the rest unfolding on its height -->
+        <div
           :id="`${id}-items`"
-          class="mt-2 space-y-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
+          class="mt-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
         >
-          <li v-for="item in shown" :key="item" class="flex gap-2">
-            <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary-500" aria-hidden="true" />
-            <span>{{ item }}</span>
-          </li>
-        </ul>
+          <ul class="space-y-2">
+            <li v-for="item in items.slice(0, preview)" :key="item" class="flex gap-2">
+              <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary-500" aria-hidden="true" />
+              <span>{{ item }}</span>
+            </li>
+          </ul>
+          <UiExpand v-if="hasMore" :open="open">
+            <ul class="space-y-2 pt-2">
+              <li v-for="item in items.slice(preview)" :key="item" class="flex gap-2">
+                <span
+                  class="mt-2 size-1.5 shrink-0 rounded-full bg-primary-500"
+                  aria-hidden="true"
+                />
+                <span>{{ item }}</span>
+              </li>
+            </ul>
+          </UiExpand>
+        </div>
       </div>
       <div v-if="links.length">
         <h4 class="eyebrow">

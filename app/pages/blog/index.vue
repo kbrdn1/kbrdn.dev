@@ -199,120 +199,137 @@ const { postUrl } = useBlogUrl()
         </div>
       </div>
 
-      <!-- List view: a card per post -->
-      <TransitionGroup
-        v-if="viewMode === 'list' && paginatedPosts.length > 0"
-        tag="div"
-        class="mt-1 space-y-1"
-        name="list"
-      >
-        <BlogPostRow
-          v-for="(post, index) in paginatedPosts"
-          :key="post.path"
-          :post="post"
-          :show-author="true"
-          :style="{ '--i': index }"
-        />
-      </TransitionGroup>
-
-      <!-- Cards view: the banner on top, through the pixel layer -->
-      <TransitionGroup
-        v-else-if="viewMode === 'cards' && paginatedPosts.length > 0"
-        tag="div"
-        class="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2"
-        name="list"
-      >
-        <!-- After disarto's event card: the banner full width on top, the card over its
-               bottom edge (tag and reading time, title, summary, then date, author and tags
-               between dashed rules), the call to read in the footer -->
-        <NuxtLink
-          v-for="(post, index) in paginatedPosts"
-          :key="post.path"
-          :to="postUrl(post)"
-          class="panel group relative isolate flex flex-col overflow-hidden p-0 transition-colors hover:border-primary-500/50"
-          :style="{ '--i': index }"
+      <UiAutoHeight>
+        <!-- List view: a card per post -->
+        <TransitionGroup
+          v-if="viewMode === 'list' && paginatedPosts.length > 0"
+          tag="div"
+          class="mt-1 space-y-1"
+          :css="false"
+          @enter="rowEnter"
+          @leave="rowLeave"
         >
-          <ClientOnly v-if="post.banner">
-            <div class="-mb-5 h-44 overflow-hidden">
-              <UiPixelImage :src="bannerOf(post)" class="size-full" reveal />
-            </div>
-          </ClientOnly>
-          <div class="panel-card relative z-10 mx-1 flex flex-1 flex-col overflow-hidden p-5">
-            <UiPixelCanvas />
-            <div class="flex items-start justify-between gap-3">
-              <UiTag v-if="post.tags?.length" :label="post.tags[0]!" variant="auto" />
-              <p class="ml-auto shrink-0 text-2xl text-green-600 dark:text-green-500">
-                <UiRollingNumber :value="readingTime(post.body)" />
-                <span class="text-base text-neutral-500">/ {{ t('blog.readingTime') }}</span>
-              </p>
-            </div>
-            <h3
-              class="mt-3 text-xl tracking-tight text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
-            >
-              {{ post.title }}
-            </h3>
-            <p
-              v-if="post.description"
-              class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
-            >
-              {{ post.description }}
-            </p>
+          <BlogPostRow
+            v-for="(post, index) in paginatedPosts"
+            :key="post.path"
+            :post="post"
+            :show-author="true"
+            :style="{ '--i': index }"
+          />
+        </TransitionGroup>
 
-            <!-- Date and tag count on one mono line, between dashed rules -->
-            <p
-              class="eyebrow mt-auto flex items-center gap-2 border-y border-dashed border-(--card-border) py-2.5"
-            >
-              <UIcon name="i-heroicons-calendar" class="size-3.5" aria-hidden="true" />
-              <template v-if="post.publishedAt">{{
-                formatDate(post.publishedAt, 'short')
-              }}</template>
-              <template v-if="post.tags?.length">
-                · {{ post.tags.length }} {{ t('blogNav.tags').toLowerCase() }}
-              </template>
-            </p>
-            <div v-if="post.tags && post.tags.length > 1" class="flex flex-wrap gap-1.5 pt-4">
-              <UiTag v-for="tag in post.tags.slice(1, 4)" :key="tag" :label="tag" variant="auto" />
-            </div>
-          </div>
-          <div class="flex items-center justify-between gap-3 py-2.5 pr-2 pl-4">
-            <span class="eyebrow">{{ t('sections.blog') }}</span>
-            <span class="btn btn-primary btn-sm">
-              {{ t('blog.read') }}
-              <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-            </span>
-          </div>
-        </NuxtLink>
-      </TransitionGroup>
-
-      <!-- Compact view: dashed rows in one card -->
-      <div
-        v-else-if="viewMode === 'compact' && paginatedPosts.length > 0"
-        class="panel-card mt-1 px-5"
-      >
-        <TransitionGroup tag="ul" class="divide-y divide-dashed divide-(--card-border)" name="list">
-          <li v-for="(post, index) in paginatedPosts" :key="post.path" :style="{ '--i': index }">
-            <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
-              <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
-                {{ formatDate(post.publishedAt) }}
-              </span>
-              <span
-                class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
+        <!-- Cards view: the banner on top, through the pixel layer -->
+        <TransitionGroup
+          v-else-if="viewMode === 'cards' && paginatedPosts.length > 0"
+          tag="div"
+          class="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2"
+          :css="false"
+          @enter="rowEnter"
+          @leave="rowLeave"
+        >
+          <!-- After disarto's event card: the banner full width on top, the card over its
+                 bottom edge (tag and reading time, title, summary, then date, author and tags
+                 between dashed rules), the call to read in the footer -->
+          <NuxtLink
+            v-for="(post, index) in paginatedPosts"
+            :key="post.path"
+            :to="postUrl(post)"
+            class="panel group relative isolate flex flex-col overflow-hidden p-0 transition-colors hover:border-primary-500/50"
+            :style="{ '--i': index }"
+          >
+            <ClientOnly v-if="post.banner">
+              <div class="-mb-5 h-44 overflow-hidden">
+                <UiPixelImage :src="bannerOf(post)" class="size-full" reveal />
+              </div>
+            </ClientOnly>
+            <div class="panel-card relative z-10 mx-1 flex flex-1 flex-col overflow-hidden p-5">
+              <UiPixelCanvas />
+              <div class="flex items-start justify-between gap-3">
+                <UiTag v-if="post.tags?.length" :label="post.tags[0]!" variant="auto" />
+                <p class="ml-auto shrink-0 text-2xl text-green-600 dark:text-green-500">
+                  <UiRollingNumber :value="readingTime(post.body)" />
+                  <span class="text-base text-neutral-500">/ {{ t('blog.readingTime') }}</span>
+                </p>
+              </div>
+              <h3
+                class="mt-3 text-xl tracking-tight text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
               >
                 {{ post.title }}
-              </span>
-            </NuxtLink>
-          </li>
-        </TransitionGroup>
-      </div>
+              </h3>
+              <p
+                v-if="post.description"
+                class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
+              >
+                {{ post.description }}
+              </p>
 
-      <!-- Empty state -->
-      <div
-        v-if="filteredPosts.length === 0"
-        class="panel-card mt-1 flex flex-col items-center justify-center py-20 text-center"
-      >
-        <UiMascot mood="thinking" :size="80" class="mb-4" />
-        <p class="eyebrow">{{ t('blog.noArticles') }}</p>
-      </div>
+              <!-- Date and tag count on one mono line, between dashed rules -->
+              <p
+                class="eyebrow mt-auto flex items-center gap-2 border-y border-dashed border-(--card-border) py-2.5"
+              >
+                <UIcon name="i-heroicons-calendar" class="size-3.5" aria-hidden="true" />
+                <template v-if="post.publishedAt">{{
+                  formatDate(post.publishedAt, 'short')
+                }}</template>
+                <template v-if="post.tags?.length">
+                  · {{ post.tags.length }} {{ t('blogNav.tags').toLowerCase() }}
+                </template>
+              </p>
+              <div v-if="post.tags && post.tags.length > 1" class="flex flex-wrap gap-1.5 pt-4">
+                <UiTag
+                  v-for="tag in post.tags.slice(1, 4)"
+                  :key="tag"
+                  :label="tag"
+                  variant="auto"
+                />
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 py-2.5 pr-2 pl-4">
+              <span class="eyebrow">{{ t('sections.blog') }}</span>
+              <span class="btn btn-primary btn-sm">
+                {{ t('blog.read') }}
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </span>
+            </div>
+          </NuxtLink>
+        </TransitionGroup>
+
+        <!-- Compact view: dashed rows in one card -->
+        <div
+          v-else-if="viewMode === 'compact' && paginatedPosts.length > 0"
+          class="panel-card mt-1 px-5"
+        >
+          <TransitionGroup
+            tag="ul"
+            class="divide-y divide-dashed divide-(--card-border)"
+            :css="false"
+            @enter="rowEnter"
+            @leave="rowLeave"
+          >
+            <li v-for="(post, index) in paginatedPosts" :key="post.path" :style="{ '--i': index }">
+              <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+                <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
+                  {{ formatDate(post.publishedAt) }}
+                </span>
+                <span
+                  class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
+                >
+                  {{ post.title }}
+                </span>
+              </NuxtLink>
+            </li>
+          </TransitionGroup>
+        </div>
+
+        <!-- Empty state -->
+        <div
+          v-if="filteredPosts.length === 0"
+          class="panel-card mt-1 flex flex-col items-center justify-center py-20 text-center"
+        >
+          <UiMascot mood="thinking" :size="80" class="mb-4" />
+          <p class="eyebrow">{{ t('blog.noArticles') }}</p>
+        </div>
+      </UiAutoHeight>
 
       <template v-if="totalPages > 1" #meta>
         {{ String(currentPage).padStart(2, '0') }} / {{ String(totalPages).padStart(2, '0') }}

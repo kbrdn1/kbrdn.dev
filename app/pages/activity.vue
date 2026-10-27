@@ -175,71 +175,77 @@ const TAG: Record<string, string> = {
         </div>
 
         <div class="panel-card p-2 sm:p-3">
-          <!-- Loading: rows shaped like the real ones -->
-          <ul v-if="status === 'pending' || status === 'idle'" class="space-y-1" aria-hidden="true">
-            <li v-for="i in 6" :key="i" class="flex items-center gap-3 px-2 py-3">
-              <UiSkeleton class="size-9 rounded-[0.625rem]" />
-              <div class="flex-1 space-y-2">
-                <UiSkeleton class="h-3.5 w-40" />
-                <UiSkeleton class="h-3 w-64" />
-              </div>
-              <UiSkeleton class="h-3 w-12" />
-            </li>
-          </ul>
+          <UiAutoHeight>
+            <!-- Loading: rows shaped like the real ones -->
+            <ul
+              v-if="status === 'pending' || status === 'idle'"
+              class="space-y-1"
+              aria-hidden="true"
+            >
+              <li v-for="i in 6" :key="i" class="flex items-center gap-3 px-2 py-3">
+                <UiSkeleton class="size-9 rounded-[0.625rem]" />
+                <div class="flex-1 space-y-2">
+                  <UiSkeleton class="h-3.5 w-40" />
+                  <UiSkeleton class="h-3 w-64" />
+                </div>
+                <UiSkeleton class="h-3 w-12" />
+              </li>
+            </ul>
 
-          <!-- Error -->
-          <p
-            v-else-if="status === 'error' || !items.length"
-            class="flex items-center justify-center gap-3 py-10 text-sm text-neutral-500"
-          >
-            <UiMascot mood="sad" :size="40" />
-            {{ t('github.error') }}
-          </p>
+            <!-- Error -->
+            <p
+              v-else-if="status === 'error' || !items.length"
+              class="flex items-center justify-center gap-3 py-10 text-sm text-neutral-500"
+            >
+              <UiMascot mood="sad" :size="40" />
+              {{ t('github.error') }}
+            </p>
 
-          <div v-else>
-            <section v-for="day in days" :key="day.key" :aria-label="day.label">
-              <h3
-                class="eyebrow border-b border-dashed border-(--card-border) px-2 pt-3 pb-2 first:pt-1"
-              >
-                {{ day.label }}
-              </h3>
-              <ul class="divide-y divide-(--card-border)">
-                <li v-for="item in day.items" :key="item.id">
-                  <a
-                    :href="item.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="row group flex items-start gap-3 px-2 py-3"
-                  >
-                    <span class="icon-box size-9">
-                      <UIcon
-                        :name="icon(item)"
-                        class="size-4 text-neutral-500"
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <span class="min-w-0 flex-1">
-                      <span class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                        <span
-                          class="truncate text-[15px] text-neutral-900 transition-colors group-hover:text-(--accent-text) dark:text-neutral-100"
-                        >
-                          {{ item.repo }}
+            <div v-else>
+              <section v-for="day in days" :key="day.key" :aria-label="day.label">
+                <h3
+                  class="eyebrow border-b border-dashed border-(--card-border) px-2 pt-3 pb-2 first:pt-1"
+                >
+                  {{ day.label }}
+                </h3>
+                <ul class="divide-y divide-(--card-border)">
+                  <li v-for="item in day.items" :key="item.id">
+                    <a
+                      :href="item.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="row group flex items-start gap-3 px-2 py-3"
+                    >
+                      <span class="icon-box size-9">
+                        <UIcon
+                          :name="icon(item)"
+                          class="size-4 text-neutral-500"
+                          aria-hidden="true"
+                        />
+                      </span>
+                      <span class="min-w-0 flex-1">
+                        <span class="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                          <span
+                            class="truncate text-[15px] text-neutral-900 transition-colors group-hover:text-(--accent-text) dark:text-neutral-100"
+                          >
+                            {{ item.repo }}
+                          </span>
+                          <span :class="cn('tag h-5 px-2 text-[10px]', TAG[item.type])">
+                            {{ t(`activityPage.types.${item.type}`) }}
+                          </span>
                         </span>
-                        <span :class="cn('tag h-5 px-2 text-[10px]', TAG[item.type])">
-                          {{ t(`activityPage.types.${item.type}`) }}
+                        <span class="mt-0.5 block text-sm text-neutral-600 dark:text-neutral-400">
+                          {{ describe(item)
+                          }}<template v-if="item.title">{{ colon }}{{ item.title }}</template>
                         </span>
                       </span>
-                      <span class="mt-0.5 block text-sm text-neutral-600 dark:text-neutral-400">
-                        {{ describe(item)
-                        }}<template v-if="item.title">{{ colon }}{{ item.title }}</template>
-                      </span>
-                    </span>
-                    <span class="eyebrow shrink-0 pt-1 tabular-nums">{{ time(item.at) }}</span>
-                  </a>
-                </li>
-              </ul>
-            </section>
-          </div>
+                      <span class="eyebrow shrink-0 pt-1 tabular-nums">{{ time(item.at) }}</span>
+                    </a>
+                  </li>
+                </ul>
+              </section>
+            </div>
+          </UiAutoHeight>
         </div>
 
         <template #meta>

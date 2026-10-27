@@ -414,70 +414,60 @@ function formatTime(seconds: number): string {
       </div>
 
       <!-- Track listing: a card under the player, after disarto's ground station rows -->
-      <div
-        class="grid overflow-hidden"
-        :class="showListing ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
-        style="
-          transition:
-            grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 200ms ease !important;
-        "
-      >
-        <div class="overflow-hidden">
-          <div class="panel-card mt-1 max-h-56 overflow-y-auto p-1.5">
-            <button
-              v-for="(t, index) in tracks"
-              :key="index"
-              type="button"
-              :aria-current="currentIndex === index ? 'true' : undefined"
+      <UiExpand :open="showListing">
+        <div class="panel-card mt-1 max-h-56 overflow-y-auto p-1.5">
+          <button
+            v-for="(t, index) in tracks"
+            :key="index"
+            type="button"
+            :aria-current="currentIndex === index ? 'true' : undefined"
+            :class="
+              cn(
+                'row flex w-full items-center gap-3 px-2.5 py-2 text-left',
+                currentIndex === index && 'bg-primary-500/10 hover:bg-primary-500/15',
+              )
+            "
+            @click.prevent.stop="goToTrack(index)"
+          >
+            <span
               :class="
                 cn(
-                  'row flex w-full items-center gap-3 px-2.5 py-2 text-left',
-                  currentIndex === index && 'bg-primary-500/10 hover:bg-primary-500/15',
+                  'eyebrow w-5 shrink-0 text-right tabular-nums',
+                  currentIndex === index && 'text-(--accent-text)',
                 )
               "
-              @click.prevent.stop="goToTrack(index)"
             >
+              <UIcon
+                v-if="currentIndex === index && isPlaying"
+                name="i-heroicons-speaker-wave-16-solid"
+                class="size-3.5"
+                aria-hidden="true"
+              />
+              <template v-else>{{ String(index + 1).padStart(2, '0') }}</template>
+            </span>
+            <img
+              :src="t.cover"
+              :alt="t.album"
+              class="size-9 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
+            />
+            <span class="min-w-0 flex-1">
               <span
                 :class="
                   cn(
-                    'eyebrow w-5 shrink-0 text-right tabular-nums',
-                    currentIndex === index && 'text-(--accent-text)',
+                    'block truncate text-sm',
+                    currentIndex === index
+                      ? 'text-(--accent-text)'
+                      : 'text-neutral-900 dark:text-neutral-100',
                   )
                 "
               >
-                <UIcon
-                  v-if="currentIndex === index && isPlaying"
-                  name="i-heroicons-speaker-wave-16-solid"
-                  class="size-3.5"
-                  aria-hidden="true"
-                />
-                <template v-else>{{ String(index + 1).padStart(2, '0') }}</template>
+                {{ t.title }}
               </span>
-              <img
-                :src="t.cover"
-                :alt="t.album"
-                class="size-9 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
-              />
-              <span class="min-w-0 flex-1">
-                <span
-                  :class="
-                    cn(
-                      'block truncate text-sm',
-                      currentIndex === index
-                        ? 'text-(--accent-text)'
-                        : 'text-neutral-900 dark:text-neutral-100',
-                    )
-                  "
-                >
-                  {{ t.title }}
-                </span>
-                <span class="eyebrow block truncate">{{ t.artist }}</span>
-              </span>
-            </button>
-          </div>
+              <span class="eyebrow block truncate">{{ t.artist }}</span>
+            </span>
+          </button>
         </div>
-      </div>
+      </UiExpand>
 
       <audio
         v-if="track?.preview"

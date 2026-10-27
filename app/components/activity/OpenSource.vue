@@ -166,134 +166,142 @@ const reference = (url: string) =>
       </div>
 
       <div :id="`${headingId}-panel`" role="tabpanel" :aria-labelledby="`${headingId}-tab-${tab}`">
-        <!-- Projects. Rows come in one after the other on a tab switch or a search (not on
-             the first render: what the server sent stays put) -->
-        <TransitionGroup
-          v-if="tab === 'projectsLabel'"
-          tag="ul"
-          name="list"
-          :appear="mounted"
-          class="divide-y divide-(--card-border)"
-        >
-          <li
-            v-for="(project, i) in shownProjects"
-            :key="project.key"
-            class="relative isolate flex gap-4 overflow-hidden px-2 py-4 sm:px-3"
-            :style="{ '--i': i }"
+        <UiAutoHeight>
+          <!-- Projects. Rows come in one after the other on a tab switch or a search (not on
+               the first render: what the server sent stays put) -->
+          <TransitionGroup
+            v-if="tab === 'projectsLabel'"
+            tag="ul"
+            :css="false"
+            @enter="rowEnter"
+            @leave="rowLeave"
+            :appear="mounted"
+            class="divide-y divide-(--card-border)"
           >
-            <UiPixelCanvas />
-            <span class="icon-box size-11">
-              <UIcon
-                :name="LANGUAGE_ICONS[project.language] ?? 'i-lucide-book-marked'"
-                class="size-5 text-neutral-500"
-                aria-hidden="true"
-              />
-            </span>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <h3 class="text-lg text-neutral-900 dark:text-neutral-100">{{ project.name }}</h3>
-                  <p class="eyebrow mt-0.5">
-                    {{ t('experiencePage.openSource.lot') }}
-                    {{ String(projects.indexOf(project) + 1).padStart(2, '0') }} ·
-                    {{ project.language }}
+            <li
+              v-for="(project, i) in shownProjects"
+              :key="project.key"
+              class="relative isolate flex gap-4 overflow-hidden px-2 py-4 sm:px-3"
+              :style="{ '--i': i }"
+            >
+              <UiPixelCanvas />
+              <span class="icon-box size-11">
+                <UIcon
+                  :name="LANGUAGE_ICONS[project.language] ?? 'i-lucide-book-marked'"
+                  class="size-5 text-neutral-500"
+                  aria-hidden="true"
+                />
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <h3 class="text-lg text-neutral-900 dark:text-neutral-100">
+                      {{ project.name }}
+                    </h3>
+                    <p class="eyebrow mt-0.5">
+                      {{ t('experiencePage.openSource.lot') }}
+                      {{ String(projects.indexOf(project) + 1).padStart(2, '0') }} ·
+                      {{ project.language }}
+                    </p>
+                  </div>
+                  <span :class="cn('tag shrink-0', STATUS_CLASS[project.status])">
+                    {{ t(`experiencePage.openSource.status.${project.status}`) }}
+                  </span>
+                </div>
+                <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  {{ t(`experiencePage.openSource.projects.${project.key}`) }}
+                </p>
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <ul v-if="'channels' in project" class="flex flex-wrap gap-1.5">
+                    <li
+                      v-for="channel in project.channels"
+                      :key="channel"
+                      class="inline-flex h-7 items-center rounded-full border border-(--control-border) px-2.5 text-xs text-neutral-700 dark:text-neutral-300"
+                    >
+                      {{ channel }}
+                    </li>
+                  </ul>
+                  <p class="eyebrow relative z-10 ml-auto flex items-center gap-2">
+                    <a
+                      v-if="'site' in project"
+                      :href="project.site"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="underline underline-offset-4 hover:text-(--accent-text)"
+                    >
+                      {{ t('experiencePage.openSource.site') }} ↗
+                    </a>
+                    <span v-if="'site' in project" aria-hidden="true">/</span>
+                    <a
+                      :href="project.repo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="underline underline-offset-4 hover:text-(--accent-text)"
+                    >
+                      {{ t('experiencePage.openSource.repo') }} ↗
+                    </a>
                   </p>
                 </div>
-                <span :class="cn('tag shrink-0', STATUS_CLASS[project.status])">
-                  {{ t(`experiencePage.openSource.status.${project.status}`) }}
-                </span>
               </div>
-              <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {{ t(`experiencePage.openSource.projects.${project.key}`) }}
-              </p>
-              <div class="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                <ul v-if="'channels' in project" class="flex flex-wrap gap-1.5">
-                  <li
-                    v-for="channel in project.channels"
-                    :key="channel"
-                    class="inline-flex h-7 items-center rounded-full border border-(--control-border) px-2.5 text-xs text-neutral-700 dark:text-neutral-300"
-                  >
-                    {{ channel }}
-                  </li>
-                </ul>
-                <p class="eyebrow relative z-10 ml-auto flex items-center gap-2">
+            </li>
+          </TransitionGroup>
+
+          <!-- Contributions and reports -->
+          <TransitionGroup
+            v-else
+            tag="ul"
+            :css="false"
+            @enter="rowEnter"
+            @leave="rowLeave"
+            :appear="mounted"
+            class="divide-y divide-(--card-border)"
+          >
+            <li
+              v-for="(item, i) in shownUpstream"
+              :key="item.key"
+              class="flex gap-4 px-2 py-4 sm:px-3"
+              :style="{ '--i': i }"
+            >
+              <span class="icon-box size-11">
+                <UIcon
+                  :name="UPSTREAM_ICON[item.kind]!"
+                  class="size-5 text-neutral-500"
+                  aria-hidden="true"
+                />
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <h3 class="truncate text-lg text-neutral-900 dark:text-neutral-100">
+                      {{ item.repo }}
+                    </h3>
+                    <p class="eyebrow mt-0.5">{{ reference(item.url) }}</p>
+                  </div>
+                  <span :class="cn('tag shrink-0', STATUS_CLASS[item.kind])">
+                    {{ t(`experiencePage.openSource.status.${item.kind}`) }}
+                  </span>
+                </div>
+                <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  {{ t(`experiencePage.openSource.upstream.${item.key}`) }}
+                </p>
+                <p class="eyebrow mt-3 text-right">
                   <a
-                    v-if="'site' in project"
-                    :href="project.site"
+                    :href="item.url"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="underline underline-offset-4 hover:text-(--accent-text)"
                   >
-                    {{ t('experiencePage.openSource.site') }} ↗
-                  </a>
-                  <span v-if="'site' in project" aria-hidden="true">/</span>
-                  <a
-                    :href="project.repo"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="underline underline-offset-4 hover:text-(--accent-text)"
-                  >
-                    {{ t('experiencePage.openSource.repo') }} ↗
+                    {{ t('experiencePage.openSource.view') }} ↗
                   </a>
                 </p>
               </div>
-            </div>
-          </li>
-        </TransitionGroup>
+            </li>
+          </TransitionGroup>
 
-        <!-- Contributions and reports -->
-        <TransitionGroup
-          v-else
-          tag="ul"
-          name="list"
-          :appear="mounted"
-          class="divide-y divide-(--card-border)"
-        >
-          <li
-            v-for="(item, i) in shownUpstream"
-            :key="item.key"
-            class="flex gap-4 px-2 py-4 sm:px-3"
-            :style="{ '--i': i }"
-          >
-            <span class="icon-box size-11">
-              <UIcon
-                :name="UPSTREAM_ICON[item.kind]!"
-                class="size-5 text-neutral-500"
-                aria-hidden="true"
-              />
-            </span>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                  <h3 class="truncate text-lg text-neutral-900 dark:text-neutral-100">
-                    {{ item.repo }}
-                  </h3>
-                  <p class="eyebrow mt-0.5">{{ reference(item.url) }}</p>
-                </div>
-                <span :class="cn('tag shrink-0', STATUS_CLASS[item.kind])">
-                  {{ t(`experiencePage.openSource.status.${item.kind}`) }}
-                </span>
-              </div>
-              <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-                {{ t(`experiencePage.openSource.upstream.${item.key}`) }}
-              </p>
-              <p class="eyebrow mt-3 text-right">
-                <a
-                  :href="item.url"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="underline underline-offset-4 hover:text-(--accent-text)"
-                >
-                  {{ t('experiencePage.openSource.view') }} ↗
-                </a>
-              </p>
-            </div>
-          </li>
-        </TransitionGroup>
-
-        <p v-if="shown === 0" class="eyebrow py-10 text-center">
-          {{ t('experiencePage.openSource.noResults') }}
-        </p>
+          <p v-if="shown === 0" class="eyebrow py-10 text-center">
+            {{ t('experiencePage.openSource.noResults') }}
+          </p>
+        </UiAutoHeight>
       </div>
     </div>
 
