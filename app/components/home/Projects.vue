@@ -35,18 +35,6 @@ const LOGOS: Record<string, { dark: string; light?: string }> = {
   'gwm-cli': { dark: 'docs/_assets/logo.svg', light: 'docs/_assets/logo-light.svg' },
   'kbrdn.dev': { dark: 'public/favicon.svg' },
 }
-const LANGUAGE_ICONS: Record<string, string> = {
-  Astro: 'i-simple-icons-astro',
-  Go: 'i-simple-icons-go',
-  JavaScript: 'i-simple-icons-javascript',
-  Lua: 'i-simple-icons-lua',
-  PHP: 'i-simple-icons-php',
-  Python: 'i-simple-icons-python',
-  Rust: 'i-simple-icons-rust',
-  Shell: 'i-simple-icons-gnubash',
-  TypeScript: 'i-simple-icons-typescript',
-  Vue: 'i-simple-icons-vuedotjs',
-}
 
 function logo(repo: PinnedRepo): { dark: string; light: string } | null {
   const paths = LOGOS[repo.name]

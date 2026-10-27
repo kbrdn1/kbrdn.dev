@@ -34,6 +34,7 @@ const timeline = computed(() =>
       start: e.startDate,
       end: e.endDate,
       name: e.company,
+      logo: e.logo,
       detail: t(`experiences.${e.key}.role`),
     })),
     ...STUDIES.map((s) => ({
@@ -41,6 +42,7 @@ const timeline = computed(() =>
       start: s.startDate,
       end: s.endDate,
       name: s.school,
+      logo: s.logo,
       detail: t(`studies.${s.key}.degree`),
     })),
   ].sort((a, b) => b.start.localeCompare(a.start)),
@@ -53,27 +55,57 @@ const projects = OPEN_SOURCE_PROJECTS
 const contributions = UPSTREAM.filter((u) => u.kind !== 'report')
 const reports = UPSTREAM.filter((u) => u.kind === 'report')
 
+// Open source: three groups, counted in a stat card (a tick bar per group, one segment per
+// item in its status colour, and a legend), listed one at a time through a segmented control
+const OS_TABS = ['projectsLabel', 'upstreamLabel', 'reportsLabel'] as const
+const osTab = ref<(typeof OS_TABS)[number]>('projectsLabel')
+const osGroups = [
+  { key: 'projectsLabel', statuses: projects.map((p) => p.status) },
+  { key: 'upstreamLabel', statuses: contributions.map((c) => c.kind) },
+  { key: 'reportsLabel', statuses: reports.map((r) => r.kind) },
+] as const
+const tally = (statuses: readonly string[]) =>
+  [...new Set(statuses)].map((s) => [s, statuses.filter((x) => x === s).length] as const)
+
+function switchOsTab(delta: number) {
+  const next = OS_TABS[(OS_TABS.indexOf(osTab.value) + delta + OS_TABS.length) % OS_TABS.length]!
+  osTab.value = next
+  document.getElementById(`os-tab-${next}`)?.focus()
+}
+
+const UPSTREAM_ICON: Record<string, string> = {
+  merged: 'i-lucide-git-merge',
+  review: 'i-lucide-git-pull-request',
+  report: 'i-lucide-circle-dot',
+}
+
+const STATUS_BAR: Record<string, string> = {
+  released: 'bg-green-600 dark:bg-green-500',
+  merged: 'bg-green-600 dark:bg-green-500',
+  inDevelopment: 'bg-primary-500',
+  review: 'bg-primary-500',
+  archived: 'bg-neutral-400 dark:bg-neutral-600',
+  report: 'bg-sky-500',
+}
+
+// Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
-  released:
-    'text-green-700 dark:text-green-500 border-green-600/40 dark:border-green-500/30 bg-green-600/5 dark:bg-green-500/5',
-  merged:
-    'text-green-700 dark:text-green-500 border-green-600/40 dark:border-green-500/30 bg-green-600/5 dark:bg-green-500/5',
-  inDevelopment: 'text-primary-500 border-primary-500/40 bg-primary-500/5',
-  review: 'text-primary-500 border-primary-500/40 bg-primary-500/5',
-  archived: 'text-neutral-500 border-neutral-300 dark:border-neutral-700 bg-neutral-500/5',
-  report: 'text-sky-500 border-sky-500/40 bg-sky-500/5',
+  released: 'text-green-700 dark:text-green-500',
+  merged: 'text-green-700 dark:text-green-500',
+  inDevelopment: 'text-primary-500',
+  review: 'text-primary-500',
+  archived: 'text-neutral-500',
+  report: 'text-sky-500',
 }
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-5xl px-6 pb-20">
-    <!-- Intro -->
-    <section class="pt-14 pb-10">
-      <p class="font-mono text-[11px] uppercase tracking-widest text-primary-500">
-        {{ t('experiencePage.eyebrow') }}
-      </p>
+  <div class="mx-auto w-full max-w-5xl space-y-8 px-4 pt-6 pb-20 sm:px-6">
+    <!-- Intro, open on the page like the home's hero -->
+    <section class="py-4 sm:py-8">
+      <p class="eyebrow">{{ t('experiencePage.eyebrow') }}</p>
       <h1
-        class="mt-4 max-w-3xl text-4xl font-bold leading-tight text-neutral-900 sm:text-5xl dark:text-neutral-100"
+        class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
         :aria-label="t('experiencePage.title')"
       >
         <UiScrambleText :text="t('experiencePage.title')" />
@@ -82,189 +114,274 @@ const STATUS_CLASS: Record<string, string> = {
         {{ t('experiencePage.intro') }}
       </p>
       <div class="mt-8 flex flex-wrap gap-3">
-        <a
-          href="#open-source"
-          class="inline-flex items-center gap-2 bg-primary-500 px-4 py-2 font-mono text-xs uppercase tracking-wider text-white transition-colors hover:bg-primary-600"
-        >
+        <a href="#open-source" class="btn btn-primary">
           {{ t('experiencePage.ctaOpenSource') }}
         </a>
-        <NuxtLink
-          to="/blog"
-          class="inline-flex items-center gap-2 px-4 py-2 font-mono text-xs uppercase tracking-wider text-sky-500 transition-colors hover:text-sky-400"
-        >
-          <UiScrambleText :text="t('experiencePage.ctaBlog')" effect="link" /> →
+        <NuxtLink to="/blog" class="btn btn-outline">
+          <UiScrambleText :text="t('experiencePage.ctaBlog')" effect="link" />
+          <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
         </NuxtLink>
       </div>
     </section>
 
-    <!-- Strip: every role and degree -->
-    <nav
-      :aria-label="t('experiencePage.timeline')"
-      class="-mx-6 overflow-x-auto border-y border-neutral-200 px-6 dark:border-neutral-800"
-    >
-      <ol class="flex min-w-max divide-x divide-neutral-200 dark:divide-neutral-800">
-        <li v-for="(item, i) in timeline" :key="item.id">
-          <a
-            :href="`#${item.id}`"
-            class="group block w-48 px-4 py-4 transition-colors hover:bg-primary-500/5"
-          >
-            <span class="block font-mono text-[10px] tracking-widest text-neutral-500">
-              {{ String(i + 1).padStart(2, '0') }} · {{ item.start.slice(0, 4) }}–{{
-                item.end ? item.end.slice(0, 4) : ''
-              }}
-            </span>
-            <span
-              class="mt-1 block truncate text-sm font-medium text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100"
+    <!-- Strip: every role and degree, one small card each -->
+    <UiPanel :title="t('experiencePage.timeline')">
+      <nav :aria-label="t('experiencePage.timeline')" class="overflow-x-auto">
+        <ol class="flex min-w-max gap-1">
+          <li v-for="(item, i) in timeline" :key="item.id">
+            <a
+              :href="`#${item.id}`"
+              class="panel-card group block w-60 p-4 transition-colors hover:border-primary-500/50"
             >
-              {{ item.name }}
-            </span>
-            <span class="block truncate text-xs text-neutral-500">{{ item.detail }}</span>
-          </a>
-        </li>
-      </ol>
-    </nav>
+              <span class="eyebrow block">
+                {{ String(i + 1).padStart(2, '0') }} · {{ item.start.slice(0, 4) }}–{{
+                  item.end ? item.end.slice(0, 4) : ''
+                }}
+              </span>
+              <span class="mt-3 flex items-center gap-3">
+                <NuxtImg
+                  :src="item.logo"
+                  alt=""
+                  width="32"
+                  height="32"
+                  class="size-8 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
+                />
+                <span class="min-w-0">
+                  <span
+                    class="block truncate text-sm text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100"
+                  >
+                    {{ item.name }}
+                  </span>
+                  <span class="block truncate text-xs text-neutral-500">{{ item.detail }}</span>
+                </span>
+              </span>
+            </a>
+          </li>
+        </ol>
+      </nav>
+    </UiPanel>
 
     <!-- Experience -->
-    <section id="experience" aria-labelledby="experience-heading" class="scroll-mt-24 pt-14">
-      <h2
-        id="experience-heading"
-        class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500"
-      >
-        <UiScrambleText :text="t('experiencePage.experienceLabel')" />
-      </h2>
-      <ExperienceSpread
-        v-for="(exp, i) in EXPERIENCES"
-        :id="exp.id"
-        :key="exp.id"
-        :index="i + 1"
-        :title="exp.company"
-        :logo="exp.logo"
-        :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.role`)} · ${t(`experiences.${exp.key}.type`)}`"
-        :summary="t(`experiencePage.summaries.${exp.key}`)"
-        :stack="exp.technologies"
-        :items-label="t('experiencePage.missions')"
-        :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
-      />
+    <section id="experience" aria-labelledby="experience-heading" class="scroll-mt-28">
+      <UiPanel>
+        <h2
+          id="experience-heading"
+          class="flex min-h-12 items-center px-4 text-[17px] text-neutral-900 dark:text-neutral-100"
+        >
+          <UiScrambleText :text="t('experiencePage.experienceLabel')" />
+        </h2>
+        <div class="space-y-1">
+          <ExperienceSpread
+            v-for="(exp, i) in EXPERIENCES"
+            :id="exp.id"
+            :key="exp.id"
+            :index="i + 1"
+            :title="exp.company"
+            :logo="exp.logo"
+            :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.role`)} · ${t(`experiences.${exp.key}.type`)}`"
+            :summary="t(`experiencePage.summaries.${exp.key}`)"
+            :stack="exp.technologies"
+            :items-label="t('experiencePage.missions')"
+            :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
+          />
+        </div>
+      </UiPanel>
     </section>
 
     <!-- Education -->
-    <section id="education" aria-labelledby="education-heading" class="scroll-mt-24 pt-14">
-      <h2
-        id="education-heading"
-        class="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-500"
-      >
-        <UiScrambleText :text="t('experiencePage.educationLabel')" />
-      </h2>
-      <ExperienceSpread
-        v-for="(study, i) in STUDIES"
-        :id="study.id"
-        :key="study.id"
-        :index="i + 1"
-        :title="study.school"
-        :logo="study.logo"
-        :meta="`${period(study.startDate, study.endDate)} · ${study.level} · ${t(`studies.${study.key}.degree`)}`"
-        :summary="t(`experiencePage.summaries.${study.key}`)"
-        :stack="study.technologies"
-        :items-label="t('experiencePage.skills')"
-        :items="list(`studies.${study.key}.skills`, study.skillsCount)"
-      />
+    <section id="education" aria-labelledby="education-heading" class="scroll-mt-28">
+      <UiPanel>
+        <h2
+          id="education-heading"
+          class="flex min-h-12 items-center px-4 text-[17px] text-neutral-900 dark:text-neutral-100"
+        >
+          <UiScrambleText :text="t('experiencePage.educationLabel')" />
+        </h2>
+        <div class="space-y-1">
+          <ExperienceSpread
+            v-for="(study, i) in STUDIES"
+            :id="study.id"
+            :key="study.id"
+            :index="i + 1"
+            :title="study.school"
+            :logo="study.logo"
+            :meta="`${period(study.startDate, study.endDate)} · ${study.level} · ${t(`studies.${study.key}.degree`)}`"
+            :summary="t(`experiencePage.summaries.${study.key}`)"
+            :stack="study.technologies"
+            :items-label="t('experiencePage.skills')"
+            :items="list(`studies.${study.key}.skills`, study.skillsCount)"
+          />
+        </div>
+      </UiPanel>
     </section>
 
     <!-- Open source -->
-    <section id="open-source" aria-labelledby="open-source-heading" class="scroll-mt-24 pt-20">
-      <p class="font-mono text-[11px] uppercase tracking-widest text-primary-500">
-        {{ t('experiencePage.openSource.eyebrow') }}
-      </p>
-      <h2
-        id="open-source-heading"
-        class="mt-3 max-w-2xl text-3xl font-semibold text-neutral-900 dark:text-neutral-100"
-      >
-        <UiScrambleText :text="t('experiencePage.openSource.title')" />
-      </h2>
-      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-        {{ t('experiencePage.openSource.intro') }}
-      </p>
+    <section id="open-source" aria-labelledby="open-source-heading" class="scroll-mt-28">
+      <UiPanel>
+        <div class="flex min-h-12 items-center px-4 py-2">
+          <h2 id="open-source-heading" class="text-[17px] text-neutral-900 dark:text-neutral-100">
+            <UiScrambleText :text="t('experiencePage.openSource.title')" />
+          </h2>
+        </div>
 
-      <h3 class="mt-10 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
-        {{ t('experiencePage.openSource.projectsLabel') }}
-      </h3>
-      <ul class="mt-4 grid gap-3 sm:grid-cols-2">
-        <li
-          v-for="(project, i) in projects"
-          :key="project.key"
-          class="relative isolate flex flex-col gap-3 overflow-hidden border border-neutral-200 bg-white/50 p-5 transition-colors hover:border-primary-500/50 dark:border-neutral-800 dark:bg-neutral-950/50"
-        >
-          <UiPixelCanvas />
-          <div class="flex items-center justify-between gap-3">
-            <span class="font-mono text-[10px] tracking-widest text-neutral-500">
-              {{ t('experiencePage.openSource.lot') }} {{ String(i + 1).padStart(2, '0') }} ·
-              {{ project.language }}
-            </span>
-            <span
-              :class="
-                cn(
-                  'border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider',
-                  STATUS_CLASS[project.status],
-                )
-              "
-            >
-              {{ t(`experiencePage.openSource.status.${project.status}`) }}
-            </span>
-          </div>
-          <h4 class="font-mono text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-            {{ project.name }}
-          </h4>
-          <p class="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-            {{ t(`experiencePage.openSource.projects.${project.key}`) }}
+        <!-- The numbers, after disarto's occupancy card -->
+        <div class="panel-card p-5 sm:p-6">
+          <p class="max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+            {{ t('experiencePage.openSource.intro') }}
           </p>
-          <p
-            v-if="'channels' in project"
-            class="font-mono text-[11px] leading-relaxed text-neutral-500"
+          <div
+            class="mt-6 grid gap-6 border-t border-dashed border-(--card-border) pt-6 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-dashed sm:divide-(--card-border)"
           >
-            {{ t('experiencePage.openSource.install') }} {{ project.channels.join(' · ') }}
-          </p>
-          <div class="mt-auto flex gap-4 pt-1 font-mono text-xs uppercase tracking-wider">
-            <a
-              v-if="'site' in project"
-              :href="project.site"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="relative z-10 text-primary-500 hover:text-primary-400"
+            <div
+              v-for="group in osGroups"
+              :key="group.key"
+              class="sm:px-5 sm:first:pl-0 sm:last:pr-0"
             >
-              <UiScrambleText :text="t('experiencePage.openSource.site')" effect="link" /> ↗
-            </a>
-            <a
-              :href="project.repo"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="relative z-10 text-neutral-500 hover:text-primary-500"
-            >
-              <UiScrambleText :text="t('experiencePage.openSource.repo')" effect="link" /> ↗
-            </a>
+              <p class="eyebrow">{{ t(`experiencePage.openSource.${group.key}`) }}</p>
+              <p class="mt-1 text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
+                {{ group.statuses.length }}
+              </p>
+              <div class="mt-3 flex h-3 gap-1" aria-hidden="true">
+                <span
+                  v-for="(status, i) in group.statuses"
+                  :key="i"
+                  :class="cn('ticks h-full flex-1', STATUS_BAR[status])"
+                />
+              </div>
+              <ul class="mt-3 space-y-1">
+                <li
+                  v-for="[status, count] in tally(group.statuses)"
+                  :key="status"
+                  class="eyebrow flex items-center gap-2"
+                >
+                  <span
+                    :class="cn('size-1.5 rounded-full', STATUS_BAR[status])"
+                    aria-hidden="true"
+                  />
+                  {{ t(`experiencePage.openSource.status.${status}`) }}:
+                  <span class="text-neutral-900 dark:text-neutral-100">{{ count }}</span>
+                </li>
+              </ul>
+            </div>
           </div>
-        </li>
-      </ul>
+        </div>
 
-      <div class="mt-12 grid gap-10 md:grid-cols-2">
-        <div
-          v-for="group in [
-            { key: 'upstreamLabel', items: contributions },
-            { key: 'reportsLabel', items: reports },
-          ]"
-          :key="group.key"
-        >
-          <h3 class="font-mono text-[11px] uppercase tracking-widest text-neutral-500">
-            {{ t(`experiencePage.openSource.${group.key}`) }}
-          </h3>
-          <ul class="mt-3 divide-y divide-neutral-200 dark:divide-neutral-800">
+        <!-- The lists, one at a time, after disarto's ground station rows -->
+        <div class="panel-card mt-1 p-2 sm:p-3">
+          <div class="segmented flex w-full" role="tablist" aria-label="Open source">
+            <button
+              v-for="tab in OS_TABS"
+              :id="`os-tab-${tab}`"
+              :key="tab"
+              type="button"
+              role="tab"
+              class="segment flex-1"
+              :aria-selected="osTab === tab"
+              :aria-controls="`os-panel-${tab}`"
+              :tabindex="osTab === tab ? 0 : -1"
+              @click="osTab = tab"
+              @keydown.right.prevent="switchOsTab(1)"
+              @keydown.left.prevent="switchOsTab(-1)"
+            >
+              {{ t(`experiencePage.openSource.${tab}`) }}
+            </button>
+          </div>
+
+          <ul
+            v-show="osTab === 'projectsLabel'"
+            id="os-panel-projectsLabel"
+            role="tabpanel"
+            aria-labelledby="os-tab-projectsLabel"
+            class="mt-2 divide-y divide-dashed divide-(--card-border)"
+          >
+            <li
+              v-for="(project, i) in projects"
+              :key="project.key"
+              class="row relative isolate flex items-start gap-4 overflow-hidden p-3"
+            >
+              <UiPixelCanvas />
+              <span class="icon-box size-10">
+                <UIcon
+                  :name="LANGUAGE_ICONS[project.language] ?? 'i-lucide-book-marked'"
+                  class="size-5 text-neutral-500"
+                  aria-hidden="true"
+                />
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <h3 class="text-[15px] text-neutral-900 dark:text-neutral-100">
+                    {{ project.name }}
+                  </h3>
+                  <span :class="cn('tag', STATUS_CLASS[project.status])">
+                    {{ t(`experiencePage.openSource.status.${project.status}`) }}
+                  </span>
+                </div>
+                <p class="mt-1 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+                  {{ t(`experiencePage.openSource.projects.${project.key}`) }}
+                </p>
+                <p class="eyebrow mt-2 leading-relaxed">
+                  {{ t('experiencePage.openSource.lot') }} {{ String(i + 1).padStart(2, '0') }} ·
+                  {{ project.language
+                  }}<template v-if="'channels' in project">
+                    · {{ project.channels.join(' · ') }}</template
+                  >
+                </p>
+              </div>
+              <div class="relative z-10 flex shrink-0 items-center">
+                <a
+                  v-if="'site' in project"
+                  :href="project.site"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="icon-btn"
+                  :aria-label="`${t('experiencePage.openSource.site')} — ${project.name}`"
+                >
+                  <UIcon
+                    name="i-heroicons-arrow-up-right-20-solid"
+                    class="size-4"
+                    aria-hidden="true"
+                  />
+                </a>
+                <a
+                  :href="project.repo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="icon-btn"
+                  :aria-label="`${t('experiencePage.openSource.repo')} — ${project.name}`"
+                >
+                  <UIcon name="i-simple-icons-github" class="size-4" aria-hidden="true" />
+                </a>
+              </div>
+            </li>
+          </ul>
+
+          <ul
+            v-for="group in [
+              { key: 'upstreamLabel', items: contributions },
+              { key: 'reportsLabel', items: reports },
+            ]"
+            v-show="osTab === group.key"
+            :id="`os-panel-${group.key}`"
+            :key="group.key"
+            role="tabpanel"
+            :aria-labelledby="`os-tab-${group.key}`"
+            class="mt-2 divide-y divide-dashed divide-(--card-border)"
+          >
             <li v-for="item in group.items" :key="item.key">
               <a
                 :href="item.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group flex items-start justify-between gap-4 py-3"
+                class="row group flex items-center gap-4 p-3"
               >
-                <span class="min-w-0">
+                <span class="icon-box size-10">
+                  <UIcon
+                    :name="UPSTREAM_ICON[item.kind]!"
+                    class="size-4 text-neutral-500"
+                    aria-hidden="true"
+                  />
+                </span>
+                <span class="min-w-0 flex-1">
                   <span
                     class="block font-mono text-xs text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100"
                   >
@@ -274,44 +391,41 @@ const STATUS_CLASS: Record<string, string> = {
                     {{ t(`experiencePage.openSource.upstream.${item.key}`) }}
                   </span>
                 </span>
-                <span
-                  :class="
-                    cn(
-                      'shrink-0 border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider',
-                      STATUS_CLASS[item.kind],
-                    )
-                  "
-                >
+                <span :class="cn('tag shrink-0', STATUS_CLASS[item.kind])">
                   {{ t(`experiencePage.openSource.status.${item.kind}`) }}
                 </span>
+                <UIcon
+                  name="i-heroicons-arrow-up-right-20-solid"
+                  class="size-4 shrink-0 text-neutral-500 group-hover:text-primary-500"
+                  aria-hidden="true"
+                />
               </a>
             </li>
           </ul>
         </div>
-      </div>
 
-      <a
-        href="https://github.com/kbrdn1"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-8 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-neutral-500 hover:text-primary-500"
-      >
-        <UIcon name="i-simple-icons-github" class="size-4" aria-hidden="true" />
-        <UiScrambleText :text="t('experiencePage.openSource.viewAll')" effect="link" />
-      </a>
+        <template #meta>github.com/kbrdn1</template>
+        <template #footer>
+          <a
+            href="https://github.com/kbrdn1"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline btn-sm"
+          >
+            <UIcon name="i-simple-icons-github" class="size-4" aria-hidden="true" />
+            <UiScrambleText :text="t('experiencePage.openSource.viewAll')" effect="link" />
+          </a>
+        </template>
+      </UiPanel>
     </section>
 
     <!-- Availability -->
-    <section
-      class="mt-20 flex flex-col gap-6 border border-neutral-200 p-8 sm:flex-row sm:items-center sm:justify-between dark:border-neutral-800"
-    >
-      <div class="flex items-center gap-5">
+    <UiPanel>
+      <div class="panel-card flex items-center gap-5 p-6 sm:p-8">
         <UiMascot mood="hoodie-cool" :size="72" />
         <div>
-          <span
-            class="inline-flex items-center gap-2 border border-green-600/40 bg-green-600/5 px-3 py-1 font-mono text-xs uppercase tracking-wider text-green-700 dark:border-green-500/30 dark:bg-green-500/5 dark:text-green-500"
-          >
-            <span class="size-1.5 rounded-full bg-green-600 dark:bg-green-500" aria-hidden="true" />
+          <span class="tag text-green-700 dark:text-green-500">
+            <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
             {{ t('hero.availableForHire') }}
           </span>
           <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
@@ -319,12 +433,13 @@ const STATUS_CLASS: Record<string, string> = {
           </p>
         </div>
       </div>
-      <a
-        href="mailto:hello@kbrdn.dev"
-        class="inline-flex items-center justify-center gap-2 bg-primary-500 px-4 py-2 font-mono text-xs uppercase tracking-wider text-white transition-colors hover:bg-primary-600"
-      >
-        hello@kbrdn.dev
-      </a>
-    </section>
+      <template #meta>{{ t('footer.location.city') }}</template>
+      <template #footer>
+        <a href="mailto:hello@kbrdn.dev" class="btn btn-primary btn-sm">
+          <UIcon name="i-heroicons-envelope" class="size-4" aria-hidden="true" />
+          hello@kbrdn.dev
+        </a>
+      </template>
+    </UiPanel>
   </div>
 </template>

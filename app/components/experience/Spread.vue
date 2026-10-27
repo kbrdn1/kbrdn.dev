@@ -28,28 +28,26 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
 </script>
 
 <template>
-  <article
-    :id="id"
-    class="grid scroll-mt-24 gap-8 border-t border-neutral-200 py-10 md:grid-cols-12 dark:border-neutral-800"
-  >
+  <article :id="id" class="panel-card grid scroll-mt-28 gap-8 p-6 sm:p-8 md:grid-cols-12">
     <header class="md:col-span-7">
-      <span class="block font-mono text-[11px] tracking-widest text-neutral-500">
+      <span class="eyebrow block">
         {{ String(index).padStart(2, '0') }}
       </span>
       <div class="mt-2 flex items-center gap-3">
+        <!-- The logos are opaque squares: they fill a rounded tile, like an avatar -->
         <NuxtImg
           v-if="logo"
           :src="logo"
           alt=""
-          width="36"
-          height="36"
-          class="size-9 shrink-0 object-contain"
+          width="44"
+          height="44"
+          class="size-11 shrink-0 rounded-xl object-cover ring-1 ring-(--card-border)"
         />
-        <h3 class="text-2xl font-semibold text-neutral-900 sm:text-3xl dark:text-neutral-100">
+        <h3 class="text-2xl tracking-tight text-neutral-900 sm:text-3xl dark:text-neutral-100">
           <UiScrambleText :text="title" />
         </h3>
       </div>
-      <p class="mt-3 font-mono text-xs uppercase tracking-wider text-primary-500">{{ meta }}</p>
+      <p class="eyebrow mt-3 text-primary-500">{{ meta }}</p>
       <p class="mt-5 max-w-xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
         {{ summary }}
       </p>
@@ -58,7 +56,7 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
         type="button"
         :aria-expanded="open"
         :aria-controls="`${id}-items`"
-        class="relative isolate mt-6 inline-flex items-center gap-2 overflow-hidden border border-neutral-300 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-neutral-700 transition-colors hover:border-primary-500/60 hover:text-primary-500 dark:border-neutral-700 dark:text-neutral-300"
+        class="btn btn-outline btn-sm relative isolate mt-6 overflow-hidden"
         @click="open = !open"
       >
         <UiPixelCanvas />
@@ -67,11 +65,9 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
       </button>
     </header>
 
-    <aside
-      class="space-y-6 border-neutral-200 md:col-span-5 md:border-l md:pl-8 dark:border-neutral-800"
-    >
+    <aside class="space-y-6 border-dashed border-(--card-border) md:col-span-5 md:border-l md:pl-8">
       <div>
-        <h4 class="font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+        <h4 class="eyebrow">
           {{ t('experiencePage.stack') }}
         </h4>
         <p
@@ -81,7 +77,7 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
         </p>
       </div>
       <div>
-        <h4 class="font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+        <h4 class="eyebrow">
           {{ itemsLabel }}
         </h4>
         <ul
@@ -89,7 +85,7 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
           class="mt-2 space-y-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
         >
           <li v-for="item in shown" :key="item" class="flex gap-2">
-            <span class="mt-2 size-1.5 shrink-0 bg-primary-500" aria-hidden="true" />
+            <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary-500" aria-hidden="true" />
             <span>{{ item }}</span>
           </li>
         </ul>

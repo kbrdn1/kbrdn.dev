@@ -10,12 +10,14 @@ const rows = computed(() => [
     id: e.id,
     years: `${e.startDate.slice(0, 4)}–${e.endDate?.slice(0, 4) ?? ''}`,
     name: e.company,
+    logo: e.logo,
     detail: t(`experiences.${e.key}.role`),
   })),
   ...STUDIES.map((s) => ({
     id: s.id,
     years: `${s.startDate.slice(0, 4)}–${s.endDate?.slice(0, 4) ?? ''}`,
     name: s.school,
+    logo: s.logo,
     detail: `${s.level} · ${t(`studies.${s.key}.degree`)}`,
   })),
 ])
@@ -34,6 +36,13 @@ const rows = computed(() => [
         >
           <UiPixelCanvas />
           <span class="eyebrow w-24 shrink-0">{{ row.years }}</span>
+          <NuxtImg
+            :src="row.logo"
+            alt=""
+            width="28"
+            height="28"
+            class="size-7 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
+          />
           <span
             class="min-w-0 truncate text-sm text-neutral-900 group-hover:text-primary-500 dark:text-neutral-100"
           >
