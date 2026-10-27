@@ -310,7 +310,7 @@ export default {
       download: 'Download the CV',
     },
     figures: {
-      months: 'Months at work',
+      years: 'Years at work',
       projects: 'Client projects',
       openSource: 'Open source tools',
       studies: 'Degrees',

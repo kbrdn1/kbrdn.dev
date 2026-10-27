@@ -81,7 +81,28 @@ onUnmounted(() => {
         </Transition>
       </p>
 
-      <p class="eyebrow mt-5">{{ handle }} · {{ t('footer.location.city') }}</p>
+      <!-- A face, small, beside the handle: the photo, the drawing on hover -->
+      <p class="eyebrow group/me mt-5 flex items-center gap-2.5">
+        <span
+          class="relative size-7 shrink-0 overflow-hidden rounded-full ring-1 ring-(--card-border)"
+        >
+          <NuxtImg
+            src="/images/me/face.webp"
+            alt=""
+            width="56"
+            height="56"
+            class="absolute inset-0 size-full object-cover transition-opacity duration-300 group-hover/me:opacity-0"
+          />
+          <NuxtImg
+            src="/images/me/avatar.webp"
+            alt=""
+            width="56"
+            height="56"
+            class="absolute inset-0 size-full bg-neutral-200 object-cover opacity-0 transition-opacity duration-300 group-hover/me:opacity-100 dark:bg-neutral-800"
+          />
+        </span>
+        {{ handle }} · {{ t('footer.location.city') }}
+      </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <UTooltip :text="t('hero.bookCallDisabled')">
