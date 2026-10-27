@@ -116,7 +116,24 @@ const content = computed(() => {
 
         <section id="about">
           <UiPanel :title="t('bio.title')">
-            <HomeBio :paragraphs="content.bio" class="panel-card p-5 sm:p-6" />
+            <div class="panel-card p-5 sm:p-6">
+              <HomeBio :paragraphs="content.bio" />
+              <!-- The career in four figures, rolling in (app/utils/career.ts) -->
+              <dl
+                class="mt-6 grid grid-cols-2 gap-5 border-t border-dashed border-(--card-border) pt-5 md:grid-cols-4 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
+              >
+                <div
+                  v-for="figure in CAREER_FIGURES"
+                  :key="figure.key"
+                  class="md:px-5 md:first:pl-0 md:last:pr-0"
+                >
+                  <dt class="eyebrow">{{ t(`experiencePage.figures.${figure.key}`) }}</dt>
+                  <dd class="mt-1 text-3xl tracking-tight text-neutral-900 dark:text-neutral-100">
+                    <UiRollingNumber :value="figure.value" />
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </UiPanel>
         </section>
 

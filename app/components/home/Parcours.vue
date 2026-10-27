@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// The home's Parcours section, a short teaser of /experience: its figures, then its timeline
-// in one line per stop (a role and, under it, its projects; then the degrees), the same
-// points on the same rail. The full story and the open source work live on /experience.
+// The home's Parcours section, a short teaser of /experience: its timeline in one line per
+// stop (a role and, under it, its projects; then the degrees), the same points on the same
+// rail. The full story and the open source work live on /experience; the figures sit in the
+// home's About.
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
@@ -56,23 +57,8 @@ const rows = computed<Row[]>(() => [
       {{ t('experiencePage.teaser') }}
     </p>
 
-    <dl
-      class="mt-5 grid grid-cols-2 gap-5 border-y border-dashed border-(--card-border) py-4 md:grid-cols-4 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
-    >
-      <div
-        v-for="figure in CAREER_FIGURES"
-        :key="figure.key"
-        class="md:px-5 md:first:pl-0 md:last:pr-0"
-      >
-        <dt class="eyebrow">{{ t(`experiencePage.figures.${figure.key}`) }}</dt>
-        <dd class="mt-1 text-3xl tracking-tight text-neutral-900 dark:text-neutral-100">
-          <UiRollingNumber :value="figure.value" />
-        </dd>
-      </div>
-    </dl>
-
     <!-- The rail runs behind the points, as on /experience -->
-    <ol class="relative mt-2">
+    <ol class="relative mt-3">
       <span
         class="absolute top-4 bottom-4 left-[7.375rem] hidden w-px -translate-x-1/2 bg-(--card-border) sm:block"
         aria-hidden="true"
