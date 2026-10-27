@@ -1,16 +1,17 @@
 <script setup lang="ts">
 // Now and then, on the footer's top edge, one of the pointer's invaders (utils/invaders) walks
-// in from the right in its own colour, marching on its two frames, and crosses to the left.
-// One or two of its favourite food hang on its way: it jumps to catch them, and hops now and
-// then for nothing. One at a time, only while the footer is in view. Decorative, never under
-// reduced motion.
+// in from the right in its own colour of the theme, marching on its two frames, and crosses to
+// the left. One or two of its favourite food hang on its way: it leaps to catch them, and hops
+// now and then for nothing. One at a time, only while the footer is in view. Decorative, never
+// under reduced motion.
 
-const CELL = 3
+const CELL = 2
 // px/s, and px walked between two frames
-const SPEED = 54
-const STRIDE = 4 * CELL
-const JUMP = { lift: 30, duration: 560 }
-const HOP = { lift: 9, duration: 300 }
+const SPEED = 96
+const STRIDE = 6 * CELL
+// A long jump for the food, a short hop for nothing
+const JUMP = { lift: 24, duration: 880 }
+const HOP = { lift: 8, duration: 420 }
 // Between two passes (ms): the first once the footer shows, then after each one
 const FIRST = [4000, 10000] as const
 const NEXT = [14000, 32000] as const
@@ -22,31 +23,34 @@ const BURST = [
   [-1, -1],
 ] as const
 
-// Its favourite food: rows, a colour per letter
+// Its favourite food, in the theme's palette (theme.css: its 600 on light, its 500 on dark):
+// rows, a fill class per letter
 type Art = { rows: string[]; colors: Record<string, string> }
+const YELLOW = 'fill-yellow-600 dark:fill-yellow-500'
+const RED = 'fill-red-600 dark:fill-red-500'
 const FOODS = {
-  pellet: { rows: ['.##.', '####', '####', '.##.'], colors: { '#': '#eab308' } },
+  pellet: { rows: ['.##.', '####', '####', '.##.'], colors: { '#': YELLOW } },
   cherry: {
     rows: ['...g.', '..gg.', '.g..g', 'rr.rr', 'rr.rr'],
-    colors: { g: '#22c55e', r: '#ef4444' },
+    colors: { g: 'fill-green-600 dark:fill-green-500', r: RED },
   },
-  star: { rows: ['..#..', '.###.', '#####', '.###.', '.#.#.'], colors: { '#': '#f59e0b' } },
+  star: { rows: ['..#..', '.###.', '#####', '.###.', '.#.#.'], colors: { '#': YELLOW } },
   mushroom: {
     rows: ['.rrr.', 'rwrwr', 'rrrrr', '.sss.', '.sss.'],
-    colors: { r: '#ef4444', w: '#fafafa', s: '#d6b38a' },
+    colors: { r: RED, w: 'fill-neutral-50', s: 'fill-primary-300' },
   },
   cookie: {
     rows: ['.###.', '#c#c#', '##c##', '#c###', '.###.'],
-    colors: { '#': '#c8925a', c: '#6b3f22' },
+    colors: { '#': 'fill-primary-400', c: 'fill-primary-800' },
   },
 } satisfies Record<string, Art>
 // One per invader, in INVADERS' order: the squid eats pellets, the crab cherries…
 const VARIANTS = [
-  { color: '#8b5cf6', food: FOODS.pellet },
-  { color: '#22c55e', food: FOODS.cherry },
-  { color: '#0ea5e9', food: FOODS.star },
-  { color: '#ec4899', food: FOODS.mushroom },
-  { color: 'var(--color-primary-500)', food: FOODS.cookie },
+  { tone: 'text-purple-600 dark:text-purple-500', food: FOODS.pellet },
+  { tone: 'text-green-600 dark:text-green-500', food: FOODS.cherry },
+  { tone: 'text-blue-600 dark:text-blue-500', food: FOODS.star },
+  { tone: 'text-cyan-600 dark:text-cyan-500', food: FOODS.mushroom },
+  { tone: 'text-primary-600 dark:text-primary-500', food: FOODS.cookie },
 ]
 
 // The blocks of a picture, one rect each
@@ -69,14 +73,14 @@ interface Food {
   eaten: boolean
 }
 const pass = ref<{
-  color: string
+  tone: string
   frames: ReturnType<typeof blocks>[]
   w: number
   h: number
   food: { blocks: ReturnType<typeof blocks>; w: number; h: number }
 }>()
 const foods = ref<Food[]>([])
-const bursts = ref<{ id: number; x: number; y: number; color: string }[]>([])
+const bursts = ref<{ id: number; x: number; y: number; tone: string }[]>([])
 const frame = ref(0)
 const at = reactive({ x: 0, y: 0 })
 
@@ -111,7 +115,7 @@ function start() {
   const [a, b] = INVADERS[i]!
   const food = variant.food
   pass.value = {
-    color: variant.color,
+    tone: variant.tone,
     frames: [blocks(a), blocks(b)],
     w: a[0]!.length * CELL,
     h: a.length * CELL,
@@ -167,7 +171,7 @@ function step(now: number) {
         id,
         x: jump.food.x,
         y: foodBottom.value + current.food.h / 2,
-        color: current.color,
+        tone: current.tone,
       })
       setTimeout(() => (bursts.value = bursts.value.filter((b) => b.id !== id)), 600)
     }
@@ -222,15 +226,15 @@ onBeforeUnmount(() => {
           :y="b.y"
           :width="CELL"
           :height="CELL"
-          :fill="b.fill"
+          :class="b.fill"
         />
       </svg>
       <svg
-        class="footer-critter-body"
+        :class="['footer-critter-body', pass.tone]"
         :width="pass.w"
         :height="pass.h"
         shape-rendering="crispEdges"
-        :style="{ translate: `${at.x}px ${-at.y}px`, color: pass.color }"
+        :style="{ translate: `${at.x}px ${-at.y}px` }"
       >
         <rect
           v-for="(b, i) in pass.frames[frame]"
@@ -246,13 +250,13 @@ onBeforeUnmount(() => {
     <div
       v-for="burst in bursts"
       :key="burst.id"
-      class="footer-critter-burst"
-      :style="{ left: `${burst.x}px`, bottom: `${burst.y}px`, color: burst.color }"
+      :class="['footer-critter-burst', burst.tone]"
+      :style="{ left: `${burst.x}px`, bottom: `${burst.y}px` }"
     >
       <span
         v-for="([dx, dy], i) in BURST"
         :key="i"
-        :style="{ '--dx': `${dx * 14}px`, '--dy': `${dy * 14}px` }"
+        :style="{ '--dx': `${dx * 12}px`, '--dy': `${dy * 12}px` }"
       />
     </div>
   </div>
@@ -266,7 +270,7 @@ onBeforeUnmount(() => {
   right: 1.25rem;
   bottom: 100%;
   left: 1.25rem;
-  height: 4.5rem;
+  height: 4rem;
   overflow: clip;
   pointer-events: none;
 }
@@ -285,7 +289,7 @@ onBeforeUnmount(() => {
 
 @keyframes footer-critter-bob {
   50% {
-    translate: 0 -3px;
+    translate: 0 -2px;
   }
 }
 
@@ -295,8 +299,8 @@ onBeforeUnmount(() => {
 
 .footer-critter-burst span {
   position: absolute;
-  width: 3px;
-  height: 3px;
+  width: 2px;
+  height: 2px;
   background: currentColor;
   animation: footer-critter-burst 0.5s steps(5, end) forwards;
 }
