@@ -64,4 +64,11 @@ assert.equal(feed[3]!.url, 'https://github.com/kbrdn1/gwm-cli/pull/703')
 assert.equal(feed[3]!.title, undefined)
 assert.equal(feed[0]!.url, 'https://github.com/kbrdn1/gwm-cli/tree/main')
 
+// A branch named after its issue (feat/#86-…) links to the branch, not to a fragment
+const [feature] = toActivities([
+  event('PushEvent', '2026-10-27T08:00:00Z', { ref: 'refs/heads/feat/#86-visual-style-blur' }),
+])
+assert.equal(feature!.url, 'https://github.com/kbrdn1/gwm-cli/tree/feat/%2386-visual-style-blur')
+assert.equal(new URL(feature!.url).hash, '')
+
 console.log('github-activity: ok')

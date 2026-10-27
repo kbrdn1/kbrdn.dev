@@ -69,7 +69,13 @@ function toActivity(event: GitHubEvent): Activity | null {
 
   switch (event.type) {
     case 'PushEvent':
-      return { ...base, type: 'push', ref: branch(p.ref), url: `${base.url}/tree/${branch(p.ref)}` }
+      // Each segment encoded: a `#` in a branch name (feat/#86-…) would start a fragment
+      return {
+        ...base,
+        type: 'push',
+        ref: branch(p.ref),
+        url: `${base.url}/tree/${branch(p.ref).split('/').map(encodeURIComponent).join('/')}`,
+      }
     case 'PullRequestEvent':
       if (!p.action || !KEPT_ACTIONS.has(p.action) || !p.number) return null
       return {
