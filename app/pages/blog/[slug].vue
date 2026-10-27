@@ -28,13 +28,24 @@ const { data: relatedPosts } = await useAsyncData(
   { watch: [locale] },
 )
 
-// Reading time estimate (~200 words/min)
-const readingTime = computed(() => {
-  if (!post.value?.body) return 0
-  const text = JSON.stringify(post.value.body)
-  const wordCount = text.split(/\s+/).length
-  return Math.max(1, Math.ceil(wordCount / 200))
-})
+const minutes = computed(() => readingTime(post.value?.body))
+const { formatDate } = useFormatDate()
+
+// The device's own share sheet (Web Share), where the browser has one: checked once mounted,
+// the server cannot know
+const canShare = ref(false)
+onMounted(() => (canShare.value = typeof navigator.share === 'function'))
+async function share() {
+  try {
+    await navigator.share({
+      title: post.value?.title,
+      text: post.value?.description,
+      url: window.location.href,
+    })
+  } catch {
+    // Dismissed, or refused: nothing to do
+  }
+}
 
 // Copy link functionality
 const linkCopied = ref(false)
@@ -64,16 +75,14 @@ if (post.value) {
     title: post.value.title,
     description: post.value.description,
   })
-  if (import.meta.server) {
-    defineOgImage('Blog', {
-      title: post.value.title,
-      description: post.value.description,
-      publishedAt: post.value.publishedAt,
-      tags: post.value.tags || [],
-      slug,
-      bannerImage: post.value.bannerImage || '/images/banners/dark.jpg',
-    })
-  }
+  useSiteOgImage('Blog', {
+    title: post.value.title,
+    description: post.value.description,
+    date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
+    tags: post.value.tags || [],
+    minutes: minutes.value,
+    bannerImage: post.value.bannerImage,
+  })
 }
 
 // Table of contents
@@ -127,7 +136,7 @@ onMounted(() => {
           }
         }
       },
-      { rootMargin: '-80px 0px -70% 0px' },
+      { rootMargin: '-112px 0px -70% 0px' },
     )
 
     headings.forEach((heading) => observer!.observe(heading))
@@ -152,7 +161,8 @@ const activeHeadingText = computed(() => {
 function scrollToHeading(id: string) {
   const el = document.getElementById(id)
   if (el) {
-    const offset = 80
+    // Under the floating navbar and its notch (they end at 90px), like the router's anchors
+    const offset = 112
     const top = el.getBoundingClientRect().top + window.scrollY - offset
     window.scrollTo({ top, behavior: 'smooth' })
   }
@@ -165,7 +175,7 @@ function scrollToHeading(id: string) {
     <div ref="articleRef" class="w-full flex flex-col items-center relative z-10">
       <!-- Article found -->
       <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto">
-        <BlogArticleHeader :post="post" :reading-time="readingTime" />
+        <BlogArticleHeader :post="post" :reading-time="minutes" />
 
         <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
           <!-- Main column -->
@@ -186,7 +196,7 @@ function scrollToHeading(id: string) {
                 @scroll-to="scrollToHeading"
               />
               <BlogSidebarCard
-                title="gwm — Git Worktree Manager"
+                title="gwm: Git Worktree Manager"
                 description="A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap."
                 image="/images/blog/gwm/banner.png"
                 badge="New"
@@ -199,30 +209,32 @@ function scrollToHeading(id: string) {
         <!-- Footer -->
         <footer class="mt-12 mb-28 lg:mb-16 space-y-8 px-6 lg:px-12">
           <!-- Separator -->
-          <div class="border-b border-neutral-200 dark:border-neutral-800" />
+          <div class="border-b border-dashed border-(--card-border)" />
 
           <!-- Share section -->
           <div>
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
-              {{ t('blog.shareArticle') }}
-            </h2>
-            <button
-              type="button"
-              :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
-              class="inline-flex items-center gap-2 border border-neutral-200 dark:border-neutral-800 px-3 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400 hover:border-primary-500 hover:text-primary-500 transition-colors"
-              @click="copyLink"
-            >
-              <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-3" />
-              {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
-            </button>
+            <h2 class="eyebrow mb-3">{{ t('blog.shareArticle') }}</h2>
+            <div class="flex flex-wrap gap-2">
+              <button v-if="canShare" type="button" class="btn btn-primary btn-sm" @click="share">
+                <UIcon name="i-lucide-share" class="size-4" aria-hidden="true" />
+                {{ t('blog.share') }}
+              </button>
+              <button
+                type="button"
+                :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
+                class="btn btn-outline btn-sm"
+                @click="copyLink"
+              >
+                <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
+                {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
+              </button>
+            </div>
           </div>
 
           <!-- More articles -->
           <div v-if="relatedPosts?.length">
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">
-              {{ t('blog.moreArticles') }}
-            </h2>
-            <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <h2 class="eyebrow mb-3">{{ t('blog.moreArticles') }}</h2>
+            <div class="panel space-y-1">
               <BlogPostRow v-for="related in relatedPosts" :key="related.path" :post="related" />
             </div>
           </div>

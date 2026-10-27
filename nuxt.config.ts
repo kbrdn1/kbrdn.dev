@@ -92,7 +92,7 @@ export default defineNuxtConfig({
     //
     // APP_VERSION porte la version du tag, suffixe de pré-release compris
     // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
-    // (`1.1.0`) — sans ça deux candidats successifs seraient indiscernables.
+    // (`1.1.0`) : sans ça deux candidats successifs seraient indiscernables.
     appVersion: process.env.APP_VERSION || pkg.version,
     gitSha: process.env.GIT_SHA || 'dev',
     // Figée au build elle aussi, via le build-arg APP_ENV que passent les deux
@@ -100,21 +100,29 @@ export default defineNuxtConfig({
     // garantit qu'une variable de run atteigne le conteneur.
     //
     // Elle reste surchargeable à l'exécution, mais seulement par la convention
-    // Nuxt `NUXT_<CLÉ>` — c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
+    // Nuxt `NUXT_<CLÉ>` : c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
     // fois le build figé.
     appEnv: process.env.APP_ENV || 'local',
+    public: {
+      // Les CV (FR, EN) sont hébergés hors du repo, qui est public : leurs adresses
+      // arrivent en build-args depuis les variables du dépôt (vars.CV_URL_FR / _EN),
+      // surchargeables à l'exécution par NUXT_PUBLIC_CV_URL_FR / _EN. Vides, les
+      // sections qui proposent le CV ne s'affichent pas.
+      cvUrlFr: process.env.CV_URL_FR || '',
+      cvUrlEn: process.env.CV_URL_EN || '',
+    },
   },
 
-  // Page transition
   app: {
     head: {
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
-    pageTransition: {
-      name: 'page',
-      mode: 'out-in',
-    },
   },
+
+  // Pages cross-fade through view transitions: snapshots keep the glass panels blurred, where
+  // a Vue page transition put the page under an opacity that turned their blur off. Skipped
+  // under reduced motion; browsers without them just swap the page.
+  experimental: { viewTransition: true },
 
   // Content configuration (collections defined in content.config.ts)
   content: {},

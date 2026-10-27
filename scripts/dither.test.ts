@@ -1,4 +1,4 @@
-// Check de app/utils/dither.ts — la matrice de Bayer et le bruit qui pilotent
+// Check de app/utils/dither.ts : la matrice de Bayer et le bruit qui pilotent
 // UiDitherCanvas. Un bruit mal normalisé change la densité du fond sur toutes les
 // pages sans casser ni le typecheck ni le build ; un bruit qui ne boucle pas
 // laisse une couture verticale qui défile.

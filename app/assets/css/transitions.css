@@ -2,6 +2,94 @@
    Animations & Transitions
    ═══════════════════════════════════════════════════ */
 
+/* Page navigation (Nuxt view transitions): a focus pull. The old page blurs and fades out
+   quickly, the new one comes into focus as it rises. The navbar and its notch are left out
+   of it, captured on their own, so they stay sharp and still; named on the glass panels
+   themselves, never on the header: an ancestor with a name is a backdrop root, and the
+   navbar's glass would blur nothing. */
+header .panel.notched {
+  view-transition-name: site-nav;
+}
+
+header .notch {
+  view-transition-name: site-notch;
+}
+
+::view-transition-old(root) {
+  animation: page-out 0.22s ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: page-in 0.55s var(--ease-out-quint) both;
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(0.985);
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(14px);
+  }
+}
+
+/* The theme switch reveals the whole screen at once, navbar included */
+html[data-theme-switch] header .panel.notched,
+html[data-theme-switch] header .notch {
+  view-transition-name: none;
+}
+
+/* Theme switch (ThemeToggle): the new mode spreads from the button in a circle over a still
+   snapshot of the old one, a halo in the new mode's colour along the edge. No cross-fade,
+   and no colour transitions: the new page is live, they would tween behind the circle. */
+html[data-theme-switch]::view-transition-old(root),
+html[data-theme-switch]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme-switch] *,
+html[data-theme-switch] *::before,
+html[data-theme-switch] *::after {
+  transition: none !important;
+}
+
+@property --halo-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Inside the new page, so the circle cuts it at the edge: only its inner glow shows */
+.theme-halo {
+  --halo: var(--color-primary-500);
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--halo-x) var(--halo-y),
+    transparent calc(var(--halo-r) - 9rem),
+    color-mix(in srgb, var(--halo) 16%, transparent) calc(var(--halo-r) - 2.5rem),
+    color-mix(in srgb, var(--halo) 60%, transparent) calc(var(--halo-r) - 2px),
+    transparent var(--halo-r)
+  );
+}
+
+.theme-halo[data-mode="light"] {
+  --halo: var(--color-yellow-500);
+}
+
+.theme-halo[data-mode="blur"] {
+  --halo: var(--color-cyan-500);
+}
+
 /* Nav entrance animation */
 @keyframes nav-fade-in {
   from {
@@ -12,83 +100,41 @@
   }
 }
 
+/* backwards, not both: a filled opacity animation keeps the header a backdrop root, and the
+   glass navbar inside it would blur nothing (blur mode) */
 .nav-entrance {
-  animation: nav-fade-in 0.6s ease both !important;
+  animation: nav-fade-in 0.6s ease backwards !important;
 }
 
-/* Page transition (fade + slide up) */
-.page-enter-active {
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease !important;
+/* Hero mascot: a slow float (stopped under reduced motion, accessibility.css) */
+.mascot-float {
+  animation: mascot-float 5s ease-in-out infinite;
 }
 
-.page-leave-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease !important;
+@keyframes mascot-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-1.5deg);
+  }
 }
 
-.page-enter-from {
-  opacity: 0 !important;
-  transform: translateY(10px) !important;
+/* Explore carousel: the footer's tick timer, one slide long. Uncovered with clip-path rather
+   than grown in width: no layout every frame, and the ticks (a mask on the bar) stay put */
+.explore-timer {
+  width: 100%;
+  animation: explore-timer 5s linear both;
 }
 
-.page-enter-to {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-.page-leave-from {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-.page-leave-to {
-  opacity: 0 !important;
-  transform: translateY(-10px) !important;
-}
-
-/* Hero rotating title */
-.hero-title-visible {
-  opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease !important;
-}
-
-.hero-title-hidden {
-  opacity: 0;
-  transform: translateY(16px);
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease !important;
-}
-
-/* Music player track transition */
-.player-visible {
-  opacity: 1;
-  transform: translateX(0);
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease !important;
-}
-
-.player-hidden-left {
-  opacity: 0;
-  transform: translateX(24px);
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease !important;
-}
-
-.player-hidden-right {
-  opacity: 0;
-  transform: translateX(-24px);
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease !important;
+@keyframes explore-timer {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
 }
 
 /* Music player equalizer */
@@ -125,91 +171,45 @@
   }
 }
 
-/* Carousel slide transitions */
-.carousel-visible {
-  opacity: 1;
-  transform: translateX(0);
-  filter: blur(0);
+/* Swapped content (a track, a slide, the hero's title): the old one leaves on one side, the
+   next comes in from the other, so the motion says which way it went. Vue <Transition>
+   names, mode out-in. */
+.swap-next-enter-active,
+.swap-prev-enter-active,
+.swap-up-enter-active {
   transition:
-    opacity 0.5s ease,
-    transform 0.5s ease,
-    filter 0.5s ease !important;
+    opacity 0.35s var(--ease-out-quint),
+    translate 0.35s var(--ease-out-quint);
 }
 
-.carousel-hidden-left {
+.swap-next-leave-active,
+.swap-prev-leave-active,
+.swap-up-leave-active {
+  transition:
+    opacity 0.15s ease-in,
+    translate 0.15s ease-in;
+}
+
+.swap-next-enter-from,
+.swap-prev-leave-to {
   opacity: 0;
-  transform: translateX(30px);
-  filter: blur(4px);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease,
-    filter 0.3s ease !important;
+  translate: 1.5rem 0;
 }
 
-.carousel-hidden-right {
+.swap-next-leave-to,
+.swap-prev-enter-from {
   opacity: 0;
-  transform: translateX(-30px);
-  filter: blur(4px);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease,
-    filter 0.3s ease !important;
+  translate: -1.5rem 0;
 }
 
-/* Blog list items stagger animation */
-.blog-item-enter {
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease !important;
+.swap-up-enter-from {
+  opacity: 0;
+  translate: 0 0.5em;
 }
 
-.blog-item-leave {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease !important;
-}
-
-.blog-item-from {
-  opacity: 0 !important;
-  transform: translateY(16px) !important;
-}
-
-.blog-item-to {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-/* Stagger list enter/leave animations (Projects, GitHub Chart, Skills) */
-.stagger-enter {
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease !important;
-}
-
-.stagger-leave {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease !important;
-}
-
-.stagger-enter-from {
-  opacity: 0 !important;
-  transform: translateY(16px) !important;
-}
-
-.stagger-enter-to {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-.stagger-leave-from {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-.stagger-leave-to {
-  opacity: 0 !important;
-  transform: translateY(16px) !important;
+.swap-up-leave-to {
+  opacity: 0;
+  translate: 0 -0.5em;
 }
 
 /* Tab switch transition (Skills) */

@@ -12,6 +12,16 @@ export interface Experience {
   endDate: string | null
   technologies: string[]
   tasksCount: number
+  /** An illustration beside the summary (public/images/projects) */
+  image?: string
+  /** Where the company lives online */
+  sites?: Site[]
+}
+
+/** A company's, a client's or a school's site, its domain as label */
+export interface Site {
+  label: string
+  url: string
 }
 
 export interface Study {
@@ -24,6 +34,7 @@ export interface Study {
   endDate: string | null
   technologies: string[]
   skillsCount: number
+  sites?: Site[]
 }
 
 export const EXPERIENCES: Experience[] = [
@@ -32,6 +43,12 @@ export const EXPERIENCES: Experience[] = [
     key: 'flippad',
     company: 'Jewely x Flippad',
     logo: '/images/logos/jewely-x-flippad.png',
+    // flippad.com and jewely.fr, cut on the bias
+    image: '/images/projects/jewely-x-flippad.webp',
+    sites: [
+      { label: 'flippad.com', url: 'https://www.flippad.com' },
+      { label: 'jewely.fr', url: 'https://www.jewely.fr' },
+    ],
     startDate: '2023-10',
     endDate: '2026-09',
     technologies: [
@@ -46,7 +63,7 @@ export const EXPERIENCES: Experience[] = [
       'Hono.js',
       'Prisma',
     ],
-    tasksCount: 5,
+    tasksCount: 3,
   },
   {
     id: 'virtual-immersion',
@@ -60,12 +77,151 @@ export const EXPERIENCES: Experience[] = [
   },
 ]
 
+// The projects of a role, shown under it on /experience (after isrod.eu's "↳" entries).
+// Only Kylian's own share of each, checked in the repositories' history: the products of
+// clients he worked on, not tooling. Text in experiencePage.work.<key>.
+export interface Project {
+  id: string
+  key: string
+  /** The Experience it belongs to */
+  parent: string
+  name: string
+  startDate: string
+  endDate: string | null
+  technologies: string[]
+  highlightsCount: number
+  /** Public site, when the product has one */
+  site?: string
+  /** Content path of a blog post about it ("To read") */
+  article?: string
+  /** An illustration: its public site, its README or its maker's site (public/images/projects) */
+  image?: string
+  /** The product's logo, square (public/images/logos) */
+  logo?: string
+  /** The clients' sites */
+  clients?: Site[]
+}
+
+// Most recent first, like the strip
+export const PROJECTS: Project[] = [
+  {
+    id: 'jewely-ecommerce',
+    key: 'jewelyEcommerce',
+    parent: 'flippad',
+    name: 'Jewely E-commerce',
+    startDate: '2026-06',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel 13',
+      'PHP 8.5',
+      'Vue 3',
+      'Inertia',
+      'TypeScript',
+      'MySQL',
+      'Redis',
+      'Docker Swarm',
+      'GitHub Actions',
+    ],
+    highlightsCount: 4,
+    image: '/images/projects/jewely-ecommerce.webp',
+    logo: '/images/logos/jewely.jpeg',
+    clients: [
+      { label: 'bijouterie-julian.com', url: 'https://www.bijouterie-julian.com' },
+      { label: 'crown-dp.com', url: 'https://www.crown-dp.com' },
+    ],
+  },
+  {
+    id: 'fiches-pedagogiques',
+    key: 'fichesPedagogiques',
+    parent: 'flippad',
+    name: 'Fiches Pédagogiques',
+    startDate: '2024-10',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel 13',
+      'PHP 8.5',
+      'MySQL',
+      'Redis',
+      'Elasticsearch',
+      'Stripe',
+      'Nuxt 4',
+      'TypeScript',
+      'Go',
+      'AWS',
+    ],
+    highlightsCount: 4,
+    site: 'https://www.fichespedagogiques.com',
+    article: '/blogs/fiches-pedagogiques',
+    image: '/images/projects/fiches-pedagogiques.webp',
+    logo: '/images/logos/fiches-pedagogiques.png',
+    clients: [{ label: 'martin-media.fr', url: 'https://martin-media.fr' }],
+  },
+  {
+    id: 'jewely-configurator',
+    key: 'jewelyConfigurator',
+    parent: 'flippad',
+    name: 'Jewely Configurator',
+    startDate: '2024-04',
+    endDate: '2024-10',
+    technologies: [
+      'Vue 3',
+      'Pinia',
+      'Panda CSS',
+      'Hono',
+      'Prisma',
+      'AWS Lambda',
+      'WooCommerce',
+      'Bun',
+    ],
+    highlightsCount: 3,
+    image: '/images/projects/jewely-configurator.webp',
+    logo: '/images/logos/jewely-configurator.png',
+    clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
+  },
+  {
+    id: 'assmat-facile',
+    key: 'assmatFacile',
+    parent: 'flippad',
+    name: 'Assmat Facile',
+    startDate: '2024-01',
+    endDate: '2026-06',
+    technologies: [
+      'Symfony 5.4',
+      'PHP 8.1',
+      'Doctrine',
+      'MySQL',
+      'Stripe',
+      'React',
+      'TypeScript',
+      'Heroku',
+    ],
+    highlightsCount: 4,
+    site: 'https://www.assmat-facile.fr',
+    image: '/images/projects/assmat-facile.webp',
+    logo: '/images/logos/assmat-facile.png',
+  },
+  {
+    id: 'jewely-erp',
+    key: 'jewelyErp',
+    parent: 'flippad',
+    name: 'Jewely ERP',
+    startDate: '2023-10',
+    endDate: '2024-01',
+    technologies: ['Laravel', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
+    highlightsCount: 3,
+    image: '/images/projects/jewely-erp.webp',
+    logo: '/images/logos/jewely.jpeg',
+    clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
+  },
+]
+
 export const STUDIES: Study[] = [
   {
     id: 'mns-master',
     key: 'mnsMaster',
     school: 'Metz Numeric School',
     logo: '/images/logos/mns.jpeg',
+    sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
     level: 'Master',
     startDate: '2023-10',
     endDate: '2025-10',
@@ -89,6 +245,7 @@ export const STUDIES: Study[] = [
     key: 'mnsLicence',
     school: 'Metz Numeric School',
     logo: '/images/logos/mns.jpeg',
+    sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
     level: 'Licence',
     startDate: '2022-10',
     endDate: '2023-09',
@@ -235,10 +392,38 @@ export const UPSTREAM = [
   },
 ] as const
 
+// A role counts its first and last month: Oct 2023 to Sep 2026 is 36 months, not 35
+function months(start: string, end: string | null): number {
+  const [y1, m1] = start.split('-').map(Number) as [number, number]
+  const [y2, m2] = (end ?? start).split('-').map(Number) as [number, number]
+  return (y2 - y1) * 12 + (m2 - m1) + 1
+}
+
+/** The figures on /experience and the home's Parcours, counted from the data: years worked
+ * (work-study included, rounded up), client projects, open source tools, degrees. Labels in
+ * experiencePage.figures.<key>. */
+export const CAREER_FIGURES = [
+  {
+    key: 'years',
+    value: Math.ceil(EXPERIENCES.reduce((sum, e) => sum + months(e.startDate, e.endDate), 0) / 12),
+  },
+  { key: 'projects', value: PROJECTS.length },
+  { key: 'openSource', value: OPEN_SOURCE_PROJECTS.length },
+  { key: 'studies', value: STUDIES.length },
+]
+
+/** "2023–2026", "2026" when it starts and ends the same year, "2024–" while it runs */
+export function yearSpan(start: string, end: string | null): string {
+  const [from, to] = [start.slice(0, 4), end?.slice(0, 4) ?? '']
+  return from === to ? from : `${from}–${to}`
+}
+
 /** "oct. 2023" / "Oct 2023" */
 export function formatMonth(date: string, locale: string): string {
+  // "2023-10" parses as midnight UTC: formatted in UTC, or a visitor west of it reads September
   return new Date(date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
   })
 }

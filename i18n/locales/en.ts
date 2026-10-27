@@ -1,7 +1,7 @@
 export default {
   // Banner
   banner: {
-    gwm: 'Check out gwm — Git Worktree Manager (CLI + TUI)',
+    gwm: 'Check out gwm: Git Worktree Manager (CLI + TUI)',
   },
 
   // Common
@@ -26,9 +26,8 @@ export default {
     viewCount: 'views',
     sponsor: 'Sponsor',
     availableForHire: 'Open to opportunities',
-    bookCall: 'Book a Call',
+    contact: 'Get in touch',
     bookCallTip: 'Schedule a 30-min meeting to discuss your project',
-    bookCallDisabled: 'Booking temporarily unavailable',
   },
 
   // Navigation
@@ -36,17 +35,32 @@ export default {
     home: 'Home',
     experience: 'Journey',
     apps: 'Apps',
+    activity: 'Activity',
     blog: 'Blog',
+    contact: 'Contact',
     skipToContent: 'Skip to content',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     switchLanguage: 'Switch language',
   },
 
+  // The navbar's notch menus
+  navMenu: {
+    home: 'The portfolio at a glance: who I am, what I write, what I use and what I build.',
+    experience: 'Three years at Jewely x Flippad and their projects, the degrees, the open source.',
+    apps: 'The terminal tools I publish, in Rust and Go.',
+    activity: 'The open source and the recent GitHub activity, read live.',
+    blog: 'The latest posts, and all the others.',
+    contact: 'A role, a project, a question: a short message is enough.',
+    gwm: 'The git worktree manager, CLI and TUI, in Rust: a single binary, no git CLI needed.',
+    gwmApps: 'On the Apps page',
+  },
+
   // Theme toggle
   themeSwitch: {
     toLight: 'Switch to light mode',
     toDark: 'Switch to dark mode',
+    toBlur: 'Switch to glass mode',
   },
 
   // Section Labels
@@ -62,24 +76,27 @@ export default {
 
   // Explore Section
   explore: {
+    title: 'Explore',
+    previous: 'Previous',
+    next: 'Next',
     labels: {
-      collab: '✦ Collaboration',
-      crafting: '⚡ Projects',
-      blog: '📝 Blog',
-      sponsor: '♥ Sponsor',
-      motto: '◈ Philosophy',
+      collab: 'Collaboration',
+      crafting: 'Projects',
+      blog: 'Blog',
+      sponsor: 'Sponsor',
+      motto: 'Philosophy',
     },
     slides: {
       collab: {
         title: "Let's build something together",
         description:
-          "I'm always open to interesting projects and collaborations. Whether it's a web app, an API, or a full-stack product — let's talk.",
+          "I'm always open to interesting projects and collaborations. Whether it's a web app, an API, or a full-stack product, let's talk.",
         cta: 'Get in touch',
       },
       crafting: {
         title: 'Currently crafting...',
         description:
-          'gwm — a Git Worktree Manager (CLI + TUI) built in Rust. Also working on this portfolio, cloud architecture experiments, and diving deeper into Rust.',
+          'gwm, a Git Worktree Manager (CLI + TUI) built in Rust. Also working on this portfolio, cloud architecture experiments, and diving deeper into Rust.',
       },
       blog: {
         title: 'Read my articles',
@@ -118,6 +135,7 @@ export default {
 
   // Bio Section
   bio: {
+    title: 'About',
     defaultParagraphs: [
       "Hey, I'm Kylian, a full stack developer who loves building clean, modern websites and apps where design, functionality, and even the smallest details matter, with a focus on making products that are both practical and visually satisfying.",
       "Tech stack isn't my concern, I'm flexible with whatever the project needs, though I prefer modern frameworks and tools. I'm always open for new opportunities to learn and grow.",
@@ -179,7 +197,6 @@ export default {
 
   // Skills Section
   skills: {
-    featured: 'STACK & SKILLS',
     title: 'Tools I work with',
     stack: {
       languages: 'Languages',
@@ -193,6 +210,8 @@ export default {
   // Projects Section
   projects: {
     title: 'Featured Projects',
+    tabs: { perso: 'Personal', pro: 'Work' },
+    next: { eyebrow: 'Up next', text: 'The next project, maybe yours' },
     viewAll: 'View all on GitHub',
     demo: 'Demo',
     stats: {
@@ -215,10 +234,8 @@ export default {
       type: 'Full-time (formerly apprenticeship)',
       tasks: [
         'Production and pre-production deployment on AWS and Heroku via GitHub Actions (API Gateway, Lambda, EC2, S3, CloudWatch, etc.)',
-        'Feature development on Jewely ERP for luxury jewelry stores (Alma installment payments and continuous improvement of various services)',
-        'Creation of a multi-brand customizable jewelry configurator for luxury jewelry stores',
-        'Development of the Back-Office for Assmat-Facile website (user management, financials via Stripe, annual report generation, data and statistics exports)',
-        'Complete from-scratch redesign of the Fiches Pédagogiques website (project lead and in charge of Backend development)',
+        'Upgrades of the products (Laravel 12 then 13, PHP 8.5) and of their dependencies',
+        'SemVer versioning, a changelog per version and release procedures, with the CI that goes with them',
       ],
     },
     virtualImmersion: {
@@ -283,16 +300,89 @@ export default {
     ctaOpenSource: 'See the open source',
     ctaBlog: 'Read the blog',
     timeline: 'Roles and education',
-    experienceLabel: 'EXPERIENCE',
-    educationLabel: 'EDUCATION',
+    experienceLabel: 'Experience',
+    educationLabel: 'Education',
     stack: 'Stack',
     missions: 'Missions',
     skills: 'Learned',
-    more: 'Show more',
-    less: 'Show less',
+    cv: {
+      title: 'CV',
+      text: 'The journey on one page, up to date, as a PDF.',
+      download: 'Download the CV',
+    },
+    figures: {
+      years: 'Years at work',
+      projects: 'Client projects',
+      openSource: 'Open source tools',
+      studies: 'Degrees',
+    },
+    highlights: 'What I did',
+    work: {
+      jewelyEcommerce: {
+        client: 'Louis Julian and Crown DP',
+        role: 'Takeover and evolution',
+        summary:
+          "Jewely's multi-shop e-commerce CMS, which runs the sites of the Louis Julian and Crown DP watch and jewellery stores. Taken over in June 2026 on an existing codebase: I set it up to ship, upgraded it and kept it moving until I left.",
+        highlights: [
+          'SemVer versioning, a changelog per version and a release procedure: from v1.0.0 to v1.11.1 in three months',
+          'Upgrade to Laravel 13 and PHP 8.5, Inertia 3 and Vite 7, move to Bun',
+          "Features and payment gateways switched on shop by shop, integration of a watch brand's stock API",
+          'SEO recovered (sitemap, redirects of the old URLs, structured data), a dashboard in strict TypeScript, a test CI',
+        ],
+      },
+      fichesPedagogiques: {
+        client: 'Martin Media',
+        role: 'Project lead and back-end developer',
+        summary:
+          'A platform of teaching resources for primary school, from nursery to the last year: a catalogue of worksheets, search, sales and subscriptions, school licences and a back office. Rebuilt from scratch: I created the API and wrote most of it, then took over a large part of the front end in 2026.',
+        highlights: [
+          'The rebuild went live with v1.0.0 in May 2026, 63 versions released with their changelog on the API',
+          'Migration of the old database, several million records in about an hour, by a tool rewritten in Go',
+          'Elasticsearch search with a French analyser, Stripe subscriptions with idempotent webhooks, school licences and administrative mandates',
+          'Two-factor authentication, Google sign-in, FFmpeg and PDF previews, upgrades to Laravel 12 then 13',
+        ],
+        site: 'fichespedagogiques.com',
+        article: 'The article on the rebuild',
+      },
+      jewelyConfigurator: {
+        client: 'Jewely',
+        role: 'Design and development',
+        summary:
+          'A multi-brand jewellery configurator shipped as a WordPress plugin: customers customise a piece, see the price change in real time and add it to the WooCommerce cart. Built nearly alone, from the plugin to the API.',
+        highlights: [
+          'Three apps in one Bun monorepo: the plugin, the back office and the API',
+          'A back office for brands, collections, models, configurations and size guides',
+          "A serverless API in Hono and Prisma on AWS Lambda, wired to WooCommerce's REST API",
+        ],
+      },
+      assmatFacile: {
+        client: 'Assmat Facile',
+        role: 'Full stack developer',
+        summary:
+          'A web app for parents who employ a childminder: contracts, payslips, payments, calculators and subscriptions. Taken over on an existing codebase: I built its back office and reworked the payments.',
+        highlights: [
+          'An admin back office: users, finance and refunds, statistics (revenue, churn, payments), exports and an annual report',
+          'Subscription by administrative mandate for childcare networks: purchase orders and invoices as PDF, emails, scheduled jobs',
+          'The checkout and the Stripe webhooks reworked, gross and net amounts',
+          'Yearly update of the regulatory figures (minimum wage, contribution rates) until 2026',
+        ],
+        site: 'assmat-facile.fr',
+      },
+      jewelyErp: {
+        client: 'Jewely',
+        role: 'Full stack developer, work-study',
+        summary:
+          "Jewely's ERP for luxury jewellers: stock, sales, repairs, customers, invoicing and reporting, deployed for each client. My first months at Flippad, on the API and the screens.",
+        highlights: [
+          'API endpoints: employees, suppliers, categories, locations, product images, repairs and orders',
+          'The orders and repairs screens',
+          'Instalment payments with Alma, payment requests by SMS and email',
+        ],
+      },
+    },
     summaries: {
       flippad:
-        'Three years at Jewely x Flippad, first as a work-study student, then full time: an ERP for luxury jewellers, a multi-brand jewellery configurator, the Assmat-Facile back office and the Fiches Pédagogiques rebuild, deployed on AWS and Heroku through GitHub Actions.',
+        'Three years at Jewely x Flippad, first as a work-study student, then full time: an ERP for luxury jewellers, a multi-brand jewellery configurator, the Assmat-Facile back office, the Fiches Pédagogiques rebuild, then the Jewely e-commerce takeover, deployed on AWS and Heroku through GitHub Actions. Each project follows.',
       virtualImmersion:
         'A work-study year at Virtual Immersion: a file management API in Symfony, mixed reality on WordPress and the map navigation of an animal park in React.',
       mnsMaster:
@@ -315,6 +405,9 @@ export default {
       site: 'Site',
       repo: 'Repository',
       viewAll: 'See everything on GitHub',
+      search: 'Search…',
+      noResults: 'No results',
+      view: 'View',
       status: {
         released: 'Released',
         inDevelopment: 'In development',
@@ -350,6 +443,103 @@ export default {
     teaserCta: 'See the journey',
   },
 
+  // /contact
+  contactPage: {
+    seoTitle: 'Contact · Kylian Bardini',
+    seoDescription:
+      'Write to Kylian Bardini, full stack developer in Nancy: a role, a project or a question.',
+    ogTitle: 'Contact',
+    ogSubtitle: 'A role, a project, a question',
+    eyebrow: 'CONTACT',
+    title: 'Write to me.',
+    intro: 'For a role, a project or a precise question. A short message is enough.',
+    formTitle: 'Share the context',
+    formSubtitle: 'A short message is enough',
+    company: 'Company or product',
+    companyPlaceholder: 'Optional',
+    topic: 'Topic',
+    topics: {
+      role: 'A role',
+      project: 'A project',
+      openSource: 'Open source',
+      other: 'Something else',
+    },
+    details: 'Details',
+    location: 'Location',
+    availability: 'Availability',
+    email: 'Email',
+    socials: 'Elsewhere',
+    cv: 'CV',
+    cvDownload: 'Download (PDF)',
+    write: 'Write a message',
+  },
+
+  // /activity
+  activityPage: {
+    now: {
+      title: 'Right now',
+      learning: 'Learning',
+      gameDev: 'Game development',
+      reading: 'Reading',
+      symposium: 'The Symposium',
+      plato: 'Plato',
+      openTo: 'Open to',
+      role: 'A role',
+      project: 'A project',
+      write: 'Write a message',
+    },
+    seoTitle: 'Activity · Kylian Bardini',
+    seoDescription:
+      "Kylian Bardini's open source work and recent GitHub activity, read live from his public repositories.",
+    ogTitle: 'Activity',
+    ogSubtitle: 'Open source and GitHub activity',
+    eyebrow: 'ACTIVITY',
+    title: "What's moving right now.",
+    intro:
+      'The tools I maintain, what I send back to the projects I use, and the recent activity of my public GitHub repositories, read live.',
+    lastActivity: 'last public activity {ago}',
+    checked: 'GitHub checked at {time}',
+    feedTitle: 'Recent GitHub activity',
+    feedCount: '{count} entries',
+    feedEmpty: 'Nothing public on GitHub lately.',
+    more: 'More on GitHub',
+    showMore: 'Show more',
+    today: 'Today',
+    yesterday: 'Yesterday',
+    types: {
+      push: 'push',
+      pr: 'pr',
+      issue: 'issue',
+      comment: 'comment',
+      release: 'release',
+      create: 'create',
+      star: 'star',
+      fork: 'fork',
+    },
+    events: {
+      push: 'pushed to {ref}',
+      pushes: '{count} pushes to {ref}',
+      pr: {
+        opened: 'opened PR #{number}',
+        merged: 'merged PR #{number}',
+        closed: 'closed PR #{number}',
+        reopened: 'reopened PR #{number}',
+      },
+      issue: {
+        opened: 'opened issue #{number}',
+        closed: 'closed issue #{number}',
+        reopened: 'reopened issue #{number}',
+      },
+      comment: 'commented on #{number}',
+      comments: '{count} comments on #{number}',
+      release: 'released {ref}',
+      repository: 'created the repository',
+      tag: 'created tag {ref}',
+      star: 'starred',
+      fork: 'forked',
+    },
+  },
+
   // /apps
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
@@ -365,6 +555,8 @@ export default {
     repo: 'Repository',
     releases: 'Releases',
     install: 'Install',
+    demo: 'Demo',
+    preview: 'Preview',
     status: {
       released: 'Available',
       inDevelopment: 'In development',
@@ -415,7 +607,14 @@ export default {
   },
 
   // Blog Section
+  lightbox: {
+    open: 'Enlarge the illustration: {name}',
+    close: 'Close',
+  },
+
   blog: {
+    toc: 'Contents',
+    read: 'Read',
     title: 'Articles & Thoughts',
     description: 'Writing about web development, architecture, and tools I use.',
     allTags: 'All',
@@ -428,16 +627,27 @@ export default {
     backToArticles: 'Back to articles',
     readingTime: 'min read',
     shareArticle: 'Share this article',
+    share: 'Share',
     copyLink: 'Copy link',
     linkCopied: 'Link copied!',
     moreArticles: 'More articles',
     notFound: 'Article not found',
+    nextPost: {
+      eyebrow: 'Up next',
+      text: "The next post's spot, still being written.",
+    },
   },
 
   // Error Page
   error: {
-    title: 'Page not found',
-    subtitle: 'Looks like this page got lost in the pixels',
+    eyebrow: 'ERROR {code}',
+    title: 'Page not found.',
+    subtitle: 'Looks like this page got lost in the pixels.',
+    titleOther: 'Something broke.',
+    subtitleOther: 'Something went wrong on my side. Try again in a moment.',
+    playTitle: 'The pixels',
+    playSubtitle: 'Drag them around, put them back',
+    inPlace: 'in place',
     backHome: 'Back to home',
     reset: 'Reset pixels',
   },
@@ -481,5 +691,16 @@ export default {
       title: 'Email',
     },
     copyright: 'All rights reserved.',
+  },
+  // The OG images' facts (components/OgImage)
+  og: {
+    status: 'Status',
+    location: 'Location',
+    site: 'Site',
+    github: 'GitHub',
+    published: 'Published',
+    reading: 'Reading',
+    tags: 'Tags',
+    author: 'Author',
   },
 }

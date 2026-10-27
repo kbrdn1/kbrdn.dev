@@ -93,11 +93,13 @@ jobs:
           # Mêmes build-args que release.yml : sans eux /api/health annoncerait
           # env=local sur preprod en permanence, puisque le déploiement passe
           # par un wrapper VPS qui ne transmet pas forcément NUXT_APP_ENV.
-          # Pas d'APP_VERSION ici — une image de branche n'a pas de version de
+          # Pas d'APP_VERSION ici : une image de branche n'a pas de version de
           # release, le fallback package.json est le bon.
           build-args: |
             GIT_SHA=${{ github.sha }}
             APP_ENV=${{ needs.resolve.outputs.env }}
+            CV_URL_FR=${{ vars.CV_URL_FR }}
+            CV_URL_EN=${{ vars.CV_URL_EN }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:${{ needs.resolve.outputs.image_tag }}
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:sha-${{ github.sha }}
@@ -139,7 +141,7 @@ jobs:
           ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
           # ssh-keyscan expire au bout de 5 s par defaut, et son echec en
           # derniere commande d'un step lance sous `bash -e` faisait tomber tout
-          # le deploiement — avec `2>/dev/null` pour masquer la raison. Vecu sur
+          # le deploiement, avec `2>/dev/null` pour masquer la raison. Vecu sur
           # le premier deploiement prod de v1.0.0. Timeout explicite, retry, et
           # verification qu'on a vraiment une cle avant de continuer.
           for i in 1 2 3 4 5; do

@@ -26,11 +26,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
+  <!-- Slides up from under the viewport's edge, without a fade: opacity on this wrapper
+       would turn the player's glass off for the whole transition -->
   <Transition
-    enter-from-class="opacity-0 translate-y-4"
-    leave-to-class="opacity-0 translate-y-4"
-    enter-active-class="transition duration-300 ease-out motion-reduce:transition-none"
-    leave-active-class="transition duration-200 ease-in motion-reduce:transition-none"
+    enter-from-class="translate-y-[calc(100%+5rem)]"
+    leave-to-class="translate-y-[calc(100%+5rem)]"
+    enter-active-class="transition-transform duration-500 ease-out-quint motion-reduce:transition-none"
+    leave-active-class="transition-transform duration-300 ease-in motion-reduce:transition-none"
   >
     <!-- Above the toggle until xl, where the centred column no longer reaches it. -->
     <section
@@ -46,7 +48,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <button
     ref="toggleButton"
     type="button"
-    class="fixed bottom-4 right-4 z-50 flex size-11 items-center justify-center border border-neutral-200 dark:border-neutral-800 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md text-neutral-600 dark:text-neutral-300 transition-colors hover:text-primary-500 hover:border-primary-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50"
+    class="fixed bottom-4 right-4 z-50 flex size-11 items-center justify-center rounded-full border border-(--panel-border) bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md text-neutral-600 dark:text-neutral-300 transition-colors hover:text-primary-500 hover:border-primary-500/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50"
     :aria-label="open ? t('music.closePlayer') : t('music.openPlayer')"
     :aria-expanded="open"
     aria-controls="music-dock"

@@ -13,13 +13,13 @@ const items = computed(() => [
   { id: 'latest-posts', text: t('sections.blog'), level: 2 },
   { id: 'skills', text: t('sections.skills'), level: 2 },
   { id: 'projects', text: t('sections.projects'), level: 2 },
-  { id: 'activity', text: t('sections.activity'), level: 3 },
+  { id: 'activity', text: t('sections.activity'), level: 2 },
   { id: 'experience', text: t('sections.parcours'), level: 2 },
 ])
 
 const active = ref('')
 const progress = ref(0)
-const HEADER_OFFSET = 72 // fixed header (56px) and some air
+const HEADER_OFFSET = 100 // floating header and its notch (end at 90px), and some air
 
 function scrollToSection(id: string) {
   const el = document.getElementById(id)

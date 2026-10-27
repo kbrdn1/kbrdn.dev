@@ -5,5 +5,7 @@
     </NuxtLayout>
     <!-- Outside the layout so the music survives page and layout changes. -->
     <LayoutMusicDock />
+    <UiPixelCursor />
+    <UiLightbox />
   </UApp>
 </template>

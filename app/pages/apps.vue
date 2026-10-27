@@ -14,14 +14,11 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-if (import.meta.server) {
-  defineOgImage('Default', {
-    title: t('appsPage.ogTitle'),
-    subtitle: t('appsPage.ogSubtitle'),
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
-  })
-}
+useSiteOgImage('Default', {
+  title: t('appsPage.ogTitle'),
+  subtitle: t('appsPage.ogSubtitle'),
+  scene: 'terminal',
+})
 
 const RAW = 'https://raw.githubusercontent.com/kbrdn1'
 const APPS = [
@@ -98,161 +95,196 @@ onMounted(() => {
 })
 onUnmounted(() => videoObserver?.disconnect())
 
+// Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
-  released:
-    'text-green-700 dark:text-green-500 border-green-600/40 dark:border-green-500/30 bg-green-600/5 dark:bg-green-500/5',
-  inDevelopment: 'text-primary-500 border-primary-500/40 bg-primary-500/5',
-  archived: 'text-neutral-500 border-neutral-300 dark:border-neutral-700 bg-neutral-500/5',
+  released: 'text-green-700 dark:text-green-500',
+  inDevelopment: 'text-primary-500',
+  archived: 'text-neutral-500',
 }
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-5xl px-6 pb-20">
-    <section class="pt-14 pb-10">
-      <p class="font-mono text-[11px] uppercase tracking-widest text-primary-500">
-        {{ t('appsPage.eyebrow') }}
-      </p>
-      <h1
-        class="mt-4 max-w-3xl text-4xl font-bold leading-tight text-neutral-900 sm:text-5xl dark:text-neutral-100"
-        :aria-label="t('appsPage.title')"
-      >
-        <UiScrambleText :text="t('appsPage.title')" />
-      </h1>
-      <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
-        {{ t('appsPage.intro') }}
-      </p>
+  <div class="mx-auto w-full max-w-5xl space-y-8 px-4 pt-6 pb-20 sm:px-6">
+    <!-- Intro, open on the page like the home's hero -->
+    <!-- The scene beside it, under it on a phone -->
+    <section
+      class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="min-w-0 flex-1">
+        <p class="eyebrow">{{ t('appsPage.eyebrow') }}</p>
+        <h1
+          class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
+          :aria-label="t('appsPage.title')"
+        >
+          <UiScrambleText :text="t('appsPage.title')" />
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {{ t('appsPage.intro') }}
+        </p>
+      </div>
+      <UiPixelScene
+        scene="terminal"
+        class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64"
+      />
     </section>
 
-    <div class="space-y-6">
-      <article
-        v-for="app in APPS"
-        :id="app.key"
-        :key="app.key"
-        class="relative isolate grid scroll-mt-24 gap-8 overflow-hidden border border-neutral-200 bg-white/50 p-6 transition-colors hover:border-primary-500/50 sm:p-8 md:grid-cols-12 dark:border-neutral-800 dark:bg-neutral-950/50"
-        :class="{ 'opacity-80': app.status === 'archived' }"
-      >
+    <!-- One panel per app, after disarto's deployment card: name and status in the header,
+         the app in a card, its install commands and its picture in their own, the links in
+         the footer -->
+    <UiPanel
+      v-for="app in APPS"
+      :id="app.key"
+      :key="app.key"
+      :title="app.name"
+      :subtitle="app.language"
+      class="scroll-mt-28"
+      :class="{ 'opacity-80': app.status === 'archived' }"
+    >
+      <template #actions>
+        <span
+          v-if="releases?.[app.repo]?.version"
+          class="tag text-neutral-500 dark:text-neutral-400"
+        >
+          {{ releases[app.repo]!.version }}
+        </span>
+        <span :class="cn('tag mr-2', STATUS_CLASS[app.status])">
+          <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
+          {{ t(`appsPage.status.${app.status}`) }}
+        </span>
+      </template>
+
+      <!-- The app in one card, after disarto's deployment card: the app and its features,
+           then its install commands and its picture, each after a dashed rule -->
+      <div class="panel-card relative isolate overflow-hidden p-6 sm:p-8">
         <UiPixelCanvas />
-
-        <!-- min-w-0 on every grid child: a grid item defaults to min-width: auto, so the
-             longest install line would widen its column instead of scrolling in its block. -->
-        <header class="min-w-0 md:col-span-5">
-          <div class="flex items-center gap-3">
-            <template v-if="'logo' in app">
-              <img
-                :src="app.logo.light"
-                alt=""
-                width="40"
-                height="40"
-                class="size-10 dark:hidden"
-              />
-              <img
-                :src="app.logo.dark"
-                alt=""
-                width="40"
-                height="40"
-                class="hidden size-10 dark:block"
-              />
-            </template>
-            <UIcon v-else :name="app.icon" class="size-10 text-neutral-500" aria-hidden="true" />
-            <h2 class="font-mono text-3xl font-semibold text-neutral-900 dark:text-neutral-100">
-              <UiScrambleText :text="app.name" />
-            </h2>
+        <div class="grid gap-8 md:grid-cols-12">
+          <!-- min-w-0 on every grid child: a grid item defaults to min-width: auto -->
+          <div class="min-w-0 md:col-span-5">
+            <span class="icon-box size-12">
+              <template v-if="'logo' in app">
+                <img
+                  :src="app.logo.light"
+                  alt=""
+                  width="28"
+                  height="28"
+                  class="size-7 dark:hidden"
+                />
+                <img
+                  :src="app.logo.dark"
+                  alt=""
+                  width="28"
+                  height="28"
+                  class="hidden size-7 dark:block"
+                />
+              </template>
+              <UIcon v-else :name="app.icon" class="size-6 text-neutral-500" aria-hidden="true" />
+            </span>
+            <p class="mt-5 text-lg text-neutral-900 dark:text-neutral-100">
+              {{ t(`appsPage.apps.${app.key}.tagline`) }}
+            </p>
+            <p class="mt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              {{ t(`appsPage.apps.${app.key}.description`) }}
+            </p>
           </div>
-          <p class="mt-4 text-sm text-neutral-600 dark:text-neutral-400">
-            {{ t(`appsPage.apps.${app.key}.tagline`) }}
-          </p>
-          <div
-            class="mt-4 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-wider"
+          <ul
+            class="min-w-0 divide-y divide-dashed divide-neutral-200 self-start md:col-span-7 dark:divide-neutral-800"
           >
-            <span :class="cn('border px-2 py-0.5', STATUS_CLASS[app.status])">
-              {{ t(`appsPage.status.${app.status}`) }}
-            </span>
-            <span
-              v-if="releases?.[app.repo]?.version"
-              class="border border-neutral-300 px-2 py-0.5 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400"
+            <li
+              v-for="i in app.features"
+              :key="i"
+              class="flex gap-3 py-3 text-sm leading-relaxed text-neutral-700 first:pt-0 last:pb-0 dark:text-neutral-300"
             >
-              {{ releases[app.repo]!.version }}
-            </span>
-            <span class="text-neutral-500">{{ app.language }} · {{ app.license }}</span>
-          </div>
-          <div class="mt-6 flex flex-wrap gap-4 font-mono text-xs uppercase tracking-wider">
-            <a
-              v-if="'site' in app"
-              :href="app.site"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="relative z-10 text-primary-500 hover:text-primary-400"
-            >
-              <UiScrambleText :text="t('appsPage.site')" effect="link" /> ↗
-            </a>
-            <a
-              :href="`https://github.com/kbrdn1/${app.repo}`"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="relative z-10 text-neutral-500 hover:text-primary-500"
-            >
-              <UiScrambleText :text="t('appsPage.repo')" effect="link" /> ↗
-            </a>
-            <a
-              v-if="app.status !== 'inDevelopment'"
-              :href="`https://github.com/kbrdn1/${app.repo}/releases`"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="relative z-10 text-neutral-500 hover:text-primary-500"
-            >
-              <UiScrambleText :text="t('appsPage.releases')" effect="link" /> ↗
-            </a>
-          </div>
-        </header>
-
-        <div class="min-w-0 space-y-6 md:col-span-7">
-          <p class="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-            {{ t(`appsPage.apps.${app.key}.description`) }}
-          </p>
-          <ul class="space-y-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-            <li v-for="i in app.features" :key="i" class="flex gap-2">
-              <span class="mt-2 size-1.5 shrink-0 bg-primary-500" aria-hidden="true" />
+              <UIcon
+                name="i-heroicons-check-20-solid"
+                class="mt-0.5 size-4 shrink-0 text-green-600 dark:text-green-500"
+                aria-hidden="true"
+              />
               <span>{{ t(`appsPage.apps.${app.key}.features.${i - 1}`) }}</span>
             </li>
           </ul>
-          <div v-if="'install' in app">
-            <h3 class="font-mono text-[11px] uppercase tracking-widest text-neutral-500">
-              {{ t('appsPage.install') }}
-            </h3>
-            <pre
-              class="relative z-10 mt-2 overflow-x-auto border border-neutral-200 bg-neutral-50 p-4 font-mono text-xs leading-relaxed text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
-            ><code><span v-for="line in app.install" :key="line" class="block"><span class="select-none text-primary-500">$ </span>{{ line }}</span></code></pre>
-          </div>
         </div>
 
+        <div
+          v-if="'install' in app"
+          class="mt-8 min-w-0 border-t border-dashed border-(--card-border) pt-6"
+        >
+          <h3 class="eyebrow">{{ t('appsPage.install') }}</h3>
+          <pre
+            class="relative z-10 mt-3 overflow-x-auto rounded-xl border border-(--card-border) bg-neutral-50 p-4 font-mono text-xs leading-relaxed text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300"
+          ><code><span v-for="line in app.install" :key="line" class="block"><span class="select-none text-primary-500">$ </span>{{ line }}</span></code></pre>
+        </div>
+
+        <!-- The picture, labelled, inset with its own corners -->
         <figure
           v-if="'image' in app"
-          class="relative z-10 min-w-0 overflow-hidden border border-neutral-200 bg-neutral-950 md:col-span-12 dark:border-neutral-800"
+          class="relative z-10 mt-8 min-w-0 border-t border-dashed border-(--card-border) pt-6"
         >
-          <video
-            v-if="'video' in app"
-            data-demo
-            :poster="app.image"
-            :controls="reducedMotion"
-            :aria-label="t(`appsPage.apps.${app.key}.illustration`)"
-            muted
-            loop
-            playsinline
-            preload="none"
-            class="block w-full"
-          >
-            <source :src="app.video" type="video/mp4" />
-          </video>
-          <NuxtImg
-            v-else
-            :src="app.image"
-            :alt="t(`appsPage.apps.${app.key}.illustration`)"
-            width="1600"
-            loading="lazy"
-            class="block w-full"
-          />
+          <figcaption class="eyebrow flex items-center gap-2">
+            <UIcon
+              :name="'video' in app ? 'i-heroicons-play-20-solid' : 'i-heroicons-photo-20-solid'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            {{ t('video' in app ? 'appsPage.demo' : 'appsPage.preview') }}
+          </figcaption>
+          <div class="mt-3 overflow-hidden rounded-xl border border-(--card-border) bg-neutral-950">
+            <video
+              v-if="'video' in app"
+              data-demo
+              :poster="app.image"
+              :controls="reducedMotion"
+              :aria-label="t(`appsPage.apps.${app.key}.illustration`)"
+              muted
+              loop
+              playsinline
+              preload="none"
+              class="block w-full"
+            >
+              <source :src="app.video" type="video/mp4" />
+            </video>
+            <!-- A screenshot through the pixel layer, crisp block by block while hovered -->
+            <UiPixelImage
+              v-else
+              :src="app.image"
+              :alt="t(`appsPage.apps.${app.key}.illustration`)"
+              class="aspect-video w-full"
+              reveal
+            />
+          </div>
         </figure>
-      </article>
-    </div>
+      </div>
+
+      <template #meta>{{ app.language }} · {{ app.license }}</template>
+      <template #footer>
+        <a
+          v-if="app.status !== 'inDevelopment'"
+          :href="`https://github.com/kbrdn1/${app.repo}/releases`"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-sm"
+        >
+          <UiScrambleText :text="t('appsPage.releases')" effect="link" />
+        </a>
+        <a
+          :href="`https://github.com/kbrdn1/${app.repo}`"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-outline btn-sm"
+        >
+          <UIcon name="i-simple-icons-github" class="size-4" aria-hidden="true" />
+          <UiScrambleText :text="t('appsPage.repo')" effect="link" />
+        </a>
+        <a
+          v-if="'site' in app"
+          :href="app.site"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary btn-sm"
+        >
+          <UiScrambleText :text="t('appsPage.site')" effect="link" />
+          <UIcon name="i-heroicons-arrow-up-right-20-solid" class="size-4" aria-hidden="true" />
+        </a>
+      </template>
+    </UiPanel>
   </div>
 </template>

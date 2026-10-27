@@ -6,7 +6,7 @@
 #
 #   restrict,command="/srv/github-deploy.sh" ssh-ed25519 AAAA...
 #
-# Il n'était versionné nulle part — la pièce centrale du pipeline de
+# Il n'était versionné nulle part : la pièce centrale du pipeline de
 # déploiement était donc invisible depuis le repo et non reproductible. Cette
 # copie corrige ça ; elle n'est pas déployée automatiquement, cf. la section
 # « Synchroniser le VPS » de docs/RELEASE.md.
@@ -28,7 +28,7 @@ set -euo pipefail
 ORIG="${SSH_ORIGINAL_COMMAND:-}"
 
 # Allowlist des variables acceptées. Sans elle, `export "$tok"` prend
-# n'importe quoi, `PATH` compris — et deploy.sh résout `docker`, `nginx` et
+# n'importe quoi, `PATH` compris, et deploy.sh résout `docker`, `nginx` et
 # `systemctl` par le PATH, en root : un `PATH=/tmp/x deploy` exécuterait des
 # binaires choisis par l'appelant. L'escalade suppose déjà la clé privée SSH,
 # donc quelqu'un qui peut de toute façon déployer l'image de son choix, mais

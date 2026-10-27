@@ -1,9 +1,9 @@
-# gwm — worktree config for kbrdn.dev-v2 (Nuxt)
+# gwm: worktree config for kbrdn.dev-v2 (Nuxt)
 #
 # base mirrors Zed's default git.worktree_directory = "../worktrees": Zed
 # resolves it relative to the repo then appends the repo dir name
 # (zed-industries/zed#53673), so worktrees land in <repo_parent>/worktrees/
-# <repo>/… — gwm and Zed's native worktree picker share the same location.
+# <repo>/…; gwm and Zed's native worktree picker share the same location.
 # Needs gwm ≥ the {repo_parent} placeholder (gwm-cli#176).
 # Docs: https://github.com/kbrdn1/gwm-cli
 
@@ -18,7 +18,7 @@ branch_pattern = "{type}/#{issue}-{desc}"
 [[bootstrap.no_symlink]]
 path = "node_modules"
 
-# ── exec / clean profiles for the TUI overlays (x / X) — issue #325 ──────────
+# ── exec / clean profiles for the TUI overlays (x / X), issue #325 ──────────
 [exec.profiles.dev]
 command = ["npm", "run", "dev"]
 [exec.profiles.build]

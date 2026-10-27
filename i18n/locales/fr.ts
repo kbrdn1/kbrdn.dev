@@ -1,7 +1,7 @@
 export default {
   // Banner
   banner: {
-    gwm: 'Découvrez gwm — gestionnaire de worktrees Git (CLI + TUI)',
+    gwm: 'Découvrez gwm : gestionnaire de worktrees Git (CLI + TUI)',
   },
 
   // Common
@@ -26,9 +26,8 @@ export default {
     viewCount: 'vues',
     sponsor: 'Sponsoriser',
     availableForHire: 'Ouvert aux opportunités',
-    bookCall: 'Prendre rendez-vous',
+    contact: 'Prendre contact',
     bookCallTip: 'Planifier un échange de 30 min pour discuter de votre projet',
-    bookCallDisabled: 'Prise de rendez-vous temporairement indisponible',
   },
 
   // Navigation
@@ -36,17 +35,32 @@ export default {
     home: 'Accueil',
     experience: 'Parcours',
     apps: 'Apps',
+    activity: 'Activité',
     blog: 'Blog',
+    contact: 'Contact',
     skipToContent: 'Aller au contenu',
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
     switchLanguage: 'Changer de langue',
   },
 
+  // The navbar's notch menus
+  navMenu: {
+    home: "Le portfolio en bref : qui je suis, ce que j'écris, ce que j'utilise et ce que je construis.",
+    experience: "Trois ans chez Jewely x Flippad et leurs projets, les formations, l'open source.",
+    apps: 'Les outils pour le terminal que je publie, en Rust et en Go.',
+    activity: "L'open source et l'activité GitHub récente, lue en direct.",
+    blog: 'Les derniers articles, et tous les autres.',
+    contact: 'Un poste, un projet, une question : un message suffit.',
+    gwm: 'Le gestionnaire de worktrees git, CLI et TUI, en Rust : un seul binaire, sans la CLI git.',
+    gwmApps: 'Sur la page Apps',
+  },
+
   // Theme toggle
   themeSwitch: {
     toLight: 'Passer en mode clair',
     toDark: 'Passer en mode sombre',
+    toBlur: 'Passer en mode verre',
   },
 
   // Section Labels
@@ -55,31 +69,34 @@ export default {
     projects: 'PROJETS',
     skills: 'STACK & COMPÉTENCES',
     parcours: 'PARCOURS',
-    activity: 'ACTIVITE',
+    activity: 'ACTIVITÉ',
     blog: 'BLOG',
     sponsor: 'Sponsoriser sur GitHub',
   },
 
   // Explore Section
   explore: {
+    title: 'À découvrir',
+    previous: 'Précédent',
+    next: 'Suivant',
     labels: {
-      collab: '✦ Collaboration',
-      crafting: '⚡ Projets',
-      blog: '📝 Blog',
-      sponsor: '♥ Sponsor',
-      motto: '◈ Philosophie',
+      collab: 'Collaboration',
+      crafting: 'Projets',
+      blog: 'Blog',
+      sponsor: 'Sponsor',
+      motto: 'Philosophie',
     },
     slides: {
       collab: {
         title: 'Construisons quelque chose ensemble',
         description:
-          'Je suis toujours ouvert aux projets intéressants et aux collaborations. Que ce soit une app web, une API, ou un produit full-stack — parlons-en.',
+          'Je suis toujours ouvert aux projets intéressants et aux collaborations. Que ce soit une app web, une API, ou un produit full-stack, parlons-en.',
         cta: 'Me contacter',
       },
       crafting: {
         title: 'En cours de création...',
         description:
-          "gwm — un gestionnaire de worktrees Git (CLI + TUI) construit en Rust. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
+          "gwm, un gestionnaire de worktrees Git (CLI + TUI) construit en Rust. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
       },
       blog: {
         title: 'Lisez mes articles',
@@ -118,6 +135,7 @@ export default {
 
   // Bio Section
   bio: {
+    title: 'À propos',
     defaultParagraphs: [
       'Salut, je suis Kylian, un développeur full stack qui aime créer des sites web et applications modernes et soignés où le design, la fonctionnalité et même les plus petits détails comptent, avec un focus sur des produits à la fois pratiques et visuellement satisfaisants.',
       "La stack technique n'est pas ma préoccupation, je m'adapte à ce dont le projet a besoin, bien que je préfère les frameworks et outils modernes. Je suis toujours ouvert à de nouvelles opportunités pour apprendre et évoluer.",
@@ -179,7 +197,6 @@ export default {
 
   // Skills Section
   skills: {
-    featured: 'STACK & COMPÉTENCES',
     title: 'Outils avec lesquels je travaille',
     stack: {
       languages: 'Langages',
@@ -193,6 +210,8 @@ export default {
   // Projects Section
   projects: {
     title: 'Projets en vedette',
+    tabs: { perso: 'Perso', pro: 'Pro' },
+    next: { eyebrow: 'À suivre', text: 'Le prochain projet, peut-être le vôtre' },
     viewAll: 'Voir tout sur GitHub',
     demo: 'Démo',
     stats: {
@@ -215,10 +234,8 @@ export default {
       type: 'CDI (anciennement alternance)',
       tasks: [
         'Déploiement production et pré-production sur AWS et Heroku via GitHub Actions (API Gateway, Lambda, EC2, S3, CloudWatch, etc.)',
-        'Développement de fonctionnalités sur Jewely ERP destiné aux bijouteries de luxe (paiements en plusieurs fois Alma et amélioration continue de différents services)',
-        "Création d'un configurateur de bijoux multi-marques et personnalisable destiné aux bijouteries de luxe",
-        'Développement de la partie Back-Office du site Assmat-Facile (gestions utilisateurs, financières via Stripe, génération de rapport annuel, exports des données et de statistiques)',
-        'Refonte complète from scratch du site Fiches Pédagogiques (chef de projet et en charge du développement de la partie Backend)',
+        'Montées de version des produits (Laravel 12 puis 13, PHP 8.5) et de leurs dépendances',
+        'Versioning SemVer, changelogs par version et procédures de release, avec la CI qui va avec',
       ],
     },
     virtualImmersion: {
@@ -283,16 +300,89 @@ export default {
     ctaOpenSource: "Voir l'open source",
     ctaBlog: 'Lire le blog',
     timeline: 'Postes et formations',
-    experienceLabel: 'EXPÉRIENCE',
-    educationLabel: 'FORMATION',
+    experienceLabel: 'Expérience',
+    educationLabel: 'Formation',
     stack: 'Stack',
     missions: 'Missions',
     skills: 'Acquis',
-    more: 'En savoir plus',
-    less: 'Réduire',
+    cv: {
+      title: 'CV',
+      text: 'Le parcours sur une page, à jour, en PDF.',
+      download: 'Télécharger le CV',
+    },
+    figures: {
+      years: 'Années en entreprise',
+      projects: 'Projets clients',
+      openSource: 'Outils open source',
+      studies: 'Formations',
+    },
+    highlights: 'Réalisations',
+    work: {
+      jewelyEcommerce: {
+        client: 'Louis Julian et Crown DP',
+        role: 'Reprise et évolutions',
+        summary:
+          "Le CMS e-commerce multi-boutiques de Jewely, qui fait tourner les sites des bijouteries-horlogeries Louis Julian et Crown DP. Repris en juin 2026 sur une base existante : je l'ai outillé pour livrer, mis à jour et fait évoluer jusqu'à mon départ.",
+        highlights: [
+          'Versioning SemVer, un changelog par version et une procédure de release : de la v1.0.0 à la v1.11.1 en trois mois',
+          'Montée vers Laravel 13 et PHP 8.5, Inertia 3 et Vite 7, passage à Bun',
+          "Fonctionnalités et moyens de paiement activables boutique par boutique, intégration de l'API de stock d'une marque horlogère",
+          'Référencement récupéré (sitemap, redirections des anciennes URLs, données structurées), tableau de bord en TypeScript strict, CI de tests',
+        ],
+      },
+      fichesPedagogiques: {
+        client: 'Martin Media',
+        role: 'Chef de projet et développeur back-end',
+        summary:
+          "Une plateforme de ressources pédagogiques pour l'école primaire, de la petite section au CM2 : catalogue de fiches, recherche, vente et abonnements, licences d'établissement et back-office. Refaite de zéro : j'ai créé l'API et en ai écrit l'essentiel, puis repris une large part du front en 2026.",
+        highlights: [
+          "Refonte mise en production avec la v1.0.0 en mai 2026, 63 versions publiées avec leur changelog sur l'API",
+          "Migration de l'ancienne base, plusieurs millions d'enregistrements en environ une heure, par un outil réécrit en Go",
+          "Recherche Elasticsearch avec analyseur français, abonnements Stripe aux webhooks idempotents, licences d'établissement et mandats administratifs",
+          'Double authentification, connexion Google, aperçus FFmpeg et PDF, montées vers Laravel 12 puis 13',
+        ],
+        site: 'fichespedagogiques.com',
+        article: "L'article sur la refonte",
+      },
+      jewelyConfigurator: {
+        client: 'Jewely',
+        role: 'Conception et développement',
+        summary:
+          "Un configurateur de bijoux multi-marques livré en plugin WordPress : le client personnalise une pièce, voit le prix changer en temps réel et l'ajoute au panier WooCommerce. Construit presque seul, du plugin à l'API.",
+        highlights: [
+          "Trois applications dans un monorepo Bun : le plugin, le back-office et l'API",
+          'Back-office des marques, collections, modèles, configurations et guides des tailles',
+          "API serverless en Hono et Prisma sur AWS Lambda, reliée à l'API REST de WooCommerce",
+        ],
+      },
+      assmatFacile: {
+        client: 'Assmat Facile',
+        role: 'Développeur full stack',
+        summary:
+          "Une application web pour les parents qui emploient une assistante maternelle : contrats, bulletins de paie, paiements, calculateurs et abonnements. Reprise sur une base existante : j'en ai construit le back-office et fait évoluer le paiement.",
+        highlights: [
+          "Back-office d'administration : utilisateurs, finance et remboursements, statistiques (chiffre d'affaires, churn, paiements), exports et rapport annuel",
+          'Abonnement par mandat administratif pour les relais petite enfance : bons de commande et factures en PDF, e-mails, tâches planifiées',
+          'Refonte du tunnel de paiement et des webhooks Stripe, montants bruts et nets',
+          "Mise à jour annuelle des paramètres réglementaires (SMIC, taux de cotisations) jusqu'en 2026",
+        ],
+        site: 'assmat-facile.fr',
+      },
+      jewelyErp: {
+        client: 'Jewely',
+        role: 'Développeur full stack, en alternance',
+        summary:
+          "L'ERP des bijouteries de luxe de Jewely : stock, ventes, réparations, clients, facturation et reporting, déployé chez chaque client. Mes premiers mois chez Flippad, sur l'API et les écrans.",
+        highlights: [
+          "Endpoints de l'API : employés, fournisseurs, catégories, emplacements, images produits, réparations et commandes",
+          'Écrans des commandes et des réparations',
+          'Paiement en plusieurs fois avec Alma, demandes de paiement par SMS et e-mail',
+        ],
+      },
+    },
     summaries: {
       flippad:
-        "Trois ans chez Jewely x Flippad, d'abord en alternance puis en CDI : un ERP pour les bijouteries de luxe, un configurateur de bijoux multi-marques, le back-office d'Assmat-Facile et la refonte de Fiches Pédagogiques, déployés sur AWS et Heroku par GitHub Actions.",
+        "Trois ans chez Jewely x Flippad, d'abord en alternance puis en CDI : un ERP pour les bijouteries de luxe, un configurateur de bijoux multi-marques, le back-office d'Assmat-Facile, la refonte de Fiches Pédagogiques, puis la reprise du e-commerce Jewely, déployés sur AWS et Heroku par GitHub Actions. Le détail de chaque projet suit.",
       virtualImmersion:
         "Un an d'alternance chez Virtual Immersion : une API de gestion de fichiers en Symfony, de la réalité mixte sur WordPress et la navigation sur la carte d'un parc animalier en React.",
       mnsMaster:
@@ -315,6 +405,9 @@ export default {
       site: 'Site',
       repo: 'Dépôt',
       viewAll: 'Tout voir sur GitHub',
+      search: 'Rechercher…',
+      noResults: 'Aucun résultat',
+      view: 'Voir',
       status: {
         released: 'Publié',
         inDevelopment: 'En développement',
@@ -350,6 +443,103 @@ export default {
     teaserCta: 'Voir le parcours',
   },
 
+  // /contact
+  contactPage: {
+    seoTitle: 'Contact · Kylian Bardini',
+    seoDescription:
+      'Écrire à Kylian Bardini, développeur full stack à Nancy : un poste, un projet ou une question.',
+    ogTitle: 'Contact',
+    ogSubtitle: 'Un poste, un projet, une question',
+    eyebrow: 'CONTACT',
+    title: 'Écrivez-moi.',
+    intro: 'Pour un poste, un projet ou une question précise. Un court message suffit.',
+    formTitle: 'Partager le contexte',
+    formSubtitle: 'Un court message suffit',
+    company: 'Entreprise ou produit',
+    companyPlaceholder: 'Facultatif',
+    topic: 'Sujet',
+    topics: {
+      role: 'Un poste',
+      project: 'Un projet',
+      openSource: 'Open source',
+      other: 'Autre chose',
+    },
+    details: 'Détails',
+    location: 'Localisation',
+    availability: 'Disponibilité',
+    email: 'E-mail',
+    socials: 'Réseaux',
+    cv: 'CV',
+    cvDownload: 'Télécharger (PDF)',
+    write: 'Écrire un message',
+  },
+
+  // /activity
+  activityPage: {
+    now: {
+      title: 'En ce moment',
+      learning: 'En apprentissage',
+      gameDev: 'Développement de jeux',
+      reading: 'En lecture',
+      symposium: 'Le Banquet',
+      plato: 'Platon',
+      openTo: 'Ouvert à',
+      role: 'Un poste',
+      project: 'Un projet',
+      write: 'Écrire un message',
+    },
+    seoTitle: 'Activité · Kylian Bardini',
+    seoDescription:
+      "L'open source de Kylian Bardini et son activité GitHub récente, lue en direct depuis ses dépôts publics.",
+    ogTitle: 'Activité',
+    ogSubtitle: 'Open source et activité GitHub',
+    eyebrow: 'ACTIVITÉ',
+    title: 'Ce qui bouge en ce moment.',
+    intro:
+      "Les outils que je maintiens, ce que je renvoie aux projets que j'utilise, et l'activité récente de mes dépôts GitHub publics, lue en direct.",
+    lastActivity: 'dernière activité publique {ago}',
+    checked: 'GitHub vérifié à {time}',
+    feedTitle: 'Activité GitHub récente',
+    feedCount: '{count} entrées',
+    feedEmpty: 'Rien de public sur GitHub ces derniers temps.',
+    more: 'Plus sur GitHub',
+    showMore: 'Afficher plus',
+    today: "Aujourd'hui",
+    yesterday: 'Hier',
+    types: {
+      push: 'push',
+      pr: 'pr',
+      issue: 'issue',
+      comment: 'commentaire',
+      release: 'version',
+      create: 'création',
+      star: 'étoile',
+      fork: 'fork',
+    },
+    events: {
+      push: 'poussé sur {ref}',
+      pushes: '{count} pushs sur {ref}',
+      pr: {
+        opened: 'PR #{number} ouverte',
+        merged: 'PR #{number} fusionnée',
+        closed: 'PR #{number} fermée',
+        reopened: 'PR #{number} rouverte',
+      },
+      issue: {
+        opened: 'issue #{number} ouverte',
+        closed: 'issue #{number} fermée',
+        reopened: 'issue #{number} rouverte',
+      },
+      comment: 'commentaire sur #{number}',
+      comments: '{count} commentaires sur #{number}',
+      release: 'version {ref} publiée',
+      repository: 'dépôt créé',
+      tag: 'tag {ref} créé',
+      star: 'étoilé',
+      fork: 'forké',
+    },
+  },
+
   // /apps
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
@@ -365,6 +555,8 @@ export default {
     repo: 'Dépôt',
     releases: 'Versions',
     install: 'Installer',
+    demo: 'Démo',
+    preview: 'Aperçu',
     status: {
       released: 'Disponible',
       inDevelopment: 'En développement',
@@ -416,7 +608,14 @@ export default {
   },
 
   // Blog Section
+  lightbox: {
+    open: 'Agrandir l’illustration : {name}',
+    close: 'Fermer',
+  },
+
   blog: {
+    toc: 'Sommaire',
+    read: 'Lire',
     title: 'Articles & Réflexions',
     description: "J'écris sur le développement web, l'architecture et les outils que j'utilise.",
     allTags: 'Tous',
@@ -429,16 +628,27 @@ export default {
     backToArticles: 'Retour aux articles',
     readingTime: 'min de lecture',
     shareArticle: 'Partager cet article',
+    share: 'Partager',
     copyLink: 'Copier le lien',
     linkCopied: 'Lien copié !',
     moreArticles: "Plus d'articles",
     notFound: 'Article non trouvé',
+    nextPost: {
+      eyebrow: 'À suivre',
+      text: "La place du prochain article, en cours d'écriture.",
+    },
   },
 
   // Error Page
   error: {
-    title: 'Page introuvable',
-    subtitle: "On dirait que cette page s'est perdue dans les pixels",
+    eyebrow: 'ERREUR {code}',
+    title: 'Page introuvable.',
+    subtitle: "On dirait que cette page s'est perdue dans les pixels.",
+    titleOther: 'Quelque chose a cassé.',
+    subtitleOther: 'Une erreur est survenue de mon côté. Réessayez dans un instant.',
+    playTitle: 'Les pixels',
+    playSubtitle: 'Déplacez-les, remettez-les en place',
+    inPlace: 'en place',
     backHome: "Retour à l'accueil",
     reset: 'Réinitialiser',
   },
@@ -482,5 +692,16 @@ export default {
       title: 'Email',
     },
     copyright: 'Tous droits réservés.',
+  },
+  // The OG images' facts (components/OgImage)
+  og: {
+    status: 'Statut',
+    location: 'Lieu',
+    site: 'Site',
+    github: 'GitHub',
+    published: 'Publié',
+    reading: 'Lecture',
+    tags: 'Tags',
+    author: 'Auteur',
   },
 }

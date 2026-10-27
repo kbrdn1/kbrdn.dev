@@ -1,120 +1,166 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
+// The pages' OG image, the repos' banners' card (disarto's "Deployment" sheets): the dither
+// field, two dashed construction lines along the panel's sides, nothing else outside it. The
+// panel: a header (the handle, the window's icons), the card (the name and the title in Fenix,
+// the buttons; the drawn portrait, or the page's pixel scene, and the facts; the career in
+// figures on the home, the stack elsewhere), a footer (icons, the address in mono, a button).
+// Satori: every style on one line (its gradient parser fails on split values), every box
+// with several children a flex box.
+import {
+  PIXEL_SCENES,
+  SCENE_H,
+  SCENE_OG_TICK,
+  SCENE_W,
+  sceneColor,
+  type PixelSceneName,
+} from '~/utils/pixelScenes'
+
+const props = withDefaults(defineProps<{
   title?: string
   subtitle?: string
   description?: string
   handle?: string
   isHirable?: boolean
   statusText?: string
-  avatarUrl?: string
-  bannerText?: string
-  bannerImage?: string
+  location?: string
+  labels?: { status: string, location: string, site: string, github: string }
+  figures?: { label: string, value: number | string }[]
+  stack?: string[]
+  avatar?: string
+  /** The page's pixel scene (utils/pixelScenes) in place of the portrait */
+  scene?: PixelSceneName
 }>(), {
   title: 'Kylian Bardini',
   subtitle: 'Full Stack Developer',
   description: '',
   handle: '@kbrdn1',
   isHirable: true,
-  statusText: 'Available for hire',
-  avatarUrl: '',
-  bannerText: '',
-  bannerImage: '/images/banners/dark.jpg',
+  statusText: 'Open to opportunities',
+  location: 'Nancy, France',
+  labels: () => ({ status: 'Status', location: 'Location', site: 'Site', github: 'GitHub' }),
+  figures: () => [],
+  stack: () => ['TypeScript', 'Vue', 'Nuxt', 'Laravel', 'AWS', 'Rust'],
+  avatar: '/images/og/avatar.png',
+  scene: undefined,
 })
+
+// The scene at its best moment, in the dark theme's colours (no CSS in satori)
+const sceneCells = computed(() => {
+  if (!props.scene) return []
+  // An unknown name (the OG URL is open to anyone) draws the portrait instead; own keys
+  // only, or `constructor` and the like pass for a scene
+  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return []
+  const scene = PIXEL_SCENES[props.scene]
+  return [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
+    const color = sceneColor(cell.c)
+    return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
+  })
+})
+
+const handle = computed(() => props.handle.replace(/^@/, ''))
+const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' | 'person' | 'text', value: string }[]>(() => [
+  ...(props.isHirable ? [{ icon: 'status' as const, label: props.labels.status, kind: 'ok' as const, value: props.statusText }] : []),
+  { icon: 'pin', label: props.labels.location, kind: 'text', value: props.location },
+  { icon: 'link', label: props.labels.site, kind: 'text', value: 'kbrdn.dev' },
+  { icon: 'user', label: props.labels.github, kind: 'person', value: handle.value },
+])
 </script>
 
 <template>
-  <div class="h-full w-full flex relative overflow-hidden" style="background: #121212;">
+  <div class="h-full w-full flex relative overflow-hidden" style="background: #0c0c0e;">
     <!-- The site's dither field, frozen (scripts/og-dither.ts) -->
     <img src="/images/og/dither.png" alt="" style="position: absolute; top: 0; left: 0; width: 1200px; height: 630px;" />
+    <!-- The construction lines, along the panel's sides -->
+    <div style="position: absolute; top: 0; bottom: 0; left: 150px; width: 1px; background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.14) 0px, rgba(255,255,255,0.14) 6px, transparent 6px, transparent 11px);" />
+    <div style="position: absolute; top: 0; bottom: 0; left: 1049px; width: 1px; background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.14) 0px, rgba(255,255,255,0.14) 6px, transparent 6px, transparent 11px);" />
 
-    <!-- Outside the column: a muted grid and a border along the column, fading out downwards, like the pages -->
-    <div class="absolute top-0 bottom-0 left-0" style="width: 80px; background-image: linear-gradient(#232323 1px, transparent 1px), linear-gradient(90deg, #232323 1px, transparent 1px); background-size: 24px 24px;" />
-    <div class="absolute top-0 bottom-0 right-0" style="width: 80px; background-image: linear-gradient(#232323 1px, transparent 1px), linear-gradient(90deg, #232323 1px, transparent 1px); background-size: 24px 24px;" />
-    <div class="absolute top-0 bottom-0 left-0" style="width: 80px; background: linear-gradient(to bottom, rgba(18,18,18,0) 0%, #121212 90%);" />
-    <div class="absolute top-0 bottom-0 right-0" style="width: 80px; background: linear-gradient(to bottom, rgba(18,18,18,0) 0%, #121212 90%);" />
-    <div class="absolute top-0 bottom-0" style="left: 80px; width: 1px; background: linear-gradient(to bottom, #262626 0%, rgba(38,38,38,0) 90%);" />
-    <div class="absolute top-0 bottom-0" style="right: 80px; width: 1px; background: linear-gradient(to bottom, #262626 0%, rgba(38,38,38,0) 90%);" />
-
-    <!-- Banner announcement bar at bottom (like HomeBanner) -->
-    <div v-if="bannerText" class="absolute left-0 right-0 bottom-0 flex items-center justify-center" style="height: 40px; overflow: hidden;">
-      <img
-        :src="bannerImage"
-        alt=""
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: top;"
-      />
-      <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent, rgba(18,18,18,0.5));" />
-      <div class="absolute inset-0" style="background: linear-gradient(to right, rgba(18,18,18,0.5), transparent, rgba(18,18,18,0.5));" />
-      <div class="flex items-center gap-2" style="position: relative;">
-        <!-- Rocket icon SVG -->
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-          <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-        </svg>
-        <span style="font-family: 'Monaspace Krypton', monospace; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.9);">
-          {{ bannerText }}
-        </span>
-        <!-- Arrow right SVG -->
-        <svg width="12" height="12" viewBox="0 0 20 20" fill="rgba(255,255,255,0.9)">
-          <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-        </svg>
-      </div>
-    </div>
-
-    <!-- Content zone -->
-    <div class="absolute flex flex-col justify-between" :style="{ top: '60px', bottom: bannerText ? '40px' : '60px', left: '80px', right: '80px', padding: '36px 48px' }">
-      <!-- Top row: status badge + handle -->
-      <div class="flex items-center justify-between">
-        <div v-if="isHirable" class="flex items-center">
-          <span
-            class="flex items-center gap-2"
-            style="padding: 6px 14px; font-family: 'Monaspace Krypton', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); background: rgba(34, 197, 94, 0.05);"
-          >
-            <div class="w-2 h-2 rounded-full" style="background: #22c55e;" />
-            {{ statusText }}
-          </span>
-        </div>
-        <div class="flex items-center" style="gap: 8px;">
-          <svg width="18" height="18" viewBox="0 0 96 96">
-            <path d="M64 0H96L0 96V64Z" fill="#e0e0e0" />
-            <path d="M0 0L24 24L0 48ZM56 56L96 96H64L40 72Z" fill="#d4825d" />
-          </svg>
-          <span style="font-family: 'Monaspace Krypton', monospace; font-size: 13px; font-weight: 700;">
-            <span style="color: #e0e0e0;">@</span><span style="color: #d4825d;">kbrdn1</span>
-          </span>
-        </div>
-      </div>
-
-      <!-- Center: name + subtitle + avatar -->
-      <div class="flex items-center justify-between flex-1" style="padding: 16px 0;">
-        <div class="flex flex-col justify-center flex-1">
-          <h1 style="font-size: 54px; font-weight: 700; color: #e0e0e0; margin-bottom: 12px;">
-            {{ title }}
-          </h1>
-          <p style="font-family: 'Fenix', serif; font-size: 34px; color: #d4825d;">
-            {{ subtitle }}
-          </p>
+    <!-- The panel, centred: its height follows its content -->
+    <div class="absolute flex items-center justify-center" style="top: 0; left: 0; width: 1200px; height: 630px;">
+      <div class="flex flex-col" style="width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
+        <!-- Header: the handle, the window's icons -->
+        <div class="flex items-center justify-between" style="height: 52px; padding: 0 12px 0 16px;">
+          <span style="font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: #ececf0;">@{{ handle }}</span>
+          <div class="flex" style="gap: 16px;">
+            <svg v-for="name in ['expand', 'close'] as const" :key="name" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
+          </div>
         </div>
 
-        <!-- Avatar -->
-        <div class="flex-shrink-0 flex items-center justify-center" style="width: 200px; height: 200px; position: relative;">
-          <img
-            v-if="avatarUrl"
-            :src="avatarUrl"
-            alt=""
-            style="width: 100%; height: 100%; object-fit: cover; position: relative;"
-          />
-          <span v-else style="font-size: 64px; font-weight: 700; color: #d4825d; position: relative;">KB</span>
-        </div>
-      </div>
+        <!-- The card -->
+        <div class="flex flex-col" style="padding: 24px 28px; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.07); border-radius: 18px;">
+          <div class="flex justify-between" style="gap: 24px;">
+            <div class="flex flex-col">
+              <h1 style="margin: 0; font-size: 48px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; color: #ececf0;">{{ title }}</h1>
+              <p style="margin: 10px 0 0; font-family: 'Fenix', serif; font-size: 24px; line-height: 1.2; color: #d4825d;">{{ subtitle }}</p>
+              <p v-if="description" style="margin: 10px 0 0; max-width: 520px; font-size: 15px; line-height: 1.45; color: #9a9aa3;">{{ description }}</p>
+            </div>
+            <div class="flex" style="gap: 8px; padding-top: 4px;">
+              <span class="flex items-center" style="gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ececf0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.globe" />
+                kbrdn.dev
+              </span>
+              <span class="flex items-center" style="gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #111114; background: #d4825d; border: 1px solid #d4825d; border-radius: 999px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111114" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.visit" />
+                Contact
+              </span>
+            </div>
+          </div>
 
-      <!-- Bottom: branding -->
-      <div class="flex items-center justify-between">
-        <span style="font-family: 'Monaspace Krypton', monospace; font-size: 14px; font-weight: 600; color: #b0b0b0;">
-          kbrdn.dev
-        </span>
-        <span style="font-family: 'Monaspace Krypton', monospace; font-size: 11px; color: #777;">
-          portfolio
-        </span>
+          <!-- The drawn portrait, or the page's scene, and the facts -->
+          <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
+            <div v-if="sceneCells.length" class="flex items-center justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <svg width="208" height="156" :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`" shape-rendering="crispEdges">
+                <rect v-for="(cell, i) in sceneCells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
+              </svg>
+            </div>
+            <div v-else class="flex items-end justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <img :src="avatar" alt="" width="196" height="196" style="width: 196px; height: 196px; margin-bottom: -24px;" />
+            </div>
+            <div class="flex flex-col" style="gap: 9px;">
+              <div v-for="fact in facts" :key="fact.icon" class="flex items-center" style="min-height: 30px;">
+                <span class="flex items-center" style="width: 138px; gap: 10px; font-size: 15px; color: #9a9aa3;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[fact.icon]" />
+                  {{ fact.label }}
+                </span>
+                <span v-if="fact.kind === 'ok'" class="flex items-center" style="gap: 7px; height: 28px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 999px;">
+                  <span style="width: 6px; height: 6px; border-radius: 999px; background: #4ade80;" />
+                  {{ fact.value }}
+                </span>
+                <span v-else-if="fact.kind === 'person'" class="flex items-center" style="gap: 6px; height: 28px; padding: 0 11px 0 3px; font-size: 14px; color: #ececf0; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">
+                  <img src="/images/og/person.png" alt="" width="22" height="22" style="width: 22px; height: 22px; border-radius: 999px;" />
+                  {{ fact.value }}
+                </span>
+                <span v-else style="font-size: 15px; color: #ececf0;">{{ fact.value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- After a dashed rule: the career in figures (home), else the stack -->
+          <template v-if="!description">
+            <div style="height: 1px; margin: 20px 0 16px; background-image: repeating-linear-gradient(90deg, #303036 0px, #303036 6px, transparent 6px, transparent 11px);" />
+            <div v-if="figures.length" class="flex">
+              <div v-for="figure in figures" :key="figure.label" class="flex flex-col" style="flex: 1;">
+                <span style="font-family: 'Monaspace Krypton', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #9a9aa3;">{{ figure.label }}</span>
+                <span style="margin-top: 4px; font-size: 28px; line-height: 1; letter-spacing: -0.02em; color: #ececf0;">{{ figure.value }}</span>
+              </div>
+            </div>
+            <div v-else class="flex flex-wrap" style="gap: 8px;">
+              <span v-for="tool in stack" :key="tool" style="display: flex; align-items: center; height: 30px; padding: 0 13px; font-size: 13px; color: #d4d4d8; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">{{ tool }}</span>
+            </div>
+          </template>
+        </div>
+
+        <!-- Footer: icons, the address, a button -->
+        <div class="flex items-center justify-between" style="height: 52px; padding: 0 4px 0 16px;">
+          <div class="flex items-center" style="gap: 16px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.more" />
+            <span style="width: 1px; height: 20px; background: #303036;" />
+            <svg v-for="name in ['sparkles', 'terminal'] as const" :key="name" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
+          </div>
+          <div class="flex items-center" style="gap: 16px;">
+            <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #9a9aa3;">github.com/{{ handle }}</span>
+            <span style="display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">Portfolio</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-# Release — kbrdn.dev
+# Release : kbrdn.dev
 
 Protocole de publication d'une version. Reprend le layout de changelog de
 [`gwm-cli`](https://github.com/kbrdn1/gwm-cli) et le versioning de `kbrdn-docs`,
@@ -18,7 +18,7 @@ Les images de tag sont **immutables** : `:dev` et `:main` désignent « le
 dernier », `:v1.1.0` désigne 1.1.0 pour toujours. C'est ce qui rend un retour
 arrière vers une version précise possible.
 
-`deploy.yml` déclenche sur `push: branches`, `release.yml` sur `push: tags` —
+`deploy.yml` déclenche sur `push: branches`, `release.yml` sur `push: tags` :
 les deux ne se réveillent jamais ensemble.
 
 ## Knobs du repo
@@ -29,8 +29,8 @@ les deux ne se réveillent jamais ensemble.
 | Fichier de changelog | `changelogs/X.Y.Z.md` (**sans** préfixe `v`) |
 | Candidats | `changelogs/pre-releases/X.Y.Z-rc.N.md` |
 | Branches | `dev` → `main` |
-| `main` protégée | **oui** — PR, 1 approbation, 4 checks. Merge commit autorisé |
-| Qui publie la release | **la CI** (`release.yml` sur le tag) — ne rien créer à la main |
+| `main` protégée | **oui** : PR, 1 approbation, 4 checks. Merge commit autorisé |
+| Qui publie la release | **la CI** (`release.yml` sur le tag) : ne rien créer à la main |
 | Gate de vérif | `bun run lint` + `bun run fmt:check` + `bun run typecheck` + `bun run build` + `scripts/og-smoke.sh` (CI, tous bloquants). **Pas de tests** dans ce repo, hors `scripts/*.test.sh` et ce smoke test des images OG |
 | Post-release | vérification `/api/health` automatique dans le workflow |
 
@@ -39,18 +39,18 @@ les deux ne se réveillent jamais ensemble.
 Elle n'est pas dans le protocole générique `me:release` et bloque le premier
 cut si on la découvre en route.
 
-### Toute PR doit porter `Closes #N` — vers `main` comme vers `dev`
+### Toute PR doit porter `Closes #N` : vers `main` comme vers `dev`
 
 Le check `Linked issue` de `validate-pr.yml` tourne sur les PR vers `main`
 **et** vers `dev`, sans condition sur la base, et exige `Closes #N` (ou
-`Fixes` / `Resolves`) dans le corps — `Refs #N` ne passe pas. **Chaque cut de
+`Fixes` / `Resolves`) dans le corps ; `Refs #N` ne passe pas. **Chaque cut de
 version a donc besoin de sa propre issue de release**, citée par chaque PR du
 cut, vers `dev` comme `dev → main`. Vers `dev`,
-qui n'est pas la branche par défaut, `Closes` ne ferme rien au merge — c'est la
+qui n'est pas la branche par défaut, `Closes` ne ferme rien au merge : c'est la
 PR vers `main` qui fermera l'issue.
 
 Corps oublié : l'éditer relance le check (type `edited`). Un `gh run rerun` de
-l'ancien run, lui, échoue encore — il rejoue la charge utile de l'événement
+l'ancien run, lui, échoue encore : il rejoue la charge utile de l'événement
 d'origine, donc l'ancien corps.
 
 Le check `Branch convention`, lui, autorise déjà `dev → main` et `hotfix/* →
@@ -75,7 +75,7 @@ Un candidat `1.1.0-rc.2` est un candidat **de 1.1.0** : `package.json` porte
 `1.1.0`, le suffixe ne vit que dans le tag. La comparaison se fait sur le cœur
 du SemVer.
 
-À ce stade, `## [Unreleased]` doit décrire ce que la version apporte — c'est
+À ce stade, `## [Unreleased]` doit décrire ce que la version apporte : c'est
 elle qui deviendra les notes.
 
 ```
@@ -85,7 +85,7 @@ elle qui deviendra les notes.
 ### 2. Candidat sur preprod (optionnel mais recommandé)
 
 ```bash
-# photographie [Unreleased] sans la vider — le workflow exige ce fichier
+# photographie [Unreleased] sans la vider : le workflow exige ce fichier
 /changelog 1.1.0-rc.1          # → changelogs/pre-releases/1.1.0-rc.1.md
 git tag -a v1.1.0-rc.1 -m "v1.1.0-rc.1" && git push origin v1.1.0-rc.1
 ```
@@ -115,7 +115,7 @@ Ouvrir une PR (obligatoire, cf. la contrainte ci-dessus), corps contenant
 🔖 chore(release): v1.1.0
 ```
 
-Attendre les 4 checks verts, puis merger en **merge commit** — jamais squash,
+Attendre les 4 checks verts, puis merger en **merge commit** : jamais squash,
 il écraserait les commits atomiques. `required_linear_history` a été désactivé
 sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
 
@@ -140,7 +140,7 @@ git push origin v1.1.0
 
 ⛔ **Jamais avant le merge** : le tag doit pointer un commit qui porte déjà le
 bump et le changelog, sinon la publication n'est pas reproductible depuis le
-tag. `release.yml` le vérifie — un tag stable qui n'est pas un ancêtre de
+tag. `release.yml` le vérifie : un tag stable qui n'est pas un ancêtre de
 `origin/main` est refusé avant tout build, donc un `vX.Y.Z` posé sur `dev` ne
 déploiera pas la production.
 
@@ -159,10 +159,10 @@ release sont réécrites depuis l'arbre du tag (cf. « Revenir en arrière »).
 
 Même rattrapage si `Deploy prod` **échoue** (vu sur la v1.0.1 : `ssh-keyscan`
 sans réponse, #42) : `gh run rerun <run> --failed` rejoue le déploiement puis la
-release GitHub, sans reconstruire l'image. Établir la cause avant de relancer —
+release GitHub, sans reconstruire l'image. Établir la cause avant de relancer :
 un job qui échoue sur le code échouera pareil.
 
-Le push du tag suffit — `release.yml` prend la suite : image `:v1.1.0`, deploy
+Le push du tag suffit. `release.yml` prend la suite : image `:v1.1.0`, deploy
 prod, vérification `/api/health`, puis release GitHub avec
 `--notes-file changelogs/1.1.0.md` et pour titre `v1.1.0` seul.
 
@@ -176,17 +176,17 @@ curl -s https://kbrdn.dev/api/health | jq
 ```
 
 Le workflow le fait déjà et échoue avant de publier la release si le compte n'y
-est pas — cette commande sert à contrôler après coup, ou à répondre à « quelle
+est pas ; cette commande sert à contrôler après coup, ou à répondre à « quelle
 version est live ».
 
 ⚠️ **Elle ne prouve pas que la release a tourné.** Le merge sur `main` déploie
-aussi la prod par `deploy.yml` — avant ou après le job du tag, selon qui prend
-le verrou `vps-deploy-prod` —, et pour une stable l'image du filet porte la
+aussi la prod par `deploy.yml` (avant ou après le job du tag, selon qui prend
+le verrou `vps-deploy-prod`), et pour une stable l'image du filet porte la
 même version que celle du tag (`APP_VERSION` vide hors release → repli sur
 `package.json`, cf. `nuxt.config.ts`) ; le `sha` aussi est le même. Sur la
 v1.0.1, `/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait
 échoué. La preuve, c'est la release elle-même : le job `release` dépend de
-`deploy` (`needs: [resolve, deploy]`), qui fait le contrôle `/api/health` — une
+`deploy` (`needs: [resolve, deploy]`), qui fait le contrôle `/api/health` : une
 release publiée par le bot n'existe donc que si le déploiement a réussi, qu'il
 vienne du push du tag, d'un `rerun --failed` ou d'un `workflow_dispatch` (rangé
 sous `main` dans `gh run list`, d'où l'inutilité d'y chercher le run du tag) :
@@ -202,7 +202,7 @@ Deux mécanismes, à ne pas confondre :
 
 ```bash
 # d'un cran, instantané : redémarre la couleur précédente, conservée stoppée
-# ⚠️ ne marche qu'une fois le VPS synchronisé (cf. « Synchroniser le VPS ») —
+# ⚠️ ne marche qu'une fois le VPS synchronisé (cf. « Synchroniser le VPS ») :
 #    jusque-là la couleur sortante est détruite à chaque deploy
 ssh <vps> 'ENV=prod rollback'
 
@@ -219,7 +219,7 @@ aussi : l'image existe déjà dans le registre, donc le build est sauté
 existe déjà, donc `gh release edit` remplace ses notes au lieu d'échouer sur un
 `create`. ⚠️ Ces notes viennent de l'arbre **du tag** : si
 `changelogs/X.Y.Z.md` a été corrigé depuis (cf. Notes), le rollback remet la
-version d'origine — refaire le `gh release edit` après.
+version d'origine : refaire le `gh release edit` après.
 
 ## Notes
 
@@ -227,12 +227,12 @@ version d'origine — refaire le `gh release edit` après.
   la met pas à jour : `gh release edit vX.Y.Z --notes-file changelogs/X.Y.Z.md`.
 - **`deploy.yml` a un `paths-ignore` sur `**.md` et `docs/**`.** Un merge de
   release qui ne toucherait que du markdown ne redéploierait pas prod par ce
-  chemin — raison de plus pour que le déploiement de prod appartienne au tag.
+  chemin : raison de plus pour que le déploiement de prod appartienne au tag.
 
 ## La chaîne de déploiement
 
-`deploy.yml` et `release.yml` envoient `ENV=... IMAGE=... deploy` en SSH — une
-commande nue configurée par variables d'environnement — alors que
+`deploy.yml` et `release.yml` envoient `ENV=... IMAGE=... deploy` en SSH, une
+commande nue configurée par variables d'environnement, alors que
 `scripts/deploy.sh` parse des flags. Les deux interfaces sont réconciliées par
 un maillon qui ne se voyait pas depuis le repo :
 
@@ -248,7 +248,7 @@ ssh root@vps "ENV=prod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:v1.1.0 GITHUB_TOKEN=... de
 ```
 
 `/usr/local/bin/deploy` et `/usr/local/bin/rollback` existent aussi, mais ce
-sont des shims pour l'usage manuel sur le VPS — **le CI ne passe pas par eux**,
+sont des shims pour l'usage manuel sur le VPS : **le CI ne passe pas par eux**,
 le `ForceCommand` s'interpose avant.
 
 `/srv/github-deploy.sh` n'était versionné nulle part ; sa copie de référence
@@ -262,7 +262,7 @@ sha256). Ce repo ne le déploie pas : le `ForceCommand` n'autorise que
 CI. La synchronisation est **manuelle**, depuis un accès admin :
 
 ```bash
-# 1. aucun déploiement ne doit être en vol — cf. l'encadré ci-dessous
+# 1. aucun déploiement ne doit être en vol (cf. l'encadré ci-dessous)
 gh run list --workflow=deploy.yml --limit 1
 
 # 2. copier à côté, puis remplacer d'un `mv` : il échange l'inode au lieu
@@ -285,10 +285,10 @@ gh run list --workflow=deploy.yml --limit 1
 > contenu en cours de route lui fait reprendre sa lecture au même offset dans le
 > nouveau texte, au milieu d'une autre construction.
 >
-> Vécu le 2026-08-14 — le `scp` a croisé le déploiement déclenché par le merge :
+> Vécu le 2026-08-14. Le `scp` a croisé le déploiement déclenché par le merge :
 >
 > ```
-> 16:20:16  [deploy preprod] actif: blue (:3002) — cible: green (:3003)
+> 16:20:16  [deploy preprod] actif: blue (:3002), cible: green (:3003)
 > 16:21:33  /srv/deploy.sh: line 144: syntax error near unexpected token `('
 > 16:21:33  [deploy preprod] kbrdn-preprod-green healthy
 >           exit code 2
@@ -296,7 +296,7 @@ gh run list --workflow=deploy.yml --limit 1
 >
 > Le script est mort **entre le passage healthy et le swap nginx** : preprod a
 > continué de servir l'ancienne image pendant que la nouvelle tournait, healthy,
-> sur un port que rien ne routait. Le `mv` de l'étape 2 évite ça — l'exécution en
+> sur un port que rien ne routait. Le `mv` de l'étape 2 évite ça : l'exécution en
 > cours garde l'ancien inode jusqu'au bout. Rattrapage si ça arrive quand même :
 > relancer `deploy.yml`, qui détruit la couleur cible en début de course et
 > emporte l'orphelin avec.
@@ -304,7 +304,7 @@ gh run list --workflow=deploy.yml --limit 1
 ⚠️ Les deux fichiers vont **ensemble** : `github-deploy.sh` n'accepte plus que
 les variables de son allowlist (`ENV`, `IMAGE`, `GITHUB_TOKEN`,
 `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) et refuse le reste. Ajouter une variable
-au workflow sans l'ajouter à cette liste casse le déploiement — c'est
+au workflow sans l'ajouter à cette liste casse le déploiement ; c'est
 volontaire, un refus se voit, un `export` silencieux non. Le `ping` ci-dessus
 vérifie la chaîne complète sans rien déployer.
 
@@ -313,13 +313,13 @@ sort :
 
 | Change | Effet au merge |
 |---|---|
-| Version et env dans `/api/health` | **immédiat** — build-args, cuits dans l'image |
-| `HEALTHCHECK` du `Dockerfile` → `/api/health` | **immédiat** — cuit dans l'image |
-| Gates de `release.yml`, tag → deploy, release GitHub | **immédiat** — côté CI |
-| `--health-cmd` du `docker run` | **après sync** — override de celui de l'image, lui-même déjà correct |
-| Label `kbrdn.version` | **après sync** — vide sur les conteneurs actuels |
-| `-e NUXT_APP_ENV` | **après sync** — sans effet utile, la valeur du build est déjà la bonne |
-| Rollback qui conserve la couleur sortante | **après sync** — jusque-là `--rollback` reste cassé, seul `--image ...:vX.Y.Z` fonctionne |
+| Version et env dans `/api/health` | **immédiat** : build-args, cuits dans l'image |
+| `HEALTHCHECK` du `Dockerfile` → `/api/health` | **immédiat** : cuit dans l'image |
+| Gates de `release.yml`, tag → deploy, release GitHub | **immédiat** : côté CI |
+| `--health-cmd` du `docker run` | **après sync** : override de celui de l'image, lui-même déjà correct |
+| Label `kbrdn.version` | **après sync** : vide sur les conteneurs actuels |
+| `-e NUXT_APP_ENV` | **après sync** : sans effet utile, la valeur du build est déjà la bonne |
+| Rollback qui conserve la couleur sortante | **après sync** : jusque-là `--rollback` reste cassé, seul `--image ...:vX.Y.Z` fonctionne |
 
 Aucun de ces reports ne casse une release : le workflow ne dépend que de ce qui
 est cuit dans l'image ou exécuté côté CI.
@@ -334,7 +334,7 @@ Diagnostic du 2026-08-14, en lecture seule :
 | preprod | `kbrdn-preprod-blue` | blue | 3002 | `:dev` | healthy |
 
 **Une seule couleur par environnement**, et `docker ps -a` ne liste même pas les
-opposées — elles sont détruites en fin de déploiement. C'est ce qui rend le
+opposées : elles sont détruites en fin de déploiement. C'est ce qui rend le
 `--rollback` actuel incapable de fonctionner ailleurs que dans la fenêtre de
 drain de 5 s d'un déploiement en cours, et ce que corrige le passage au `docker
 stop`.
@@ -342,7 +342,7 @@ stop`.
 Le seul déclencheur de déploiement est le SSH de GitHub Actions : ni Dokploy, ni
 watchtower, ni webhook, ni cron (vérifié). Le `docker-compose.yml` du repo, que
 `deploy.sh` nettoie défensivement en fin de course, n'a plus aucun conteneur
-actif — c'est du legacy.
+actif : c'est du legacy.
 
 ### Suivi
 

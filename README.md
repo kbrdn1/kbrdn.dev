@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)"  srcset="docs/_assets/promo.png">
     <source media="(prefers-color-scheme: light)" srcset="docs/_assets/promo-light.png">
-    <img alt="kbrdn.dev — Nuxt 4, file-based content, shipped blue/green on a tag" src="docs/_assets/promo.png" width="100%">
+    <img alt="kbrdn.dev: Nuxt 4, file-based content, shipped blue/green on a tag" src="docs/_assets/promo.png" width="100%">
   </picture>
 </p>
 

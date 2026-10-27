@@ -32,11 +32,17 @@ ARG APP_VERSION=""
 # déploiement passe par un wrapper sur le VPS, donc rien ne garantit qu'un
 # NUXT_APP_ENV atteigne le conteneur. Le figer ici rend /api/health correct
 # sans dépendre de ce wrapper. Chaque image ne vise de toute façon qu'un
-# étage — les candidats ne vont qu'en preprod, les stables qu'en prod.
+# étage : les candidats ne vont qu'en preprod, les stables qu'en prod.
 ARG APP_ENV=""
 ENV GIT_SHA=$GIT_SHA
 ENV APP_VERSION=$APP_VERSION
 ENV APP_ENV=$APP_ENV
+# Les adresses des CV, hébergés hors du repo (qui est public) : figées au build depuis
+# les variables du dépôt, pour la même raison qu'APP_ENV. Vides, le site n'en parle pas.
+ARG CV_URL_FR=""
+ARG CV_URL_EN=""
+ENV CV_URL_FR=$CV_URL_FR
+ENV CV_URL_EN=$CV_URL_EN
 
 # Copy installed dependencies
 COPY --from=deps /app/node_modules ./node_modules
@@ -76,12 +82,12 @@ USER nuxt
 # Expose port
 EXPOSE 3000
 
-# Health check — vise /api/health, pas `/` : la home rend côté serveur même
+# Health check. Vise /api/health, pas `/` : la home rend côté serveur même
 # quand la couche API est morte, donc l'ancienne sonde passait au vert sur un
 # conteneur à moitié cassé.
 #
 # `-O /dev/null` et non `--spider` : --spider émet un HEAD, et h3 ne route pas
-# HEAD vers un handler `.get` — vérifié sur le build de prod, HEAD
+# HEAD vers un handler `.get` ; vérifié sur le build de prod, HEAD
 # /api/health répond 404 là où GET répond 200. Un --spider ici marquerait
 # tous les conteneurs unhealthy.
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=40s \

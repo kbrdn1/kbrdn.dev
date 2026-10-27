@@ -35,7 +35,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const containerRef = ref<HTMLElement | null>(null)
-const isVisible = ref(false)
+// Shown from the start on screen (server render included), staggered in below the fold
+const hidden = useReveal(containerRef)
+const isVisible = computed(() => !hidden.value)
 
 // Detect reduced motion preference
 const prefersReducedMotion = useReducedMotion()
@@ -45,34 +47,6 @@ const effectiveStaggerDelay = computed(() => (prefersReducedMotion.value ? 0 : p
 const effectiveBaseDelay = computed(() => (prefersReducedMotion.value ? 0 : props.baseDelay))
 const effectiveAnimation = computed(() => (prefersReducedMotion.value ? 'fadeIn' : props.animation))
 const effectiveDuration = computed(() => (prefersReducedMotion.value ? 0 : props.duration))
-
-onMounted(() => {
-  if (!containerRef.value) return
-
-  // If reduced motion, show immediately
-  if (prefersReducedMotion.value) {
-    isVisible.value = true
-    return
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          isVisible.value = true
-          observer.disconnect()
-        }
-      })
-    },
-    { threshold: 0.1 },
-  )
-
-  observer.observe(containerRef.value)
-
-  onUnmounted(() => {
-    observer.disconnect()
-  })
-})
 
 // Provide animation context to children
 provide(

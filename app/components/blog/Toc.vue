@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useI18n } from '#imports'
+
 const props = defineProps<{
   items: { id: string; text: string; level: number }[]
   activeHeading: string
@@ -9,7 +11,14 @@ const emit = defineEmits<{
   'scroll-to': [id: string]
 }>()
 
+const { t } = useI18n()
 const tocListRef = ref<HTMLElement | null>(null)
+
+// Read as a checklist (TocSteps): the header counts the steps passed
+const { steps, current } = useTocSteps(
+  () => props.items,
+  () => props.activeHeading,
+)
 
 watch(
   () => props.activeHeading,
@@ -24,65 +33,36 @@ watch(
 </script>
 
 <template>
-  <aside
-    v-if="items.length > 0"
-    class="w-full min-h-0 flex flex-col"
-    aria-label="Table of contents"
-  >
-    <div
-      class="border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-950/50 font-mono flex flex-col min-h-0"
-    >
-      <!-- Header with progress -->
-      <div class="flex items-center justify-between px-3 py-2 shrink-0">
-        <span class="text-[9px] uppercase tracking-widest text-neutral-400">sommaire</span>
-        <span
-          v-if="progress !== undefined"
-          class="text-[10px] font-bold tabular-nums text-primary-500"
+  <aside v-if="items.length > 0" class="flex min-h-0 w-full flex-col" :aria-label="t('blog.toc')">
+    <div class="panel flex min-h-0 flex-col">
+      <!-- Header: the title, the reading progress in ticks, the steps passed -->
+      <div class="flex shrink-0 items-center gap-3 px-3 py-2.5">
+        <span class="text-[15px] text-neutral-900 dark:text-neutral-100">{{ t('blog.toc') }}</span>
+        <div
+          class="ticks ml-auto h-3 w-16 bg-neutral-300 dark:bg-neutral-700"
+          role="progressbar"
+          :aria-valuenow="progress ?? 0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          :aria-label="t('blog.toc')"
         >
-          {{ progress }}%
+          <div
+            class="h-full bg-primary-500 transition-[width] duration-300"
+            :style="{ width: `${progress ?? 0}%` }"
+          />
+        </div>
+        <span class="eyebrow shrink-0 tabular-nums">
+          <UiRollingNumber :value="Math.max(current, 0)" />/{{ steps.length }}
         </span>
       </div>
 
-      <!-- Progress bar -->
-      <div class="mx-3 h-px bg-neutral-200 dark:bg-neutral-800 relative overflow-hidden shrink-0">
-        <div
-          class="absolute inset-y-0 left-0 bg-primary-500 transition-all duration-300"
-          :style="{ width: `${progress || 0}%` }"
+      <!-- Steps (scrollable) -->
+      <div ref="tocListRef" class="panel-card min-h-0 overflow-y-auto p-1.5 scrollbar-none">
+        <BlogTocSteps
+          :items="items"
+          :active-heading="activeHeading"
+          @scroll-to="emit('scroll-to', $event)"
         />
-      </div>
-
-      <!-- Items (scrollable) -->
-      <div ref="tocListRef" class="p-3 overflow-y-auto min-h-0 scrollbar-none">
-        <ul class="space-y-px">
-          <li v-for="item in items" :key="item.id">
-            <button
-              type="button"
-              :data-toc-id="item.id"
-              :class="
-                cn(
-                  'flex items-center w-full text-left text-[11px] leading-snug py-1 px-1.5 -mx-1.5 transition-all',
-                  activeHeading === item.id
-                    ? 'text-primary-500 bg-primary-500/10'
-                    : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
-                )
-              "
-              @click="emit('scroll-to', item.id)"
-            >
-              <span
-                v-if="activeHeading === item.id"
-                class="shrink-0 text-primary-500 mr-1 select-none"
-                >▸</span
-              >
-              <span v-else class="shrink-0 mr-1 w-2 select-none" />
-              <span
-                v-if="item.level >= 3"
-                class="shrink-0 text-neutral-300 dark:text-neutral-600 mr-1"
-                >└</span
-              >
-              <span :class="item.level >= 3 ? 'text-[10px]' : ''">{{ item.text }}</span>
-            </button>
-          </li>
-        </ul>
       </div>
     </div>
   </aside>

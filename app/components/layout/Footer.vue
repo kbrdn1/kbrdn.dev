@@ -4,10 +4,9 @@ import { useI18n } from '#imports'
 const { t } = useI18n()
 // Categorized navigation links: the home page and the site's pages, the blog apart
 const { links } = useSiteNav()
-const portfolioLinks = computed(() => [
-  { href: '/', label: t('nav.home') },
-  ...links.value.filter((l) => l.to !== '/blog').map((l) => ({ href: l.to, label: l.label })),
-])
+const portfolioLinks = computed(() =>
+  links.value.filter((l) => l.to !== '/blog').map((l) => ({ href: l.to, label: l.label })),
+)
 
 const blogLinks = computed(() => [{ href: '/blog', label: t('footer.nav.articles') }])
 
@@ -44,331 +43,165 @@ const socialLinks = [
   },
 ]
 
-// Form state
-const form = reactive({
-  name: '',
-  email: '',
-  message: '',
-})
-
-const isSubmitting = ref(false)
-const submitStatus = ref<'idle' | 'success' | 'error'>('idle')
-
-async function handleSubmit() {
-  isSubmitting.value = true
-  submitStatus.value = 'idle'
-
-  try {
-    await $fetch('/api/contact', {
-      method: 'POST',
-      body: form,
-    })
-
-    submitStatus.value = 'success'
-    form.name = ''
-    form.email = ''
-    form.message = ''
-
-    setTimeout(() => {
-      submitStatus.value = 'idle'
-    }, 5000)
-  } catch {
-    submitStatus.value = 'error'
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
 const currentYear = new Date().getFullYear()
 </script>
 
 <template>
-  <footer
-    class="relative w-full border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950"
-  >
+  <!-- A panel over the dither, as wide as the navbar: the three columns in one card,
+       the copyright in the panel's footer -->
+  <footer class="relative w-full px-4 pt-6 pb-6 sm:px-6">
     <UiDitherCanvas fade="up" class="absolute inset-0 h-full w-full" />
-    <div
-      class="relative mx-auto px-6 py-12 border-x border-neutral-200 dark:border-neutral-800 bg-neutral-100/40 dark:bg-neutral-950/40 backdrop-blur-sm"
-      style="max-width: 80rem"
-    >
-      <!-- Three-column grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-        <!-- Left Column: Contact Form -->
-        <div
-          class="space-y-5 md:col-span-1 md:pr-12 md:border-r md:border-neutral-200 dark:md:border-neutral-800"
-        >
-          <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-            {{ t('footer.contact.title') }}
-          </h3>
-          <p class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t('footer.contact.description') }}
-          </p>
-
-          <ClientOnly>
-            <form class="space-y-4" @submit.prevent="handleSubmit">
-              <!-- Name -->
-              <div class="space-y-1.5">
-                <label
-                  for="footer-name"
-                  class="block font-mono text-xs uppercase tracking-wider text-neutral-500"
-                >
-                  {{ t('footer.contact.name') }}
-                </label>
-                <input
-                  id="footer-name"
-                  v-model="form.name"
-                  type="text"
-                  required
-                  :placeholder="t('footer.contact.namePlaceholder')"
-                  :class="
-                    cn(
-                      'w-full px-3 py-2 text-sm rounded-none',
-                      'bg-white dark:bg-neutral-900',
-                      'border border-neutral-300 dark:border-neutral-700',
-                      'text-neutral-900 dark:text-neutral-100',
-                      'placeholder:text-neutral-400 dark:placeholder:text-neutral-600',
-                      'focus:outline-none focus:ring-2 focus:ring-[#d4825d]/50 focus:border-[#d4825d]',
-                      'transition-colors duration-200',
-                    )
-                  "
-                />
-              </div>
-
-              <!-- Email -->
-              <div class="space-y-1.5">
-                <label
-                  for="footer-email"
-                  class="block font-mono text-xs uppercase tracking-wider text-neutral-500"
-                >
-                  {{ t('footer.contact.email') }}
-                </label>
-                <input
-                  id="footer-email"
-                  v-model="form.email"
-                  type="email"
-                  required
-                  :placeholder="t('footer.contact.emailPlaceholder')"
-                  :class="
-                    cn(
-                      'w-full px-3 py-2 text-sm rounded-none',
-                      'bg-white dark:bg-neutral-900',
-                      'border border-neutral-300 dark:border-neutral-700',
-                      'text-neutral-900 dark:text-neutral-100',
-                      'placeholder:text-neutral-400 dark:placeholder:text-neutral-600',
-                      'focus:outline-none focus:ring-2 focus:ring-[#d4825d]/50 focus:border-[#d4825d]',
-                      'transition-colors duration-200',
-                    )
-                  "
-                />
-              </div>
-
-              <!-- Message -->
-              <div class="space-y-1.5">
-                <label
-                  for="footer-message"
-                  class="block font-mono text-xs uppercase tracking-wider text-neutral-500"
-                >
-                  {{ t('footer.contact.message') }}
-                </label>
-                <textarea
-                  id="footer-message"
-                  v-model="form.message"
-                  required
-                  rows="4"
-                  :placeholder="t('footer.contact.messagePlaceholder')"
-                  :class="
-                    cn(
-                      'w-full px-3 py-2 text-sm resize-none rounded-none',
-                      'bg-white dark:bg-neutral-900',
-                      'border border-neutral-300 dark:border-neutral-700',
-                      'text-neutral-900 dark:text-neutral-100',
-                      'placeholder:text-neutral-400 dark:placeholder:text-neutral-600',
-                      'focus:outline-none focus:ring-2 focus:ring-[#d4825d]/50 focus:border-[#d4825d]',
-                      'transition-colors duration-200',
-                    )
-                  "
-                />
-              </div>
-
-              <!-- Submit Button -->
-              <button
-                type="submit"
-                :disabled="isSubmitting"
-                :aria-busy="isSubmitting"
-                :class="
-                  cn(
-                    'w-full px-4 py-2.5 text-sm font-mono uppercase tracking-wider rounded-none',
-                    'bg-[#d4825d] text-white',
-                    'hover:bg-[#c0714e]',
-                    'active:scale-[0.98]',
-                    'disabled:opacity-50 disabled:cursor-not-allowed',
-                    'transition-all duration-200',
-                  )
-                "
-              >
-                <span v-if="isSubmitting" class="flex items-center justify-center gap-2">
-                  <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
-                  {{ t('footer.contact.sending') }}
-                </span>
-                <span v-else>{{ t('footer.contact.send') }}</span>
-              </button>
-
-              <!-- Status Messages -->
-              <div aria-live="polite" aria-atomic="true">
-                <p
-                  v-if="submitStatus === 'success'"
-                  role="status"
-                  class="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-                >
-                  <UiMascot mood="clap" :size="32" />
-                  {{ t('footer.contact.success') }}
-                </p>
-                <p
-                  v-if="submitStatus === 'error'"
-                  role="alert"
-                  class="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
-                >
-                  <UiMascot mood="nervous" :size="32" />
-                  {{ t('footer.contact.error') }}
-                </p>
-              </div>
-            </form>
-          </ClientOnly>
-        </div>
-
-        <!-- Center Column: Categorized Links -->
-        <div class="grid grid-cols-2 gap-6 md:col-span-1">
-          <!-- Portfolio -->
-          <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('blogNav.portfolio') }}
+    <!-- The panel, and the strip on its top edge where an invader walks by now and then -->
+    <div class="relative mx-auto max-w-[61rem]">
+      <LayoutFooterCritter />
+      <UiPanel class="relative">
+        <!-- Three-column grid -->
+        <div class="panel-card grid grid-cols-1 gap-12 p-5 sm:p-8 md:grid-cols-3">
+          <!-- Left Column: Contact, the form lives on /contact -->
+          <div
+            class="space-y-5 md:col-span-1 md:pr-12 md:border-r md:border-dashed md:border-neutral-200 dark:md:border-neutral-800"
+          >
+            <h3 class="eyebrow">
+              {{ t('footer.contact.title') }}
             </h3>
-            <nav :aria-label="t('blogNav.portfolio')" class="flex flex-col space-y-2">
-              <a
-                v-for="link in portfolioLinks"
-                :key="link.href"
-                :href="link.href"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
-              >
-                <UiScrambleText :text="link.label" effect="link" />
-              </a>
-            </nav>
-          </div>
-
-          <!-- Blog -->
-          <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('sections.blog') }}
-            </h3>
-            <nav :aria-label="t('sections.blog')" class="flex flex-col space-y-2">
-              <a
-                v-for="link in blogLinks"
-                :key="link.href"
-                :href="link.href"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
-              >
-                <UiScrambleText :text="link.label" effect="link" />
-              </a>
-            </nav>
-          </div>
-
-          <!-- Socials -->
-          <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('footer.links.title') }}
-            </h3>
-            <nav :aria-label="t('footer.links.title')" class="flex flex-col space-y-2">
-              <a
-                v-for="social in socialLinks"
-                :key="social.href"
-                :href="social.href"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
-              >
-                <UIcon :name="social.icon" class="w-4 h-4" />
-                <UiScrambleText :text="social.label" effect="link" />
-              </a>
-            </nav>
-          </div>
-
-          <!-- Other -->
-          <div class="space-y-3">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('footer.links.other') }}
-            </h3>
-            <nav :aria-label="t('footer.links.other')" class="flex flex-col space-y-2">
-              <a
-                v-for="link in otherLinks"
-                :key="link.href"
-                :href="link.href"
-                :target="link.external ? '_blank' : undefined"
-                :rel="link.external ? 'noopener noreferrer' : undefined"
-                class="text-sm text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
-              >
-                <UIcon :name="link.icon" class="w-4 h-4" />
-                <UiScrambleText :text="link.label" effect="link" />
-              </a>
-            </nav>
-          </div>
-        </div>
-
-        <!-- Right Column: Info -->
-        <div class="space-y-6 md:col-span-1">
-          <!-- Location -->
-          <div class="space-y-2">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('footer.location.title') }}
-            </h3>
-            <p class="text-sm text-neutral-300">
-              {{ t('footer.location.city') }}
+            <p class="text-sm text-neutral-500 dark:text-neutral-400">
+              {{ t('footer.contact.description') }}
             </p>
+            <div class="flex flex-wrap gap-2">
+              <NuxtLink to="/contact" class="btn btn-primary btn-sm">
+                <UIcon name="i-heroicons-paper-airplane" class="size-4" aria-hidden="true" />
+                {{ t('contactPage.write') }}
+              </NuxtLink>
+            </div>
           </div>
 
-          <!-- Status -->
-          <div class="space-y-2">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('footer.availability.title') }}
-            </h3>
-            <span
-              class="inline-flex items-center gap-2 px-2.5 py-1 text-xs font-mono border border-green-600/40 dark:border-green-500/30 text-green-700 dark:text-green-500 bg-green-600/5 dark:bg-green-500/5"
-            >
-              <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"
-                />
-                <span
-                  class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-600 dark:bg-green-500"
-                />
+          <!-- Center Column: Categorized Links -->
+          <div class="grid grid-cols-2 gap-6 md:col-span-1">
+            <!-- Portfolio -->
+            <div class="space-y-3">
+              <h3 class="eyebrow">
+                {{ t('blogNav.portfolio') }}
+              </h3>
+              <nav :aria-label="t('blogNav.portfolio')" class="flex flex-col space-y-2">
+                <a
+                  v-for="link in portfolioLinks"
+                  :key="link.href"
+                  :href="link.href"
+                  class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
+                >
+                  <UiScrambleText :text="link.label" effect="link" />
+                </a>
+              </nav>
+            </div>
+
+            <!-- Blog -->
+            <div class="space-y-3">
+              <h3 class="eyebrow">
+                {{ t('sections.blog') }}
+              </h3>
+              <nav :aria-label="t('sections.blog')" class="flex flex-col space-y-2">
+                <a
+                  v-for="link in blogLinks"
+                  :key="link.href"
+                  :href="link.href"
+                  class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
+                >
+                  <UiScrambleText :text="link.label" effect="link" />
+                </a>
+              </nav>
+            </div>
+
+            <!-- Socials -->
+            <div class="space-y-3">
+              <h3 class="eyebrow">
+                {{ t('footer.links.title') }}
+              </h3>
+              <nav :aria-label="t('footer.links.title')" class="flex flex-col space-y-2">
+                <a
+                  v-for="social in socialLinks"
+                  :key="social.href"
+                  :href="social.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
+                >
+                  <UIcon :name="social.icon" class="w-4 h-4" />
+                  <UiScrambleText :text="social.label" effect="link" />
+                </a>
+              </nav>
+            </div>
+
+            <!-- Other -->
+            <div class="space-y-3">
+              <h3 class="eyebrow">
+                {{ t('footer.links.other') }}
+              </h3>
+              <nav :aria-label="t('footer.links.other')" class="flex flex-col space-y-2">
+                <a
+                  v-for="link in otherLinks"
+                  :key="link.href"
+                  :href="link.href"
+                  :target="link.external ? '_blank' : undefined"
+                  :rel="link.external ? 'noopener noreferrer' : undefined"
+                  class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200 inline-flex items-center gap-2"
+                >
+                  <UIcon :name="link.icon" class="w-4 h-4" />
+                  <UiScrambleText :text="link.label" effect="link" />
+                </a>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Right Column: Info -->
+          <div class="space-y-6 md:col-span-1">
+            <!-- Location -->
+            <div class="space-y-2">
+              <h3 class="eyebrow">
+                {{ t('footer.location.title') }}
+              </h3>
+              <p class="text-sm text-neutral-900 dark:text-neutral-300">
+                {{ t('footer.location.city') }}
+              </p>
+            </div>
+
+            <!-- Status -->
+            <div class="space-y-2">
+              <h3 class="eyebrow">
+                {{ t('footer.availability.title') }}
+              </h3>
+              <span class="tag text-green-700 dark:text-green-500">
+                <span class="relative flex size-1.5" aria-hidden="true">
+                  <span
+                    class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"
+                  />
+                  <span class="relative inline-flex size-1.5 rounded-full bg-current" />
+                </span>
+                {{ t('footer.availability.status') }}
               </span>
-              {{ t('footer.availability.status') }}
-            </span>
-          </div>
+            </div>
 
-          <!-- Email -->
-          <div class="space-y-2">
-            <h3 class="font-mono text-xs uppercase tracking-wider text-neutral-500">
-              {{ t('footer.email.title') }}
-            </h3>
-            <a
-              href="mailto:hello@kbrdn.dev"
-              class="text-sm text-neutral-300 hover:text-[#d4825d] transition-colors duration-200"
-            >
-              hello@kbrdn.dev
-            </a>
+            <!-- Email -->
+            <div class="space-y-2">
+              <h3 class="eyebrow">
+                {{ t('footer.email.title') }}
+              </h3>
+              <a
+                href="mailto:hello@kbrdn.dev"
+                class="text-sm text-neutral-900 dark:text-neutral-300 hover:text-[#d4825d] transition-colors duration-200"
+              >
+                hello@kbrdn.dev
+              </a>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bottom Bar -->
-      <div
-        class="mt-12 pt-6 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-center"
-      >
-        <p class="flex items-center gap-2 text-xs text-neutral-500 text-center">
-          <UiMascot mood="hoodie-cool" :size="28" />
-          &copy; {{ currentYear }} Kylian Bardini. {{ t('footer.copyright') }}
-        </p>
-      </div>
+        <template #meta>
+          &copy; {{ currentYear }} Kylian Bardini · {{ t('footer.copyright') }}
+        </template>
+        <template #footer>
+          <UiLogo :size="20" class="text-neutral-900 dark:text-neutral-100" />
+        </template>
+      </UiPanel>
     </div>
   </footer>
 </template>

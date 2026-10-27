@@ -93,15 +93,15 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 
 ### Lint & format configuration
 `.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). Known gaps in `.vue` files, checked on oxlint 1.83:
-- no template rules at all — broken templates are caught by `vue-tsc` and the build;
-- `no-unused-vars` and `prefer-const` do not run on SFCs. Unused imports, locals and functions are caught instead by `vue-tsc` (`noUnusedLocals` in `nuxt.config.ts`, template usage included) — stricter than ESLint was: a `_` prefix does not exempt a local. `prefer-const` is lost.
+- no template rules at all: broken templates are caught by `vue-tsc` and the build;
+- `no-unused-vars` and `prefer-const` do not run on SFCs. Unused imports, locals and functions are caught instead by `vue-tsc` (`noUnusedLocals` in `nuxt.config.ts`, template usage included), stricter than ESLint was: a `_` prefix does not exempt a local. `prefer-const` is lost.
 
-`.oxfmtrc.json` formats code only, with three deliberate exceptions — the last two break at request time, where lint, typecheck and build cannot see them:
+`.oxfmtrc.json` formats code only, with three deliberate exceptions; the last two break at request time, where lint, typecheck and build cannot see them:
 - Markdown and MDX (blog articles, changelogs, docs) are prose, never reformatted;
 - `app/components/OgImage/**` is rendered by satori, whose gradient parser fails on a `style` value split across lines (`/_og/*` returns 500);
 - CSS keeps double quotes (`overrides`): nuxt-og-image 6.1 only recognises the Tailwind entry through `@theme` or a double-quoted `@import "tailwindcss"` (`dist/chunks/tw4.mjs`). `main.css` has no `@theme`, so `@import 'tailwindcss'` turns that resolver off and the OG images fall back to the mono font. `theme.css` quotes alone change nothing.
 
-CI catches both: `scripts/og-smoke.sh` serves the build and compares the OG images of `/`, `/blog` and `/blog/gwm` byte for byte against `scripts/og-smoke/*.png` (rendering is deterministic across platforms). An intended change to an OG image — hero copy, that article, a satori component — needs `scripts/og-smoke.sh --update` after `bun run build`, and the new PNGs committed. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
+CI catches both: `scripts/og-smoke.sh` serves the build and compares the OG images of `/`, `/blog` and `/blog/gwm` byte for byte against `scripts/og-smoke/*.png` (rendering is deterministic across platforms). An intended change to an OG image (hero copy, that article, a satori component) needs `scripts/og-smoke.sh --update` after `bun run build`, and the new PNGs committed. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
 
 ### Content System
 The project uses Nuxt Content v3's collection-based API (not the legacy document-driven mode). Always use `queryCollection()` instead of deprecated content APIs.
@@ -138,14 +138,14 @@ Located in `.github/workflows/`:
 - `build` job: builds the multi-stage Docker image with buildx and pushes it to GHCR (`ghcr.io/<repo>:<tag>` + `:sha-<sha>`)
 - `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) inline; writes a GitHub step summary
 
-Content changes (`app/content/**.mdx`) deploy through this same pipeline — `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
+Content changes (`app/content/**.mdx`) deploy through this same pipeline: `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
 
 **release.yml** - Tag-driven release + deploy (see `docs/RELEASE.md`):
 - Triggers on `push: tags` matching `v*.*.*`, so it never overlaps `deploy.yml` (which only watches branches); `workflow_dispatch` takes an explicit tag
-- `resolve` job: routes the tag via `scripts/resolve-release-tag.sh` — `vX.Y.Z-rc.N` → preprod + GitHub pre-release, `vX.Y.Z` → prod + release. Gates on `package.json` matching the tag and on the notes file existing, **before** anything deploys
+- `resolve` job: routes the tag via `scripts/resolve-release-tag.sh`: `vX.Y.Z-rc.N` → preprod + GitHub pre-release, `vX.Y.Z` → prod + release. Gates on `package.json` matching the tag and on the notes file existing, **before** anything deploys
 - `build` job: pushes an **immutable** `ghcr.io/<repo>:vX.Y.Z`, with `APP_VERSION` / `GIT_SHA` baked in as build args
 - `deploy` job: same SSH wrapper as `deploy.yml`, then verifies `/api/health` from the outside actually serves that version on that domain
-- `release` job: `gh release create` with `--notes-file changelogs/X.Y.Z.md`, title = the bare tag. **Never create the release by hand** — the CI owns it
+- `release` job: `gh release create` with `--notes-file changelogs/X.Y.Z.md`, title = the bare tag. **Never create the release by hand**: the CI owns it
 
 The routing logic lives in a script rather than inline YAML because getting it wrong ships an unvalidated candidate to kbrdn.dev; `scripts/resolve-release-tag.test.sh` covers it.
 
@@ -153,15 +153,18 @@ The routing logic lives in a script rather than inline YAML because getting it w
 - **Platform**: self-hosted VPS, image pulled from GHCR and deployed over SSH by `deploy.yml` (no Dokploy)
 - **Environments**: `main` → prod (https://kbrdn.dev), `dev` → preprod (https://pre-prod.kbrdn.dev)
 - **Domain**: kbrdn.dev with Let's Encrypt SSL
-- **Health Check**: `wget -q -O /dev/null http://localhost:3000/api/health` every 30s. Not `--spider` — that sends a HEAD, and h3 does not route HEAD to a `.get` handler (HEAD returns 404 where GET returns 200), so a spider probe marks every container unhealthy
-- **Versioning**: SemVer from `1.0.0`, single source of truth in `package.json`. `GET /api/health` returns `{ status, version, sha, env }` — that is how you answer "which version is live". Cutting a version: `docs/RELEASE.md`
+- **Health Check**: `wget -q -O /dev/null http://localhost:3000/api/health` every 30s. Not `--spider`: that sends a HEAD, and h3 does not route HEAD to a `.get` handler (HEAD returns 404 where GET returns 200), so a spider probe marks every container unhealthy
+- **Versioning**: SemVer from `1.0.0`, single source of truth in `package.json`. `GET /api/health` returns `{ status, version, sha, env }`: that is how you answer "which version is live". Cutting a version: `docs/RELEASE.md`
 
 ### Required Secrets
 Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
 - `VPS_HOST` / `VPS_USER` / `VPS_SSH_PRIVATE_KEY` - SSH deploy target + key
 - `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
-- `RESEND_API_KEY` - Email sending (contact form) — **source of truth for prod**, injected into the VPS by `deploy.yml`
+- `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - Nuxt Studio API
+
+Repo-level **variables** (not secrets), passed as build-args by both workflows:
+- `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
 
 ## Active Technologies
 - TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker

@@ -19,15 +19,12 @@ useSeoMeta({
   description: t('blog.description'),
 })
 
-if (import.meta.server) {
-  defineOgImage('Default', {
-    title: t('blog.title'),
-    description: t('blog.description'),
-    // Same badge and avatar as the home page's image, instead of the defaults
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
-  })
-}
+useSiteOgImage('Default', {
+  title: t('blog.title'),
+  subtitle: 'blog@kbrdn1',
+  description: t('blog.description'),
+  scene: 'blog',
+})
 
 // Active tag filter
 const activeTag = ref<string | null>(null)
@@ -40,12 +37,21 @@ onMounted(() => {
     viewMode.value = 'cards'
   }
 })
-const showViewDropdown = ref(false)
+const VIEW_MODES = [
+  { mode: 'list', icon: 'i-heroicons-bars-3', label: 'blog.viewList' },
+  { mode: 'cards', icon: 'i-heroicons-squares-2x2', label: 'blog.viewCards' },
+  { mode: 'compact', icon: 'i-heroicons-list-bullet', label: 'blog.viewCompact' },
+] as const
 
-function selectViewMode(mode: typeof viewMode.value) {
-  viewMode.value = mode
-  showViewDropdown.value = false
-}
+// A post's banner, resized by IPX: the pixel layer only needs a few hundred pixels of it
+const $img = useImage()
+const colorMode = useColorMode()
+const bannerOf = (post: { bannerImage?: string }) =>
+  $img(
+    post.bannerImage ||
+      (isDarkMode(colorMode.value) ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'),
+    { width: 640, format: 'webp' },
+  )
 const blogListRef = ref<HTMLElement | null>(null)
 
 function goToPage(page: number) {
@@ -119,406 +125,279 @@ const { postUrl } = useBlogUrl()
 </script>
 
 <template>
-  <div class="flex justify-center overflow-x-clip">
-    <!-- Main content -->
-    <div class="w-full flex flex-col items-center relative z-10">
-      <!-- Hero Section -->
-      <section class="p-6 w-full">
-        <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
-          <div class="max-w-5xl mx-auto min-md:px-6">
-            <span class="block text-[11px] font-mono uppercase tracking-widest text-sky-400 mb-1">
-              {{ t('sections.blog') }}
-            </span>
-            <h1
-              class="text-2xl sm:text-3xl font-medium text-neutral-900 dark:text-neutral-100 mt-2"
-              style="font-family: 'Fenix', serif"
-              :aria-label="t('blog.title')"
-            >
-              <UiScrambleText :text="t('blog.title')" />
-            </h1>
-            <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-3 max-w-xl">
-              {{ t('blog.description') }}
-            </p>
-            <div class="flex items-center gap-4 mt-4">
-              <span class="text-[11px] font-mono uppercase tracking-widest text-neutral-500">
-                {{ postCount }}
-              </span>
-              <a
-                href="https://github.com/sponsors/kbrdn1"
-                target="_blank"
-                rel="noopener noreferrer"
-                :class="
-                  cn(
-                    'inline-flex items-center gap-1.5 px-3 py-1',
-                    'text-[11px] font-mono uppercase tracking-wider',
-                    'text-pink-500 border border-pink-500/30 bg-pink-500/5',
-                    'hover:bg-pink-500/10 hover:border-pink-500/50 transition-colors',
-                  )
-                "
-              >
-                <UIcon name="i-heroicons-heart" class="w-3 h-3" />
-                Sponsor
-              </a>
-            </div>
-          </div>
-        </UiAnimatedSection>
-      </section>
-
-      <!-- Tag filter bar + Posts -->
-      <div ref="blogListRef" class="scroll-mt-20" />
-      <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
-        <!-- Tag filters + View toggle -->
-        <UiAnimatedSection animation="fadeInUp" :delay="100" :duration="500">
-          <div class="flex items-center gap-3">
-            <!-- Tags -->
-            <div class="flex-1 flex gap-2 overflow-x-auto pb-2 -mb-2 scrollbar-none">
-              <button
-                :class="
-                  cn(
-                    'shrink-0 px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors',
-                    !activeTag
-                      ? 'bg-primary-500/10 border-primary-500 text-primary-500'
-                      : 'border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:border-primary-500/50 hover:text-primary-500',
-                  )
-                "
-                @click="activeTag = null"
-              >
-                {{ t('blog.allTags') }}
-              </button>
-              <button
-                v-for="tag in allTags"
-                :key="tag"
-                :class="
-                  cn(
-                    'shrink-0 px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors',
-                    activeTag === tag
-                      ? 'bg-primary-500/10 border-primary-500 text-primary-500'
-                      : 'border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:border-primary-500/50 hover:text-primary-500',
-                  )
-                "
-                @click="activeTag = tag"
-              >
-                {{ tag }}
-              </button>
-            </div>
-
-            <!-- View mode toggle - Desktop -->
-            <div
-              class="hidden sm:flex items-center gap-1 shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3"
-            >
-              <UTooltip
-                v-for="mode in ['list', 'cards', 'compact'] as const"
-                :key="mode"
-                :text="
-                  mode === 'list'
-                    ? t('blog.viewList')
-                    : mode === 'cards'
-                      ? t('blog.viewCards')
-                      : t('blog.viewCompact')
-                "
-              >
-                <button
-                  :class="
-                    cn(
-                      'p-1.5 transition-all cursor-pointer',
-                      viewMode === mode
-                        ? 'text-primary-500 bg-primary-500/10'
-                        : 'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300',
-                    )
-                  "
-                  @click="viewMode = mode"
-                >
-                  <UIcon
-                    :name="
-                      mode === 'list'
-                        ? 'i-heroicons-bars-3'
-                        : mode === 'cards'
-                          ? 'i-heroicons-squares-2x2'
-                          : 'i-heroicons-list-bullet'
-                    "
-                    class="w-4 h-4"
-                  />
-                </button>
-              </UTooltip>
-            </div>
-
-            <!-- View mode toggle - Mobile dropdown -->
-            <div
-              class="sm:hidden relative shrink-0 border-l border-neutral-200 dark:border-neutral-800 pl-3"
-            >
-              <button
-                class="p-1.5 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-all"
-                @click="showViewDropdown = !showViewDropdown"
-              >
-                <UIcon
-                  :name="
-                    viewMode === 'list'
-                      ? 'i-heroicons-bars-3'
-                      : viewMode === 'cards'
-                        ? 'i-heroicons-squares-2x2'
-                        : 'i-heroicons-list-bullet'
-                  "
-                  class="w-4 h-4"
-                />
-              </button>
-              <Transition
-                enter-active-class="transition-all duration-150 ease-out"
-                enter-from-class="opacity-0 scale-95"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-100 ease-in"
-                leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-95"
-              >
-                <div
-                  v-if="showViewDropdown"
-                  class="absolute right-0 top-full mt-1 z-20 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg"
-                >
-                  <button
-                    v-for="mode in ['list', 'cards', 'compact'] as const"
-                    :key="mode"
-                    :class="
-                      cn(
-                        'flex items-center gap-2 w-full px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
-                        viewMode === mode
-                          ? 'text-primary-500 bg-primary-500/10'
-                          : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-50 dark:hover:bg-neutral-800',
-                      )
-                    "
-                    @click="selectViewMode(mode)"
-                  >
-                    <UIcon
-                      :name="
-                        mode === 'list'
-                          ? 'i-heroicons-bars-3'
-                          : mode === 'cards'
-                            ? 'i-heroicons-squares-2x2'
-                            : 'i-heroicons-list-bullet'
-                      "
-                      class="w-4 h-4"
-                    />
-                    {{
-                      mode === 'list'
-                        ? t('blog.viewList')
-                        : mode === 'cards'
-                          ? t('blog.viewCards')
-                          : t('blog.viewCompact')
-                    }}
-                  </button>
-                </div>
-              </Transition>
-            </div>
-          </div>
-        </UiAnimatedSection>
-
-        <!-- Blog posts -->
-        <UiAnimatedSection animation="fadeInUp" :delay="150" :duration="500">
-          <!-- List view (oxc.rs style) -->
-          <TransitionGroup
-            v-if="viewMode === 'list' && paginatedPosts.length > 0"
-            tag="div"
-            class="divide-y divide-neutral-200 dark:divide-neutral-800"
-            enter-active-class="blog-item-enter"
-            leave-active-class="blog-item-leave"
-            enter-from-class="blog-item-from"
-            enter-to-class="blog-item-to"
-            leave-from-class="blog-item-to"
-            leave-to-class="blog-item-from"
+  <div class="mx-auto w-full max-w-5xl space-y-8 px-4 pt-6 pb-20 sm:px-6">
+    <!-- Intro, open on the page like the home's hero -->
+    <!-- The scene beside it, under it on a phone -->
+    <section
+      class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="min-w-0 flex-1">
+        <p class="eyebrow">{{ t('sections.blog') }}</p>
+        <h1
+          class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
+          :aria-label="t('blog.title')"
+        >
+          <UiScrambleText :text="t('blog.title')" />
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {{ t('blog.description') }}
+        </p>
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <span class="eyebrow">{{ postCount }}</span>
+          <a
+            href="https://github.com/sponsors/kbrdn1"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline btn-sm"
           >
-            <BlogPostRow
-              v-for="(post, index) in paginatedPosts"
-              :key="post.path"
-              :post="post"
-              :show-author="true"
-              :style="{ transitionDelay: `${index * 50}ms` }"
-            />
-          </TransitionGroup>
+            <UIcon name="i-heroicons-heart" class="size-4 text-pink-500" aria-hidden="true" />
+            Sponsor
+          </a>
+        </div>
+      </div>
+      <UiPixelScene scene="blog" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
+    </section>
 
-          <!-- Cards view -->
-          <TransitionGroup
-            v-else-if="viewMode === 'cards' && paginatedPosts.length > 0"
-            tag="div"
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            enter-active-class="blog-item-enter"
-            leave-active-class="blog-item-leave"
-            enter-from-class="blog-item-from"
-            enter-to-class="blog-item-to"
-            leave-from-class="blog-item-to"
-            leave-to-class="blog-item-from"
+    <div ref="blogListRef" class="scroll-mt-28" />
+    <!-- After disarto's notes panel: a filter bar, the posts as cards, the pages in the
+           footer -->
+    <UiPanel>
+      <div class="panel-card flex items-center gap-3 p-2">
+        <!-- Tags: toggles, one at a time -->
+        <div class="flex flex-1 gap-1 overflow-x-auto scrollbar-none">
+          <button
+            type="button"
+            class="segment shrink-0"
+            :aria-pressed="!activeTag"
+            @click="activeTag = null"
           >
-            <NuxtLink
-              v-for="(post, index) in paginatedPosts"
-              :key="post.path"
-              :to="postUrl(post)"
-              :class="
-                cn(
-                  'relative isolate block p-5 border border-neutral-200 dark:border-neutral-800 overflow-hidden',
-                  'hover:border-primary-500/50 transition-all group',
-                )
-              "
-              :style="{ transitionDelay: `${index * 60}ms` }"
+            {{ t('blog.allTags') }}
+          </button>
+          <button
+            v-for="tag in allTags"
+            :key="tag"
+            type="button"
+            class="segment shrink-0"
+            :aria-pressed="activeTag === tag"
+            @click="activeTag = tag"
+          >
+            {{ tag }}
+          </button>
+        </div>
+
+        <!-- View mode -->
+        <div class="segmented shrink-0">
+          <UTooltip v-for="view in VIEW_MODES" :key="view.mode" :text="t(view.label)">
+            <button
+              type="button"
+              class="segment px-2"
+              :aria-label="t(view.label)"
+              :aria-pressed="viewMode === view.mode"
+              @click="viewMode = view.mode"
+            >
+              <UIcon :name="view.icon" class="size-4" aria-hidden="true" />
+            </button>
+          </UTooltip>
+          <UiSegmentInk />
+        </div>
+      </div>
+
+      <UiAutoHeight>
+        <!-- The three views stay mounted, only their rows change: switching view, tag or
+             page, the old rows close one after the other while the new ones open -->
+        <!-- List view: a card per post -->
+        <TransitionGroup
+          tag="div"
+          class="mt-1 space-y-1 empty:hidden"
+          :css="false"
+          @enter="rowEnter"
+          @leave="rowLeave"
+        >
+          <BlogPostRow
+            v-for="(post, index) in viewMode === 'list' ? paginatedPosts : []"
+            :key="post.path"
+            :post="post"
+            :show-author="true"
+            :style="{ '--i': index }"
+          />
+        </TransitionGroup>
+
+        <!-- Cards view: the banner on top, through the pixel layer -->
+        <TransitionGroup
+          tag="div"
+          class="relative mt-1 grid grid-cols-1 gap-1 empty:hidden sm:grid-cols-2"
+          :css="false"
+          @enter="rowEnter"
+          @leave="rowLeave"
+        >
+          <!-- After disarto's event card: the banner full width on top, the card over its
+                 bottom edge (tag and reading time, title, summary, then date, author and tags
+                 between dashed rules), the call to read in the footer -->
+          <NuxtLink
+            v-for="(post, index) in viewMode === 'cards' ? paginatedPosts : []"
+            :key="post.path"
+            :to="postUrl(post)"
+            class="panel group relative isolate flex flex-col overflow-hidden p-0 transition-colors hover:border-primary-500/50"
+            :style="{ '--i': index }"
+          >
+            <ClientOnly v-if="post.banner">
+              <div class="-mb-5 h-44 overflow-hidden">
+                <UiPixelImage :src="bannerOf(post)" class="size-full" reveal />
+              </div>
+            </ClientOnly>
+            <!-- In glass, a translucent card: it frosts the banner's edge it covers -->
+            <div
+              class="panel-card relative z-10 mx-1 flex flex-1 flex-col overflow-hidden p-5 blur:backdrop-blur-xl blur:backdrop-saturate-150"
             >
               <UiPixelCanvas />
-              <!-- Thumbnail fade (if banner) -->
-              <ClientOnly v-if="post.banner">
-                <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
-                  <NuxtImg
-                    :src="
-                      post.bannerImage ||
-                      ($colorMode.value === 'dark'
-                        ? '/images/banners/dark.jpg'
-                        : '/images/banners/light.jpg')
-                    "
-                    alt=""
-                    class="w-full h-full object-cover"
-                  />
-                  <UiDitherCanvas class="absolute inset-0 h-full w-full" />
-                  <div
-                    class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-[#121212]"
-                  />
-                </div>
-              </ClientOnly>
-              <div class="relative z-10">
-                <span
-                  v-if="post.publishedAt"
-                  class="block text-[10px] font-mono text-neutral-500 mb-2"
-                >
-                  {{ formatDate(post.publishedAt) }}
-                </span>
-                <h3
-                  class="text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors"
-                  style="font-family: 'Fenix', serif"
-                >
-                  {{ post.title }}
-                </h3>
-                <p
-                  v-if="post.description"
-                  class="text-xs text-neutral-500 dark:text-neutral-400 mt-2 line-clamp-2"
-                >
-                  {{ post.description }}
+              <div class="flex items-start justify-between gap-3">
+                <UiTag v-if="post.tags?.length" :label="post.tags[0]!" variant="auto" />
+                <p class="ml-auto shrink-0 text-2xl text-green-600 dark:text-green-500">
+                  <UiRollingNumber :value="readingTime(post.body)" />
+                  <span class="text-base text-neutral-500 dark:text-neutral-400"
+                    >/ {{ t('blog.readingTime') }}</span
+                  >
                 </p>
-                <div v-if="post.tags?.length" class="flex flex-wrap gap-1.5 mt-3">
-                  <UiTag
-                    v-for="tag in post.tags.slice(0, 3)"
-                    :key="tag"
-                    :label="tag"
-                    variant="auto"
-                  />
-                </div>
               </div>
-            </NuxtLink>
-          </TransitionGroup>
-
-          <!-- Compact view -->
-          <TransitionGroup
-            v-else-if="viewMode === 'compact' && paginatedPosts.length > 0"
-            tag="div"
-            class="space-y-1"
-            enter-active-class="blog-item-enter"
-            leave-active-class="blog-item-leave"
-            enter-from-class="blog-item-from"
-            enter-to-class="blog-item-to"
-            leave-from-class="blog-item-to"
-            leave-to-class="blog-item-from"
-          >
-            <NuxtLink
-              v-for="(post, index) in paginatedPosts"
-              :key="post.path"
-              :style="{ transitionDelay: `${index * 40}ms` }"
-              :to="postUrl(post)"
-              class="flex items-center gap-4 py-2 px-2 -mx-2 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30"
-            >
-              <span
-                v-if="post.publishedAt"
-                class="shrink-0 w-24 text-[10px] font-mono text-neutral-500"
+              <h3
+                class="mt-3 text-xl tracking-tight text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
               >
+                {{ post.title }}
+              </h3>
+              <p
+                v-if="post.description"
+                class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
+              >
+                {{ post.description }}
+              </p>
+
+              <!-- Date and tag count on one mono line, between dashed rules -->
+              <p
+                class="eyebrow mt-auto flex items-center gap-2 border-y border-dashed border-(--card-border) py-2.5"
+              >
+                <UIcon name="i-heroicons-calendar" class="size-3.5" aria-hidden="true" />
+                <template v-if="post.publishedAt">{{
+                  formatDate(post.publishedAt, 'short')
+                }}</template>
+                <template v-if="post.tags?.length">
+                  · {{ post.tags.length }} {{ t('blogNav.tags').toLowerCase() }}
+                </template>
+              </p>
+              <div v-if="post.tags && post.tags.length > 1" class="flex flex-wrap gap-1.5 pt-4">
+                <UiTag
+                  v-for="tag in post.tags.slice(1, 4)"
+                  :key="tag"
+                  :label="tag"
+                  variant="auto"
+                />
+              </div>
+            </div>
+            <div class="flex items-center justify-between gap-3 py-2.5 pr-2 pl-4">
+              <span class="eyebrow">{{ t('sections.blog') }}</span>
+              <span class="btn btn-primary btn-sm">
+                {{ t('blog.read') }}
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </span>
+            </div>
+          </NuxtLink>
+          <!-- An odd page leaves a hole beside the last card: a hatched placeholder fills it -->
+          <div
+            v-if="viewMode === 'cards' && paginatedPosts.length % 2"
+            key="next-post"
+            class="panel hidden sm:flex"
+          >
+            <div
+              class="panel-card hatched flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center"
+            >
+              <UIcon
+                name="i-heroicons-pencil-square"
+                class="size-5 text-(--label)"
+                aria-hidden="true"
+              />
+              <p class="eyebrow">{{ t('blog.nextPost.eyebrow') }}</p>
+              <p class="max-w-56 text-sm text-neutral-600 dark:text-neutral-400">
+                {{ t('blog.nextPost.text') }}
+              </p>
+            </div>
+          </div>
+        </TransitionGroup>
+
+        <!-- Compact view: dashed rows in one card -->
+        <TransitionGroup
+          tag="ul"
+          class="panel-card mt-1 divide-y divide-dashed divide-(--card-border) px-5 empty:hidden"
+          :css="false"
+          @enter="rowEnter"
+          @leave="rowLeave"
+        >
+          <li
+            v-for="(post, index) in viewMode === 'compact' ? paginatedPosts : []"
+            :key="post.path"
+            :style="{ '--i': index }"
+          >
+            <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+              <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
                 {{ formatDate(post.publishedAt) }}
               </span>
               <span
-                class="text-sm text-primary-500 group-hover:text-primary-400 transition-colors truncate"
+                class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
               >
                 {{ post.title }}
               </span>
             </NuxtLink>
-          </TransitionGroup>
+          </li>
+        </TransitionGroup>
 
-          <!-- Pagination -->
-          <nav
-            v-if="totalPages > 1"
-            class="flex items-center justify-center gap-1 mt-8"
-            aria-label="Pagination"
+        <!-- Empty state -->
+        <div
+          v-if="filteredPosts.length === 0"
+          class="panel-card mt-1 flex flex-col items-center justify-center py-20 text-center"
+        >
+          <UiMascot mood="thinking" :size="80" class="mb-4" />
+          <p class="eyebrow">{{ t('blog.noArticles') }}</p>
+        </div>
+      </UiAutoHeight>
+
+      <template v-if="totalPages > 1" #meta>
+        {{ String(currentPage).padStart(2, '0') }} / {{ String(totalPages).padStart(2, '0') }}
+      </template>
+      <template v-if="totalPages > 1" #footer>
+        <nav class="flex items-center gap-1" aria-label="Pagination">
+          <button
+            type="button"
+            class="icon-btn disabled:pointer-events-none disabled:opacity-40"
+            :disabled="currentPage === 1"
+            :aria-label="t('explore.previous')"
+            @click="goToPage(currentPage - 1)"
           >
-            <!-- Prev -->
+            <UIcon name="i-heroicons-chevron-left-20-solid" class="size-4" aria-hidden="true" />
+          </button>
+          <template v-for="page in pageNumbers" :key="page">
+            <span v-if="page === '...'" class="eyebrow px-1">…</span>
             <button
-              :disabled="currentPage === 1"
-              :class="
-                cn(
-                  'px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all',
-                  'border border-neutral-200 dark:border-neutral-800',
-                  currentPage === 1
-                    ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                    : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
-                )
-              "
-              @click="goToPage(currentPage - 1)"
+              v-else
+              type="button"
+              class="segment min-w-8 px-2"
+              :aria-current="currentPage === page ? 'page' : undefined"
+              @click="goToPage(page as number)"
             >
-              <UIcon name="i-heroicons-chevron-left" class="w-3.5 h-3.5" />
+              {{ page }}
             </button>
-
-            <!-- Page numbers -->
-            <template v-for="page in pageNumbers" :key="page">
-              <span v-if="page === '...'" class="px-2 py-1.5 text-xs font-mono text-neutral-400">
-                ...
-              </span>
-              <button
-                v-else
-                :class="
-                  cn(
-                    'min-w-[32px] px-2 py-1.5 text-xs font-mono transition-all',
-                    'border',
-                    currentPage === page
-                      ? 'text-primary-500 border-primary-500/50 bg-primary-500/10'
-                      : 'text-neutral-500 border-neutral-200 dark:border-neutral-800 hover:text-primary-500 hover:border-primary-500/50',
-                  )
-                "
-                @click="goToPage(page as number)"
-              >
-                {{ page }}
-              </button>
-            </template>
-
-            <!-- Next -->
-            <button
-              :disabled="currentPage === totalPages"
-              :class="
-                cn(
-                  'px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-all',
-                  'border border-neutral-200 dark:border-neutral-800',
-                  currentPage === totalPages
-                    ? 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'
-                    : 'text-neutral-500 hover:text-primary-500 hover:border-primary-500/50',
-                )
-              "
-              @click="goToPage(currentPage + 1)"
-            >
-              <UIcon name="i-heroicons-chevron-right" class="w-3.5 h-3.5" />
-            </button>
-          </nav>
-
-          <!-- Empty state -->
-          <div
-            v-if="filteredPosts.length === 0"
-            class="flex flex-col items-center justify-center py-20 text-center"
+          </template>
+          <button
+            type="button"
+            class="icon-btn disabled:pointer-events-none disabled:opacity-40"
+            :disabled="currentPage === totalPages"
+            :aria-label="t('explore.next')"
+            @click="goToPage(currentPage + 1)"
           >
-            <UiMascot mood="thinking" :size="80" class="mb-4" />
-            <p class="text-sm text-neutral-500 font-mono">
-              {{ t('blog.noArticles') }}
-            </p>
-          </div>
-        </UiAnimatedSection>
-      </main>
+            <UIcon name="i-heroicons-chevron-right-20-solid" class="size-4" aria-hidden="true" />
+          </button>
+        </nav>
+      </template>
+    </UiPanel>
 
-      <!-- Explore Section -->
-      <HomeExplore />
-    </div>
+    <!-- Explore: a carousel, its own panel -->
+    <HomeExplore />
   </div>
 </template>
