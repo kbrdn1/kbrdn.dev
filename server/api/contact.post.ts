@@ -37,15 +37,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Invalid field type' })
   }
 
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(body.email)) {
-    throw createError({
-      statusCode: 400,
-      message: 'Invalid email format',
-    })
-  }
-
+  // Lengths first: the email pattern backtracks quadratically, so an unbounded address would
+  // hold the event loop for seconds before being turned down
   if (
     body.name.length > MAX.name ||
     body.email.length > MAX.email ||
@@ -53,6 +46,15 @@ export default defineEventHandler(async (event) => {
     (body.company?.length ?? 0) > MAX.company
   ) {
     throw createError({ statusCode: 400, message: 'Field too long' })
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(body.email)) {
+    throw createError({
+      statusCode: 400,
+      message: 'Invalid email format',
+    })
   }
 
   const name = escapeHtml(body.name)
