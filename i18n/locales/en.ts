@@ -501,6 +501,7 @@ export default {
     checked: 'GitHub checked at {time}',
     feedTitle: 'Recent GitHub activity',
     feedCount: '{count} entries',
+    feedEmpty: 'Nothing public on GitHub lately.',
     more: 'More on GitHub',
     showMore: 'Show more',
     today: 'Today',

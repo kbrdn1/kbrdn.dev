@@ -262,13 +262,13 @@ const TAG: Record<string, string> = {
               </li>
             </ul>
 
-            <!-- Error -->
+            <!-- Error, or nothing public lately: two different things to say -->
             <p
               v-else-if="status === 'error' || !items.length"
               class="flex items-center justify-center gap-3 py-10 text-sm text-neutral-500"
             >
-              <UiMascot mood="sad" :size="40" />
-              {{ t('github.error') }}
+              <UiMascot :mood="status === 'error' ? 'sad' : 'thinking'" :size="40" />
+              {{ status === 'error' ? t('github.error') : t('activityPage.feedEmpty') }}
             </p>
 
             <div v-else>
