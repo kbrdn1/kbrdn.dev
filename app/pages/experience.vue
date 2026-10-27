@@ -275,7 +275,7 @@ const STATUS_CLASS: Record<string, string> = {
               :key="tab"
               type="button"
               role="tab"
-              class="segment flex-1"
+              class="segment h-auto min-h-7 min-w-0 flex-1 py-1 text-center leading-tight whitespace-normal"
               :aria-selected="osTab === tab"
               :aria-controls="`os-panel-${tab}`"
               :tabindex="osTab === tab ? 0 : -1"
