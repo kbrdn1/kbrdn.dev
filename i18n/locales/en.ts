@@ -624,6 +624,10 @@ export default {
     linkCopied: 'Link copied!',
     moreArticles: 'More articles',
     notFound: 'Article not found',
+    nextPost: {
+      eyebrow: 'Up next',
+      text: "The next post's spot, still being written.",
+    },
   },
 
   // Error Page

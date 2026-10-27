@@ -185,6 +185,15 @@
     background: var(--card-bg);
   }
 
+  /* An empty slot: hairlines on the diagonal over the card */
+  .hatched {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--label) 22%, transparent) 0 1px,
+      transparent 1px 9px
+    );
+  }
+
   /* Mono capitals above a figure or a list, and the "A · B" meta lines */
   .eyebrow {
     font-family: var(--font-mono);

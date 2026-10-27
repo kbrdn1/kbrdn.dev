@@ -625,6 +625,10 @@ export default {
     linkCopied: 'Lien copié !',
     moreArticles: "Plus d'articles",
     notFound: 'Article non trouvé',
+    nextPost: {
+      eyebrow: 'À suivre',
+      text: "La place du prochain article, en cours d'écriture.",
+    },
   },
 
   // Error Page

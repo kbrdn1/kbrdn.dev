@@ -295,6 +295,26 @@ const { postUrl } = useBlogUrl()
               </span>
             </div>
           </NuxtLink>
+          <!-- An odd page leaves a hole beside the last card: a hatched placeholder fills it -->
+          <div
+            v-if="viewMode === 'cards' && paginatedPosts.length % 2"
+            key="next-post"
+            class="panel hidden sm:flex"
+          >
+            <div
+              class="panel-card hatched flex flex-1 flex-col items-center justify-center gap-2 p-6 text-center"
+            >
+              <UIcon
+                name="i-heroicons-pencil-square"
+                class="size-5 text-(--label)"
+                aria-hidden="true"
+              />
+              <p class="eyebrow">{{ t('blog.nextPost.eyebrow') }}</p>
+              <p class="max-w-56 text-sm text-neutral-600 dark:text-neutral-400">
+                {{ t('blog.nextPost.text') }}
+              </p>
+            </div>
+          </div>
         </TransitionGroup>
 
         <!-- Compact view: dashed rows in one card -->
