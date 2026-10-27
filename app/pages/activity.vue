@@ -17,6 +17,7 @@ useSeoMeta({
 useSiteOgImage('Default', {
   title: t('activityPage.ogTitle'),
   subtitle: t('activityPage.ogSubtitle'),
+  scene: 'commits',
 })
 
 const { data, status } = useFetch('/api/github/activity', {

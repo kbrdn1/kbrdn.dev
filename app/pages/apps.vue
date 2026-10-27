@@ -17,6 +17,7 @@ useSeoMeta({
 useSiteOgImage('Default', {
   title: t('appsPage.ogTitle'),
   subtitle: t('appsPage.ogSubtitle'),
+  scene: 'terminal',
 })
 
 const RAW = 'https://raw.githubusercontent.com/kbrdn1'

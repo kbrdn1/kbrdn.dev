@@ -2,10 +2,19 @@
 // The pages' OG image, the repos' banners' card (disarto's "Deployment" sheets): the dither
 // field, two dashed construction lines along the panel's sides, nothing else outside it. The
 // panel: a header (the handle, the window's icons), the card (the name and the title in Fenix,
-// the buttons; the drawn portrait and the facts; the career in figures on the home, the stack
-// elsewhere), a footer (icons, the address in mono, a button).
+// the buttons; the drawn portrait, or the page's pixel scene, and the facts; the career in
+// figures on the home, the stack elsewhere), a footer (icons, the address in mono, a button).
 // Satori: every style on one line (its gradient parser fails on split values), every box
 // with several children a flex box.
+import {
+  PIXEL_SCENES,
+  SCENE_H,
+  SCENE_OG_TICK,
+  SCENE_W,
+  sceneColor,
+  type PixelSceneName,
+} from '~/utils/pixelScenes'
+
 const props = withDefaults(defineProps<{
   title?: string
   subtitle?: string
@@ -18,6 +27,8 @@ const props = withDefaults(defineProps<{
   figures?: { label: string, value: number | string }[]
   stack?: string[]
   avatar?: string
+  /** The page's pixel scene (utils/pixelScenes) in place of the portrait */
+  scene?: PixelSceneName
 }>(), {
   title: 'Kylian Bardini',
   subtitle: 'Full Stack Developer',
@@ -30,6 +41,17 @@ const props = withDefaults(defineProps<{
   figures: () => [],
   stack: () => ['TypeScript', 'Vue', 'Nuxt', 'Laravel', 'AWS', 'Rust'],
   avatar: '/images/og/avatar.png',
+  scene: undefined,
+})
+
+// The scene at its best moment, in the dark theme's colours (no CSS in satori)
+const sceneCells = computed(() => {
+  if (!props.scene) return []
+  const scene = PIXEL_SCENES[props.scene]
+  return [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
+    const color = sceneColor(cell.c)
+    return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
+  })
 })
 
 const handle = computed(() => props.handle.replace(/^@/, ''))
@@ -80,9 +102,14 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
             </div>
           </div>
 
-          <!-- The drawn portrait and the facts -->
+          <!-- The drawn portrait, or the page's scene, and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div class="flex items-end justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+            <div v-if="scene" class="flex items-center justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <svg width="208" height="156" :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`" shape-rendering="crispEdges">
+                <rect v-for="(cell, i) in sceneCells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
+              </svg>
+            </div>
+            <div v-else class="flex items-end justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
               <img :src="avatar" alt="" width="196" height="196" style="width: 196px; height: 196px; margin-bottom: -24px;" />
             </div>
             <div class="flex flex-col" style="gap: 9px;">

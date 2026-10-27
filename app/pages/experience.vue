@@ -17,6 +17,7 @@ useSeoMeta({
 useSiteOgImage('Default', {
   title: t('experiencePage.ogTitle'),
   subtitle: t('experiencePage.ogSubtitle'),
+  scene: 'climb',
 })
 
 const period = (start: string, end: string | null) =>

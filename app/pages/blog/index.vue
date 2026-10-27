@@ -23,6 +23,7 @@ useSiteOgImage('Default', {
   title: t('blog.title'),
   subtitle: 'blog@kbrdn1',
   description: t('blog.description'),
+  scene: 'blog',
 })
 
 // Active tag filter
