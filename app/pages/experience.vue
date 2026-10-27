@@ -93,6 +93,8 @@ const figures = [
   { key: 'studies', value: STUDIES.length },
 ]
 
+const cvUrl = useCvUrl()
+
 // A project's links: its public site, the blog post about it
 const { postUrl } = useBlogUrl()
 const projectLinks = (p: (typeof PROJECTS)[number]) => [
@@ -369,6 +371,27 @@ const list = (key: string, count: number) =>
         </ExperienceTimeline>
       </UiPanel>
     </section>
+
+    <!-- The CV, between the roles and the degrees; only once its address is set -->
+    <UiPanel v-if="cvUrl">
+      <div class="panel-card flex flex-wrap items-center gap-x-5 gap-y-4 p-5 sm:p-6">
+        <span class="icon-box size-11">
+          <UIcon name="i-lucide-file-text" class="size-5 text-neutral-500" aria-hidden="true" />
+        </span>
+        <div class="min-w-0 flex-1">
+          <h2 class="text-[17px] text-neutral-900 dark:text-neutral-100">
+            {{ t('experiencePage.cv.title') }}
+          </h2>
+          <p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+            {{ t('experiencePage.cv.text') }}
+          </p>
+        </div>
+        <a :href="cvUrl" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+          <UIcon name="i-heroicons-arrow-down-tray-20-solid" class="size-4" aria-hidden="true" />
+          {{ t('experiencePage.cv.download') }}
+        </a>
+      </div>
+    </UiPanel>
 
     <!-- Education -->
     <section id="education" aria-labelledby="education-heading" class="scroll-mt-28">

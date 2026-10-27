@@ -210,6 +210,8 @@ jobs:
             GIT_SHA=${{ steps.sha.outputs.value }}
             APP_VERSION=${{ needs.resolve.outputs.version }}
             APP_ENV=${{ needs.resolve.outputs.env }}
+            CV_URL_FR=${{ vars.CV_URL_FR }}
+            CV_URL_EN=${{ vars.CV_URL_EN }}
           tags: ${{ needs.resolve.outputs.image }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

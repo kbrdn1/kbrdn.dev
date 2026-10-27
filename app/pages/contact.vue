@@ -50,6 +50,8 @@ async function handleSubmit() {
   }
 }
 
+const cvUrl = useCvUrl()
+
 const SOCIALS = [
   { href: 'https://github.com/kbrdn1', icon: 'i-simple-icons-github', label: 'GitHub' },
   {
@@ -244,6 +246,24 @@ const SOCIALS = [
                 class="text-sm text-neutral-900 hover:text-(--accent-text) dark:text-neutral-100"
               >
                 hello@kbrdn.dev
+              </a>
+            </dd>
+          </div>
+          <div v-if="cvUrl" class="py-4">
+            <dt class="eyebrow">{{ t('contactPage.cv') }}</dt>
+            <dd class="mt-1">
+              <a
+                :href="cvUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 text-sm text-neutral-900 hover:text-(--accent-text) dark:text-neutral-100"
+              >
+                <UIcon
+                  name="i-heroicons-arrow-down-tray-20-solid"
+                  class="size-4"
+                  aria-hidden="true"
+                />
+                {{ t('contactPage.cvDownload') }}
               </a>
             </dd>
           </div>

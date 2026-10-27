@@ -37,6 +37,12 @@ ARG APP_ENV=""
 ENV GIT_SHA=$GIT_SHA
 ENV APP_VERSION=$APP_VERSION
 ENV APP_ENV=$APP_ENV
+# Les adresses des CV, hébergés hors du repo (qui est public) : figées au build depuis
+# les variables du dépôt, pour la même raison qu'APP_ENV. Vides, le site n'en parle pas.
+ARG CV_URL_FR=""
+ARG CV_URL_EN=""
+ENV CV_URL_FR=$CV_URL_FR
+ENV CV_URL_EN=$CV_URL_EN
 
 # Copy installed dependencies
 COPY --from=deps /app/node_modules ./node_modules

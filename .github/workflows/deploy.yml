@@ -98,6 +98,8 @@ jobs:
           build-args: |
             GIT_SHA=${{ github.sha }}
             APP_ENV=${{ needs.resolve.outputs.env }}
+            CV_URL_FR=${{ vars.CV_URL_FR }}
+            CV_URL_EN=${{ vars.CV_URL_EN }}
           tags: |
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:${{ needs.resolve.outputs.image_tag }}
             ${{ env.REGISTRY }}/${{ steps.name.outputs.name }}:sha-${{ github.sha }}

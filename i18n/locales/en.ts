@@ -292,6 +292,11 @@ export default {
     stack: 'Stack',
     missions: 'Missions',
     skills: 'Learned',
+    cv: {
+      title: 'CV',
+      text: 'The journey on one page, up to date, as a PDF.',
+      download: 'Download the CV',
+    },
     figures: {
       months: 'Months at work',
       projects: 'Client projects',
@@ -451,6 +456,8 @@ export default {
     availability: 'Availability',
     email: 'Email',
     socials: 'Elsewhere',
+    cv: 'CV',
+    cvDownload: 'Download (PDF)',
     write: 'Write a message',
   },
 

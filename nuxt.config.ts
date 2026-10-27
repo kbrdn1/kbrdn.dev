@@ -103,6 +103,14 @@ export default defineNuxtConfig({
     // Nuxt `NUXT_<CLÉ>` — c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
     // fois le build figé.
     appEnv: process.env.APP_ENV || 'local',
+    public: {
+      // Les CV (FR, EN) sont hébergés hors du repo, qui est public : leurs adresses
+      // arrivent en build-args depuis les variables du dépôt (vars.CV_URL_FR / _EN),
+      // surchargeables à l'exécution par NUXT_PUBLIC_CV_URL_FR / _EN. Vides, les
+      // sections qui proposent le CV ne s'affichent pas.
+      cvUrlFr: process.env.CV_URL_FR || '',
+      cvUrlEn: process.env.CV_URL_EN || '',
+    },
   },
 
   app: {
