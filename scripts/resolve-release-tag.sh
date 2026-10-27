@@ -6,7 +6,7 @@
 #   v1.1.0        →  env=prod     prerelease=false  notes=changelogs/1.1.0.md
 #   v1.1.0-rc.2   →  env=preprod  prerelease=true   notes=changelogs/pre-releases/1.1.0-rc.2.md
 #
-# Vit ici et pas inline dans release.yml pour être rejouable hors CI —
+# Vit ici et pas inline dans release.yml pour être rejouable hors CI :
 # `scripts/resolve-release-tag.test.sh` en dépend.
 #
 # usage: resolve-release-tag.sh <tag> [repository]

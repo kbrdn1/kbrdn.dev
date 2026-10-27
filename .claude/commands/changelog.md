@@ -4,11 +4,11 @@ argument-hint: "X.Y.Z | X.Y.Z-rc.N"
 allowed-tools: Bash(git :*), Read, Write, Edit
 ---
 
-# /changelog — kbrdn.dev
+# /changelog : kbrdn.dev
 
 Étape 1 du protocole de release ([`docs/RELEASE.md`](../../docs/RELEASE.md)).
 
-Arguments : `$ARGUMENTS` — la version (`1.1.0`) ou le candidat (`1.1.0-rc.1`).
+Arguments : `$ARGUMENTS`, la version (`1.1.0`) ou le candidat (`1.1.0-rc.1`).
 
 ## Format du repo
 
@@ -20,7 +20,7 @@ Un fichier par version, **sans préfixe `v`** :
 Chaque fichier commence par `# [X.Y.Z] - YYYY-MM-DD`, suivi d'un paragraphe de
 résumé puis des sections `### Added` / `### Changed` / `### Fixed`. **En
 anglais.** Les entrées disent ce qui était cassé et pourquoi, pas seulement ce
-qui change — cf. `changelogs/` et les fichiers de `gwm-cli` / `kbrdn-docs`.
+qui change (cf. `changelogs/` et les fichiers de `gwm-cli` / `kbrdn-docs`).
 
 Le `CHANGELOG.md` racine ne porte que la section `## [Unreleased]` en cours,
 plus l'index `## Past releases`.
@@ -61,14 +61,14 @@ plus l'index `## Past releases`.
 La skill `changelog-generator` sait faire un `split`, mais pas vers ce format :
 `renderVersion` réécrit le contenu en `# Version X.Y.Z` + `## Features` /
 `## Fixes` / `## Chores`, ne retient comme détail que les lignes préfixées `>`,
-et déduit la catégorie d'un marqueur en gras — les sections `### Added` sont
+et déduit la catégorie d'un marqueur en gras : les sections `### Added` sont
 ignorées et la prose est perdue. C'est bien pour ça que les fichiers de
 `gwm-cli` et `kbrdn-docs` sont au format `# [X.Y.Z] - date` : ils ne sortent
 pas de cet outil.
 
 Et son `--clean` supprime tout `.md` de `changelogs/` absent du `CHANGELOG.md`
 courant (`findOrphans`). Comme le root ne garde qu'`[Unreleased]`, un second cut
-effacerait **toutes** les versions déjà publiées — et le tag suivant échouerait
+effacerait **toutes** les versions déjà publiées, et le tag suivant échouerait
 sur le `test -f "$NOTES"` de `release.yml`.
 
 La migration est une copie de section : la faire à la main coûte moins cher que
@@ -78,5 +78,5 @@ de contourner un outil qui vise un autre format.
 
 - Le fichier de notes **doit** exister avant de pousser le tag : `release.yml`
   refuse de publier sans lui, après le build mais avant le déploiement.
-- La release GitHub est un snapshot — corriger le `.md` après coup ne la met pas
+- La release GitHub est un snapshot : corriger le `.md` après coup ne la met pas
   à jour (`gh release edit vX.Y.Z --notes-file changelogs/X.Y.Z.md`).

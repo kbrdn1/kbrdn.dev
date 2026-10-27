@@ -53,7 +53,7 @@ jobs:
           if [[ "$TITLE" =~ ^[^A-Za-z]*[[:space:]]*(feat|fix|hotfix|chore|refactor|docs|style|test|perf|config)(\([a-z0-9-]+\))?:[[:space:]].+ ]]; then
             echo "ok: $TITLE"
           else
-            echo "::error::titre PR doit suivre '<emoji?> <type>(<scope>): <description>' — reçu: $TITLE"
+            echo "::error::titre PR doit suivre '<emoji?> <type>(<scope>): <description>', reçu: $TITLE"
             exit 1
           fi
 

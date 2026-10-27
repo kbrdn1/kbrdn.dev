@@ -16,7 +16,7 @@ name: Release
 # fichiers ne feraient que diverger.
 #
 # L'aiguillage lui-même vit dans scripts/resolve-release-tag.sh, couvert par
-# scripts/resolve-release-tag.test.sh — se tromper de branche ici publierait
+# scripts/resolve-release-tag.test.sh : se tromper de branche ici publierait
 # un candidat non validé sur kbrdn.dev.
 
 on:
@@ -56,7 +56,7 @@ jobs:
       image: ${{ steps.set.outputs.image }}
     steps:
       # Sur workflow_dispatch, github.ref_name est la branche de lancement et
-      # pas le tag — d'où la préférence donnée à l'input, ici et au checkout.
+      # pas le tag, d'où la préférence donnée à l'input, ici et au checkout.
       # fetch-depth: 0 : le contrôle d'ascendance plus bas a besoin de
       # l'historique, un clone superficiel ne le permet pas.
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
           # `refs/tags/` explicite, et pas le nom nu : `actions/checkout`
           # résout un nom nu comme n'importe quelle ref, donc une branche
           # nommée `v1.2.3` ferait l'affaire. Le préfixe impose que ce soit un
-          # tag, et fait échouer le job si le tag n'existe pas — précondition
+          # tag, et fait échouer le job si le tag n'existe pas, précondition
           # évidente d'une release, que rien ne vérifiait.
           ref: refs/tags/${{ inputs.tag || github.ref_name }}
           fetch-depth: 0
@@ -87,7 +87,7 @@ jobs:
           # du SemVer, pas sur la version complète.
           PKG=$(jq -r .version package.json)
           if [[ "$PKG" != "$CORE" ]]; then
-            echo "::error::package.json version=$PKG mais le tag vise $CORE — bumper package.json avant de taguer"
+            echo "::error::package.json version=$PKG mais le tag vise $CORE ; bumper package.json avant de taguer"
             exit 1
           fi
 
@@ -95,13 +95,13 @@ jobs:
           # sans notes est un snapshot déjà visible, que corriger après coup
           # demande un `gh release edit`.
           if [[ ! -f "$NOTES" ]]; then
-            echo "::error::notes de release manquantes: $NOTES — lancer /changelog $VERSION avant de taguer"
+            echo "::error::notes de release manquantes: $NOTES ; lancer /changelog $VERSION avant de taguer"
             exit 1
           fi
           echo "ok: version=$VERSION notes=$NOTES"
 
       # Un tag doit pointer un commit de la branche dont il est censé sortir :
-      # `main` pour un stable, `dev` pour un candidat. Rien ne l'imposait —
+      # `main` pour un stable, `dev` pour un candidat. Rien ne l'imposait :
       # package.json et les notes existent déjà sur la branche de travail, donc
       # les deux gates au-dessus passaient et prod pouvait recevoir un commit
       # non fusionné. docs/RELEASE.md l'interdit, ce contrôle l'applique.
@@ -118,7 +118,7 @@ jobs:
           if [[ "$ENV" == "prod" ]]; then BRANCH=main; else BRANCH=dev; fi
           git fetch --no-tags --quiet origin "$BRANCH"
           if ! git merge-base --is-ancestor HEAD "origin/$BRANCH"; then
-            echo "::error::$TAG ne pointe pas un commit de $BRANCH — taguer depuis $BRANCH (pour un stable : APRÈS le merge dev → main)"
+            echo "::error::$TAG ne pointe pas un commit de $BRANCH ; taguer depuis $BRANCH (pour un stable : APRÈS le merge dev → main)"
             exit 1
           fi
           echo "ok: $TAG est un ancêtre de origin/$BRANCH"
@@ -139,7 +139,7 @@ jobs:
           ref: refs/tags/${{ needs.resolve.outputs.tag }}
 
       # `github.sha` désigne le commit de la branche de lancement sur un
-      # workflow_dispatch, pas celui du tag demandé — l'image afficherait alors
+      # workflow_dispatch, pas celui du tag demandé : l'image afficherait alors
       # via /api/health un sha sans rapport avec son contenu.
       - name: Resolve tagged sha
         id: sha
@@ -156,8 +156,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Les tags de registre restent mutables : republier `:v1.1.0` écraserait
-      # l'artefact d'origine. Et il ne serait pas identique — `oven/bun:1-alpine`
-      # bouge, `bun install` n'est pas figé — donc le rollback vers une version
+      # l'artefact d'origine. Et il ne serait pas identique : `oven/bun:1-alpine`
+      # bouge, `bun install` n'est pas figé, donc le rollback vers une version
       # ne ramènerait plus ce qui a été publié. C'est précisément la propriété
       # sur laquelle repose `--image ...:vX.Y.Z`, d'où ce garde-fou.
       - name: Image already published?
@@ -168,12 +168,12 @@ jobs:
           set -uo pipefail
           # `if OUT=$(…)` et non `OUT=$(…); RC=$?` : GitHub Actions lance ce
           # step avec `bash -e`, que le `set -uo` ci-dessus ne désactive pas.
-          # Une affectation qui échoue tuerait donc le step avant tout test —
+          # Une affectation qui échoue tuerait donc le step avant tout test ;
           # or elle échoue précisément dans le cas nominal du premier tag,
           # quand l'image n'existe pas encore. Un `if` met la commande en
           # contexte conditionnel, où `set -e` ne mord pas.
           if OUT=$(docker manifest inspect "$IMAGE" 2>&1); then
-            echo "::notice::$IMAGE existe déjà — build et push sautés, l'artefact d'origine est conservé"
+            echo "::notice::$IMAGE existe déjà : build et push sautés, l'artefact d'origine est conservé"
             echo "found=true" >> "$GITHUB_OUTPUT"
           elif grep -qiE "manifest unknown|not found|name unknown|no such manifest" <<< "$OUT"; then
             # tracé même dans le cas nominal : c'est ce message qui dira, au
@@ -190,8 +190,8 @@ jobs:
             # signale aussi un incident d'authentification sur un tag qui, lui,
             # existe. Le package ghcr.io/kbrdn1/kbrdn.dev existe déjà (:main et
             # :dev y sont publiées), donc un tag absent répond « manifest
-            # unknown » — ce fail-closed ne bloque pas le premier tag.
-            echo "::error::lecture du registre impossible pour $IMAGE (rc=$RC) — on n'en déduit rien :"
+            # unknown » : ce fail-closed ne bloque pas le premier tag.
+            echo "::error::lecture du registre impossible pour $IMAGE (rc=$RC) ; on n'en déduit rien :"
             echo "$OUT"
             exit 1
           fi
@@ -221,7 +221,7 @@ jobs:
     needs: [resolve, build]
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Clé partagée avec le job deploy de deploy.yml — les groupes de
+    # Clé partagée avec le job deploy de deploy.yml : les groupes de
     # concurrence sont globaux au repo. Sans elle, le protocole normal met deux
     # déploiements prod en vol simultanément : le merge dev → main réveille
     # deploy.yml, le push du tag qui suit réveille release.yml, et leurs
@@ -252,7 +252,7 @@ jobs:
           ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
           # ssh-keyscan expire au bout de 5 s par defaut, et son echec en
           # derniere commande d'un step lance sous `bash -e` faisait tomber tout
-          # le deploiement — avec `2>/dev/null` pour masquer la raison. Vecu sur
+          # le deploiement, avec `2>/dev/null` pour masquer la raison. Vecu sur
           # le premier deploiement prod de v1.0.0. Timeout explicite, retry, et
           # verification qu'on a vraiment une cle avant de continuer.
           for i in 1 2 3 4 5; do
@@ -283,7 +283,7 @@ jobs:
           ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_USER@$VPS_HOST" "$REMOTE_CMD"
 
       # Vérifie depuis l'extérieur que c'est bien cette version qui sert le
-      # trafic — pas seulement que le conteneur a démarré. deploy.sh attend
+      # trafic, pas seulement que le conteneur a démarré. deploy.sh attend
       # déjà `healthy` en interne, ce qui reste vrai même si l'upstream nginx
       # pointe sur l'autre couleur.
       - name: Verify deployed version
@@ -315,9 +315,9 @@ jobs:
           # La version seule ne suffit pas à identifier l'artefact : l'image
           # `:main` construite après le tag porte le même package.json tant que
           # personne n'a bumpé. Un déploiement sans effet passerait donc le
-          # contrôle de version — le sha, lui, distingue les deux commits.
+          # contrôle de version ; le sha, lui, distingue les deux commits.
           if [[ "$GOT_SHA" != "$EXPECTED_SHA" ]]; then
-            echo "::error::$URL sert le sha $GOT_SHA, attendu $EXPECTED_SHA — l'artefact tagué ne sert pas le trafic"
+            echo "::error::$URL sert le sha $GOT_SHA, attendu $EXPECTED_SHA : l'artefact tagué ne sert pas le trafic"
             exit 1
           fi
           if [[ "$GOT_ENV" != "$EXPECTED_ENV" ]]; then
@@ -354,7 +354,7 @@ jobs:
           # (workflow_dispatch) : `create` échouerait alors que l'environnement
           # vient d'être redéployé avec succès. On met à jour au lieu de mourir.
           if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "::notice::release $TAG déjà publiée — mise à jour des notes"
+            echo "::notice::release $TAG déjà publiée : mise à jour des notes"
             gh release edit "$TAG" \
               --notes-file "$NOTES" \
               --prerelease="$PRERELEASE"

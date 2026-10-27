@@ -1,4 +1,4 @@
-// Check de server/utils/githubActivity.ts — la lecture des événements GitHub publics que
+// Check de server/utils/githubActivity.ts : la lecture des événements GitHub publics que
 // montre /activity. Un pli mal borné avale les pushes d'un autre jour ou d'une autre
 // branche, un filtre trop large remplit le flux de libellés et de branches créées.
 //

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Check de resolve-release-tag.sh — c'est lui qui décide si un tag part en prod
+# Check de resolve-release-tag.sh : c'est lui qui décide si un tag part en prod
 # ou en preprod, une erreur d'aiguillage y publie une version non validée sur
 # kbrdn.dev.
 #
@@ -10,7 +10,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RESOLVE="$HERE/resolve-release-tag.sh"
 FAILED=0
 
-# get <tag> <clé> — valeur résolue, ou vide si le script rejette le tag
+# get <tag> <clé> : valeur résolue, ou vide si le script rejette le tag
 get() {
   "$RESOLVE" "$1" kbrdn1/kbrdn.dev 2>/dev/null | grep "^$2=" | cut -d= -f2-
 }
@@ -57,7 +57,7 @@ echo "core = version cible (ce que package.json doit porter)"
 expect v1.1.0-rc.2 core 1.1.0
 expect v1.1.0 core 1.1.0
 
-echo "rejets — un candidat mal formé ne doit jamais tomber dans la branche prod"
+echo "rejets : un candidat mal formé ne doit jamais tomber dans la branche prod"
 expect_reject v1.1.0-rc          # pas de numéro de candidat
 expect_reject v1.1.0-rc.1.2      # numéro non entier
 expect_reject 1.0.0              # sans préfixe v

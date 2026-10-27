@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Smoke test des images OG (#44). Elles sont rendues à la requête par satori :
 # ni le lint, ni le typecheck, ni le build ne les exécutent. Le reformatage
-# oxfmt de #37 les a cassées deux fois sans que la CI bouge — un dégradé coupé
+# oxfmt de #37 les a cassées deux fois sans que la CI bouge : un dégradé coupé
 # sur deux lignes (/_og/* en 500), puis `@import 'tailwindcss'` en guillemets
 # simples dans main.css (200, mais police de repli). Le statut attrape le
 # premier, seule la comparaison à une référence attrape le second.
@@ -28,7 +28,7 @@ BASE="http://127.0.0.1:$PORT"
 UPDATE=false
 [[ "${1:-}" == "--update" ]] && UPDATE=true
 
-# nom:chemin — la home (Default avec avatar et bannière), l'index du blog
+# nom:chemin : la home (Default avec avatar et bannière), l'index du blog
 # (Default nu) et un article (Blog : tags, bannière, Fenix).
 PAGES=(home:/ blog:/blog blog-gwm:/blog/gwm)
 

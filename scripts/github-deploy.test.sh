@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Check de github-deploy.sh — c'est le point d'entrée root du pipeline de
+# Check de github-deploy.sh : c'est le point d'entrée root du pipeline de
 # déploiement. Ce qu'on vérifie : l'allowlist ne laisse pas passer une variable
 # capable de détourner l'exécution (PATH en tête), et les commandes réellement
 # émises par les workflows continuent de fonctionner.
@@ -14,7 +14,7 @@ FAILED=0
 # On neutralise ça avec un faux /srv via PATH ? Non : le chemin est absolu. On
 # se limite donc aux chemins qui n'exécutent pas deploy.sh (refus d'une
 # variable, action inconnue, ping), plus une vérification que les variables
-# autorisées sont bien exportées — via `ping`, qui n'exec rien.
+# autorisées sont bien exportées, via `ping`, qui n'exec rien.
 run() {  # run <SSH_ORIGINAL_COMMAND> ; imprime stdout+stderr, renvoie le code
   SSH_ORIGINAL_COMMAND="$1" bash "$HERE/github-deploy.sh" 2>&1
 }
@@ -25,7 +25,7 @@ expect_reject() {  # une variable hors allowlist doit faire échouer AVANT tout 
   if [[ $rc -ne 0 ]] && grep -q "variable refusée" <<< "$out"; then
     echo "  ok   $desc"
   else
-    echo "  FAIL $desc — rc=$rc, sortie: $out"
+    echo "  FAIL $desc ; rc=$rc, sortie: $out"
     FAILED=1
   fi
 }
@@ -36,7 +36,7 @@ expect_ok() {  # doit aboutir (chemins sans exec)
   if [[ $rc -eq 0 ]] && grep -q "$needle" <<< "$out"; then
     echo "  ok   $desc"
   else
-    echo "  FAIL $desc — rc=$rc, sortie: $out"
+    echo "  FAIL $desc ; rc=$rc, sortie: $out"
     FAILED=1
   fi
 }
@@ -64,7 +64,7 @@ out=$(run 'ENV=prod frobnicate'); rc=$?
 if [[ $rc -ne 0 ]] && grep -q "action inconnue" <<< "$out"; then
   echo "  ok   action inconnue → exit non nul"
 else
-  echo "  FAIL action inconnue — rc=$rc, sortie: $out"
+  echo "  FAIL action inconnue ; rc=$rc, sortie: $out"
   FAILED=1
 fi
 

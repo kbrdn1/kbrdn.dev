@@ -1,4 +1,4 @@
-// Check de app/utils/pixelScenes.ts — les scènes pixel des heros et de leurs images OG.
+// Check de app/utils/pixelScenes.ts : les scènes pixel des heros et de leurs images OG.
 // Les couleurs des OG (satori n'a pas de CSS) recopient celles du thème : si theme.css bouge
 // sans elles, les OG partent d'une autre palette que le site sans que rien ne casse. Une
 // lettre de palette inconnue ne dessine rien, en silence.
