@@ -6,7 +6,8 @@ import { START_LOCATION } from 'vue-router'
 // their compact strip): vue-router reads only `top`
 const TOP = 112
 const topFor = (hash: string) => {
-  const target = document.getElementById(decodeURIComponent(hash.slice(1)))
+  // vue-router hands the hash over decoded already: decoding it again throws on a literal %
+  const target = document.getElementById(hash.slice(1))
   return Math.max(TOP, target ? parseFloat(getComputedStyle(target).scrollMarginTop) || 0 : 0)
 }
 

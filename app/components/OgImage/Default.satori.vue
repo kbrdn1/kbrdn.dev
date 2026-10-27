@@ -47,7 +47,9 @@ const props = withDefaults(defineProps<{
 // The scene at its best moment, in the dark theme's colours (no CSS in satori)
 const sceneCells = computed(() => {
   if (!props.scene) return []
+  // An unknown name (the OG URL is open to anyone) draws the portrait instead
   const scene = PIXEL_SCENES[props.scene]
+  if (!scene) return []
   return [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
     const color = sceneColor(cell.c)
     return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
@@ -104,7 +106,7 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 
           <!-- The drawn portrait, or the page's scene, and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div v-if="scene" class="flex items-center justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+            <div v-if="sceneCells.length" class="flex items-center justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
               <svg width="208" height="156" :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`" shape-rendering="crispEdges">
                 <rect v-for="(cell, i) in sceneCells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
               </svg>

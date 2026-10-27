@@ -151,7 +151,8 @@ function dismissIchigo() {
 const INTERACTIVE = 'a, button, input, textarea, select, label, summary, [role="button"]'
 let lockTimer: ReturnType<typeof setTimeout> | undefined
 function onClick(event: MouseEvent) {
-  if (!enabled.value) return
+  // A click from the keyboard has no pointer position (detail 0): nothing to draw at
+  if (!enabled.value || event.detail === 0) return
   // A click means the pointer is on the page, whatever a leave said
   if (!shown.value) {
     x = tx = event.clientX
