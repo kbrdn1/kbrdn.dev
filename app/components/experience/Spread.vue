@@ -28,7 +28,8 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
 </script>
 
 <template>
-  <article :id="id" class="panel-card grid scroll-mt-28 gap-8 p-6 sm:p-8 md:grid-cols-12">
+  <!-- scroll-mt-40: an anchor lands under the navbar, its notch and the compact strip -->
+  <article :id="id" class="panel-card grid scroll-mt-40 gap-8 p-6 sm:p-8 md:grid-cols-12">
     <header class="md:col-span-7">
       <span class="eyebrow block">
         {{ String(index).padStart(2, '0') }}

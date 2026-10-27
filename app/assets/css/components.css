@@ -329,6 +329,18 @@
     border-radius: 0.625rem;
   }
 
+  /* A tinted pill over the active card of a strip, sliding from one card to the next */
+  .ink {
+    position: absolute;
+    pointer-events: none;
+    border: 1px solid color-mix(in srgb, var(--color-primary-500) 50%, transparent);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-primary-500) 10%, transparent);
+    transition:
+      left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   /* List row inside a card: lifts on hover */
   .row {
     border-radius: 0.75rem;
@@ -342,5 +354,15 @@
   /* Cuts whatever it covers into 2px ticks, 4px apart: meters and bars */
   .ticks {
     mask-image: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 6px);
+  }
+}
+
+/* Scrolls sideways without a scrollbar: strips, tag rows, the table of contents. Not in
+   Tailwind 4, though the class was already used. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }

@@ -29,3 +29,8 @@
     border-color 0.2s ease,
     color 0.2s ease;
 }
+
+/* In-page anchors scroll smoothly; accessibility.css turns it off under reduced motion */
+html {
+  scroll-behavior: smooth;
+}
