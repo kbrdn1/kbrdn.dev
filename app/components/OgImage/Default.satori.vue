@@ -47,9 +47,10 @@ const props = withDefaults(defineProps<{
 // The scene at its best moment, in the dark theme's colours (no CSS in satori)
 const sceneCells = computed(() => {
   if (!props.scene) return []
-  // An unknown name (the OG URL is open to anyone) draws the portrait instead
+  // An unknown name (the OG URL is open to anyone) draws the portrait instead; own keys
+  // only, or `constructor` and the like pass for a scene
+  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return []
   const scene = PIXEL_SCENES[props.scene]
-  if (!scene) return []
   return [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
     const color = sceneColor(cell.c)
     return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
