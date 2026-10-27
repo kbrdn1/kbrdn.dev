@@ -63,12 +63,15 @@ export default {
 
   // Explore Section
   explore: {
+    title: 'À découvrir',
+    previous: 'Précédent',
+    next: 'Suivant',
     labels: {
-      collab: '✦ Collaboration',
-      crafting: '⚡ Projets',
-      blog: '📝 Blog',
-      sponsor: '♥ Sponsor',
-      motto: '◈ Philosophie',
+      collab: 'Collaboration',
+      crafting: 'Projets',
+      blog: 'Blog',
+      sponsor: 'Sponsor',
+      motto: 'Philosophie',
     },
     slides: {
       collab: {

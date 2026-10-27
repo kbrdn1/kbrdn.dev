@@ -83,6 +83,20 @@
   }
 }
 
+/* Explore carousel: the footer's tick timer, one slide long */
+.explore-timer {
+  animation: explore-timer 5s linear both;
+}
+
+@keyframes explore-timer {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 /* Music player track transition */
 .player-visible {
   opacity: 1;

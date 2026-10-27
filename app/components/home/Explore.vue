@@ -6,6 +6,7 @@ const colorMode = useColorMode()
 const isDark = computed(() => isDarkMode(colorMode.value))
 
 interface Slide {
+  label: string
   title: string
   description: string
   cta?: { label: string; href: string; icon: string }
@@ -13,6 +14,7 @@ interface Slide {
 
 const slides = computed<Slide[]>(() => [
   {
+    label: t('explore.labels.collab'),
     title: t('explore.slides.collab.title'),
     description: t('explore.slides.collab.description'),
     cta: {
@@ -22,16 +24,19 @@ const slides = computed<Slide[]>(() => [
     },
   },
   {
+    label: t('explore.labels.crafting'),
     title: t('explore.slides.crafting.title'),
     description: t('explore.slides.crafting.description'),
     cta: { label: 'gwm', href: 'https://github.com/kbrdn1/gwm-cli', icon: 'i-simple-icons-github' },
   },
   {
+    label: t('explore.labels.blog'),
     title: t('explore.slides.blog.title'),
     description: t('explore.slides.blog.description'),
     cta: { label: t('explore.slides.blog.cta'), href: '/blog', icon: 'i-heroicons-document-text' },
   },
   {
+    label: t('explore.labels.sponsor'),
     title: t('explore.slides.sponsor.title'),
     description: t('explore.slides.sponsor.description'),
     cta: {
@@ -41,6 +46,7 @@ const slides = computed<Slide[]>(() => [
     },
   },
   {
+    label: t('explore.labels.motto'),
     title: t('explore.slides.motto.title'),
     description: t('explore.slides.motto.description'),
   },
@@ -58,146 +64,117 @@ const scene = computed(() => {
   const list = SCENES[isDark.value ? 'dark' : 'light']
   return `/images/scenes/${list[currentSlide.value % list.length]}.webp`
 })
+
 const isTransitioning = ref(false)
 const slideDirection = ref<'left' | 'right'>('left')
-let interval: ReturnType<typeof setInterval> | undefined
-
-function startAutoRotate() {
-  interval = setInterval(() => {
-    slideDirection.value = 'left'
-    isTransitioning.value = true
-    setTimeout(() => {
-      currentSlide.value = (currentSlide.value + 1) % slides.value.length
-      isTransitioning.value = false
-    }, 400)
-  }, 5000)
-}
-
-onMounted(() => {
-  startAutoRotate()
-})
-
-onUnmounted(() => {
-  if (interval) clearInterval(interval)
-})
+const pad = (n: number) => String(n).padStart(2, '0')
 
 function goToSlide(index: number) {
-  if (index === currentSlide.value) return
+  const target = (index + slides.value.length) % slides.value.length
+  if (target === currentSlide.value) return
   slideDirection.value = index > currentSlide.value ? 'left' : 'right'
   isTransitioning.value = true
   setTimeout(() => {
-    currentSlide.value = index
+    currentSlide.value = target
     isTransitioning.value = false
   }, 400)
 }
+
+// Autoplay: the footer's tick timer fills in 5s (CSS), and its end moves to the next slide.
+// Paused while the carousel is hovered or focused, off under reduced motion: moving content
+// must be pausable (WCAG 2.2.2).
+const paused = ref(false)
+const reducedMotion = useReducedMotion()
 </script>
 
 <template>
+  <!-- A panel after disarto's onboarding card: the slide in a card, its voxel scene seen
+       through the pixel layer beside it, the position and the steps in the footer -->
   <section
-    class="w-full relative overflow-hidden mx-auto border-t border-neutral-200 dark:border-neutral-800"
-    style="max-width: 80rem"
     aria-roledescription="carousel"
-    aria-label="Featured content"
+    :aria-label="t('explore.title')"
+    @mouseenter="paused = true"
+    @mouseleave="paused = false"
+    @focusin="paused = true"
+    @focusout="paused = false"
   >
-    <!-- Background image -->
-    <ClientOnly>
-      <!-- Seen through the pixel layer, in the page's pixel shape -->
-      <div class="absolute inset-0">
-        <UiPixelImage :src="scene" class="size-full" />
-      </div>
-      <template #fallback>
-        <div class="absolute inset-0 bg-neutral-200 dark:bg-neutral-800" />
+    <UiPanel :title="t('explore.title')">
+      <template #actions>
+        <button
+          type="button"
+          class="icon-btn"
+          :aria-label="t('explore.previous')"
+          @click="goToSlide(currentSlide - 1)"
+        >
+          <UIcon name="i-heroicons-chevron-left-20-solid" class="size-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
+          :aria-label="t('explore.next')"
+          @click="goToSlide(currentSlide + 1)"
+        >
+          <UIcon name="i-heroicons-chevron-right-20-solid" class="size-4" aria-hidden="true" />
+        </button>
       </template>
-    </ClientOnly>
-    <!-- Fade edges -->
-    <div
-      class="absolute inset-0 bg-radial-[ellipse_at_center] from-transparent via-transparent/30 to-neutral-950/50"
-    />
-    <div
-      class="absolute inset-0 bg-gradient-to-r from-neutral-950/50 via-transparent to-neutral-950/50"
-    />
 
-    <!-- Content -->
-    <div class="relative z-10 py-14 sm:py-28 px-6">
-      <div class="max-w-5xl mx-auto min-md:px-6 flex flex-col items-center text-center">
-        <!-- Rotating content -->
-        <div
-          class="h-[160px] sm:h-[140px] flex flex-col items-center justify-center gap-5 w-full"
-          :class="{
-            'carousel-hidden-left': isTransitioning && slideDirection === 'left',
-            'carousel-hidden-right': isTransitioning && slideDirection === 'right',
-            'carousel-visible': !isTransitioning,
-          }"
-        >
-          <!-- Label -->
-          <span
-            class="text-[10px] font-mono font-bold uppercase tracking-[0.25em] text-primary-400 drop-shadow-sm"
+      <div class="grid gap-1 md:grid-cols-2">
+        <div class="panel-card flex min-h-80 flex-col p-6 sm:p-8">
+          <div
+            class="flex flex-1 flex-col"
+            :class="{
+              'carousel-hidden-left': isTransitioning && slideDirection === 'left',
+              'carousel-hidden-right': isTransitioning && slideDirection === 'right',
+              'carousel-visible': !isTransitioning,
+            }"
           >
-            {{
-              [
-                t('explore.labels.collab'),
-                t('explore.labels.crafting'),
-                t('explore.labels.blog'),
-                t('explore.labels.sponsor'),
-                t('explore.labels.motto'),
-              ][currentSlide]
-            }}
-          </span>
-
-          <!-- Title -->
-          <h2
-            :class="
-              cn(
-                'text-2xl sm:text-4xl font-bold text-white max-w-2xl leading-tight drop-shadow-md',
-                currentSlide === 2 ? 'font-mono' : '',
-              )
-            "
-          >
-            {{ slide?.title }}
-          </h2>
-
-          <!-- Description -->
-          <p class="text-sm sm:text-base text-white/80 max-w-xl leading-relaxed drop-shadow-sm">
-            {{ slide?.description }}
-          </p>
-
-          <!-- CTA -->
-          <NuxtLink
-            v-if="slide?.cta"
-            :to="slide.cta.href"
-            target="_blank"
-            class="btn btn-primary mt-1"
-          >
-            <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
-            {{ slide.cta.label }}
-          </NuxtLink>
+            <p class="eyebrow">{{ slide?.label }}</p>
+            <h3 class="mt-3 text-3xl tracking-tight text-neutral-900 dark:text-neutral-100">
+              {{ slide?.title }}
+            </h3>
+            <p class="mt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              {{ slide?.description }}
+            </p>
+            <div v-if="slide?.cta" class="mt-auto pt-6">
+              <NuxtLink :to="slide.cta.href" target="_blank" class="btn btn-primary">
+                <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
+                {{ slide.cta.label }}
+              </NuxtLink>
+            </div>
+          </div>
         </div>
 
-        <!-- Controls -->
+        <!-- Client only: the scene follows the colour mode, unknown to the server. Hovered,
+             it depixelates down to the crisp picture. -->
         <div
-          class="absolute bottom-5 sm:bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2"
+          class="relative min-h-64 overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900"
         >
-          <button
-            v-for="(_, index) in slides"
-            :key="index"
-            type="button"
-            :aria-label="`Slide ${index + 1} of ${slides.length}${currentSlide === index ? ' (current)' : ''}`"
-            :class="
-              cn(
-                'h-0.5',
-                currentSlide === index
-                  ? 'bg-primary-500'
-                  : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500',
-              )
-            "
-            :style="{
-              width: currentSlide === index ? '32px' : '16px',
-              transition: 'width 300ms ease, background-color 300ms ease',
-            }"
-            @click="goToSlide(index)"
-          />
+          <ClientOnly>
+            <div class="absolute inset-0">
+              <UiPixelImage :src="scene" class="size-full" reveal />
+            </div>
+          </ClientOnly>
         </div>
       </div>
-    </div>
+
+      <template #meta>{{ pad(currentSlide + 1) }} / {{ pad(slides.length) }}</template>
+      <template #footer>
+        <!-- Client only: whether to autoplay depends on the reader's motion preference -->
+        <ClientOnly>
+          <div
+            v-if="!reducedMotion"
+            class="ticks mr-2 h-3 w-36 bg-neutral-300 dark:bg-neutral-700"
+            aria-hidden="true"
+          >
+            <div
+              :key="currentSlide"
+              class="explore-timer h-full bg-primary-500"
+              :style="{ animationPlayState: paused ? 'paused' : 'running' }"
+              @animationend="goToSlide(currentSlide + 1)"
+            />
+          </div>
+        </ClientOnly>
+      </template>
+    </UiPanel>
   </section>
 </template>

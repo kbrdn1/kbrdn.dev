@@ -63,12 +63,15 @@ export default {
 
   // Explore Section
   explore: {
+    title: 'Explore',
+    previous: 'Previous',
+    next: 'Next',
     labels: {
-      collab: '✦ Collaboration',
-      crafting: '⚡ Projects',
-      blog: '📝 Blog',
-      sponsor: '♥ Sponsor',
-      motto: '◈ Philosophy',
+      collab: 'Collaboration',
+      crafting: 'Projects',
+      blog: 'Blog',
+      sponsor: 'Sponsor',
+      motto: 'Philosophy',
     },
     slides: {
       collab: {

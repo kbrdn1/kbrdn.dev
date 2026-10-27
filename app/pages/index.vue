@@ -217,12 +217,8 @@ const content = computed(() => {
           </UiPanel>
         </UiAnimatedSection>
 
-        <!-- Explore: the carousel as an image card; its own top border goes -->
-        <UiPanel>
-          <div class="overflow-hidden rounded-2xl [&>section]:border-t-0">
-            <HomeExplore />
-          </div>
-        </UiPanel>
+        <!-- Explore: a carousel, its own panel -->
+        <HomeExplore />
       </div>
 
       <!-- Footer -->
