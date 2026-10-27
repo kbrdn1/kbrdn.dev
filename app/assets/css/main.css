@@ -44,3 +44,13 @@ html {
 body {
   overflow-x: clip;
 }
+
+/* Glass is the dark theme: code blocks take shiki's dark colours, as MDC does under
+   html.dark (@nuxtjs/mdc, runtime/highlighter/shiki.js) */
+html.blur .shiki span {
+  color: var(--shiki-dark);
+  background: var(--shiki-dark-bg);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+  text-decoration: var(--shiki-dark-text-decoration);
+}
