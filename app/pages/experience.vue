@@ -80,11 +80,12 @@ const timeline = computed(() =>
 )
 
 // The figures over the strip, counted from the data: months worked (work-study included),
-// client projects, open source tools, degrees
+// client projects, open source tools, degrees. A role counts its first and last month:
+// Oct 2023 to Sep 2026 is 36 months, not 35.
 const months = (start: string, end: string | null) => {
   const [y1, m1] = start.split('-').map(Number) as [number, number]
   const [y2, m2] = (end ?? start).split('-').map(Number) as [number, number]
-  return (y2 - y1) * 12 + (m2 - m1)
+  return (y2 - y1) * 12 + (m2 - m1) + 1
 }
 const figures = [
   { key: 'months', value: EXPERIENCES.reduce((sum, e) => sum + months(e.startDate, e.endDate), 0) },
