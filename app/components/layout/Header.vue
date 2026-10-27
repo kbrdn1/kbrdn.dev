@@ -44,7 +44,7 @@ const isMobileMenuOpen = ref(false)
 
 <template>
   <header
-    :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')"
+    :class="cn('pointer-events-none fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')"
     @mouseenter="menu.keep"
     @mouseleave="menu.close()"
     :data-menu="menuOpen || undefined"
@@ -52,7 +52,17 @@ const isMobileMenuOpen = ref(false)
     @keydown.esc="menu.close(0)"
   >
     <!-- Detached from the top: a panel as wide as the home's panels -->
-    <div class="panel notched mx-auto max-w-[61rem] p-0">
+    <!-- The header spans the page: only the navbar and its notch take the pointer. The navbar
+         rises above the notch while its logo menu is open (each is its own stacking context,
+         named for the view transitions). -->
+    <div
+      :class="
+        cn(
+          'panel notched pointer-events-auto mx-auto max-w-[61rem] p-0',
+          showBrandMenu && 'relative z-10',
+        )
+      "
+    >
       <div class="hidden md:flex items-center h-12 gap-2 px-1.5">
         <!-- Brand with dropdown -->
         <div

@@ -171,7 +171,7 @@ watch(
 <template>
   <div
     ref="root"
-    class="notch relative mx-auto w-(--notch-w)"
+    class="notch pointer-events-auto relative mx-auto w-(--notch-w)"
     @mouseenter="keep"
     @mouseleave="close()"
     @keydown.esc="onEscape"
