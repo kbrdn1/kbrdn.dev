@@ -2,8 +2,10 @@ import { createError } from 'h3'
 import { toActivities, type GitHubEvent } from '../../utils/githubActivity'
 
 // Recent public GitHub activity for /activity: the last 100 public events of kbrdn1, read
-// by toActivities (server/utils/githubActivity.ts). Cached 10 minutes server side, so the
-// unauthenticated limit (60 requests an hour) is never reached; `checkedAt` says when.
+// by toActivities (server/utils/githubActivity.ts). Cached 10 minutes server side under one
+// key whatever the query string, so a made-up `?x=` neither skips the cache nor adds an
+// entry, and the unauthenticated limit (60 requests an hour) is never reached; `checkedAt`
+// says when.
 
 export default defineCachedEventHandler(
   async () => {
@@ -24,5 +26,5 @@ export default defineCachedEventHandler(
 
     return { checkedAt: new Date().toISOString(), items: toActivities(events) }
   },
-  { maxAge: 600, name: 'github-activity' },
+  { maxAge: 600, name: 'github-activity', getKey: () => 'events' },
 )
