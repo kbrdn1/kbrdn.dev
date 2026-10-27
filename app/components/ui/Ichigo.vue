@@ -12,6 +12,8 @@ interface Atlas {
 }
 
 let loading: Promise<{ atlas: Atlas; image: HTMLImageElement }> | undefined
+// The last move played, never played twice in a row
+let last = -1
 function load() {
   loading ??= Promise.all([
     fetch('/images/ichigo/atlas.json').then((response) => response.json() as Promise<Atlas>),
@@ -28,21 +30,19 @@ function load() {
 
 <script setup lang="ts">
 // UiPixelCursor's triple click: Ichigo grows out of the pointer's pixel block by block, plays
-// one of his moves at random, then folds back into it. Half the time a special, whose
-// Getsuga Tenshō (a crescent computed here, not from the game) flies off the blade across the
-// screen, the call on top. He faces the side with more room.
+// one of his 21 moves at random, then folds back into it. Three are specials, whose Getsuga
+// Tenshō (a crescent computed here, not from the game) flies off the blade across the screen,
+// the call on top: they face the side with more room, the other moves either way.
 const props = defineProps<{ x: number; y: number }>()
 const emit = defineEmits<{ done: [] }>()
 
-// DS pixels to CSS px
-const SCALE = 2
 const FRAME_MS = 85
 const SPAWN_MS = 320
 const FOLD_MS = 320
 // The spawn and fold go by blocks of this many DS pixels
 const BLOCK = 3
 // He stands this far under the tip (CSS px)
-const BELOW = 24
+const BELOW = 16
 // The wave, CSS px per ms
 const WAVE_SPEED = 1.1
 const CALL = '月牙天衝'
@@ -74,14 +74,19 @@ onMounted(async () => {
   if (!ctx) return emit('done')
 
   const dpr = Math.min(2, window.devicePixelRatio || 1)
+  // DS pixels to CSS px: one and a half, rounded to whole screen pixels so none comes out
+  // wider than its neighbours (1.5 on a retina screen, 1 otherwise)
+  const scale = Math.max(1, Math.floor(1.5 * dpr)) / dpr
   el.width = Math.round(innerWidth * dpr)
   el.height = Math.round(innerHeight * dpr)
   ctx.imageSmoothingEnabled = false
 
-  const specials = atlas.moves.filter((m) => m.wave != null)
-  const pool = Math.random() < 0.5 ? specials : atlas.moves.filter((m) => m.wave == null)
-  const move = pool[Math.floor(Math.random() * pool.length)]!
-  const dir = props.x < innerWidth / 2 ? 1 : -1
+  let pick = last
+  while (pick === last) pick = Math.floor(Math.random() * atlas.moves.length)
+  last = pick
+  const move = atlas.moves[pick]!
+  const roomy = props.x < innerWidth / 2 ? 1 : -1
+  const dir = move.wave != null ? roomy : Math.random() < 0.5 ? 1 : -1
   const X = Math.round(props.x)
   const Y = Math.round(props.y + BELOW)
   const length = move.frames.length * FRAME_MS
@@ -93,7 +98,7 @@ onMounted(async () => {
   // block from the tip outwards: `level` is how far the growth has gone (0 to 1.3).
   const drawFrame = (id: number, level: number) => {
     const [fx, fy, fw, fh, ax, ay] = atlas.frames[id]!
-    ctx.setTransform(dpr * SCALE * dir, 0, 0, dpr * SCALE, X * dpr, Y * dpr)
+    ctx.setTransform(dpr * scale * dir, 0, 0, dpr * scale, X * dpr, Y * dpr)
     if (level >= 1.3) {
       ctx.drawImage(image, fx, fy, fw, fh, -ax, -ay, fw, fh)
       return
@@ -101,7 +106,7 @@ onMounted(async () => {
     for (let by = 0; by < fh; by += BLOCK) {
       for (let bx = 0; bx < fw; bx += BLOCK) {
         const order =
-          Math.hypot(bx + BLOCK / 2 - ax, by + BLOCK / 2 - ay + BELOW / SCALE) / 40 +
+          Math.hypot(bx + BLOCK / 2 - ax, by + BLOCK / 2 - ay + BELOW / scale) / 40 +
           noise(bx, by) * 0.3
         if (order >= level) continue
         const w = Math.min(BLOCK, fw - bx)
@@ -118,7 +123,7 @@ onMounted(async () => {
     const left = 1 - travelled / reach
     const r = Math.round(15 + 20 * clamp(dt / 450))
     const back = r * 0.55
-    const cx = 26 + Math.round(travelled / SCALE)
+    const cx = 26 + Math.round(travelled / scale)
     const cy = -28
     const flicker = Math.floor(dt / 70) % 2 === 0
     const colors = flicker ? ['#2563eb', '#7dd3fc', '#ffffff'] : ['#3b82f6', '#bae6fd', '#e0f4ff']
@@ -143,7 +148,7 @@ onMounted(async () => {
         1,
       )
     }
-    ctx.setTransform(dpr * SCALE * dir, 0, 0, dpr * SCALE, X * dpr, Y * dpr)
+    ctx.setTransform(dpr * scale * dir, 0, 0, dpr * scale, X * dpr, Y * dpr)
     paths.forEach((path, i) => {
       ctx.fillStyle = colors[i]!
       ctx.fill(path)
@@ -153,8 +158,8 @@ onMounted(async () => {
   // The call, upright whatever way he faces, popping in
   const drawCall = (age: number) => {
     const pop = 1 + 0.4 * (1 - clamp(age / 140))
-    ctx.setTransform(dpr * pop, 0, 0, dpr * pop, X * dpr, (Y - 150) * dpr)
-    ctx.font = '700 22px system-ui, sans-serif'
+    ctx.setTransform(dpr * pop, 0, 0, dpr * pop, X * dpr, (Y - 70 * scale - 24) * dpr)
+    ctx.font = '700 18px system-ui, sans-serif'
     ctx.textAlign = 'center'
     ctx.lineWidth = 4
     ctx.strokeStyle = '#0b0b0f'
