@@ -41,8 +41,10 @@ const props = withDefaults(
     interactive?: boolean
     /** Where the field thins out: `down` is dense at the top and gone at the bottom. */
     fade?: 'down' | 'up' | 'none'
+    /** A second colour (any CSS colour), in slow drifting patches through the first. */
+    alt?: string
   }>(),
-  { interactive: false, fade: 'none' },
+  { interactive: false, fade: 'none', alt: undefined },
 )
 
 const FRAME_MS = 1000 / 24
@@ -87,8 +89,10 @@ onMounted(async () => {
   if (disposed) return
 
   // Props are fixed for the canvas lifetime; read once, not per cell through the proxy.
-  const { interactive, fade } = props
+  const { interactive, fade, alt } = props
   const palette = new Uint32Array(ALPHAS.length)
+  // The second colour's levels, used where a slow, coarse sample of the noise is high
+  const altPalette = new Uint32Array(ALPHAS.length)
   const shape = ditherShape()
   const shaped = shape !== 'square'
   // Shaped fields: the cell map goes to this canvas, then scaled up into `el`.
@@ -132,17 +136,24 @@ onMounted(async () => {
     '2d',
     { willReadFrequently: true },
   )
-  function readColor() {
+  function fillPalette(target: Uint32Array, color: string) {
     if (!probe) return
-    probe.fillStyle = getComputedStyle(el!).color
+    probe.clearRect(0, 0, 1, 1)
+    probe.fillStyle = color
     probe.fillRect(0, 0, 1, 1)
     const [r = 0, g = 0, b = 0] = probe.getImageData(0, 0, 1, 1).data
     const rgba = new Uint8ClampedArray(4)
     const word = new Uint32Array(rgba.buffer)
     ALPHAS.forEach((alpha, i) => {
       rgba.set([r, g, b, Math.round(alpha * 255)])
-      palette[i] = word[0]!
+      target[i] = word[0]!
     })
+  }
+  function readColor() {
+    const style = getComputedStyle(el!)
+    fillPalette(palette, style.color)
+    // Through a custom property, so a var() in it follows the theme like the main colour
+    if (alt) fillPalette(altPalette, style.getPropertyValue('--dither-alt'))
   }
 
   function resize() {
@@ -327,8 +338,16 @@ onMounted(async () => {
         const by = ((2 * ty + liftB + dy) | 0) & (NOISE_H - 1)
         const value = noise[ay * NOISE_W + ax]! * 0.65 + noise[by * NOISE_W + bx]! * 0.35 + glow
         const u = (value - floor) * GAIN
-        pixels[i] =
-          u > 0 ? palette[Math.min(3, (u * 3 + BAYER_4[((y & 3) << 2) | (x & 3)]!) | 0)]! : 0
+        // The second colour's patches: the noise again, coarse (a quarter of the frequency)
+        // and drifting slowly, so they read as areas rather than speckle
+        const tone =
+          alt &&
+          noise[
+            (((ty >> 2) + liftB) & (NOISE_H - 1)) * NOISE_W + (((tx >> 2) - shiftA) & (NOISE_W - 1))
+          ]! > 0.6
+            ? altPalette
+            : palette
+        pixels[i] = u > 0 ? tone[Math.min(3, (u * 3 + BAYER_4[((y & 3) << 2) | (x & 3)]!) | 0)]! : 0
       }
     }
     if (!levels || !levelsCtx || !pattern) {
@@ -450,6 +469,6 @@ onUnmounted(() => cleanup?.())
     ref="canvas"
     aria-hidden="true"
     class="pointer-events-none block select-none transition-none"
-    style="image-rendering: pixelated; color: var(--ui-primary)"
+    :style="{ imageRendering: 'pixelated', color: 'var(--ui-primary)', '--dither-alt': alt }"
   />
 </template>

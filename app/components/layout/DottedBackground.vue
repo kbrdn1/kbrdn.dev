@@ -2,6 +2,9 @@
 // Dotted grid background pattern component
 // Uses CSS pattern from main.css for performance
 
+// alt: a second colour for the dither, in patches through the orange (the blog's blue)
+defineProps<{ alt?: string }>()
+
 // In blur mode the dither fills the screen, unfaded: it is what the glass blurs. The canvas
 // reads its props once, so it remounts when the fade changes.
 const colorMode = useColorMode()
@@ -33,6 +36,7 @@ const fade = computed(() => (colorMode.value === 'blur' ? 'none' : 'down'))
     :key="fade"
     interactive
     :fade="fade"
+    :alt="alt"
     class="fixed inset-x-0 top-0 z-0 h-[85vh] w-full [mask-image:linear-gradient(to_bottom,#000_65%,transparent)] blur:h-screen blur:[mask-image:none]"
   />
 </template>

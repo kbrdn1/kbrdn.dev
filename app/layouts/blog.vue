@@ -11,7 +11,8 @@ const { t } = useI18n()
     >
       {{ t('nav.skipToContent') || 'Skip to content' }}
     </a>
-    <LayoutDottedBackground />
+    <!-- The blog's blue (blog@kbrdn1) through the dither -->
+    <LayoutDottedBackground alt="var(--color-sky-400)" />
     <LayoutBlogHeader />
 
     <main id="main-content" tabindex="-1" class="flex-1 relative z-10 pt-24">
