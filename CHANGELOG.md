@@ -107,8 +107,9 @@ migrates `[Unreleased]` into that file and empties this one — see
   frame like in the arcade, sometimes turns into another one, then hops back
   onto the tip. A click throws eight blocks along the D-pad. A triple click calls
   Ichigo Kurosaki, from his Jump Ultimate Stars sprites (21 moves, Shikai and
-  Bankai): he grows out of the pixel, plays a move at random, half the time a
-  special whose Getsuga Tenshō flies across the screen, then folds back. The
+  Bankai): he grows out of the pixel, plays a move drawn at random (never the
+  same twice in a row; three are specials whose Getsuga Tenshō flies across the
+  screen), then folds back; every third click calls him again. The
   sprites load on the first triple click (123 KB). Mouse and trackpad only,
   never under `prefers-reduced-motion`.
 - **What is going on right now, on `/activity`**
