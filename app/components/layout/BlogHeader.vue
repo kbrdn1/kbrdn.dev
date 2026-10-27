@@ -101,12 +101,6 @@ const isMobileMenuOpen = ref(false)
           >
             <UiScrambleText :text="link.label" effect="link" />
           </NuxtLink>
-
-          <!-- Portfolio link -->
-          <NuxtLink to="/" class="segment">
-            <UIcon name="i-heroicons-arrow-left" class="size-3" aria-hidden="true" />
-            <UiScrambleText :text="t('blogNav.portfolio')" effect="link" />
-          </NuxtLink>
         </nav>
 
         <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />
@@ -223,20 +217,6 @@ const isMobileMenuOpen = ref(false)
             @click="isMobileMenuOpen = false"
           >
             {{ link.label }}
-          </NuxtLink>
-
-          <NuxtLink
-            to="/"
-            :class="
-              cn(
-                'flex items-center gap-2 px-3 py-2 text-xs font-mono uppercase tracking-wider transition-colors',
-                'text-neutral-500 dark:text-neutral-400 hover:text-primary-500 hover:bg-primary-500/5',
-              )
-            "
-            @click="isMobileMenuOpen = false"
-          >
-            <UIcon name="i-heroicons-arrow-left" class="w-3 h-3" aria-hidden="true" />
-            {{ t('blogNav.portfolio') }}
           </NuxtLink>
         </nav>
       </Transition>

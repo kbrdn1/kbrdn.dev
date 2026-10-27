@@ -4,10 +4,9 @@ import { useI18n } from '#imports'
 const { t } = useI18n()
 // Categorized navigation links: the home page and the site's pages, the blog apart
 const { links } = useSiteNav()
-const portfolioLinks = computed(() => [
-  { href: '/', label: t('nav.home') },
-  ...links.value.filter((l) => l.to !== '/blog').map((l) => ({ href: l.to, label: l.label })),
-])
+const portfolioLinks = computed(() =>
+  links.value.filter((l) => l.to !== '/blog').map((l) => ({ href: l.to, label: l.label })),
+)
 
 const blogLinks = computed(() => [{ href: '/blog', label: t('footer.nav.articles') }])
 

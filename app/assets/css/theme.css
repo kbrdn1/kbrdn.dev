@@ -67,6 +67,8 @@
   --row-hover: rgb(0 0 0 / 0.03);
   /* Small mono labels: #666 is 5.3:1 on the light panels, 3.1:1 on the dark ones */
   --label: var(--color-neutral-500);
+  /* Accent text on an orange tint: primary-700 holds 4.8:1 there, primary-600 only 3.6 */
+  --accent-text: var(--color-primary-700);
 
   /* Layout variables */
   --stripe-color: #e8e8e8;
@@ -119,6 +121,7 @@
   --control-border: rgb(255 255 255 / 0.14);
   --row-hover: rgb(255 255 255 / 0.04);
   --label: var(--color-neutral-400);
+  --accent-text: var(--color-primary-500);
 
   --stripe-color: #2a2a2a;
   --stripe-color-alt: #333;

@@ -165,7 +165,7 @@
   }
 
   /* Pill segmented control: the active segment (aria-selected, aria-pressed, aria-current)
-     is filled and bordered */
+     is tinted with the accent and bordered */
   .segmented {
     display: inline-flex;
     align-items: center;
@@ -203,9 +203,9 @@
   .segment[aria-selected="true"],
   .segment[aria-pressed="true"],
   .segment[aria-current="page"] {
-    border-color: var(--control-border);
-    background: var(--control-bg);
-    color: var(--ui-text-highlighted);
+    border-color: color-mix(in srgb, var(--color-primary-500) 40%, transparent);
+    background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
+    color: var(--accent-text);
   }
 
   /* Pill buttons: orange with dark text (white on #d4825d fails AA), or outlined */
