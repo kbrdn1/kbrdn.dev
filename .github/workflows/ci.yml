@@ -57,6 +57,15 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
+      # The checks of the logic no build exercises: the dither field, the hero scenes and their
+      # OG colours (kept in step with theme.css), the activity feed, the release tag routing
+      - name: Script checks
+        run: |
+          bun scripts/dither.test.ts
+          bun scripts/pixel-scenes.test.ts
+          bun scripts/github-activity.test.ts
+          bash scripts/resolve-release-tag.test.sh
+
       - name: Build
         run: bun run build
         env:
@@ -71,6 +80,6 @@ jobs:
 
       # Les images OG sont rendues à la requête : aucun step au-dessus ne les
       # exécute. Sert .output et compare /, /blog et un article à leurs
-      # références (scripts/og-smoke/) — détail dans le script.
+      # références (scripts/og-smoke/) ; détail dans le script.
       - name: OG images
         run: ./scripts/og-smoke.sh
