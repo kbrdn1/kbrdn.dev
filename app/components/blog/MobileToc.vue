@@ -20,7 +20,11 @@ function handleScrollTo(id: string) {
 
 <template>
   <Teleport to="body">
-    <div v-if="items.length > 0" class="lg:hidden fixed bottom-0 left-0 right-0 z-50">
+    <!-- A floating panel, clear of the music button on the right -->
+    <div
+      v-if="items.length > 0"
+      class="panel fixed bottom-3 left-3 right-17 z-50 overflow-hidden p-0 lg:hidden"
+    >
       <!-- Expanded TOC list -->
       <Transition
         enter-active-class="transition-all duration-200 ease-out"
@@ -32,7 +36,7 @@ function handleScrollTo(id: string) {
       >
         <div
           v-if="mobileTocOpen"
-          class="border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md px-4 py-3 max-h-64 overflow-y-auto"
+          class="max-h-64 overflow-y-auto border-b border-dashed border-(--card-border) px-4 py-3"
         >
           <ul class="space-y-px font-mono">
             <li v-for="item in items" :key="item.id">
@@ -78,7 +82,7 @@ function handleScrollTo(id: string) {
       <!-- Always visible bar -->
       <button
         type="button"
-        class="w-full flex items-center gap-3 px-4 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md"
+        class="flex w-full items-center gap-3 px-4 py-3"
         @click="mobileTocOpen = !mobileTocOpen"
       >
         <span class="text-[9px] font-mono uppercase tracking-widest text-neutral-400 shrink-0"

@@ -199,30 +199,26 @@ function scrollToHeading(id: string) {
         <!-- Footer -->
         <footer class="mt-12 mb-28 lg:mb-16 space-y-8 px-6 lg:px-12">
           <!-- Separator -->
-          <div class="border-b border-neutral-200 dark:border-neutral-800" />
+          <div class="border-b border-dashed border-(--card-border)" />
 
           <!-- Share section -->
           <div>
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
-              {{ t('blog.shareArticle') }}
-            </h2>
+            <h2 class="eyebrow mb-3">{{ t('blog.shareArticle') }}</h2>
             <button
               type="button"
               :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
-              class="inline-flex items-center gap-2 border border-neutral-200 dark:border-neutral-800 px-3 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400 hover:border-primary-500 hover:text-primary-500 transition-colors"
+              class="btn btn-outline btn-sm"
               @click="copyLink"
             >
-              <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-3" />
+              <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
               {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
             </button>
           </div>
 
           <!-- More articles -->
           <div v-if="relatedPosts?.length">
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">
-              {{ t('blog.moreArticles') }}
-            </h2>
-            <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <h2 class="eyebrow mb-3">{{ t('blog.moreArticles') }}</h2>
+            <div class="panel space-y-1">
               <BlogPostRow v-for="related in relatedPosts" :key="related.path" :post="related" />
             </div>
           </div>

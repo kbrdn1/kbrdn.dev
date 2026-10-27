@@ -26,34 +26,29 @@ function dismiss() {
 <template>
   <div v-if="!dismissed" class="w-full">
     <div
-      class="relative isolate overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-all duration-300 hover:border-primary-500/40"
+      class="panel-card relative isolate overflow-hidden p-1.5 transition-colors hover:border-primary-500/40"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
     >
       <UiPixelCanvas />
       <!-- Image -->
-      <div v-if="image" class="relative h-36 overflow-hidden">
-        <img
-          :src="image"
-          :alt="title"
-          class="w-full h-full object-cover transition-transform duration-500"
-          :class="isHovered ? 'scale-105' : 'scale-100'"
-        />
+      <div v-if="image" class="relative h-36 overflow-hidden rounded-[10px]">
+        <UiPixelImage :src="image" :alt="title" class="size-full" reveal />
         <div
-          class="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/30 to-transparent"
+          class="pointer-events-none absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/30 to-transparent"
         />
 
         <!-- Badge -->
         <span
           v-if="badge"
-          class="absolute top-2.5 right-2.5 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-primary-500 border border-primary-500/40 bg-primary-500/15"
+          class="tag pointer-events-none absolute top-2.5 right-2.5 text-primary-500"
         >
           {{ badge }}
         </span>
 
         <!-- Title overlay on image -->
-        <div class="absolute bottom-0 left-0 right-0 p-3">
-          <h4 class="text-sm font-bold text-white leading-snug" style="font-family: 'Fenix', serif">
+        <div class="pointer-events-none absolute bottom-0 left-0 right-0 p-3">
+          <h4 class="text-sm font-medium leading-snug text-white">
             {{ title }}
           </h4>
         </div>
@@ -68,10 +63,7 @@ function dismiss() {
           >
             {{ title }}
           </h4>
-          <span
-            v-if="badge"
-            class="shrink-0 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-primary-500 border border-primary-500/40 bg-primary-500/15"
-          >
+          <span v-if="badge" class="tag shrink-0 text-primary-500">
             {{ badge }}
           </span>
         </div>
