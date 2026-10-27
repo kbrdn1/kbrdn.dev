@@ -242,7 +242,7 @@ const { postUrl } = useBlogUrl()
             <div class="flex items-start justify-between gap-3">
               <UiTag v-if="post.tags?.length" :label="post.tags[0]!" variant="auto" />
               <p class="ml-auto shrink-0 text-2xl text-green-600 dark:text-green-500">
-                {{ readingTime(post.body) }}
+                <UiRollingNumber :value="readingTime(post.body)" />
                 <span class="text-base text-neutral-500">/ {{ t('blog.readingTime') }}</span>
               </p>
             </div>

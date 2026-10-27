@@ -148,7 +148,10 @@ const reducedMotion = useReducedMotion()
         </div>
       </div>
 
-      <template #meta>{{ pad(currentSlide + 1) }} / {{ pad(slides.length) }}</template>
+      <template #meta>
+        <UiRollingNumber :value="pad(currentSlide + 1)" /> /
+        <UiRollingNumber :value="pad(slides.length)" />
+      </template>
       <template #footer>
         <!-- Client only: whether to autoplay depends on the reader's motion preference -->
         <ClientOnly>

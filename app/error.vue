@@ -172,7 +172,8 @@ onMounted(() => {
           </div>
 
           <template #meta>
-            {{ placed.length }} / {{ pixels.length }} {{ t('error.inPlace') }}
+            <UiRollingNumber :value="placed.length" /> / <UiRollingNumber :value="pixels.length" />
+            {{ t('error.inPlace') }}
           </template>
           <template #footer>
             <button type="button" class="btn btn-outline btn-sm" @click="resetPixels">

@@ -103,7 +103,7 @@ const reference = (url: string) =>
         <div v-for="group in groups" :key="group.key" class="sm:px-5 sm:first:pl-0 sm:last:pr-0">
           <p class="eyebrow">{{ t(`experiencePage.openSource.${group.key}`) }}</p>
           <p class="mt-1 text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-            {{ group.statuses.length }}
+            <UiRollingNumber :value="group.statuses.length" />
           </p>
           <div class="mt-3 flex h-3 gap-1" aria-hidden="true">
             <span
@@ -297,7 +297,9 @@ const reference = (url: string) =>
       </div>
     </div>
 
-    <template #meta>{{ shown }} / {{ total }}</template>
+    <template #meta>
+      <UiRollingNumber :value="shown" /> / <UiRollingNumber :value="total" />
+    </template>
     <template #footer>
       <a
         href="https://github.com/kbrdn1"

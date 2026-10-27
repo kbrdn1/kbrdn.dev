@@ -330,7 +330,7 @@ function switchTab(step: 1 | -1) {
               {{ activeTab === 'recent' ? t('github.lastYear') : t('github.totalContributions') }}
             </p>
             <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              {{ stats.total.toLocaleString() }}
+              <UiRollingNumber :value="stats.total.toLocaleString()" />
             </p>
           </div>
           <div>
@@ -338,7 +338,7 @@ function switchTab(step: 1 | -1) {
               {{ t('github.dailyAverage') }}
             </p>
             <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              {{ stats.avgPerDay }}
+              <UiRollingNumber :value="stats.avgPerDay" />
               <span class="text-base text-neutral-500">{{ t('github.perDay') }}</span>
             </p>
           </div>

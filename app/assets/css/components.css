@@ -377,6 +377,60 @@
       width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  /* RollingNumber: one reel per digit, a column 0-9 twice, moved a line at a time. Equal
+     digit widths, so the reels line up and nothing shifts as they turn. */
+  .rolling-number {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reel {
+    display: inline-block;
+    height: 1lh;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .reel-strip {
+    display: block;
+    transition: translate calc(0.9s + var(--i, 0) * 0.15s) var(--ease-out-quint);
+  }
+
+  /* 0-9 twice, one per line */
+  .reel-strip::before {
+    content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9";
+    white-space: pre;
+  }
+
+  .reel.is-instant .reel-strip {
+    transition: none;
+  }
+
+  /* Blurred while fast: the quint curve does most of its distance early, so does the blur;
+     the drum's edges fade while it turns */
+  .reel.is-spinning {
+    mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent);
+  }
+
+  .reel.is-spinning .reel-strip {
+    animation: reel-blur calc(0.9s + var(--i, 0) * 0.15s) linear both;
+  }
+
+  @keyframes reel-blur {
+    0% {
+      filter: blur(0);
+    }
+    6% {
+      filter: blur(2.5px);
+    }
+    35% {
+      filter: blur(0.8px);
+    }
+    70%,
+    100% {
+      filter: blur(0);
+    }
+  }
+
   /* List row inside a card: lifts on hover */
   .row {
     border-radius: 0.75rem;
