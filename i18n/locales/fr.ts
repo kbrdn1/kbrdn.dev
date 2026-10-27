@@ -38,6 +38,7 @@ export default {
     apps: 'Apps',
     activity: 'Activité',
     blog: 'Blog',
+    contact: 'Contact',
     skipToContent: 'Aller au contenu',
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
@@ -358,7 +359,36 @@ export default {
     teaserCta: 'Voir le parcours',
   },
 
-  // /apps
+  // /contact
+  contactPage: {
+    seoTitle: 'Contact · Kylian Bardini',
+    seoDescription:
+      'Écrire à Kylian Bardini, développeur full stack à Nancy : un poste, un projet ou une question.',
+    ogTitle: 'Contact',
+    ogSubtitle: 'Un poste, un projet, une question',
+    eyebrow: 'CONTACT',
+    title: 'Écrivez-moi.',
+    intro: 'Pour un poste, un projet ou une question précise. Un court message suffit.',
+    formTitle: 'Partager le contexte',
+    formSubtitle: 'Un court message suffit',
+    company: 'Entreprise ou produit',
+    companyPlaceholder: 'Facultatif',
+    topic: 'Sujet',
+    topics: {
+      role: 'Un poste',
+      project: 'Un projet',
+      openSource: 'Open source',
+      other: 'Autre chose',
+    },
+    details: 'Détails',
+    location: 'Localisation',
+    availability: 'Disponibilité',
+    email: 'E-mail',
+    socials: 'Réseaux',
+    write: 'Écrire un message',
+  },
+
+  // /activity
   activityPage: {
     seoTitle: 'Activité · Kylian Bardini',
     seoDescription:
@@ -411,6 +441,7 @@ export default {
     },
   },
 
+  // /apps
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:

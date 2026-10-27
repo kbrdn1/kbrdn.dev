@@ -43,41 +43,6 @@ const socialLinks = [
   },
 ]
 
-// Form state
-const form = reactive({
-  name: '',
-  email: '',
-  message: '',
-})
-
-const isSubmitting = ref(false)
-const submitStatus = ref<'idle' | 'success' | 'error'>('idle')
-
-async function handleSubmit() {
-  isSubmitting.value = true
-  submitStatus.value = 'idle'
-
-  try {
-    await $fetch('/api/contact', {
-      method: 'POST',
-      body: form,
-    })
-
-    submitStatus.value = 'success'
-    form.name = ''
-    form.email = ''
-    form.message = ''
-
-    setTimeout(() => {
-      submitStatus.value = 'idle'
-    }, 5000)
-  } catch {
-    submitStatus.value = 'error'
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
 const currentYear = new Date().getFullYear()
 </script>
 
@@ -89,7 +54,7 @@ const currentYear = new Date().getFullYear()
     <UiPanel class="relative mx-auto max-w-[61rem]">
       <!-- Three-column grid -->
       <div class="panel-card grid grid-cols-1 gap-12 p-5 sm:p-8 md:grid-cols-3">
-        <!-- Left Column: Contact Form -->
+        <!-- Left Column: Contact, the form lives on /contact -->
         <div
           class="space-y-5 md:col-span-1 md:pr-12 md:border-r md:border-dashed md:border-neutral-200 dark:md:border-neutral-800"
         >
@@ -99,89 +64,12 @@ const currentYear = new Date().getFullYear()
           <p class="text-sm text-neutral-500 dark:text-neutral-400">
             {{ t('footer.contact.description') }}
           </p>
-
-          <ClientOnly>
-            <form class="space-y-4" @submit.prevent="handleSubmit">
-              <!-- Name -->
-              <div class="space-y-1.5">
-                <label for="footer-name" class="eyebrow block">
-                  {{ t('footer.contact.name') }}
-                </label>
-                <input
-                  id="footer-name"
-                  v-model="form.name"
-                  type="text"
-                  required
-                  :placeholder="t('footer.contact.namePlaceholder')"
-                  class="field"
-                />
-              </div>
-
-              <!-- Email -->
-              <div class="space-y-1.5">
-                <label for="footer-email" class="eyebrow block">
-                  {{ t('footer.contact.email') }}
-                </label>
-                <input
-                  id="footer-email"
-                  v-model="form.email"
-                  type="email"
-                  required
-                  :placeholder="t('footer.contact.emailPlaceholder')"
-                  class="field"
-                />
-              </div>
-
-              <!-- Message -->
-              <div class="space-y-1.5">
-                <label for="footer-message" class="eyebrow block">
-                  {{ t('footer.contact.message') }}
-                </label>
-                <textarea
-                  id="footer-message"
-                  v-model="form.message"
-                  required
-                  rows="4"
-                  :placeholder="t('footer.contact.messagePlaceholder')"
-                  class="field resize-none"
-                />
-              </div>
-
-              <!-- Submit Button -->
-              <button
-                type="submit"
-                :disabled="isSubmitting"
-                :aria-busy="isSubmitting"
-                class="btn btn-primary w-full"
-              >
-                <span v-if="isSubmitting" class="flex items-center justify-center gap-2">
-                  <UIcon name="i-heroicons-arrow-path" class="w-4 h-4 animate-spin" />
-                  {{ t('footer.contact.sending') }}
-                </span>
-                <span v-else>{{ t('footer.contact.send') }}</span>
-              </button>
-
-              <!-- Status Messages -->
-              <div aria-live="polite" aria-atomic="true">
-                <p
-                  v-if="submitStatus === 'success'"
-                  role="status"
-                  class="flex items-center gap-2 text-sm text-green-600 dark:text-green-400"
-                >
-                  <UiMascot mood="clap" :size="32" />
-                  {{ t('footer.contact.success') }}
-                </p>
-                <p
-                  v-if="submitStatus === 'error'"
-                  role="alert"
-                  class="flex items-center gap-2 text-sm text-red-600 dark:text-red-400"
-                >
-                  <UiMascot mood="nervous" :size="32" />
-                  {{ t('footer.contact.error') }}
-                </p>
-              </div>
-            </form>
-          </ClientOnly>
+          <div class="flex flex-wrap gap-2">
+            <NuxtLink to="/contact" class="btn btn-primary btn-sm">
+              <UIcon name="i-heroicons-paper-airplane" class="size-4" aria-hidden="true" />
+              {{ t('contactPage.write') }}
+            </NuxtLink>
+          </div>
         </div>
 
         <!-- Center Column: Categorized Links -->
@@ -308,7 +196,7 @@ const currentYear = new Date().getFullYear()
         &copy; {{ currentYear }} Kylian Bardini · {{ t('footer.copyright') }}
       </template>
       <template #footer>
-        <UiMascot mood="hoodie-cool" :size="28" />
+        <UiLogo :size="20" class="text-neutral-900 dark:text-neutral-100" />
       </template>
     </UiPanel>
   </footer>

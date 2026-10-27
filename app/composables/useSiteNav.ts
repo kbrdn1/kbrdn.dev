@@ -15,6 +15,7 @@ export function useSiteNav() {
     { to: '/apps', label: t('nav.apps') },
     { to: '/activity', label: t('nav.activity') },
     { to: '/blog', label: t('nav.blog') },
+    { to: '/contact', label: t('nav.contact') },
   ])
 
   const isActive = (to: string) => route.path === to || route.path.startsWith(`${to}/`)

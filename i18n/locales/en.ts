@@ -38,6 +38,7 @@ export default {
     apps: 'Apps',
     activity: 'Activity',
     blog: 'Blog',
+    contact: 'Contact',
     skipToContent: 'Skip to content',
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
@@ -358,7 +359,36 @@ export default {
     teaserCta: 'See the journey',
   },
 
-  // /apps
+  // /contact
+  contactPage: {
+    seoTitle: 'Contact · Kylian Bardini',
+    seoDescription:
+      'Write to Kylian Bardini, full stack developer in Nancy: a role, a project or a question.',
+    ogTitle: 'Contact',
+    ogSubtitle: 'A role, a project, a question',
+    eyebrow: 'CONTACT',
+    title: 'Write to me.',
+    intro: 'For a role, a project or a precise question. A short message is enough.',
+    formTitle: 'Share the context',
+    formSubtitle: 'A short message is enough',
+    company: 'Company or product',
+    companyPlaceholder: 'Optional',
+    topic: 'Topic',
+    topics: {
+      role: 'A role',
+      project: 'A project',
+      openSource: 'Open source',
+      other: 'Something else',
+    },
+    details: 'Details',
+    location: 'Location',
+    availability: 'Availability',
+    email: 'Email',
+    socials: 'Elsewhere',
+    write: 'Write a message',
+  },
+
+  // /activity
   activityPage: {
     seoTitle: 'Activity · Kylian Bardini',
     seoDescription:
@@ -411,6 +441,7 @@ export default {
     },
   },
 
+  // /apps
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:
