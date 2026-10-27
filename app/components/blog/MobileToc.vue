@@ -58,15 +58,16 @@ function handleScrollTo(id: string) {
         @click="open = !open"
       >
         <span
-          class="flex size-5 shrink-0 items-center justify-center rounded-full bg-neutral-900 font-mono text-[10px] text-white dark:bg-neutral-100 dark:text-neutral-950"
+          class="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-500 font-mono text-[10px] text-white dark:text-neutral-950"
           aria-hidden="true"
         >
-          {{ current < 0 ? '·' : current + 1 }}
+          <template v-if="current < 0">·</template>
+          <UiRollingNumber v-else :value="current + 1" />
         </span>
         <span class="min-w-0 flex-1">
           <span class="eyebrow block">{{ t('blog.toc') }}</span>
           <span class="block truncate text-[13px] text-neutral-900 dark:text-neutral-100">
-            {{ activeHeadingText || steps[0]?.text }}
+            <UiRollingText :text="activeHeadingText || steps[0]?.text || ''" />
           </span>
         </span>
         <span
@@ -78,12 +79,12 @@ function handleScrollTo(id: string) {
           :aria-label="t('blog.toc')"
         >
           <span
-            class="block h-full bg-green-600 transition-[width] duration-300 dark:bg-green-500"
+            class="block h-full bg-primary-500 transition-[width] duration-300"
             :style="{ width: `${progress ?? 0}%` }"
           />
         </span>
         <span class="eyebrow shrink-0 tabular-nums">
-          {{ Math.max(current, 0) }}/{{ steps.length }}
+          <UiRollingNumber :value="Math.max(current, 0)" />/{{ steps.length }}
         </span>
         <UIcon
           name="i-heroicons-chevron-up-20-solid"

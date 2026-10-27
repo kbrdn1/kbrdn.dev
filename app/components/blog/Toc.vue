@@ -47,12 +47,12 @@ watch(
           :aria-label="t('blog.toc')"
         >
           <div
-            class="h-full bg-green-600 transition-[width] duration-300 dark:bg-green-500"
+            class="h-full bg-primary-500 transition-[width] duration-300"
             :style="{ width: `${progress ?? 0}%` }"
           />
         </div>
         <span class="eyebrow shrink-0 tabular-nums">
-          {{ Math.max(current, 0) }}/{{ steps.length }}
+          <UiRollingNumber :value="Math.max(current, 0)" />/{{ steps.length }}
         </span>
       </div>
 

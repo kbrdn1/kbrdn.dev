@@ -31,9 +31,9 @@ const { current, stepOf } = useTocSteps(
             cn(
               'flex size-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px]',
               stepOf(item.id) < current
-                ? 'bg-green-600 text-white dark:bg-green-500 dark:text-neutral-950'
+                ? 'bg-primary-500/15 text-(--accent-text)'
                 : stepOf(item.id) === current
-                  ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-950'
+                  ? 'bg-primary-500 text-white dark:text-neutral-950'
                   : 'border border-(--control-border) text-(--label)',
             )
           "
