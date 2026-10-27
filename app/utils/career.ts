@@ -96,6 +96,8 @@ export interface Project {
   article?: string
   /** An illustration: its public site, its README or its maker's site (public/images/projects) */
   image?: string
+  /** The product's logo, square (public/images/logos) */
+  logo?: string
   /** The clients' sites */
   clients?: Site[]
 }
@@ -122,6 +124,7 @@ export const PROJECTS: Project[] = [
     ],
     highlightsCount: 4,
     image: '/images/projects/jewely-ecommerce.webp',
+    logo: '/images/logos/jewely.jpeg',
     clients: [
       { label: 'bijouterie-julian.com', url: 'https://www.bijouterie-julian.com' },
       { label: 'crown-dp.com', url: 'https://www.crown-dp.com' },
@@ -150,6 +153,7 @@ export const PROJECTS: Project[] = [
     site: 'https://www.fichespedagogiques.com',
     article: '/blogs/fiches-pedagogiques',
     image: '/images/projects/fiches-pedagogiques.webp',
+    logo: '/images/logos/fiches-pedagogiques.png',
     clients: [{ label: 'martin-media.fr', url: 'https://martin-media.fr' }],
   },
   {
@@ -171,6 +175,7 @@ export const PROJECTS: Project[] = [
     ],
     highlightsCount: 3,
     image: '/images/projects/jewely-configurator.webp',
+    logo: '/images/logos/jewely-configurator.png',
     clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
   },
   {
@@ -193,6 +198,7 @@ export const PROJECTS: Project[] = [
     highlightsCount: 4,
     site: 'https://www.assmat-facile.fr',
     image: '/images/projects/assmat-facile.webp',
+    logo: '/images/logos/assmat-facile.png',
   },
   {
     id: 'jewely-erp',
@@ -204,6 +210,7 @@ export const PROJECTS: Project[] = [
     technologies: ['Laravel', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
     highlightsCount: 3,
     image: '/images/projects/jewely-erp.webp',
+    logo: '/images/logos/jewely.jpeg',
     clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
   },
 ]
