@@ -16,6 +16,9 @@ const CELL = 4
 const ALPHAS = [0, 0.06, 0.12, 0.18]
 const PRIMARY = [0xd4, 0x82, 0x5d] // --ui-primary
 const SKY = [0x38, 0xbd, 0xf8] // the blog's second colour (layouts/blog.vue)
+// Where the coarse sample reads the noise: the live field drifts through it, the frozen one
+// needs a stretch with patches (a third of the cells), the noise's corner has none
+const ALT_SHIFT = 192
 
 const cols = W / CELL
 const rows = Math.ceil(H / CELL)
@@ -37,7 +40,9 @@ function field(file: string, alt?: number[]) {
       const u = (value - floor) * 4.2
       const level = u > 0 ? Math.min(3, (u * 3 + BAYER_4[((y & 3) << 2) | (x & 3)]!) | 0) : 0
       const tone =
-        alt && noise[((y >> 2) & (NOISE_H - 1)) * NOISE_W + ((x >> 2) & (NOISE_W - 1))]! > 0.6
+        alt &&
+        noise[((y >> 2) & (NOISE_H - 1)) * NOISE_W + (((x >> 2) + ALT_SHIFT) & (NOISE_W - 1))]! >
+          0.6
           ? alt
           : PRIMARY
       rgba.set([...tone, Math.round(ALPHAS[level]! * mask * 255)], (y * cols + x) * 4)
