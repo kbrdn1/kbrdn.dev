@@ -103,9 +103,14 @@ migrates `[Unreleased]` into that file and empties this one — see
 - **A pixel on the pointer**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A pixel in the accent
   sits on the pointer's tip; now and then it grows block by block into an arcade
-  invader, steps off in one of a D-pad's eight directions, twitches through its
-  two frames, sometimes turns into another one, then shrinks back onto the tip.
-  Mouse and trackpad only, never under `prefers-reduced-motion`.
+  invader, hops off in one of a D-pad's eight directions, marches on a block per
+  frame like in the arcade, sometimes turns into another one, then hops back
+  onto the tip. A click throws eight blocks along the D-pad. A triple click calls
+  Ichigo Kurosaki, from his Jump Ultimate Stars sprites (21 moves, Shikai and
+  Bankai): he grows out of the pixel, plays a move at random, half the time a
+  special whose Getsuga Tenshō flies across the screen, then folds back. The
+  sprites load on the first triple click (123 KB). Mouse and trackpad only,
+  never under `prefers-reduced-motion`.
 - **What is going on right now, on `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
   what is being read, and what is welcome, with a link to write.
