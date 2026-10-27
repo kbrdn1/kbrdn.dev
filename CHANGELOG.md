@@ -115,9 +115,9 @@ migrates `[Unreleased]` into that file and empties this one — see
   Mouse and trackpad only, never under `prefers-reduced-motion`.
 - **Illustrations full size**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A click on an
-  illustration of `/experience` or a picture of an article opens it crisp and
-  full size in a native dialog (Escape, a click beside it or its button close
-  it).
+  illustration of `/experience` opens it crisp and full size in a native dialog
+  (Escape, a click beside it or its button close it), as an article's pictures
+  already zoom.
 - **Where the companies, clients and schools live**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Under each entry of
   `/experience`, links to flippad.com and jewely.fr, the clients' sites
