@@ -28,13 +28,7 @@ const { data: relatedPosts } = await useAsyncData(
   { watch: [locale] },
 )
 
-// Reading time estimate (~200 words/min)
-const readingTime = computed(() => {
-  if (!post.value?.body) return 0
-  const text = JSON.stringify(post.value.body)
-  const wordCount = text.split(/\s+/).length
-  return Math.max(1, Math.ceil(wordCount / 200))
-})
+const minutes = computed(() => readingTime(post.value?.body))
 
 // Copy link functionality
 const linkCopied = ref(false)
@@ -165,7 +159,7 @@ function scrollToHeading(id: string) {
     <div ref="articleRef" class="w-full flex flex-col items-center relative z-10">
       <!-- Article found -->
       <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto">
-        <BlogArticleHeader :post="post" :reading-time="readingTime" />
+        <BlogArticleHeader :post="post" :reading-time="minutes" />
 
         <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
           <!-- Main column -->

@@ -422,6 +422,8 @@ export default {
 
   // Blog Section
   blog: {
+    toc: 'Contents',
+    read: 'Read',
     title: 'Articles & Thoughts',
     description: 'Writing about web development, architecture, and tools I use.',
     allTags: 'All',

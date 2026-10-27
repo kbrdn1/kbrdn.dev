@@ -423,6 +423,8 @@ export default {
 
   // Blog Section
   blog: {
+    toc: 'Sommaire',
+    read: 'Lire',
     title: 'Articles & Réflexions',
     description: "J'écris sur le développement web, l'architecture et les outils que j'utilise.",
     allTags: 'Tous',
