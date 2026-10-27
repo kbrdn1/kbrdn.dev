@@ -6,6 +6,11 @@ const { t } = useI18n()
 const showBrandMenu = ref(false)
 // The notch's menus: opened from the nav items, closed once the pointer leaves the header
 const menu = useNavMenu()
+// The focus leaving the header (navbar and notch) closes the menu too
+function onFocusOut(event: FocusEvent) {
+  const header = event.currentTarget as HTMLElement
+  if (!header.contains(event.relatedTarget as Node | null)) menu.close(0)
+}
 
 function handleClickOutside(e: MouseEvent) {
   const target = e.target as HTMLElement
@@ -42,6 +47,8 @@ const isMobileMenuOpen = ref(false)
     :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')"
     @mouseenter="menu.keep"
     @mouseleave="menu.close()"
+    @focusout="onFocusOut"
+    @keydown.esc="menu.close(0)"
   >
     <!-- Detached from the top: a panel as wide as the home's panels -->
     <div class="panel notched mx-auto max-w-[61rem] p-0">
