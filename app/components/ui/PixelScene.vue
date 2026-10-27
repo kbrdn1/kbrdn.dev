@@ -1,8 +1,15 @@
 <script setup lang="ts">
-// A page's hero scene (utils/pixelScenes), drawn in the theme's palette: what never moves once,
-// then what each tick draws. It plays only while on screen; under reduced motion it holds its
-// first frame. Decorative.
-import type { PixelSceneName } from '~/utils/pixelScenes'
+// A page's hero scene (utils/pixelScenes), drawn in the theme's palette on no background: what
+// never moves once, then what each tick draws. It plays only while on screen, and holds its
+// frame while reduced motion is on, even if it is turned on later. Decorative.
+import {
+  PIXEL_SCENES,
+  SCENE_FILL,
+  SCENE_H,
+  SCENE_TICK,
+  SCENE_W,
+  type PixelSceneName,
+} from '~/utils/pixelScenes'
 
 const props = defineProps<{ scene: PixelSceneName }>()
 const scene = computed(() => PIXEL_SCENES[props.scene])
@@ -15,10 +22,12 @@ const el = ref<SVGSVGElement>()
 let timer: ReturnType<typeof setInterval> | undefined
 let observer: IntersectionObserver | undefined
 onMounted(() => {
-  if (reducedMotion.value || !el.value) return
+  if (!el.value) return
   observer = new IntersectionObserver(([entry]) => {
     clearInterval(timer)
-    timer = entry?.isIntersecting ? setInterval(() => tick.value++, SCENE_TICK) : undefined
+    timer = entry?.isIntersecting
+      ? setInterval(() => reducedMotion.value || tick.value++, SCENE_TICK)
+      : undefined
   })
   observer.observe(el.value)
 })
@@ -44,7 +53,7 @@ onBeforeUnmount(() => {
         :y="cell.y"
         :width="cell.w ?? 1"
         :height="cell.h ?? 1"
-        :class="cell.c"
+        :class="SCENE_FILL[cell.c]"
       />
     </g>
     <rect
@@ -54,7 +63,7 @@ onBeforeUnmount(() => {
       :y="cell.y"
       :width="cell.w ?? 1"
       :height="cell.h ?? 1"
-      :class="cell.c"
+      :class="SCENE_FILL[cell.c]"
     />
   </svg>
 </template>

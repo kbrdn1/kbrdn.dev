@@ -154,7 +154,7 @@ const { postUrl } = useBlogUrl()
           </a>
         </div>
       </div>
-      <UiPixelScene scene="read" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
+      <UiPixelScene scene="blog" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
     </section>
 
     <div ref="blogListRef" class="scroll-mt-28" />
