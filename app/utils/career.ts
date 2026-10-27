@@ -420,8 +420,10 @@ export function yearSpan(start: string, end: string | null): string {
 
 /** "oct. 2023" / "Oct 2023" */
 export function formatMonth(date: string, locale: string): string {
+  // "2023-10" parses as midnight UTC: formatted in UTC, or a visitor west of it reads September
   return new Date(date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
   })
 }
