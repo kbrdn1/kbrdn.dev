@@ -282,7 +282,7 @@ function formatTime(seconds: number): string {
               <UTooltip :text="t('music.previous')">
                 <button
                   type="button"
-                  class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
+                  class="icon-btn size-8 cursor-pointer"
                   :aria-label="t('music.previous')"
                   @click.prevent.stop="prevTrack"
                 >
@@ -299,13 +299,7 @@ function formatTime(seconds: number): string {
               <UTooltip :text="isPlaying ? t('music.pause') : t('music.play')">
                 <button
                   type="button"
-                  :class="
-                    cn(
-                      'flex items-center justify-center w-8 h-8',
-                      'text-white bg-primary-500 hover:bg-primary-400',
-                      'transition-all cursor-pointer',
-                    )
-                  "
+                  class="mx-0.5 flex size-9 cursor-pointer items-center justify-center rounded-full bg-primary-500 text-neutral-950 transition-colors hover:bg-primary-400"
                   :aria-label="isPlaying ? t('music.pause') : t('music.play')"
                   @click="togglePlay"
                 >
@@ -332,7 +326,7 @@ function formatTime(seconds: number): string {
               <UTooltip :text="t('music.next')">
                 <button
                   type="button"
-                  class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
+                  class="icon-btn size-8 cursor-pointer"
                   :aria-label="t('music.next')"
                   @click.prevent.stop="nextTrack"
                 >
@@ -346,16 +340,12 @@ function formatTime(seconds: number): string {
                   </svg>
                 </button>
               </UTooltip>
-              <span class="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-0.5" />
+              <span class="mx-1 h-4 w-px bg-(--panel-border)" aria-hidden="true" />
               <UTooltip :text="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')">
                 <button
                   type="button"
-                  :class="
-                    cn(
-                      'flex items-center justify-center w-7 h-7 transition-colors cursor-pointer',
-                      shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500',
-                    )
-                  "
+                  class="segment size-8 cursor-pointer px-0"
+                  :aria-pressed="shuffleMode"
                   :aria-label="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')"
                   @click.prevent.stop="shuffleMode = !shuffleMode"
                 >
@@ -365,12 +355,8 @@ function formatTime(seconds: number): string {
               <UTooltip :text="showListing ? t('music.hideList') : t('music.showList')">
                 <button
                   type="button"
-                  :class="
-                    cn(
-                      'flex items-center justify-center w-7 h-7 transition-colors cursor-pointer',
-                      showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500',
-                    )
-                  "
+                  class="segment size-8 cursor-pointer px-0"
+                  :aria-pressed="showListing"
                   :aria-label="showListing ? t('music.hideList') : t('music.showList')"
                   @click.prevent.stop="showListing = !showListing"
                 >
@@ -382,11 +368,12 @@ function formatTime(seconds: number): string {
 
           <!-- Progress bar -->
           <div class="flex items-center gap-2 mt-2">
-            <span class="text-[10px] font-mono text-neutral-400 w-7 text-right">
+            <span class="eyebrow w-8 text-right tabular-nums">
               {{ formatTime(currentTime) }}
             </span>
+            <!-- A tick slider, after disarto's cost estimate: ticks filled up to a pill handle -->
             <div
-              class="progress-bar flex-1 h-1 bg-neutral-200 dark:bg-neutral-800 cursor-pointer group/bar relative"
+              class="progress-bar group/bar relative h-4 flex-1 cursor-pointer"
               role="slider"
               tabindex="0"
               :aria-label="'Track progress'"
@@ -394,8 +381,6 @@ function formatTime(seconds: number): string {
               :aria-valuemin="0"
               :aria-valuemax="Math.round(duration)"
               :aria-valuetext="`${formatTime(currentTime)} of ${formatTime(duration)}`"
-              :class="{ 'h-1.5': isSeeking }"
-              style="transition: height 0.15s ease"
               @mousedown="startSeek"
               @keydown.left.prevent="
                 audio && (audio.currentTime = Math.max(0, audio.currentTime - 5))
@@ -405,26 +390,26 @@ function formatTime(seconds: number): string {
               "
             >
               <div
-                class="h-full bg-primary-500 relative"
-                :style="{
-                  width: `${progress}%`,
-                  transition: isSeeking ? 'none' : 'width 1s linear',
-                }"
+                class="ticks absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 bg-neutral-300 dark:bg-neutral-700"
               >
                 <div
-                  :class="
-                    cn(
-                      'absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary-500 border-2 border-white dark:border-neutral-900 rounded-full',
-                      'transition-transform duration-150',
-                      isSeeking
-                        ? 'scale-125 opacity-100'
-                        : 'scale-0 group-hover/bar:scale-100 opacity-0 group-hover/bar:opacity-100',
-                    )
-                  "
+                  class="h-full bg-primary-500"
+                  :style="{
+                    width: `${progress}%`,
+                    transition: isSeeking ? 'none' : 'width 1s linear',
+                  }"
                 />
               </div>
+              <div
+                class="absolute top-1/2 h-4 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-900 transition-transform duration-150 dark:bg-white"
+                :class="isSeeking ? 'scale-110' : ''"
+                :style="{
+                  left: `${progress}%`,
+                  transition: isSeeking ? 'none' : 'left 1s linear',
+                }"
+              />
             </div>
-            <span class="text-[10px] font-mono text-neutral-400 w-7">
+            <span class="eyebrow w-8 tabular-nums">
               {{ formatTime(duration) }}
             </span>
           </div>
@@ -432,58 +417,52 @@ function formatTime(seconds: number): string {
       </div>
 
       <!-- Track indicators -->
-      <div
-        v-if="tracks.length > 1 && !showListing"
-        class="flex items-center justify-center gap-2 px-3 pb-3"
-      >
+      <!-- Track indicators: dots, the current one a longer orange pill; each button is
+           larger than its dot, to be easy to hit -->
+      <div v-if="tracks.length > 1 && !showListing" class="flex items-center justify-center pb-2">
         <button
           v-for="(_, index) in tracks"
           :key="index"
           type="button"
+          class="group/dot cursor-pointer p-1"
           :aria-label="`Track ${index + 1} of ${tracks.length}${currentIndex === index ? ' (current)' : ''}`"
-          :class="
-            cn(
-              'h-0.5 cursor-pointer',
-              currentIndex === index
-                ? 'bg-primary-500'
-                : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500',
-            )
-          "
-          :style="{
-            width: currentIndex === index ? '24px' : '12px',
-            transition: 'width 300ms ease, background-color 300ms ease',
-          }"
+          :aria-current="currentIndex === index ? 'true' : undefined"
           @click.prevent.stop="goToTrack(index)"
-        />
+        >
+          <span
+            :class="
+              cn(
+                'block h-1.5 rounded-full transition-[width,background-color] duration-300',
+                currentIndex === index
+                  ? 'w-4 bg-primary-500'
+                  : 'w-1.5 bg-neutral-300 group-hover/dot:bg-neutral-400 dark:bg-neutral-700 dark:group-hover/dot:bg-neutral-500',
+              )
+            "
+          />
+        </button>
       </div>
 
-      <!-- Track listing -->
+      <!-- Track listing: a card under the player, after disarto's ground station rows -->
       <div
-        class="border-t border-neutral-200 dark:border-neutral-800 grid overflow-hidden"
-        :class="
-          showListing
-            ? 'grid-rows-[1fr] opacity-100'
-            : 'grid-rows-[0fr] opacity-0 border-t-transparent'
-        "
+        class="grid overflow-hidden"
+        :class="showListing ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
         style="
           transition:
             grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 200ms ease,
-            border-color 200ms ease !important;
+            opacity 200ms ease !important;
         "
       >
         <div class="overflow-hidden">
-          <div class="max-h-48 overflow-y-auto">
+          <div class="panel-card mt-1 max-h-56 overflow-y-auto p-1.5">
             <button
               v-for="(t, index) in tracks"
               :key="index"
               type="button"
+              :aria-current="currentIndex === index ? 'true' : undefined"
               :class="
                 cn(
-                  'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
-                  currentIndex === index
-                    ? 'bg-primary-500/10'
-                    : 'hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
+                  'row flex w-full items-center gap-3 px-2.5 py-2 text-left',
+                  currentIndex === index && 'bg-primary-500/10 hover:bg-primary-500/15',
                 )
               "
               @click.prevent.stop="goToTrack(index)"
@@ -491,31 +470,39 @@ function formatTime(seconds: number): string {
               <span
                 :class="
                   cn(
-                    'text-[10px] font-mono w-4 text-right shrink-0',
-                    currentIndex === index ? 'text-primary-500' : 'text-neutral-400',
+                    'eyebrow w-5 shrink-0 text-right tabular-nums',
+                    currentIndex === index && 'text-(--accent-text)',
                   )
                 "
               >
-                {{ currentIndex === index && isPlaying ? '▸' : String(index + 1) }}
+                <UIcon
+                  v-if="currentIndex === index && isPlaying"
+                  name="i-heroicons-speaker-wave-16-solid"
+                  class="size-3.5"
+                  aria-hidden="true"
+                />
+                <template v-else>{{ String(index + 1).padStart(2, '0') }}</template>
               </span>
-              <img :src="t.cover" :alt="t.album" class="w-8 h-8 shrink-0 object-cover" />
-              <div class="min-w-0 flex-1">
+              <img
+                :src="t.cover"
+                :alt="t.album"
+                class="size-9 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
+              />
+              <span class="min-w-0 flex-1">
                 <span
                   :class="
                     cn(
-                      'block text-xs truncate',
+                      'block truncate text-sm',
                       currentIndex === index
-                        ? 'text-primary-500 font-medium'
+                        ? 'text-(--accent-text)'
                         : 'text-neutral-900 dark:text-neutral-100',
                     )
                   "
                 >
                   {{ t.title }}
                 </span>
-                <span class="block text-[10px] text-neutral-500 truncate">
-                  {{ t.artist }}
-                </span>
-              </div>
+                <span class="eyebrow block truncate">{{ t.artist }}</span>
+              </span>
             </button>
           </div>
         </div>
