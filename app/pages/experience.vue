@@ -172,26 +172,32 @@ const list = (key: string, count: number) =>
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-8 px-4 pt-6 pb-20 sm:px-6">
     <!-- Intro, open on the page like the home's hero -->
-    <section class="py-4 sm:py-8">
-      <p class="eyebrow">{{ t('experiencePage.eyebrow') }}</p>
-      <h1
-        class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
-        :aria-label="t('experiencePage.title')"
-      >
-        <UiScrambleText :text="t('experiencePage.title')" />
-      </h1>
-      <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
-        {{ t('experiencePage.intro') }}
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a href="#open-source" class="btn btn-primary">
-          {{ t('experiencePage.ctaOpenSource') }}
-        </a>
-        <NuxtLink to="/blog" class="btn btn-outline">
-          <UiScrambleText :text="t('experiencePage.ctaBlog')" effect="link" />
-          <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-        </NuxtLink>
+    <!-- The scene beside it, under it on a phone -->
+    <section
+      class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="min-w-0 flex-1">
+        <p class="eyebrow">{{ t('experiencePage.eyebrow') }}</p>
+        <h1
+          class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
+          :aria-label="t('experiencePage.title')"
+        >
+          <UiScrambleText :text="t('experiencePage.title')" />
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {{ t('experiencePage.intro') }}
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#open-source" class="btn btn-primary">
+            {{ t('experiencePage.ctaOpenSource') }}
+          </a>
+          <NuxtLink to="/blog" class="btn btn-outline">
+            <UiScrambleText :text="t('experiencePage.ctaBlog')" effect="link" />
+            <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+          </NuxtLink>
+        </div>
       </div>
+      <UiPixelScene scene="climb" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
     </section>
 
     <!-- The figures, after disarto's stat cards: they roll in -->

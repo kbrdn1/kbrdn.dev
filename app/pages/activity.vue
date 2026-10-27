@@ -137,31 +137,37 @@ const TAG: Record<string, string> = {
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-8 px-4 pt-6 pb-20 sm:px-6">
     <!-- Intro, open on the page like the home's hero -->
-    <section class="py-4 sm:py-8">
-      <p class="eyebrow">{{ t('activityPage.eyebrow') }}</p>
-      <h1
-        class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
-        :aria-label="t('activityPage.title')"
-      >
-        <UiScrambleText :text="t('activityPage.title')" />
-      </h1>
-      <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
-        {{ t('activityPage.intro') }}
-      </p>
-      <!-- Client only: relative times and the reader's own clock -->
-      <ClientOnly>
-        <p v-if="data && items.length" class="eyebrow mt-6 flex flex-wrap items-center gap-x-2">
-          <span class="relative flex size-1.5" aria-hidden="true">
-            <span
-              class="absolute inline-flex size-full animate-ping rounded-full bg-green-500 opacity-75"
-            />
-            <span class="relative inline-flex size-1.5 rounded-full bg-green-500" />
-          </span>
-          {{ t('activityPage.lastActivity', { ago: ago(items[0]!.at) }) }}
-          <span aria-hidden="true">·</span>
-          {{ t('activityPage.checked', { time: time(data.checkedAt) }) }}
+    <!-- The scene beside it, under it on a phone -->
+    <section
+      class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="min-w-0 flex-1">
+        <p class="eyebrow">{{ t('activityPage.eyebrow') }}</p>
+        <h1
+          class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
+          :aria-label="t('activityPage.title')"
+        >
+          <UiScrambleText :text="t('activityPage.title')" />
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {{ t('activityPage.intro') }}
         </p>
-      </ClientOnly>
+        <!-- Client only: relative times and the reader's own clock -->
+        <ClientOnly>
+          <p v-if="data && items.length" class="eyebrow mt-6 flex flex-wrap items-center gap-x-2">
+            <span class="relative flex size-1.5" aria-hidden="true">
+              <span
+                class="absolute inline-flex size-full animate-ping rounded-full bg-green-500 opacity-75"
+              />
+              <span class="relative inline-flex size-1.5 rounded-full bg-green-500" />
+            </span>
+            {{ t('activityPage.lastActivity', { ago: ago(items[0]!.at) }) }}
+            <span aria-hidden="true">·</span>
+            {{ t('activityPage.checked', { time: time(data.checkedAt) }) }}
+          </p>
+        </ClientOnly>
+      </div>
+      <UiPixelScene scene="desk" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
     </section>
 
     <!-- Right now: what is being learnt, read, and what is welcome -->

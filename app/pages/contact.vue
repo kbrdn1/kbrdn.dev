@@ -62,17 +62,23 @@ const SOCIALS = [
 <template>
   <div class="mx-auto w-full max-w-5xl space-y-8 px-4 pt-6 pb-20 sm:px-6">
     <!-- Intro, open on the page like the home's hero -->
-    <section class="py-4 sm:py-8">
-      <p class="eyebrow">{{ t('contactPage.eyebrow') }}</p>
-      <h1
-        class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
-        :aria-label="t('contactPage.title')"
-      >
-        <UiScrambleText :text="t('contactPage.title')" />
-      </h1>
-      <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
-        {{ t('contactPage.intro') }}
-      </p>
+    <!-- The scene beside it, under it on a phone -->
+    <section
+      class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
+    >
+      <div class="min-w-0 flex-1">
+        <p class="eyebrow">{{ t('contactPage.eyebrow') }}</p>
+        <h1
+          class="mt-4 max-w-3xl text-5xl tracking-tight text-neutral-900 sm:text-6xl dark:text-neutral-100"
+          :aria-label="t('contactPage.title')"
+        >
+          <UiScrambleText :text="t('contactPage.title')" />
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
+          {{ t('contactPage.intro') }}
+        </p>
+      </div>
+      <UiPixelScene scene="mail" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
     </section>
 
     <div class="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
