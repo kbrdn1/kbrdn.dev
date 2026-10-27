@@ -285,9 +285,13 @@ function onClick(event: MouseEvent) {
     clearTimeout(lockTimer)
     lockTimer = setTimeout(() => sight.value && draw(SIGHT), 160)
   }
-  if (event.detail >= 3 && event.detail % 3 === 0) {
-    // The triple click also selected a paragraph
-    getSelection()?.removeAllRanges()
+  // Not on controls, fields or code: there a triple click selects a line to copy, or is just
+  // fast clicking. The selection a triple click makes elsewhere is left as it is.
+  if (
+    event.detail >= 3 &&
+    event.detail % 3 === 0 &&
+    !(event.target as Element | null)?.closest(`${INTERACTIVE}, pre, code, [contenteditable]`)
+  ) {
     ichigo.value = { x: event.clientX, y: event.clientY, key: ++burstId }
     clearTimeout(ichigoTimer)
     ichigoTimer = setTimeout(dismissIchigo, ICHIGO_MAX_MS)
