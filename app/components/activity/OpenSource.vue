@@ -76,6 +76,9 @@ const STATUS_CLASS: Record<string, string> = {
   report: 'text-sky-500',
 }
 
+const mounted = ref(false)
+onMounted(() => (mounted.value = true))
+
 // "PR #403295" / "ISSUE #2689", from the link: the number is not stored on its own
 const reference = (url: string) =>
   `${url.includes('/pull/') ? 'PR' : 'ISSUE'} #${url.split('/').pop()}`
@@ -163,12 +166,20 @@ const reference = (url: string) =>
       </div>
 
       <div :id="`${headingId}-panel`" role="tabpanel" :aria-labelledby="`${headingId}-tab-${tab}`">
-        <!-- Projects -->
-        <ul v-if="tab === 'projectsLabel'" class="divide-y divide-(--card-border)">
+        <!-- Projects. Rows come in one after the other on a tab switch or a search (not on
+             the first render: what the server sent stays put) -->
+        <TransitionGroup
+          v-if="tab === 'projectsLabel'"
+          tag="ul"
+          name="list"
+          :appear="mounted"
+          class="divide-y divide-(--card-border)"
+        >
           <li
-            v-for="project in shownProjects"
+            v-for="(project, i) in shownProjects"
             :key="project.key"
             class="relative isolate flex gap-4 overflow-hidden px-2 py-4 sm:px-3"
+            :style="{ '--i': i }"
           >
             <UiPixelCanvas />
             <span class="icon-box size-11">
@@ -228,11 +239,22 @@ const reference = (url: string) =>
               </div>
             </div>
           </li>
-        </ul>
+        </TransitionGroup>
 
         <!-- Contributions and reports -->
-        <ul v-else class="divide-y divide-(--card-border)">
-          <li v-for="item in shownUpstream" :key="item.key" class="flex gap-4 px-2 py-4 sm:px-3">
+        <TransitionGroup
+          v-else
+          tag="ul"
+          name="list"
+          :appear="mounted"
+          class="divide-y divide-(--card-border)"
+        >
+          <li
+            v-for="(item, i) in shownUpstream"
+            :key="item.key"
+            class="flex gap-4 px-2 py-4 sm:px-3"
+            :style="{ '--i': i }"
+          >
             <span class="icon-box size-11">
               <UIcon
                 :name="UPSTREAM_ICON[item.kind]!"
@@ -267,7 +289,7 @@ const reference = (url: string) =>
               </p>
             </div>
           </li>
-        </ul>
+        </TransitionGroup>
 
         <p v-if="shown === 0" class="eyebrow py-10 text-center">
           {{ t('experiencePage.openSource.noResults') }}
