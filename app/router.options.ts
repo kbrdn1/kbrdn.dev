@@ -15,8 +15,12 @@ export default <RouterConfig>{
       return to.hash ? { el: to.hash, top: TOP, behavior: behavior() } : false
     }
     // Another page jumps, once rendered, like Nuxt's default: smooth, it would roll the old
-    // page before it leaves, or the new one under the view transition
-    const position = savedPosition ?? (to.hash ? { el: to.hash, top: TOP } : { top: 0 })
+    // page before it leaves, or the new one under the view transition. Said explicitly:
+    // html's scroll-behavior is smooth (main.css) and would apply otherwise
+    const position = {
+      ...(savedPosition ?? (to.hash ? { el: to.hash, top: TOP } : { top: 0 })),
+      behavior: 'instant' as const,
+    }
     if (from === START_LOCATION) return position
     const nuxtApp = useNuxtApp()
     return new Promise((resolve) =>
