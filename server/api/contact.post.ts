@@ -4,17 +4,37 @@ interface ContactForm {
   name: string
   email: string
   message: string
+  /** Optional, from /contact */
+  company?: string
+  topic?: string
 }
+
+// The topics /contact offers; anything else is dropped
+const TOPICS = new Set(['role', 'project', 'openSource', 'other'])
+const MAX = { name: 200, email: 320, company: 200, message: 5000 }
+
+// Every field ends up in an HTML email: escaped, so a message cannot inject markup into it
+const escapeHtml = (text: string) =>
+  text.replace(
+    /[&<>"']/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!,
+  )
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<ContactForm>(event)
 
   // Validate required fields
-  if (!body.name || !body.email || !body.message) {
+  if (!body?.name || !body.email || !body.message) {
     throw createError({
       statusCode: 400,
       message: 'Missing required fields',
     })
+  }
+
+  // A crafted request can send arrays or objects: every field must be a string
+  const optional = [body.company, body.topic].filter((v) => v != null)
+  if (![body.name, body.email, body.message, ...optional].every((v) => typeof v === 'string')) {
+    throw createError({ statusCode: 400, message: 'Invalid field type' })
   }
 
   // Validate email format
@@ -25,6 +45,19 @@ export default defineEventHandler(async (event) => {
       message: 'Invalid email format',
     })
   }
+
+  if (
+    body.name.length > MAX.name ||
+    body.email.length > MAX.email ||
+    body.message.length > MAX.message ||
+    (body.company?.length ?? 0) > MAX.company
+  ) {
+    throw createError({ statusCode: 400, message: 'Field too long' })
+  }
+
+  const name = escapeHtml(body.name)
+  const company = body.company ? escapeHtml(body.company) : ''
+  const topic = body.topic && TOPICS.has(body.topic) ? body.topic : ''
 
   // runtimeConfig.resendApiKey is frozen at build time (nuxt.config reads process.env then) and
   // the image is built without it; the container gets RESEND_API_KEY at run time, which Nuxt
@@ -43,13 +76,16 @@ export default defineEventHandler(async (event) => {
         body: {
           from: 'contact@email.kbrdn.dev',
           to: 'hello@kbrdn.dev',
-          subject: `New contact from ${body.name}`,
+          reply_to: body.email,
+          subject: `New contact from ${body.name}${topic ? ` (${topic})` : ''}`,
           html: `
             <h2>New Contact Form Submission</h2>
-            <p><strong>Name:</strong> ${body.name}</p>
-            <p><strong>Email:</strong> ${body.email}</p>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${escapeHtml(body.email)}</p>
+            ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
+            ${topic ? `<p><strong>Topic:</strong> ${topic}</p>` : ''}
             <p><strong>Message:</strong></p>
-            <p>${body.message.replace(/\n/g, '<br>')}</p>
+            <p>${escapeHtml(body.message).replace(/\n/g, '<br>')}</p>
           `,
         },
       })
@@ -58,6 +94,8 @@ export default defineEventHandler(async (event) => {
       console.log('📧 New contact form submission:')
       console.log(`Name: ${body.name}`)
       console.log(`Email: ${body.email}`)
+      if (company) console.log(`Company: ${body.company}`)
+      if (topic) console.log(`Topic: ${topic}`)
       console.log(`Message: ${body.message}`)
     }
 
