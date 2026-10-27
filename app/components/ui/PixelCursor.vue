@@ -2,7 +2,7 @@
 // A pixel on the pointer's tip. Now and then it grows block by block into an arcade invader,
 // hops off the tip in one of a D-pad's eight directions, marches on a few steps through its
 // two frames like in the arcade, sometimes turns into another one, then hops back onto the
-// tip. A click throws a burst of blocks.
+// tip. A click throws a burst of blocks; a triple click calls Ichigo (UiIchigo).
 // Decorative: a mouse or trackpad only, never under reduced motion.
 
 // The grid every shape is centred in, in blocks of CELL px
@@ -220,11 +220,18 @@ function onMove(event: PointerEvent) {
 }
 const onLeave = () => (shown.value = false)
 
-// A click throws eight blocks along the D-pad
+// A click throws eight blocks along the D-pad; a triple click calls Ichigo where it landed
 const bursts = ref<number[]>([])
 let burstId = 0
-function onClick() {
+const ichigo = ref<{ x: number; y: number }>()
+function onClick(event: MouseEvent) {
   if (!enabled.value || !shown.value) return
+  if (event.detail === 3 && !ichigo.value) {
+    // The triple click also selected a paragraph
+    getSelection()?.removeAllRanges()
+    ichigo.value = { x: event.clientX, y: event.clientY }
+    return
+  }
   const id = ++burstId
   bursts.value.push(id)
   setTimeout(() => (bursts.value = bursts.value.filter((b) => b !== id)), 600)
@@ -236,7 +243,7 @@ async function perform() {
   let last = -1
   while (alive) {
     await sleep(6000 + Math.random() * 6000)
-    if (!alive || !enabled.value || !shown.value || document.hidden) continue
+    if (!alive || !enabled.value || !shown.value || ichigo.value || document.hidden) continue
     // One invader, or two in a row
     for (let turn = Math.random() < 0.45 ? 2 : 1; turn > 0 && alive; turn--) {
       let i = last
@@ -285,7 +292,7 @@ onBeforeUnmount(() => {
     <div
       ref="el"
       class="pixel-cursor"
-      :data-shown="shown || undefined"
+      :data-shown="(shown && !ichigo) || undefined"
       :data-snap="snap || undefined"
       :style="{ '--w': W, '--cell': `${CELL}px`, '--spread': SPREAD_MS }"
       aria-hidden="true"
@@ -306,6 +313,7 @@ onBeforeUnmount(() => {
         />
       </div>
     </div>
+    <UiIchigo v-if="ichigo" :x="ichigo.x" :y="ichigo.y" @done="ichigo = undefined" />
   </template>
 </template>
 
