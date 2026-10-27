@@ -88,8 +88,7 @@ migrates `[Unreleased]` into that file and empties this one — see
   under `prefers-reduced-motion`. Banners go through IPX at a few hundred pixels
   instead of the 11 MB originals.
 - **The navbar's notch opens into menus**
-  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Hovering or focusing
-  a page in the navbar opens the notch under it into that page's menu: a line of
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Hovering a page in the navbar opens the notch under it into that page's menu: a line of
   context, its sections (the latest posts for the blog) and an illustration that
   follows the link under the pointer and stays on the last one; it widens as it
   opens, and the navbar's
