@@ -1,17 +1,21 @@
 <script setup lang="ts">
 // Now and then, on the footer's top edge, one of the pointer's invaders (utils/invaders) walks
 // in from the right in its own colour of the theme, marching on its two frames, and crosses to
-// the left. One or two of its favourite food hang on its way: it leaps to catch them, and hops
-// now and then for nothing. One at a time, only while the footer is in view. Decorative, never
-// under reduced motion.
+// the left, a trail on the ground behind it. One or two of its favourite food hang on its way: it
+// leaps to catch them, and hops now and then for nothing. One at a time, only while the footer
+// is in view. Decorative, never under reduced motion.
 
 const CELL = 2
 // px/s, and px walked between two frames
-const SPEED = 96
+const SPEED = 150
 const STRIDE = 6 * CELL
 // A long jump for the food, a short hop for nothing
-const JUMP = { lift: 24, duration: 880 }
-const HOP = { lift: 8, duration: 420 }
+const JUMP = { lift: 24, duration: 720 }
+const HOP = { lift: 8, duration: 360 }
+// Its trail on the ground: a block dropped behind it every few ms, gone after TRAIL_LIFE,
+// on through its jumps
+const TRAIL_EVERY = 40
+const TRAIL_LIFE = 500
 // Between two passes (ms): the first once the footer shows, then after each one
 const FIRST = [4000, 10000] as const
 const NEXT = [14000, 32000] as const
@@ -83,6 +87,7 @@ const foods = ref<Food[]>([])
 const bursts = ref<{ id: number; x: number; y: number; tone: string }[]>([])
 const frame = ref(0)
 const at = reactive({ x: 0, y: 0 })
+const trail = ref<{ id: number; x: number; y: number; t: number }[]>([])
 
 let x = 0
 let from = 0
@@ -90,6 +95,7 @@ let last = 0
 let raf = 0
 let nextHop = 0
 let ids = 0
+let sampled = 0
 let jump: { start: number; lift: number; duration: number; food?: Food } | undefined
 let timer: ReturnType<typeof setTimeout> | undefined
 let visible = false
@@ -127,6 +133,8 @@ function start() {
   if (Math.random() < 0.5)
     foods.value.push({ id: ++ids, x: first + width * between([0.2, 0.3]), eaten: false })
   x = from = width
+  trail.value = []
+  sampled = 0
   jump = undefined
   last = performance.now()
   nextHop = last + between([1200, 2600])
@@ -138,6 +146,7 @@ function end() {
   raf = 0
   pass.value = undefined
   foods.value = []
+  trail.value = []
   schedule(NEXT)
 }
 
@@ -179,6 +188,13 @@ function step(now: number) {
   }
   at.x = snapped(x)
   at.y = snapped(lift)
+  if (now - sampled >= TRAIL_EVERY) {
+    sampled = now
+    trail.value = [
+      ...trail.value.filter((d) => now - d.t < TRAIL_LIFE),
+      { id: ++ids, x: at.x + current.w - CELL, y: Math.random() < 0.5 ? 0 : CELL, t: now },
+    ]
+  }
   if (x < -current.w) return end()
   raf = requestAnimationFrame(step)
 }
@@ -229,6 +245,12 @@ onBeforeUnmount(() => {
           :class="b.fill"
         />
       </svg>
+      <span
+        v-for="dust in trail"
+        :key="dust.id"
+        :class="['footer-critter-dust', pass.tone]"
+        :style="{ left: `${dust.x}px`, bottom: `${dust.y}px` }"
+      />
       <svg
         :class="['footer-critter-body', pass.tone]"
         :width="pass.w"
@@ -290,6 +312,21 @@ onBeforeUnmount(() => {
 @keyframes footer-critter-bob {
   50% {
     translate: 0 -2px;
+  }
+}
+
+/* Its trail fades out on a few steps, like the rest */
+.footer-critter-dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: currentColor;
+  animation: footer-critter-dust 0.5s steps(4, end) forwards;
+}
+
+@keyframes footer-critter-dust {
+  to {
+    opacity: 0;
   }
 }
 
