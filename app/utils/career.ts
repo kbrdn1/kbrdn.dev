@@ -77,6 +77,8 @@ export interface Project {
   site?: string
   /** Content path of a blog post about it ("To read") */
   article?: string
+  /** An illustration taken from its public site (public/images/projects) */
+  image?: string
 }
 
 // Most recent first, like the strip
@@ -100,6 +102,7 @@ export const PROJECTS: Project[] = [
       'GitHub Actions',
     ],
     highlightsCount: 4,
+    image: '/images/projects/jewely-ecommerce.webp',
   },
   {
     id: 'fiches-pedagogiques',
@@ -123,6 +126,7 @@ export const PROJECTS: Project[] = [
     highlightsCount: 4,
     site: 'https://www.fichespedagogiques.com',
     article: '/blogs/fiches-pedagogiques',
+    image: '/images/projects/fiches-pedagogiques.webp',
   },
   {
     id: 'jewely-configurator',
@@ -162,6 +166,7 @@ export const PROJECTS: Project[] = [
     ],
     highlightsCount: 4,
     site: 'https://www.assmat-facile.fr',
+    image: '/images/projects/assmat-facile.webp',
   },
   {
     id: 'jewely-erp',

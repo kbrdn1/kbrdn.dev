@@ -292,10 +292,13 @@ export default {
     stack: 'Stack',
     missions: 'Missions',
     skills: 'Learned',
-    more: 'Show more',
-    less: 'Show less',
+    figures: {
+      months: 'Months at work',
+      projects: 'Client projects',
+      openSource: 'Open source tools',
+      studies: 'Degrees',
+    },
     highlights: 'What I did',
-    links: 'Links',
     work: {
       jewelyEcommerce: {
         client: 'Louis Julian and Crown DP',

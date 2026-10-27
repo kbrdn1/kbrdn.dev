@@ -79,6 +79,20 @@ const timeline = computed(() =>
     ]),
 )
 
+// The figures over the strip, counted from the data: months worked (work-study included),
+// client projects, open source tools, degrees
+const months = (start: string, end: string | null) => {
+  const [y1, m1] = start.split('-').map(Number) as [number, number]
+  const [y2, m2] = (end ?? start).split('-').map(Number) as [number, number]
+  return (y2 - y1) * 12 + (m2 - m1)
+}
+const figures = [
+  { key: 'months', value: EXPERIENCES.reduce((sum, e) => sum + months(e.startDate, e.endDate), 0) },
+  { key: 'projects', value: PROJECTS.length },
+  { key: 'openSource', value: OPEN_SOURCE_PROJECTS.length },
+  { key: 'studies', value: STUDIES.length },
+]
+
 // A project's links: its public site, the blog post about it
 const { postUrl } = useBlogUrl()
 const projectLinks = (p: (typeof PROJECTS)[number]) => [
@@ -197,6 +211,20 @@ const list = (key: string, count: number) =>
       </div>
     </section>
 
+    <!-- The figures, after disarto's stat cards: they roll in -->
+    <UiPanel>
+      <dl
+        class="panel-card grid grid-cols-2 gap-6 p-5 sm:p-6 md:grid-cols-4 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
+      >
+        <div v-for="figure in figures" :key="figure.key" class="md:px-6 md:first:pl-0 md:last:pr-0">
+          <dt class="eyebrow">{{ t(`experiencePage.figures.${figure.key}`) }}</dt>
+          <dd class="mt-1 text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
+            <UiRollingNumber :value="figure.value" />
+          </dd>
+        </div>
+      </dl>
+    </UiPanel>
+
     <!-- Strip: every role and degree, one small card each, the one being read marked -->
     <div ref="strip">
       <UiPanel :title="t('experiencePage.timeline')">
@@ -299,39 +327,46 @@ const list = (key: string, count: number) =>
         >
           <UiScrambleText :text="t('experiencePage.experienceLabel')" />
         </h2>
-        <div class="space-y-1">
-          <template v-for="(exp, i) in EXPERIENCES" :key="exp.id">
-            <ExperienceSpread
+        <!-- A vertical timeline: each role, its projects under it -->
+        <ol class="panel-card px-3 pt-6 pb-1 sm:px-6 sm:pt-8">
+          <template v-for="exp in EXPERIENCES" :key="exp.id">
+            <ExperienceEntry
               :id="exp.id"
-              :index="i + 1"
+              kind="role"
+              :start="exp.startDate"
+              :end="exp.endDate"
               :title="exp.company"
               :logo="exp.logo"
-              :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.role`)} · ${t(`experiences.${exp.key}.type`)}`"
+              :detail="t(`experiences.${exp.key}.role`)"
+              :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.type`)}`"
               :summary="t(`experiencePage.summaries.${exp.key}`)"
               :stack="exp.technologies"
               :items-label="t('experiencePage.missions')"
               :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
+              :active="activeId === exp.id"
             />
-            <!-- Its projects, set in under it -->
-            <ExperienceSpread
+            <ExperienceEntry
               v-for="project in projectsOf(exp.id)"
               :id="project.id"
               :key="project.id"
-              nested
-              :index="0"
-              :eyebrow="`↳ ${clientOf(project) ?? ''}`"
+              kind="project"
+              :start="project.startDate"
+              :end="project.endDate"
               :title="project.name"
+              :detail="`↳ ${clientOf(project) ?? exp.company}`"
               :meta="`${period(project.startDate, project.endDate)} · ${t(`experiencePage.work.${project.key}.role`)}`"
               :summary="t(`experiencePage.work.${project.key}.summary`)"
+              :image="project.image"
               :stack="project.technologies"
               :items-label="t('experiencePage.highlights')"
               :items="
                 list(`experiencePage.work.${project.key}.highlights`, project.highlightsCount)
               "
               :links="projectLinks(project)"
+              :active="activeId === project.id"
             />
           </template>
-        </div>
+        </ol>
       </UiPanel>
     </section>
 
@@ -344,21 +379,26 @@ const list = (key: string, count: number) =>
         >
           <UiScrambleText :text="t('experiencePage.educationLabel')" />
         </h2>
-        <div class="space-y-1">
-          <ExperienceSpread
-            v-for="(study, i) in STUDIES"
+        <!-- The same timeline, a diamond per degree -->
+        <ol class="panel-card px-3 pt-6 pb-1 sm:px-6 sm:pt-8">
+          <ExperienceEntry
+            v-for="study in STUDIES"
             :id="study.id"
             :key="study.id"
-            :index="i + 1"
+            kind="degree"
+            :start="study.startDate"
+            :end="study.endDate"
             :title="study.school"
             :logo="study.logo"
-            :meta="`${period(study.startDate, study.endDate)} · ${study.level} · ${t(`studies.${study.key}.degree`)}`"
+            :detail="`${study.level} · ${t(`studies.${study.key}.degree`)}`"
+            :meta="period(study.startDate, study.endDate)"
             :summary="t(`experiencePage.summaries.${study.key}`)"
             :stack="study.technologies"
             :items-label="t('experiencePage.skills')"
             :items="list(`studies.${study.key}.skills`, study.skillsCount)"
+            :active="activeId === study.id"
           />
-        </div>
+        </ol>
       </UiPanel>
     </section>
 
