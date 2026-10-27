@@ -361,6 +361,32 @@ export const UPSTREAM = [
   },
 ] as const
 
+// A role counts its first and last month: Oct 2023 to Sep 2026 is 36 months, not 35
+function months(start: string, end: string | null): number {
+  const [y1, m1] = start.split('-').map(Number) as [number, number]
+  const [y2, m2] = (end ?? start).split('-').map(Number) as [number, number]
+  return (y2 - y1) * 12 + (m2 - m1) + 1
+}
+
+/** The figures on /experience and the home's Parcours, counted from the data: years worked
+ * (work-study included, rounded up), client projects, open source tools, degrees. Labels in
+ * experiencePage.figures.<key>. */
+export const CAREER_FIGURES = [
+  {
+    key: 'years',
+    value: Math.ceil(EXPERIENCES.reduce((sum, e) => sum + months(e.startDate, e.endDate), 0) / 12),
+  },
+  { key: 'projects', value: PROJECTS.length },
+  { key: 'openSource', value: OPEN_SOURCE_PROJECTS.length },
+  { key: 'studies', value: STUDIES.length },
+]
+
+/** "2023–2026", "2026" when it starts and ends the same year, "2024–" while it runs */
+export function yearSpan(start: string, end: string | null): string {
+  const [from, to] = [start.slice(0, 4), end?.slice(0, 4) ?? '']
+  return from === to ? from : `${from}–${to}`
+}
+
 /** "oct. 2023" / "Oct 2023" */
 export function formatMonth(date: string, locale: string): string {
   return new Date(date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {

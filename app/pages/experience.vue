@@ -79,24 +79,6 @@ const timeline = computed(() =>
     ]),
 )
 
-// The figures over the strip, counted from the data: years worked (work-study included,
-// rounded up), client projects, open source tools, degrees. A role counts its first and
-// last month: Oct 2023 to Sep 2026 is 36 months, not 35.
-const months = (start: string, end: string | null) => {
-  const [y1, m1] = start.split('-').map(Number) as [number, number]
-  const [y2, m2] = (end ?? start).split('-').map(Number) as [number, number]
-  return (y2 - y1) * 12 + (m2 - m1) + 1
-}
-const figures = [
-  {
-    key: 'years',
-    value: Math.ceil(EXPERIENCES.reduce((sum, e) => sum + months(e.startDate, e.endDate), 0) / 12),
-  },
-  { key: 'projects', value: PROJECTS.length },
-  { key: 'openSource', value: OPEN_SOURCE_PROJECTS.length },
-  { key: 'studies', value: STUDIES.length },
-]
-
 const cvUrl = useCvUrl()
 
 // A project's links: its public site, the blog post about it
@@ -109,12 +91,6 @@ const projectLinks = (p: (typeof PROJECTS)[number]) => [
     ? [{ label: t(`experiencePage.work.${p.key}.article`), to: postUrl({ path: p.article }) }]
     : []),
 ]
-
-// "2023–2026", "2026" when it starts and ends the same year, "2024–" while it runs
-const years = (item: { start: string; end: string | null }) => {
-  const [from, to] = [item.start.slice(0, 4), item.end?.slice(0, 4) ?? '']
-  return from === to ? from : `${from}–${to}`
-}
 
 // Scroll spy: the role or degree being read (the first article in a band across the middle
 // of the viewport), and whether the full strip has scrolled away under the navbar. Then a
@@ -222,7 +198,11 @@ const list = (key: string, count: number) =>
       <dl
         class="panel-card grid grid-cols-2 gap-6 p-5 sm:p-6 md:grid-cols-4 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
       >
-        <div v-for="figure in figures" :key="figure.key" class="md:px-6 md:first:pl-0 md:last:pr-0">
+        <div
+          v-for="figure in CAREER_FIGURES"
+          :key="figure.key"
+          class="md:px-6 md:first:pl-0 md:last:pr-0"
+        >
           <dt class="eyebrow">{{ t(`experiencePage.figures.${figure.key}`) }}</dt>
           <dd class="mt-1 text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
             <UiRollingNumber :value="figure.value" />
@@ -250,7 +230,8 @@ const list = (key: string, count: number) =>
                   "
                 >
                   <span class="eyebrow block">
-                    {{ item.nested ? '↳' : String(item.n).padStart(2, '0') }} · {{ years(item) }}
+                    {{ item.nested ? '↳' : String(item.n).padStart(2, '0') }} ·
+                    {{ yearSpan(item.start, item.end) }}
                   </span>
                   <span class="mt-3 flex items-center gap-3">
                     <NuxtImg
@@ -316,7 +297,7 @@ const list = (key: string, count: number) =>
               <span class="text-xs whitespace-nowrap text-neutral-900 dark:text-neutral-100">
                 {{ item.name }}
               </span>
-              <span class="eyebrow whitespace-nowrap">{{ years(item) }}</span>
+              <span class="eyebrow whitespace-nowrap">{{ yearSpan(item.start, item.end) }}</span>
             </a>
             <span v-if="compactInk" class="ink" :style="compactInk" aria-hidden="true" />
           </div>
