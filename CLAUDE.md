@@ -163,6 +163,9 @@ Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
 - `RESEND_API_KEY` - Email sending (contact form) — **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - Nuxt Studio API
 
+Repo-level **variables** (not secrets), passed as build-args by both workflows:
+- `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
+
 ## Active Technologies
 - TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker
 - File-based content (Markdown/MDX) via @nuxt/content, no database
