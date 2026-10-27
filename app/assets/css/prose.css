@@ -139,6 +139,7 @@
 /* Images */
 .prose-blog :deep(img) {
   width: 100%;
+  cursor: zoom-in;
   border: 1px solid var(--color-neutral-200);
   margin: 1.5rem 0;
 }

@@ -625,6 +625,7 @@ export default {
     backToArticles: 'Back to articles',
     readingTime: 'min read',
     shareArticle: 'Share this article',
+    share: 'Share',
     copyLink: 'Copy link',
     linkCopied: 'Link copied!',
     moreArticles: 'More articles',

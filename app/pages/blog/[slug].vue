@@ -30,6 +30,32 @@ const { data: relatedPosts } = await useAsyncData(
 
 const minutes = computed(() => readingTime(post.value?.body))
 
+// The device's own share sheet (Web Share), where the browser has one: checked once mounted,
+// the server cannot know
+const canShare = ref(false)
+onMounted(() => (canShare.value = typeof navigator.share === 'function'))
+async function share() {
+  try {
+    await navigator.share({
+      title: post.value?.title,
+      text: post.value?.description,
+      url: window.location.href,
+    })
+  } catch {
+    // Dismissed, or refused: nothing to do
+  }
+}
+
+// An article's pictures open full size
+const lightbox = useLightbox()
+function onProseClick(event: MouseEvent) {
+  // A modifier click belongs to something else (the cursor's sight on shift)
+  if (event.shiftKey || event.metaKey || event.ctrlKey || event.altKey) return
+  const img = (event.target as Element | null)?.closest('img')
+  if (!img || img.closest('a')) return
+  lightbox.open(img.currentSrc || img.src, img.alt)
+}
+
 // Copy link functionality
 const linkCopied = ref(false)
 async function copyLink() {
@@ -165,7 +191,7 @@ function scrollToHeading(id: string) {
           <!-- Main column -->
           <div class="flex-1 min-w-0">
             <!-- Article body -->
-            <div class="prose-blog">
+            <div class="prose-blog" @click="onProseClick">
               <ContentRenderer :value="post" />
             </div>
           </div>
@@ -198,15 +224,21 @@ function scrollToHeading(id: string) {
           <!-- Share section -->
           <div>
             <h2 class="eyebrow mb-3">{{ t('blog.shareArticle') }}</h2>
-            <button
-              type="button"
-              :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
-              class="btn btn-outline btn-sm"
-              @click="copyLink"
-            >
-              <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
-              {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
-            </button>
+            <div class="flex flex-wrap gap-2">
+              <button v-if="canShare" type="button" class="btn btn-primary btn-sm" @click="share">
+                <UIcon name="i-lucide-share" class="size-4" aria-hidden="true" />
+                {{ t('blog.share') }}
+              </button>
+              <button
+                type="button"
+                :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
+                class="btn btn-outline btn-sm"
+                @click="copyLink"
+              >
+                <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
+                {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
+              </button>
+            </div>
           </div>
 
           <!-- More articles -->
