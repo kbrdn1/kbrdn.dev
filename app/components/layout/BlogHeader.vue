@@ -101,6 +101,7 @@ const isMobileMenuOpen = ref(false)
           >
             <UiScrambleText :text="link.label" effect="link" />
           </NuxtLink>
+          <UiSegmentInk />
         </nav>
 
         <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />

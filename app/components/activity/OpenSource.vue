@@ -144,6 +144,7 @@ const reference = (url: string) =>
           >
             {{ t(`experiencePage.openSource.${key}`) }}
           </button>
+          <UiSegmentInk />
         </div>
         <label class="relative w-full sm:w-56">
           <span class="sr-only">{{ t('experiencePage.openSource.search') }}</span>

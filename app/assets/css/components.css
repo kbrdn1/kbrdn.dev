@@ -179,6 +179,8 @@
   /* Pill segmented control: the active segment (aria-selected, aria-pressed, aria-current)
      is tinted with the accent and bordered */
   .segmented {
+    position: relative;
+    isolation: isolate;
     display: inline-flex;
     align-items: center;
     gap: 0.125rem;
@@ -214,10 +216,32 @@
 
   .segment[aria-selected="true"],
   .segment[aria-pressed="true"],
-  .segment[aria-current="page"] {
+  .segment[aria-current="page"],
+  .segment-ink {
     border-color: color-mix(in srgb, var(--color-primary-500) 40%, transparent);
     background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
     color: var(--accent-text);
+  }
+
+  /* With a SegmentInk inside, the fill is the ink's: the active segment only keeps its
+     colour, at once (no fade under the ink as it lands) */
+  .segmented[data-ink] .segment {
+    border-color: transparent;
+    background: transparent;
+    transition: color 0.2s ease;
+  }
+
+  .segment-ink {
+    position: absolute;
+    z-index: -1;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 9999px;
+    transition:
+      left 0.4s var(--ease-out-quint),
+      top 0.4s var(--ease-out-quint),
+      width 0.4s var(--ease-out-quint),
+      height 0.4s var(--ease-out-quint);
   }
 
   /* Pill buttons: orange with dark text (white on #d4825d fails AA), or outlined */
