@@ -152,7 +152,7 @@ const visibleCalendars = computed(() => {
     return [
       {
         key: 'recent',
-        label: `${format(days[0]?.date)} — ${format(days.at(-1)?.date)}`,
+        label: `${format(days[0]?.date)} – ${format(days.at(-1)?.date)}`,
         total: data.recent.totalContributions,
         weeks: data.recent.weeks,
       },

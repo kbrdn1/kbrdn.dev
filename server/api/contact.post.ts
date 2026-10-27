@@ -103,7 +103,7 @@ export default defineEventHandler(async (event) => {
 
     return { success: true }
   } catch (error) {
-    // Surface the real Resend error (status + response body) server-side —
+    // Surface the real Resend error (status + response body) server-side:
     // $fetch/ofetch puts the parsed API response under `.data` and the HTTP
     // status under `.status`. The generic message is all the client gets.
     const status = (error as { status?: number })?.status

@@ -1,5 +1,5 @@
 // The pages' hero scenes (UiPixelScene): small pixel-art loops in the theme's palette,
-// one per page — a crab climbing a mountain at dusk (/experience), an invader on a monitor
+// one per page: a crab climbing a mountain at dusk (/experience), an invader on a monitor
 // typing gwm's commands (/apps), an invader filling a contribution graph (/activity), a
 // writing nook at night (/blog), a bird posting a letter (/contact).
 // A scene is a grid of SCENE_W × SCENE_H cells: what never moves, then what a tick
@@ -231,7 +231,7 @@ const STARS = (seed: number, n: number, maxY: number) => {
 }
 const CLOUD = ['...GGG......', '..GGGGG.GG..', '.GGGGGGGGGG.', 'GGGGGGGGGGGG', '.HHHHHHHHHH.']
 
-// ── /experience — a crab climbs the trail to the flag at dusk, cheers in confetti on the
+// ── /experience: a crab climbs the trail to the flag at dusk, cheers in confetti on the
 // summit, slides down the far side. Pines at the foot, birds crossing, clouds drifting.
 const peak = (x: number) =>
   x <= 30 ? Math.round(12 + (30 - x) * 1.05) : Math.round(12 + (x - 30) * 0.95)
@@ -369,7 +369,7 @@ const climb: Scene = {
   },
 }
 
-// ── /apps — an invader sits on the monitor while gwm's commands type themselves, keys
+// ── /apps: an invader sits on the monitor while gwm's commands type themselves, keys
 // lighting up; the screen's glow on the desk, gwm's logo on the wall
 const SQUID_SHADED = (rows: string[]) => rows.map((r) => r.replaceAll('#', 'z'))
 const LINES: [string, number][][] = [
@@ -483,7 +483,7 @@ const terminal: Scene = {
   },
 }
 
-// ── /activity — an invader commits: it runs over a contribution graph and drops a block that
+// ── /activity, an invader commits: it runs over a contribution graph and drops a block that
 // falls and raises a cell a level; a full graph flashes, confetti, and it starts again
 const COLS = 13
 const ROWS = 5
@@ -590,7 +590,7 @@ const commits: Scene = {
   },
 }
 
-// ── /blog — a writing nook at night, after Kirokaze's and Waneella's rooms: rain on the
+// ── /blog: a writing nook at night, after Kirokaze's and Waneella's rooms: rain on the
 // window over a city with its lights, the laptop typing the article, then publishing it as a
 // paper plane out of the window; the lamp's glow, a cat asleep on the books, its tail beating
 // A ginger tabby curled up asleep: ears, stripes, closed eyes, white muzzle; it breathes
@@ -704,7 +704,7 @@ const nook: Scene = {
   },
 }
 
-// ── /contact — a bird flies a letter over the hills to the mailbox; the flag goes up, hearts
+// ── /contact: a bird flies a letter over the hills to the mailbox; the flag goes up, hearts
 // rise, the bird flies off
 const FLY = [
   ['..xx......', '...xx.....', '.yxxxx9v..', 'yxxxxxx0vv', '.yxx99x...', '..yyyy....'],

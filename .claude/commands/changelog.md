@@ -48,8 +48,8 @@ plus l'index `## Past releases`.
    ```markdown
    ## Past releases
 
-   - [1.1.0](changelogs/1.1.0.md) — 2026-08-20
-   - [1.0.0](changelogs/1.0.0.md) — 2026-08-14
+   - [1.1.0](changelogs/1.1.0.md) · 2026-08-20
+   - [1.0.0](changelogs/1.0.0.md) · 2026-08-14
    ```
 
    Un candidat ne touche **pas** l'index ni le root : il photographie

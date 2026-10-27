@@ -121,7 +121,7 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
               target="_blank"
               rel="noopener noreferrer"
               class="relative z-10 hover:text-primary-500 transition-colors"
-              :aria-label="`${t('projects.demo')} — ${repo.name}`"
+              :aria-label="`${t('projects.demo')} : ${repo.name}`"
             >
               <UIcon
                 name="i-heroicons-arrow-top-right-on-square"

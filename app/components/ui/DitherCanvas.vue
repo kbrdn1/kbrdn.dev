@@ -33,7 +33,7 @@ function ditherNoise(): Promise<Float32Array> {
 // CSS `color` (--ui-primary). Each cell is drawn as the page's pixel shape
 // (ditherShape()): squares at cell resolution, upscaled by the browser with
 // `image-rendering: pixelated`; other shapes at device resolution, the cell map
-// scaled up then cut out by a repeating tile of the shape. Decorative only —
+// scaled up then cut out by a repeating tile of the shape. Decorative only:
 // positioning, size and opacity come from the parent's classes.
 const props = withDefaults(
   defineProps<{

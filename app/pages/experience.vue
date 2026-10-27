@@ -21,7 +21,7 @@ useSiteOgImage('Default', {
 })
 
 const period = (start: string, end: string | null) =>
-  `${formatMonth(start, locale.value)} — ${end ? formatMonth(end, locale.value) : t('experiences.present')}`
+  `${formatMonth(start, locale.value)} – ${end ? formatMonth(end, locale.value) : t('experiences.present')}`
 
 // Every role and degree, most recent first, for the strip at the top; a role's projects
 // right after it, marked "↳" (isrod.eu's sub-entries), out of the numbering.

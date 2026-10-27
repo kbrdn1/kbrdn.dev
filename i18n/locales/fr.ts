@@ -1,7 +1,7 @@
 export default {
   // Banner
   banner: {
-    gwm: 'Découvrez gwm — gestionnaire de worktrees Git (CLI + TUI)',
+    gwm: 'Découvrez gwm : gestionnaire de worktrees Git (CLI + TUI)',
   },
 
   // Common
@@ -90,13 +90,13 @@ export default {
       collab: {
         title: 'Construisons quelque chose ensemble',
         description:
-          'Je suis toujours ouvert aux projets intéressants et aux collaborations. Que ce soit une app web, une API, ou un produit full-stack — parlons-en.',
+          'Je suis toujours ouvert aux projets intéressants et aux collaborations. Que ce soit une app web, une API, ou un produit full-stack, parlons-en.',
         cta: 'Me contacter',
       },
       crafting: {
         title: 'En cours de création...',
         description:
-          "gwm — un gestionnaire de worktrees Git (CLI + TUI) construit en Rust. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
+          "gwm, un gestionnaire de worktrees Git (CLI + TUI) construit en Rust. Je travaille aussi sur ce portfolio, des expériences d'architecture cloud, et j'approfondis Rust.",
       },
       blog: {
         title: 'Lisez mes articles',

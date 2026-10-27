@@ -9,7 +9,7 @@ This root file carries the current `[Unreleased]` section **only**. Every
 released version lives in its own file under [`changelogs/`](changelogs/), and
 every release candidate under
 [`changelogs/pre-releases/`](changelogs/pre-releases/). Cutting a version
-migrates `[Unreleased]` into that file and empties this one — see
+migrates `[Unreleased]` into that file and empties this one, see
 [`docs/RELEASE.md`](docs/RELEASE.md).
 
 ## [Unreleased]
@@ -357,7 +357,7 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ## Past releases
 
-- [1.1.0](changelogs/1.1.0.md) — 2026-10-16
-- [1.0.2](changelogs/1.0.2.md) — 2026-09-19
-- [1.0.1](changelogs/1.0.1.md) — 2026-09-19
-- [1.0.0](changelogs/1.0.0.md) — 2026-08-14
+- [1.1.0](changelogs/1.1.0.md) · 2026-10-16
+- [1.0.2](changelogs/1.0.2.md) · 2026-09-19
+- [1.0.1](changelogs/1.0.1.md) · 2026-09-19
+- [1.0.0](changelogs/1.0.0.md) · 2026-08-14

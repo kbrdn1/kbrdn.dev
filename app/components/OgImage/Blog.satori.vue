@@ -2,7 +2,7 @@
 // An article's OG image, the repos' banners' card (disarto's "Deployment" sheets) on the
 // blog's dither field: two dashed construction lines along the panel's sides, nothing else
 // outside it. The panel: a header (blog@kbrdn1, the window's icons), the card (the title, the
-// call to read; the banner and the facts — date, reading time, tags, author; the summary after
+// call to read; the banner and the facts (date, reading time, tags, author); the summary after
 // a dashed rule), a footer (icons, the address in mono, a button).
 // Satori: every style on one line (its gradient parser fails on split values), every box
 // with several children a flex box.

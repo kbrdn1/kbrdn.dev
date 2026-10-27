@@ -1,7 +1,7 @@
 export default {
   // Banner
   banner: {
-    gwm: 'Check out gwm — Git Worktree Manager (CLI + TUI)',
+    gwm: 'Check out gwm: Git Worktree Manager (CLI + TUI)',
   },
 
   // Common
@@ -90,13 +90,13 @@ export default {
       collab: {
         title: "Let's build something together",
         description:
-          "I'm always open to interesting projects and collaborations. Whether it's a web app, an API, or a full-stack product — let's talk.",
+          "I'm always open to interesting projects and collaborations. Whether it's a web app, an API, or a full-stack product, let's talk.",
         cta: 'Get in touch',
       },
       crafting: {
         title: 'Currently crafting...',
         description:
-          'gwm — a Git Worktree Manager (CLI + TUI) built in Rust. Also working on this portfolio, cloud architecture experiments, and diving deeper into Rust.',
+          'gwm, a Git Worktree Manager (CLI + TUI) built in Rust. Also working on this portfolio, cloud architecture experiments, and diving deeper into Rust.',
       },
       blog: {
         title: 'Read my articles',

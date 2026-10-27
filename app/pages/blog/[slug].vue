@@ -196,7 +196,7 @@ function scrollToHeading(id: string) {
                 @scroll-to="scrollToHeading"
               />
               <BlogSidebarCard
-                title="gwm — Git Worktree Manager"
+                title="gwm: Git Worktree Manager"
                 description="A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap."
                 image="/images/blog/gwm/banner.png"
                 badge="New"

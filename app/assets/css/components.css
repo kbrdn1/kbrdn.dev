@@ -56,7 +56,7 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   Panels — rounded surfaces holding cards. Layered so utilities override them.
+   Panels: rounded surfaces holding cards. Layered so utilities override them.
    ═══════════════════════════════════════════════════ */
 /* The notch's width at rest, 31rem: an initial value must be computationally independent,
    and rem is not (it follows the root's font size), which voids the whole rule */

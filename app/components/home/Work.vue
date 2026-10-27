@@ -2,7 +2,7 @@
 // The home's featured projects, Pro tab: what Kylian built at Jewely x Flippad, the projects
 // of /experience (app/utils/career.ts), in the same cards as the pinned repositories (Perso):
 // the product's logo and the name, the public site, the summary, one mono line (main stack, client,
-// years), and a bar of ticks — here when the project ran within the Jewely x Flippad years.
+// years), and a bar of ticks: here when the project ran within the Jewely x Flippad years.
 // The card leads to the project on /experience. An odd count leaves a hole beside the last
 // card: a hatched card fills it, the next project, maybe the reader's.
 import { useI18n } from '#imports'
@@ -72,7 +72,7 @@ const projects = computed(() =>
             target="_blank"
             rel="noopener noreferrer"
             class="relative z-10 transition-colors hover:text-primary-500"
-            :aria-label="`${t(`experiencePage.work.${project.key}.site`)} — ${project.name}`"
+            :aria-label="`${t(`experiencePage.work.${project.key}.site`)}: ${project.name}`"
           >
             <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4" aria-hidden="true" />
           </a>
