@@ -46,17 +46,6 @@
   background-repeat: no-repeat;
 }
 
-/* Disabled button with subtle diagonal striped background */
-.btn-disabled-striped {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 4px,
-    rgba(212, 130, 93, 0.12) 4px,
-    rgba(212, 130, 93, 0.12) 5px
-  ) !important;
-}
-
 /* Square grid: page background and side zones (lines at half the stripe colour, muted) */
 .grid-background-blog {
   --grid-line: color-mix(in srgb, var(--stripe-color-alt) 50%, transparent);

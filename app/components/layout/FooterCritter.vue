@@ -409,6 +409,8 @@ onMounted(() => {
     observer = new IntersectionObserver(([entry]) => {
       visible = !!entry?.isIntersecting
       if (visible && !timer && !pass.value) schedule(FIRST)
+      // Scrolled away: it does not run on unseen, the next one comes when the footer shows
+      else if (!visible && pass.value && !dead.value) end()
     })
     observer.observe(band.value.parentElement ?? band.value)
     resize = new ResizeObserver(([entry]) => {

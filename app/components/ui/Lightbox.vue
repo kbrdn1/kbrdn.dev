@@ -17,6 +17,10 @@ watch(
   { flush: 'post' },
 )
 
+// Another page: the picture belonged to the one left
+const route = useRoute()
+watch(() => route.fullPath, close)
+
 // Outside the picture: the dialog itself is the backdrop's target
 function onClick(event: MouseEvent) {
   if (event.target === dialog.value) close()
