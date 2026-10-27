@@ -133,11 +133,23 @@ migrates `[Unreleased]` into that file and empties this one — see
   `/experience`.
 - **An invader on the footer's edge**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Now and then one of
-  the pointer's invaders runs along the footer's top edge from right to left, in
-  its own colour of the theme, a trail of pixels on the ground behind it, and
-  leaps for its favourite food on the way: pellets for the squid, cherries for
-  the crab, stars, mushrooms or cookies for the others. One at a time, only
-  while the footer is in view, never under `prefers-reduced-motion`.
+  the pointer's invaders runs in on the footer's top edge, in its own colour of
+  the theme, and runs back and forth, a trail of pixels behind it that follows
+  its jumps. Its favourite food pops up here and there, animated (pellets for
+  the squid, cherries for the crab, stars, mushrooms or cookies for the
+  others), and it leaps to eat it; it vaults the obstacles that rise in its way
+  (a rock, spikes, a cactus, a crate) and ducks under the birds that fly at it.
+  After a while it runs off and another one comes later; a click blows it up
+  and the cycle goes on. One at a time, only while the footer is in view, never
+  under `prefers-reduced-motion`.
+- **A pixel scene in the pages' hero**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Beside the hero, under
+  it on a phone, a small loop in the theme's palette: a crab climbs the
+  mountain to its flag on `/experience`, an invader sits on a terminal typing
+  its lines on `/apps`, another fills a contribution graph on `/activity`, a
+  canary in glasses reads in its armchair on `/blog`, a bird posts a letter on
+  `/contact`. It plays only on screen; its first frame under
+  `prefers-reduced-motion`.
 - **What is going on right now, on `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
   what is being read, and what is welcome, with a link to write.
@@ -304,9 +316,16 @@ migrates `[Unreleased]` into that file and empties this one — see
   page; the table of contents as a
   checklist of the sections read in the accent, the mobile one included. The
   music player's controls and listing in the panel style.
+- **The hero's button gets in touch**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The disabled "Book a
+  call" gives way to "Get in touch", a link to `/contact`.
 
 ### Fixed
 
+- **The contribution chart's arrow keys lost the focus**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). They looked for the
+  selected tab across the whole page, so focus jumped to the featured projects'
+  or open source tabs; it now stays in the chart's own tabs.
 - **Pictures overflowed their frame's corners**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The carousel's scene
   and the full-size illustration were rounded wider than the panel around them;
