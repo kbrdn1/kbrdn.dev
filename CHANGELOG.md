@@ -87,6 +87,17 @@ migrates `[Unreleased]` into that file and empties this one — see
   to the crisp picture, and a new picture sweeps in block by block; at once
   under `prefers-reduced-motion`. Banners go through IPX at a few hundred pixels
   instead of the 11 MB originals.
+- **The navbar's notch opens into menus**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Hovering or focusing
+  a page in the navbar opens the notch under it into that page's menu: a line of
+  context, its sections (the latest posts for the blog) and an illustration; the
+  announcement opens gwm's, which now leads to gwm.kbrdn.dev. Desktop only.
+- **A CV to download**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Between the roles and
+  the degrees on `/experience`, and in `/contact`'s details, in the site's
+  language. The PDFs are hosted outside this public repository: their addresses
+  come from the repository variables `CV_URL_FR` and `CV_URL_EN` at build time;
+  without them, nothing shows.
 - **An activity page, `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The open source work
   (shared with `/experience`), the contribution chart, and the recent public
@@ -192,20 +203,27 @@ migrates `[Unreleased]` into that file and empties this one — see
   with a sliding ink and keeps the address on its anchor; anchors scroll
   smoothly.
 - **Motion, everywhere the same**
-  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Pages cross-fade
-  through view transitions and every panel comes in as it is scrolled to (what
-  is on screen at load stays put). Segmented controls get one pill that glides
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Changing page is a
+  focus pull through view transitions, the navbar staying sharp and still, and
+  every panel comes in as it is scrolled to (what is on screen at load stays
+  put). Segmented controls get one pill that glides
   to the active segment. A new slide, track or hero title leaves on one side and
   comes in from the other, and in the player only the cover and title move.
-  Refilled lists (blog, contribution calendars, open source) drop their old
-  items at once and bring the new ones in one after the other.
-- **Projects under their role on `/experience`**
-  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). After isrod.eu's
-  sub-entries: under Jewely x Flippad, a section set in for each project
-  (Jewely E-commerce, Fiches Pédagogiques, the configurator, Assmat Facile, the
-  ERP) with its client, role and period, what was done, the stack and links to
-  the public site or the blog post. They join the roles strip, marked ↳; the
-  role's own missions keep only what spans the projects.
+  Collapses (a role's missions, the player's list, the mobile menu) open on
+  their height, their content unblurring in step with it. Refilled lists (blog,
+  contribution calendars, open source) close their removed rows from the last
+  one up and open the new ones one after the other, so a list showing less
+  shrinks instead of jumping.
+- **`/experience` as a vertical timeline**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Roles and degrees on
+  a rail that fills in the accent as the page is read, the years beside it; each
+  role's projects under it (Jewely E-commerce, Fiches Pédagogiques, the
+  configurator, Assmat Facile, the ERP) with their client, role and period, and
+  an illustration from their public site, their README or their maker's site
+  seen through the pixel layer. Each entry unfolds its stack, what was done and
+  its links. Figures on top (months at work, client projects, open source tools,
+  degrees) roll in. On a phone, no rail: the sticky strip of roles tells where
+  the reader is.
 - **The error page lives in the site**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Navbar, footer and the
   three themes, an intro like the other pages, and the status code in pixels
@@ -214,7 +232,7 @@ migrates `[Unreleased]` into that file and empties this one — see
 - **Blog cards and the table of contents**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Cards after an event
   card (banner on top, reading time, one meta line); the table of contents as a
-  checklist of the sections read. The music player's controls and listing in
+  checklist of the sections read, the mobile one included. The music player's controls and listing in
   the panel style.
 
 ### Fixed
