@@ -136,7 +136,7 @@ onMounted(() => {
           }
         }
       },
-      { rootMargin: '-80px 0px -70% 0px' },
+      { rootMargin: '-112px 0px -70% 0px' },
     )
 
     headings.forEach((heading) => observer!.observe(heading))
@@ -161,7 +161,8 @@ const activeHeadingText = computed(() => {
 function scrollToHeading(id: string) {
   const el = document.getElementById(id)
   if (el) {
-    const offset = 80
+    // Under the floating navbar and its notch (they end at 90px), like the router's anchors
+    const offset = 112
     const top = el.getBoundingClientRect().top + window.scrollY - offset
     window.scrollTo({ top, behavior: 'smooth' })
   }
