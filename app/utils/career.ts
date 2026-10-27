@@ -77,7 +77,7 @@ export interface Project {
   site?: string
   /** Content path of a blog post about it ("To read") */
   article?: string
-  /** An illustration taken from its public site (public/images/projects) */
+  /** An illustration: its public site, its README or its maker's site (public/images/projects) */
   image?: string
 }
 
@@ -146,6 +146,7 @@ export const PROJECTS: Project[] = [
       'Bun',
     ],
     highlightsCount: 3,
+    image: '/images/projects/jewely-configurator.webp',
   },
   {
     id: 'assmat-facile',
@@ -177,6 +178,7 @@ export const PROJECTS: Project[] = [
     endDate: '2024-01',
     technologies: ['Laravel', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
     highlightsCount: 3,
+    image: '/images/projects/jewely-erp.webp',
   },
 ]
 
