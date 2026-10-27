@@ -47,16 +47,6 @@ async function share() {
   }
 }
 
-// An article's pictures open full size
-const lightbox = useLightbox()
-function onProseClick(event: MouseEvent) {
-  // A modifier click belongs to something else (the cursor's sight on shift)
-  if (event.shiftKey || event.metaKey || event.ctrlKey || event.altKey) return
-  const img = (event.target as Element | null)?.closest('img')
-  if (!img || img.closest('a')) return
-  lightbox.open(img.currentSrc || img.src, img.alt)
-}
-
 // Copy link functionality
 const linkCopied = ref(false)
 async function copyLink() {
@@ -190,7 +180,7 @@ function scrollToHeading(id: string) {
           <!-- Main column -->
           <div class="flex-1 min-w-0">
             <!-- Article body -->
-            <div class="prose-blog" @click="onProseClick">
+            <div class="prose-blog">
               <ContentRenderer :value="post" />
             </div>
           </div>
