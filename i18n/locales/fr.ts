@@ -693,4 +693,15 @@ export default {
     },
     copyright: 'Tous droits réservés.',
   },
+  // The OG images' facts (components/OgImage)
+  og: {
+    status: 'Statut',
+    location: 'Lieu',
+    site: 'Site',
+    github: 'GitHub',
+    published: 'Publié',
+    reading: 'Lecture',
+    tags: 'Tags',
+    author: 'Auteur',
+  },
 }

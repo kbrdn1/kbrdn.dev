@@ -12,8 +12,24 @@ export function useSiteOgImage(component: 'Default' | 'Blog', props: Record<stri
     defineOgImage('Blog', {
       readLabel: t('blog.read'),
       readingTimeLabel: t('blog.readingTime'),
-      tagsLabel: t('blogNav.tags').toLowerCase(),
+      labels: {
+        published: t('og.published'),
+        reading: t('og.reading'),
+        tags: t('og.tags'),
+        author: t('og.author'),
+      },
       ...props,
     })
-  } else defineOgImage('Default', { statusText: t('hero.availableForHire'), ...props })
+  } else
+    defineOgImage('Default', {
+      statusText: t('hero.availableForHire'),
+      location: t('footer.location.city'),
+      labels: {
+        status: t('og.status'),
+        location: t('og.location'),
+        site: t('og.site'),
+        github: t('og.github'),
+      },
+      ...props,
+    })
 }

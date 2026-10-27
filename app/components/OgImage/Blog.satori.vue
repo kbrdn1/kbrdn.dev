@@ -1,8 +1,9 @@
 <script setup lang="ts">
-// An article's OG image: the blog's card (pages/blog, cards view) on the blog's dither field.
-// The banner full width on top, the card over its bottom edge (the first tag and the
-// reading time, the title, the summary, then the date and the tags between dashed rules),
-// the call to read in the footer.
+// An article's OG image, the repos' banners' card (disarto's "Deployment" sheets) on the
+// blog's dither field: two dashed construction lines along the panel's sides, nothing else
+// outside it. The panel: a header (blog@kbrdn1, the window's icons), the card (the title, the
+// call to read; the banner and the facts — date, reading time, tags, author; the summary after
+// a dashed rule), a footer (icons, the address in mono, a button).
 // Satori: every style on one line (its gradient parser fails on split values), every box
 // with several children a flex box.
 const TAG_COLORS: Record<string, { color: string, border: string, bg: string }> = {
@@ -35,7 +36,7 @@ const props = withDefaults(defineProps<{
   bannerImage?: string
   readLabel?: string
   readingTimeLabel?: string
-  tagsLabel?: string
+  labels?: { published: string, reading: string, tags: string, author: string }
 }>(), {
   title: 'Blog Post',
   description: '',
@@ -45,78 +46,118 @@ const props = withDefaults(defineProps<{
   bannerImage: '',
   readLabel: 'Read',
   readingTimeLabel: 'min read',
-  tagsLabel: 'tags',
+  labels: () => ({ published: 'Published', reading: 'Reading', tags: 'Tags', author: 'Author' }),
 })
 
 // Two lines at most, cut at a word
 const summary = computed(() =>
-  props.description.length > 165
-    ? `${props.description.slice(0, 165).replace(/\s+\S*$/, '')}…`
+  props.description.length > 150
+    ? `${props.description.slice(0, 150).replace(/\s+\S*$/, '')}…`
     : props.description,
 )
 </script>
 
 <template>
-  <div class="h-full w-full flex relative overflow-hidden" style="background: #0a0a0a;">
+  <div class="h-full w-full flex relative overflow-hidden" style="background: #0c0c0e;">
     <!-- The blog's dither field, frozen, with its blue (scripts/og-dither.ts) -->
     <img src="/images/og/dither-blog.png" alt="" style="position: absolute; top: 0; left: 0; width: 1200px; height: 630px;" />
+    <!-- The construction lines, along the panel's sides -->
+    <div style="position: absolute; top: 0; bottom: 0; left: 150px; width: 1px; background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.14) 0px, rgba(255,255,255,0.14) 6px, transparent 6px, transparent 11px);" />
+    <div style="position: absolute; top: 0; bottom: 0; left: 1049px; width: 1px; background-image: repeating-linear-gradient(180deg, rgba(255,255,255,0.14) 0px, rgba(255,255,255,0.14) 6px, transparent 6px, transparent 11px);" />
 
-    <!-- The card's panel -->
-    <div class="absolute flex flex-col" style="top: 36px; bottom: 36px; left: 150px; right: 150px; overflow: hidden; background: #0f0f0f; border: 1px solid #262626; border-radius: 26px; box-shadow: 0 24px 48px -24px rgba(0,0,0,0.7);">
-      <!-- The banner, full width -->
-      <div class="flex" style="height: 196px; overflow: hidden; background: #141414;">
-        <img v-if="bannerImage" :src="bannerImage" alt="" width="900" height="196" style="width: 900px; height: 196px; object-fit: cover;" />
-      </div>
-
-      <!-- The card over the banner's bottom edge -->
-      <div class="flex flex-col flex-1" style="margin: -22px 6px 0; padding: 22px 28px 18px; background: #191919; border: 1px solid #262626; border-radius: 18px;">
-        <div class="flex items-center justify-between">
-          <span v-if="tags.length" :style="{ fontFamily: '\'Monaspace Krypton\', monospace', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '4px 12px', borderRadius: '999px', color: getTagColor(tags[0]!).color, border: `1px solid ${getTagColor(tags[0]!).border}`, background: getTagColor(tags[0]!).bg }">
-            {{ tags[0] }}
+    <!-- The panel, centred: its height follows its content -->
+    <div class="absolute flex items-center justify-center" style="top: 0; left: 0; width: 1200px; height: 630px;">
+      <div class="flex flex-col" style="width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
+        <!-- Header: the blog, the window's icons -->
+        <div class="flex items-center justify-between" style="height: 52px; padding: 0 12px 0 16px;">
+          <span style="font-family: 'Monaspace Krypton', monospace; font-size: 16px; font-weight: 700;">
+            <span style="color: #7dd3fc;">blog</span><span style="color: #ececf0;">@</span><span style="color: #d4825d;">kbrdn1</span>
           </span>
-          <span v-if="minutes" class="flex items-end" style="gap: 6px;">
-            <span style="font-size: 34px; line-height: 1; color: #22c55e;">{{ minutes }}</span>
-            <span style="font-size: 17px; color: #737373;">/ {{ readingTimeLabel }}</span>
-          </span>
+          <div class="flex" style="gap: 16px;">
+            <svg v-for="name in ['expand', 'close'] as const" :key="name" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
+          </div>
         </div>
-        <h1 style="margin: 14px 0 0; font-size: 30px; line-height: 1.25; letter-spacing: -0.01em; color: #ececec;">
-          {{ title }}
-        </h1>
-        <p v-if="description" style="margin: 8px 0 0; font-size: 16px; line-height: 1.5; color: #a3a3a3; max-height: 48px; overflow: hidden;">
-          {{ summary }}
-        </p>
-        <!-- Date and tag count on one mono line, between dashed rules, then the other tags -->
-        <div class="flex flex-col" style="margin-top: auto;">
-          <div style="height: 1px; background-image: repeating-linear-gradient(90deg, #333333 0px, #333333 5px, transparent 5px, transparent 9px);" />
-          <div class="flex items-center justify-between" style="padding: 10px 0;">
-            <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #8a8a8a;">
-              {{ date }}{{ tags.length ? ` · ${tags.length} ${tagsLabel}` : '' }}
+
+        <!-- The card -->
+        <div class="flex flex-col" style="padding: 24px 28px; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.07); border-radius: 18px;">
+          <div class="flex justify-between" style="gap: 24px;">
+            <h1 style="margin: 0; max-height: 78px; overflow: hidden; font-size: 32px; font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; color: #ececf0;">{{ title }}</h1>
+            <span class="flex items-center" style="flex-shrink: 0; gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #111114; background: #d4825d; border: 1px solid #d4825d; border-radius: 999px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111114" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.visit" />
+              {{ readLabel }}
             </span>
-            <div class="flex items-center" style="gap: 6px;">
-              <span
-                v-for="tag in tags.slice(1, 4)"
-                :key="tag"
-                :style="{ fontFamily: '\'Monaspace Krypton\', monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '3px 10px', borderRadius: '999px', color: getTagColor(tag).color, border: `1px solid ${getTagColor(tag).border}`, background: getTagColor(tag).bg }"
-              >
-                {{ tag }}
-              </span>
+          </div>
+
+          <!-- The banner and the facts -->
+          <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
+            <div class="flex" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <img v-if="bannerImage" :src="bannerImage" alt="" width="290" height="168" style="width: 290px; height: 168px; object-fit: cover;" />
+            </div>
+            <div class="flex flex-col" style="gap: 9px;">
+              <div v-if="date" class="flex items-center" style="min-height: 30px;">
+                <span class="flex items-center" style="width: 138px; gap: 10px; font-size: 15px; color: #9a9aa3;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.calendar" />
+                  {{ labels.published }}
+                </span>
+                <span style="font-size: 15px; color: #ececf0;">{{ date }}</span>
+              </div>
+              <div v-if="minutes" class="flex items-center" style="min-height: 30px;">
+                <span class="flex items-center" style="width: 138px; gap: 10px; font-size: 15px; color: #9a9aa3;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.clock" />
+                  {{ labels.reading }}
+                </span>
+                <span class="flex items-center" style="gap: 7px; height: 28px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 999px;">
+                  <span style="width: 6px; height: 6px; border-radius: 999px; background: #4ade80;" />
+                  {{ minutes }} {{ readingTimeLabel }}
+                </span>
+              </div>
+              <div v-if="tags.length" class="flex items-center" style="min-height: 30px;">
+                <span class="flex items-center" style="width: 138px; gap: 10px; font-size: 15px; color: #9a9aa3;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.tag" />
+                  {{ labels.tags }}
+                </span>
+                <div class="flex" style="gap: 6px;">
+                  <span
+                    v-for="tag in tags.slice(0, 3)"
+                    :key="tag"
+                    :style="{ display: 'flex', alignItems: 'center', height: '26px', padding: '0 10px', fontFamily: '\'Monaspace Krypton\', monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', borderRadius: '999px', color: getTagColor(tag).color, border: `1px solid ${getTagColor(tag).border}`, background: getTagColor(tag).bg }"
+                  >
+                    {{ tag }}
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center" style="min-height: 30px;">
+                <span class="flex items-center" style="width: 138px; gap: 10px; font-size: 15px; color: #9a9aa3;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.user" />
+                  {{ labels.author }}
+                </span>
+                <span class="flex items-center" style="gap: 6px; height: 28px; padding: 0 11px 0 3px; font-size: 14px; color: #ececf0; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">
+                  <img src="/images/og/person.png" alt="" width="22" height="22" style="width: 22px; height: 22px; border-radius: 999px;" />
+                  kbrdn1
+                </span>
+              </div>
             </div>
           </div>
-          <div style="height: 1px; background-image: repeating-linear-gradient(90deg, #333333 0px, #333333 5px, transparent 5px, transparent 9px);" />
-        </div>
-      </div>
 
-      <!-- Footer: the blog, the call to read -->
-      <div class="flex items-center justify-between" style="height: 54px; padding: 0 10px 0 18px;">
-        <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; font-weight: 700;">
-          <span style="color: #7dd3fc;">blog</span><span style="color: #e5e5e5;">@</span><span style="color: #d4825d;">kbrdn1</span>
-        </span>
-        <span class="flex items-center" style="gap: 8px; padding: 8px 16px; font-size: 15px; color: #ffffff; background: #d4825d; border-radius: 999px;">
-          {{ readLabel }}
-          <svg width="14" height="14" viewBox="0 0 20 20" fill="#ffffff">
-            <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-          </svg>
-        </span>
+          <!-- The summary, after a dashed rule -->
+          <template v-if="description">
+            <div style="height: 1px; margin: 20px 0 14px; background-image: repeating-linear-gradient(90deg, #303036 0px, #303036 6px, transparent 6px, transparent 11px);" />
+            <p style="margin: 0; max-height: 44px; overflow: hidden; font-size: 15px; line-height: 1.45; color: #9a9aa3;">{{ summary }}</p>
+          </template>
+        </div>
+
+        <!-- Footer: icons, the address, a button -->
+        <div class="flex items-center justify-between" style="height: 52px; padding: 0 4px 0 16px;">
+          <div class="flex items-center" style="gap: 16px;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.more" />
+            <span style="width: 1px; height: 20px; background: #303036;" />
+            <svg v-for="name in ['sparkles', 'terminal'] as const" :key="name" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
+          </div>
+          <div class="flex items-center" style="gap: 16px;">
+            <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #9a9aa3;">kbrdn.dev/blog</span>
+            <span style="display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">kbrdn.dev</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
