@@ -14,14 +14,10 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-if (import.meta.server) {
-  defineOgImage('Default', {
-    title: t('activityPage.ogTitle'),
-    subtitle: t('activityPage.ogSubtitle'),
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
-  })
-}
+useSiteOgImage('Default', {
+  title: t('activityPage.ogTitle'),
+  subtitle: t('activityPage.ogSubtitle'),
+})
 
 const { data, status } = useFetch('/api/github/activity', {
   server: false,

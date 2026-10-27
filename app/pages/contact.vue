@@ -14,14 +14,10 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-if (import.meta.server) {
-  defineOgImage('Default', {
-    title: t('contactPage.ogTitle'),
-    subtitle: t('contactPage.ogSubtitle'),
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
-  })
-}
+useSiteOgImage('Default', {
+  title: t('contactPage.ogTitle'),
+  subtitle: t('contactPage.ogSubtitle'),
+})
 
 const TOPICS = ['role', 'project', 'openSource', 'other'] as const
 

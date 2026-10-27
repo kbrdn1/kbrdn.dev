@@ -14,14 +14,10 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-if (import.meta.server) {
-  defineOgImage('Default', {
-    title: t('appsPage.ogTitle'),
-    subtitle: t('appsPage.ogSubtitle'),
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
-  })
-}
+useSiteOgImage('Default', {
+  title: t('appsPage.ogTitle'),
+  subtitle: t('appsPage.ogSubtitle'),
+})
 
 const RAW = 'https://raw.githubusercontent.com/kbrdn1'
 const APPS = [

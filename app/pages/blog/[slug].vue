@@ -29,6 +29,7 @@ const { data: relatedPosts } = await useAsyncData(
 )
 
 const minutes = computed(() => readingTime(post.value?.body))
+const { formatDate } = useFormatDate()
 
 // The device's own share sheet (Web Share), where the browser has one: checked once mounted,
 // the server cannot know
@@ -84,16 +85,14 @@ if (post.value) {
     title: post.value.title,
     description: post.value.description,
   })
-  if (import.meta.server) {
-    defineOgImage('Blog', {
-      title: post.value.title,
-      description: post.value.description,
-      publishedAt: post.value.publishedAt,
-      tags: post.value.tags || [],
-      slug,
-      bannerImage: post.value.bannerImage || '/images/banners/dark.jpg',
-    })
-  }
+  useSiteOgImage('Blog', {
+    title: post.value.title,
+    description: post.value.description,
+    date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
+    tags: post.value.tags || [],
+    minutes: minutes.value,
+    bannerImage: post.value.bannerImage,
+  })
 }
 
 // Table of contents

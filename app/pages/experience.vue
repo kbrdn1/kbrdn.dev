@@ -14,14 +14,10 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-if (import.meta.server) {
-  defineOgImage('Default', {
-    title: t('experiencePage.ogTitle'),
-    subtitle: t('experiencePage.ogSubtitle'),
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${useRequestURL().origin}/images/avatar.png`,
-  })
-}
+useSiteOgImage('Default', {
+  title: t('experiencePage.ogTitle'),
+  subtitle: t('experiencePage.ogSubtitle'),
+})
 
 const period = (start: string, end: string | null) =>
   `${formatMonth(start, locale.value)} — ${end ? formatMonth(end, locale.value) : t('experiences.present')}`
