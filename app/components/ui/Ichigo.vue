@@ -67,9 +67,11 @@ onMounted(async () => {
     return
   }
   const { atlas, image } = loaded
+  // Gone while loading: another call took its place
   const el = canvas.value
-  const ctx = el?.getContext('2d')
-  if (!el || !ctx) return emit('done')
+  if (!el) return
+  const ctx = el.getContext('2d')
+  if (!ctx) return emit('done')
 
   const dpr = Math.min(2, window.devicePixelRatio || 1)
   el.width = Math.round(innerWidth * dpr)
@@ -163,7 +165,8 @@ onMounted(async () => {
 
   const start = performance.now()
   const frame = (now: number) => {
-    const t = now - start
+    // A frame's timestamp can come before `start`: never a negative time (frame -1)
+    const t = Math.max(0, now - start)
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, el.width, el.height)
 

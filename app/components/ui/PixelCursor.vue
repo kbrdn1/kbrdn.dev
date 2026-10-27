@@ -173,7 +173,8 @@ const shape = ref<HTMLElement>()
 // snapped to the blocks so it moves like a sprite
 let hop = { from: { x: 0, y: 0 }, to: { x: 0, y: 0 }, start: 0, duration: 0, lift: 0 }
 function offset(now: number) {
-  const p = hop.duration ? Math.min(1, (now - hop.start) / hop.duration) : 1
+  // A frame's timestamp can come before the hop's start
+  const p = hop.duration ? Math.min(1, Math.max(0, (now - hop.start) / hop.duration)) : 1
   const e = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2
   const snapped = (v: number) => Math.round(v / CELL) * CELL
   return {
@@ -220,16 +221,33 @@ function onMove(event: PointerEvent) {
 }
 const onLeave = () => (shown.value = false)
 
-// A click throws eight blocks along the D-pad; a triple click calls Ichigo where it landed
+// A click throws eight blocks along the D-pad; a triple click calls Ichigo where it landed,
+// again on every third click (macOS keeps counting: 6, 9…), a new call replacing the one
+// playing. The pixel hides while he is on, and comes back when he is done, or after
+// ICHIGO_MAX_MS whatever happened to him.
+const ICHIGO_MAX_MS = 8000
 const bursts = ref<number[]>([])
 let burstId = 0
-const ichigo = ref<{ x: number; y: number }>()
+const ichigo = ref<{ x: number; y: number; key: number }>()
+let ichigoTimer: ReturnType<typeof setTimeout> | undefined
+function dismissIchigo() {
+  clearTimeout(ichigoTimer)
+  ichigo.value = undefined
+}
 function onClick(event: MouseEvent) {
-  if (!enabled.value || !shown.value) return
-  if (event.detail === 3 && !ichigo.value) {
+  if (!enabled.value) return
+  // A click means the pointer is on the page, whatever a leave said
+  if (!shown.value) {
+    x = tx = event.clientX
+    y = ty = event.clientY
+    shown.value = true
+  }
+  if (event.detail >= 3 && event.detail % 3 === 0) {
     // The triple click also selected a paragraph
     getSelection()?.removeAllRanges()
-    ichigo.value = { x: event.clientX, y: event.clientY }
+    ichigo.value = { x: event.clientX, y: event.clientY, key: ++burstId }
+    clearTimeout(ichigoTimer)
+    ichigoTimer = setTimeout(dismissIchigo, ICHIGO_MAX_MS)
     return
   }
   const id = ++burstId
@@ -281,6 +299,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   alive = false
   cancelAnimationFrame(raf)
+  clearTimeout(ichigoTimer)
   window.removeEventListener('pointermove', onMove)
   window.removeEventListener('click', onClick)
   document.documentElement.removeEventListener('mouseleave', onLeave)
@@ -313,7 +332,7 @@ onBeforeUnmount(() => {
         />
       </div>
     </div>
-    <UiIchigo v-if="ichigo" :x="ichigo.x" :y="ichigo.y" @done="ichigo = undefined" />
+    <UiIchigo v-if="ichigo" :key="ichigo.key" :x="ichigo.x" :y="ichigo.y" @done="dismissIchigo" />
   </template>
 </template>
 
