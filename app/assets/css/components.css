@@ -110,19 +110,30 @@
   }
 
   /* Glass only: a translucent notch does not cover the navbar's bottom border, so the
-     navbar opens there, over the notch and its shoulders. Not in light and dark, where
-     the opaque notch covers it and the mask would also clip the light panel's shadow. */
+     navbar opens there, over the notch and its shoulders. Not in light and dark, where the
+     opaque notch covers it. The bottom border is drawn apart, on a pseudo-element cut for the
+     notch: masking the navbar itself would also hide what drops below it (the brand's menu). */
   .blur .notched {
     --notch-cut: calc(var(--notch-w) + 2 * var(--shoulder));
-    mask:
-      linear-gradient(#000 0 0) top / 100% calc(100% - 1px) no-repeat,
-      linear-gradient(
-          to right,
-          #000 calc(50% - var(--notch-cut) / 2),
-          transparent 0 calc(50% + var(--notch-cut) / 2),
-          #000 0
-        )
-        bottom / 100% 1px no-repeat;
+    position: relative;
+    border-bottom-color: transparent;
+  }
+
+  .blur .notched::after {
+    content: "";
+    position: absolute;
+    inset: auto -1px -1px;
+    height: 1.25rem;
+    border: 1px solid var(--panel-border);
+    border-top: 0;
+    border-radius: 0 0 1.25rem 1.25rem;
+    pointer-events: none;
+    mask: linear-gradient(
+      to right,
+      #000 calc(50% - var(--notch-cut) / 2),
+      transparent 0 calc(50% + var(--notch-cut) / 2),
+      #000 0
+    );
   }
 
   /* Concave shoulders, after disarto's sheet tabs: each fills the corner between the
