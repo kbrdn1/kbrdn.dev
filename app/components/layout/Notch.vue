@@ -37,12 +37,16 @@ const { postUrl } = useBlogUrl()
 const posts = ref<{ title: string; path: string; bannerImage?: string }[]>([])
 watch(active, async (key) => {
   if (key !== '/blog' || posts.value.length) return
+  // A failed query leaves the menu with its "all posts" link only
   posts.value = await queryCollection(collection.value)
     .order('publishedAt', 'DESC')
     .select('title', 'path', 'bannerImage')
     .limit(3)
     .all()
+    .catch(() => [])
 })
+// Another language: its own posts, fetched again on the next opening
+watch(collection, () => (posts.value = []))
 const banner = (src?: string) => (src ? $img(src, { width: 480, format: 'webp' }) : undefined)
 
 const menus = computed<Record<string, Menu>>(() => ({
@@ -191,8 +195,8 @@ watch(
                     :target="link.external ? '_blank' : undefined"
                     :rel="link.external ? 'noopener noreferrer' : undefined"
                     class="row group flex items-center gap-2 px-2 py-1.5 text-sm text-neutral-900 dark:text-neutral-100"
-                    @mouseenter="hovered = link.image"
-                    @focus="hovered = link.image"
+                    @mouseenter="hovered = link.image ?? hovered"
+                    @focus="hovered = link.image ?? hovered"
                     @click="close(0)"
                   >
                     <span class="truncate group-hover:text-(--accent-text)">{{ link.label }}</span>
