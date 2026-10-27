@@ -2,7 +2,8 @@
 // A pixel on the pointer's tip. Now and then it grows block by block into an arcade invader,
 // hops off the tip in one of a D-pad's eight directions, marches on a few steps through its
 // two frames like in the arcade, sometimes turns into another one, then hops back onto the
-// tip. A click throws a burst of blocks; a triple click calls Ichigo (UiIchigo).
+// tip. A click throws a burst of blocks; a triple click calls Ichigo (UiIchigo); a shift
+// click turns it into a sight, and back.
 // Decorative: a mouse or trackpad only, never under reduced motion.
 
 // The grid every shape is centred in, in blocks of CELL px
@@ -27,6 +28,27 @@ const LIFT = 12
 const MARCH = CELL
 
 const REST = ['##', '##']
+// The sight (shift click): a focus frame round the pixel, tightening on each click
+const SIGHT = [
+  '..###......###..',
+  '..#..........#..',
+  '................',
+  '#......##......#',
+  '#......##......#',
+  '................',
+  '..#..........#..',
+  '..###......###..',
+]
+const SIGHT_LOCK = [
+  '................',
+  '....###..###....',
+  '....#......#....',
+  '#......##......#',
+  '#......##......#',
+  '....#......#....',
+  '....###..###....',
+  '................',
+]
 // Two frames each, after the 1978 sprites
 const SPRITES: [string[], string[]][] = [
   [
@@ -164,6 +186,9 @@ const reducedMotion = useReducedMotion()
 const fine = ref(false)
 const enabled = computed(() => fine.value && !reducedMotion.value)
 const shown = ref(false)
+const sight = ref(false)
+// What the pointer wears between invaders
+const idle = () => (sight.value ? SIGHT : REST)
 // Frames swap at once; a change of shape spreads
 const snap = ref(false)
 const el = ref<HTMLElement>()
@@ -234,6 +259,9 @@ function dismissIchigo() {
   clearTimeout(ichigoTimer)
   ichigo.value = undefined
 }
+// Shift clicks on links and fields keep their own meaning (new window, selection)
+const INTERACTIVE = 'a, button, input, textarea, select, label, summary, [role="button"]'
+let lockTimer: ReturnType<typeof setTimeout> | undefined
 function onClick(event: MouseEvent) {
   if (!enabled.value) return
   // A click means the pointer is on the page, whatever a leave said
@@ -241,6 +269,21 @@ function onClick(event: MouseEvent) {
     x = tx = event.clientX
     y = ty = event.clientY
     shown.value = true
+  }
+  if (event.shiftKey && !(event.target as Element | null)?.closest(INTERACTIVE)) {
+    sight.value = !sight.value
+    document.documentElement.toggleAttribute('data-sight', sight.value)
+    snap.value = false
+    moveTo({ x: 0, y: 0 }, 200)
+    draw(idle())
+    return
+  }
+  // The sight locks on: its frame closes in for a moment
+  if (sight.value) {
+    snap.value = true
+    draw(SIGHT_LOCK)
+    clearTimeout(lockTimer)
+    lockTimer = setTimeout(() => sight.value && draw(SIGHT), 160)
   }
   if (event.detail >= 3 && event.detail % 3 === 0) {
     // The triple click also selected a paragraph
@@ -261,9 +304,10 @@ async function perform() {
   let last = -1
   while (alive) {
     await sleep(6000 + Math.random() * 6000)
-    if (!alive || !enabled.value || !shown.value || ichigo.value || document.hidden) continue
+    if (!alive || !enabled.value || !shown.value || ichigo.value || sight.value || document.hidden)
+      continue
     // One invader, or two in a row
-    for (let turn = Math.random() < 0.45 ? 2 : 1; turn > 0 && alive; turn--) {
+    for (let turn = Math.random() < 0.45 ? 2 : 1; turn > 0 && alive && !sight.value; turn--) {
       let i = last
       while (i === last) i = Math.floor(Math.random() * SPRITES.length)
       last = i
@@ -276,7 +320,7 @@ async function perform() {
       await sleep(SPREAD_MS + 220)
       snap.value = true
       // The march: a step on with every frame
-      for (let frame = 1; frame <= 6 && alive; frame++) {
+      for (let frame = 1; frame <= 6 && alive && !sight.value; frame++) {
         draw(frame % 2 ? b : a)
         at = { x: at.x + dx * MARCH, y: at.y + dy * MARCH }
         moveTo(at)
@@ -285,7 +329,7 @@ async function perform() {
     }
     snap.value = false
     moveTo({ x: 0, y: 0 }, 300, LIFT * 0.6)
-    draw(REST)
+    draw(idle())
   }
 }
 
@@ -300,6 +344,8 @@ onBeforeUnmount(() => {
   alive = false
   cancelAnimationFrame(raf)
   clearTimeout(ichigoTimer)
+  clearTimeout(lockTimer)
+  document.documentElement.removeAttribute('data-sight')
   window.removeEventListener('pointermove', onMove)
   window.removeEventListener('click', onClick)
   document.documentElement.removeEventListener('mouseleave', onLeave)
@@ -337,6 +383,11 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* With the sight on, the system pointer turns into a cross too (links keep their hand) */
+:global(html[data-sight]) {
+  cursor: crosshair;
+}
+
 /* `translate` follows the pointer, the shape's own its hops and march (script) */
 .pixel-cursor {
   position: fixed;
