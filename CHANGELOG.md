@@ -127,8 +127,17 @@ migrates `[Unreleased]` into that file and empties this one — see
   one, a button opens the device's share sheet (Web Share), beside Copy link.
 - **Featured projects, personal and professional**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Two tabs on the home:
-  the repositories pinned on GitHub, and the projects built at Jewely x Flippad,
-  each card leading to it on `/experience`.
+  the repositories pinned on GitHub, and the projects built at Jewely x Flippad
+  in the same cards, the project's logo, its site, its client and its years, a
+  bar showing when it ran within those years; each leads to it on
+  `/experience`.
+- **An invader on the footer's edge**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Now and then one of
+  the pointer's invaders runs along the footer's top edge from right to left, in
+  its own colour of the theme, a trail of pixels on the ground behind it, and
+  leaps for its favourite food on the way: pellets for the squid, cherries for
+  the crab, stars, mushrooms or cookies for the others. One at a time, only
+  while the footer is in view, never under `prefers-reduced-motion`.
 - **What is going on right now, on `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
   what is being read, and what is welcome, with a link to write.
@@ -275,13 +284,15 @@ migrates `[Unreleased]` into that file and empties this one — see
   three themes, an intro like the other pages, and the status code in pixels
   in a panel: drag them with a mouse, pen or finger, a counter says how many are
   back in place. Any status shows its own code.
-- **OG images as the site's components**
-  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Pages share a profile
-  panel on the pixel field (badge, name, title in Fenix, stack, figures on the
-  home, the drawn portrait, a button to the site); articles the blog's card
-  (banner, tag and reading time, title and summary, date and tags, Read), on
-  the field tinted with the blog's blue. The README's banner follows the same
-  design.
+- **OG images as the site's components, in the repos' banners' design**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). One panel on the
+  pixel field, two dashed construction lines along its sides and nothing else
+  outside it, its height following its content: a header, then a card (name and
+  title in Fenix or the article's title, buttons; the drawn portrait or the
+  article's banner beside its facts; the figures on the home, the stack or the
+  summary after a dashed rule), then a footer with the address in mono. Articles
+  keep the field tinted with the blog's blue. The README's banner follows the
+  same design, with the home as its picture.
 - **Sections swing in**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Below the fold, each
   panel comes in slightly turned and off to one side, from the left and the
@@ -296,6 +307,10 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ### Fixed
 
+- **Pictures overflowed their frame's corners**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The carousel's scene
+  and the full-size illustration were rounded wider than the panel around them;
+  their corners now follow it.
 - **Activity sat under Projects in the home's table of contents**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)), and its French label
   had lost its accent.
