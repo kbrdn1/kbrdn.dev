@@ -1,8 +1,14 @@
 import type { RouterConfig } from '@nuxt/schema'
 import { START_LOCATION } from 'vue-router'
 
-// An anchor lands under the floating navbar and its notch (they end at 90px)
+// An anchor lands under the floating navbar and its notch (they end at 90px), or lower when
+// the target asks for more room (its scroll-margin-top, like /experience's entries under
+// their compact strip): vue-router reads only `top`
 const TOP = 112
+const topFor = (hash: string) => {
+  const target = document.getElementById(decodeURIComponent(hash.slice(1)))
+  return Math.max(TOP, target ? parseFloat(getComputedStyle(target).scrollMarginTop) || 0 : 0)
+}
 
 // Smooth, unless the reader asked for less motion
 const behavior = (): ScrollBehavior =>
@@ -19,19 +25,20 @@ export default <RouterConfig>{
         : from.path
     // An anchor on the same page glides there
     if (to.path === fromPath) {
-      return to.hash ? { el: to.hash, top: TOP, behavior: behavior() } : false
+      return to.hash ? { el: to.hash, top: topFor(to.hash), behavior: behavior() } : false
     }
     // Another page jumps, once rendered, like Nuxt's default: smooth, it would roll the old
     // page before it leaves, or the new one under the view transition. Said explicitly:
     // html's scroll-behavior is smooth (main.css) and would apply otherwise
-    const position = {
-      ...(savedPosition ?? (to.hash ? { el: to.hash, top: TOP } : { top: 0 })),
+    // The anchor is measured once the page is there
+    const position = () => ({
+      ...(savedPosition ?? (to.hash ? { el: to.hash, top: topFor(to.hash) } : { top: 0 })),
       behavior: 'instant' as const,
-    }
+    })
     const nuxtApp = useNuxtApp()
     return new Promise((resolve) =>
       nuxtApp.hooks.hookOnce('page:loading:end', () => {
-        requestAnimationFrame(() => resolve(position))
+        requestAnimationFrame(() => resolve(position()))
       }),
     )
   },
