@@ -33,7 +33,7 @@ const { current, stepOf } = useTocSteps(
               stepOf(item.id) < current
                 ? 'bg-primary-500/15 text-(--accent-text)'
                 : stepOf(item.id) === current
-                  ? 'bg-primary-500 text-white dark:text-neutral-950'
+                  ? 'bg-primary-500 text-neutral-950'
                   : 'border border-(--control-border) text-(--label)',
             )
           "

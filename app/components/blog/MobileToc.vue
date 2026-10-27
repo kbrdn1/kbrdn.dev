@@ -58,7 +58,7 @@ function handleScrollTo(id: string) {
         @click="open = !open"
       >
         <span
-          class="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-500 font-mono text-[10px] text-white dark:text-neutral-950"
+          class="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary-500 font-mono text-[10px] text-neutral-950"
           aria-hidden="true"
         >
           <template v-if="current < 0">·</template>
