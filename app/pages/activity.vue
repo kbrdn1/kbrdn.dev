@@ -167,7 +167,7 @@ const TAG: Record<string, string> = {
           </p>
         </ClientOnly>
       </div>
-      <UiPixelScene scene="desk" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
+      <UiPixelScene scene="commits" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
     </section>
 
     <!-- Right now: what is being learnt, read, and what is welcome -->

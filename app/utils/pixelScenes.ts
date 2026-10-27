@@ -1,8 +1,10 @@
 // The pages' hero scenes (UiPixelScene): small pixel-art loops in the theme's palette, one per
-// page — a crab climbing a mountain (/experience), an invader on a terminal (/apps), the
-// monkey at its desk (/activity), a bird reading (/blog), a bird posting a letter (/contact).
+// page — a crab climbing a mountain (/experience), an invader on a terminal (/apps), an
+// invader filling a contribution graph (/activity), a bird reading (/blog), a bird posting a
+// letter (/contact).
 // A scene is a grid of SCENE_W × SCENE_H cells: what never moves, then what a tick
 // (SCENE_TICK ms) draws.
+import { INVADERS } from './invaders'
 
 export const SCENE_W = 48
 export const SCENE_H = 36
@@ -35,7 +37,6 @@ const PALETTE: Record<string, string> = {
   w: 'fill-neutral-50 dark:fill-neutral-200',
   // Paper and snow: still a shade off the page's background on light
   P: 'fill-neutral-200 dark:fill-neutral-200',
-  B: 'fill-primary-200 dark:fill-primary-300',
   n: 'fill-primary-900 dark:fill-primary-800',
   // Rocks on the mountain's shadowed side
   R: 'fill-neutral-300 dark:fill-neutral-500',
@@ -68,8 +69,9 @@ const tinted = (rows: string[], ch: string) => rows.map((row) => row.replaceAll(
 // the other side. The mountain is lit on its left, a lighter one stands behind.
 const ridge = (x0: number, top: number, left: number, right: number) => (x: number) =>
   top + Math.round(x <= x0 ? (x0 - x) * left : (x - x0) * right)
-const main = ridge(20, 7, 1.45, 1.15)
-const back = ridge(37, 14, 1.05, 0.9)
+// The summit low enough for the crab to cheer on it, hops included
+const main = ridge(20, 12, 1.15, 0.95)
+const back = ridge(37, 18, 1.05, 0.9)
 const CRAB = [
   [
     '.r.......r.',
@@ -121,7 +123,7 @@ const climb: Scene = {
     ...Array.from({ length: SCENE_W }, (_, x) => {
       const top = main(x)
       if (top >= 35) return []
-      const snow = 12 + ((x * 7) % 3)
+      const snow = 14 + ((x * 7) % 3)
       const cells = [box(x, top, 1, 35 - top, x <= 20 ? 'l' : 'g')]
       if (top < snow) cells.push(box(x, top, 1, snow - top, 'P'))
       for (let y = Math.max(top, snow) + 1; y < 35; y++)
@@ -129,12 +131,12 @@ const climb: Scene = {
       return cells
     }).flat(),
     box(0, 35, SCENE_W, 1, 'G'),
-    box(20, 1, 1, 6, 'd'),
+    box(20, 6, 1, 6, 'd'),
   ],
   ticks: 96,
   frame(tick) {
     const cells = [
-      ...sprite(FLAG[(tick >> 1) % 3]!, 21, 1),
+      ...sprite(FLAG[(tick >> 1) % 3]!, 21, 6),
       ...sprite(CLOUD, 50 - ((tick >> 1) % 60), 9),
       ...sprite(CLOUD, 50 - (((tick >> 1) + 34) % 60), 16),
       // A bird crossing the sky, flapping
@@ -147,9 +149,9 @@ const climb: Scene = {
     } else if (tick < 64) {
       // On the summit: claws up, hops, sparkles
       const hop = [0, 1, 2, 1][(tick - 40) % 4]!
-      cells.push(...sprite(tick % 4 < 2 ? CHEER : CRAB[0]!, 15, -hop))
+      cells.push(...sprite(tick % 4 < 2 ? CHEER : CRAB[0]!, 15, main(20) - 7 - hop))
       if (tick % 4 < 2)
-        cells.push(...sprite(['.y.', 'y.y', '.y.'], 11, 1), ...sprite(['.y.', 'y.y', '.y.'], 27, 2))
+        cells.push(...sprite(['.y.', 'y.y', '.y.'], 11, 5), ...sprite(['.y.', 'y.y', '.y.'], 27, 6))
     } else {
       // Down the shadowed side, fast
       const x = 15 + Math.round((tick - 64) * 1.2)
@@ -191,97 +193,90 @@ const terminal: Scene = {
   },
 }
 
-// /activity — the monkey at its desk, behind its laptop: it types (its shoulders go), blinks,
-// code rises from the screen, the coffee steams and the clock turns
-const MONKEY = [
-  '....dddddd....',
-  '...dddddddd...',
-  '..dddddddddd..',
-  '..oooooooooo..',
-  'BBooooooooooBB',
-  'BBoBBBBBBBBoBB',
-  '.BoBkBBBBkBoB.',
-  '..oBBBBBBBBo..',
-  '..oBBBnnBBBo..',
-  '..ooBBBBBBoo..',
-  '...oBkkkkBo...',
-  '....oooooo....',
-]
-const LOGO = ['o...PP', 'oo.PP.', 'o.PP..', '.PP...', 'PP..o.', 'P...oo']
-const GLYPHS = [
-  ['..#', '.#.', '#..', '.#.', '..#'],
-  ['#..', '.#.', '..#', '.#.', '#..'],
-  ['..#', '..#', '.#.', '#..', '#..'],
-  ['.##', '.#.', '#..', '.#.', '.##'],
-]
-const HAND = [
-  [0, -1],
-  [1, -1],
-  [1, 0],
-  [1, 1],
-  [0, 1],
-  [-1, 1],
-  [-1, 0],
-  [-1, -1],
-] as const
-const desk: Scene = {
-  still: [
-    // The clock and a picture on the wall
-    ...sprite(['..ddd..', '.dPPPd.', 'dPPPPPd', 'dPPdPPd', 'dPPPPPd', '.dPPPd.', '..ddd..'], 3, 3),
-    box(5, 5, 1, 1, 'd'),
-    ...sprite(
-      ['WWWWWWWWW', 'WCCCCCyCW', 'WCCCCCCCW', 'WCCCgCCCW', 'WCCgggCCW', 'WCgggggCW', 'WWWWWWWWW'],
-      36,
-      3,
-    ),
-    // The desk, the mug, the plant
-    box(1, 26, 46, 2, 'W'),
-    box(1, 28, 46, 1, 'n'),
-    box(3, 29, 2, 7, 'n'),
-    box(43, 29, 2, 7, 'n'),
-    box(4, 21, 4, 5, 'P'),
-    box(4, 22, 4, 1, 'o'),
-    box(8, 22, 1, 2, 'P'),
-    ...sprite(['..G.G..', '.GG.GG.', 'GGG.GGG', '.GGGGG.', '..GGG..'], 38, 15),
-    box(38, 20, 7, 1, 'n'),
-    box(39, 21, 5, 5, 'W'),
-  ],
-  ticks: 96,
-  frame(tick) {
-    const blink = tick % 32 === 31
-    const left = tick % 2
-    const [ux, uy] = HAND[(tick >> 2) % 8]!
-    const cells = [
-      // Its body behind the laptop, a shoulder up with each key
-      box(11, 18 + left, 5, 8 - left, 'd'),
-      box(32, 19 - left, 5, 7 + left, 'd'),
-      box(13, 17, 22, 9, 'd'),
-      ...sprite(
-        blink ? MONKEY.map((row) => row.replaceAll('k', 'B')) : MONKEY,
-        17,
-        4 + ((tick >> 3) % 2),
-      ),
-      // The laptop's lid, the logo on its back
-      box(15, 15, 18, 11, 'g'),
-      box(15, 15, 18, 1, 'l'),
-      ...sprite(LOGO, 21, 18),
-      // The clock's hand
-      box(6 + ux, 6 + uy, 1, 1, 'o'),
-      box(6 + 2 * ux, 6 + 2 * uy, 1, 1, 'o'),
-      // Steam
-      ...sprite(tick % 6 < 3 ? ['.P.', 'P..', '.P.'] : ['P..', '.P.', 'P..'], 4, 17),
-    ]
-    // Code rises from the screen on both sides
-    for (const [k, x, ch] of [
-      [0, 11, 'G'],
-      [1, 32, 'b'],
-      [2, 14, 'p'],
-    ] as const) {
-      const phase = (tick + k * 11) % 33
-      if (phase > 26) continue
-      const glyph = GLYPHS[(Math.floor((tick + k * 11) / 33) + k) % GLYPHS.length]!
-      cells.push(...sprite(tinted(glyph, ch), x, 13 - Math.floor(phase / 2)))
+// /activity — an invader commits: it runs over a contribution graph and drops a block into a
+// column, which falls and lights the first empty cell; once the graph is full it flashes, the
+// invader hops for joy, and it starts again
+const COLS = 11
+const ROWS = 4
+const START = [2, 1, 3, 0, 2, 1, 2, 3, 1, 0, 2]
+const cellX = (col: number) => 3 + col * 4
+// Row 0 at the bottom
+const cellY = (row: number) => 19 + (ROWS - 1 - row) * 4
+// The drops, worked out once: the column, where the invader comes from, when it sets off, how
+// long it walks (two ticks a column) and how long the block falls (four cells a tick)
+const DROPS = (() => {
+  const heights = [...START]
+  const drops: {
+    col: number
+    from: number
+    start: number
+    walk: number
+    fall: number
+    row: number
+  }[] = []
+  let at = 0
+  let tick = 4
+  for (let k = 0; heights.some((h) => h < ROWS); k++) {
+    let col = (k * 7 + 3) % COLS
+    while (heights[col]! >= ROWS) col = (col + 1) % COLS
+    const row = heights[col]!++
+    const drop = {
+      col,
+      from: at,
+      start: tick,
+      walk: Math.abs(col - at) * 2,
+      fall: Math.ceil((cellY(row) - 14) / 4),
+      row,
     }
+    drops.push(drop)
+    tick += drop.walk + drop.fall + 3
+    at = col
+  }
+  return { drops, end: tick }
+})()
+const commits: Scene = {
+  still: [box(1, 35, 46, 1, 'g')],
+  ticks: DROPS.end + 16,
+  frame(tick) {
+    const heights = [...START]
+    let current: (typeof DROPS.drops)[number] | undefined
+    let rest = 0
+    for (const drop of DROPS.drops) {
+      if (tick >= drop.start + drop.walk + drop.fall) heights[drop.col]!++
+      if (tick >= drop.start) {
+        current = drop
+        rest = drop.col
+      }
+    }
+    const done = tick >= DROPS.end
+    const flash = done && tick % 4 < 2
+    const cells: Cell[] = []
+    for (let col = 0; col < COLS; col++)
+      for (let row = 0; row < ROWS; row++)
+        cells.push(
+          box(cellX(col), cellY(row), 3, 3, row < heights[col]! ? (flash ? 'P' : 'G') : 'C'),
+        )
+    // Where the invader stands (in columns), walking or not, and the block on its way down
+    let at = rest
+    let walking = false
+    if (current && !done) {
+      const t = tick - current.start
+      if (t < current.walk) {
+        at = current.from + ((current.col - current.from) * t) / current.walk
+        walking = true
+      } else if (t < current.walk + current.fall)
+        cells.push(box(cellX(current.col), 14 + (t - current.walk) * 4, 3, 3, 'G'))
+      else {
+        // Just landed: the cell flashes, a sparkle above it
+        cells.push(box(cellX(current.col), cellY(current.row), 3, 3, 'P'))
+        cells.push(...sprite(['.y.', 'yyy', '.y.'], cellX(current.col), cellY(current.row) - 4))
+      }
+    }
+    const [a, b] = INVADERS[0]!
+    const hop = done ? [0, 1, 2, 1][tick % 4]! : 0
+    cells.push(
+      ...sprite(tinted(walking && tick % 2 ? b : a, 'p'), Math.round(cellX(at) - 2.5), 5 - hop),
+    )
     return cells
   },
 }
@@ -395,5 +390,5 @@ const mail: Scene = {
   },
 }
 
-export const PIXEL_SCENES = { climb, terminal, desk, read, mail } satisfies Record<string, Scene>
+export const PIXEL_SCENES = { climb, terminal, commits, read, mail } satisfies Record<string, Scene>
 export type PixelSceneName = keyof typeof PIXEL_SCENES
