@@ -199,6 +199,13 @@ migrates `[Unreleased]` into that file and empties this one — see
   comes in from the other, and in the player only the cover and title move.
   Refilled lists (blog, contribution calendars, open source) drop their old
   items at once and bring the new ones in one after the other.
+- **Projects under their role on `/experience`**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). After isrod.eu's
+  sub-entries: under Jewely x Flippad, a section set in for each project
+  (Jewely E-commerce, Fiches Pédagogiques, the configurator, Assmat Facile, the
+  ERP) with its client, role and period, what was done, the stack and links to
+  the public site or the blog post. They join the roles strip, marked ↳; the
+  role's own missions keep only what spans the projects.
 - **The error page lives in the site**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Navbar, footer and the
   three themes, an intro like the other pages, and the status code in pixels
