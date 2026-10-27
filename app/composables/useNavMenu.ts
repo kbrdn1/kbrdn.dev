@@ -1,6 +1,7 @@
 /**
  * Which menu the navbar's notch has open: a page of the site (its path), 'gwm' (the
- * announcement), or none. A nav item or the announcement opens it on hover or focus; it
+ * announcement), or none. A nav item or the announcement opens it on hover (the keyboard
+ * keeps plain links: on focus, each Tab would swap the menu before it could be reached); it
  * closes a moment after the pointer leaves the navbar and its notch (crossing from one to
  * the other keeps it open), when the focus leaves them, and on Escape. From md, with a
  * real pointer: under it, the navbar has its own menu.

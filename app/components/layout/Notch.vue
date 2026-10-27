@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // The notch hanging under the floating navbar (both headers): the gwm announcement at
-// rest, a menu once a nav item or the announcement is hovered or focused. It widens and
+// rest, a menu once a nav item or the announcement is hovered (a pointer enhancement: the
+// tabs and the announcement stay plain links for the keyboard). It widens and
 // opens on its height like the site's collapses, the line on top turning into the page's
 // name, and holds what the page has (its sections, the latest posts for the blog), a line
 // of context and an illustration through the pixel layer, which follows the link under
@@ -144,6 +145,21 @@ const hovered = ref<string>()
 const image = computed(() => hovered.value ?? menu.value?.image)
 watch(active, () => (hovered.value = undefined))
 
+// Escape from inside a menu: its content turns inert as it closes, so focus goes back to what
+// opened it (the announcement, or the page's tab) instead of falling to the body
+const root = ref<HTMLElement>()
+function onEscape(event: KeyboardEvent) {
+  const inside = (event.target as Element | null)?.closest('.expand-content')
+  const key = active.value
+  close(0)
+  if (!inside || !key) return
+  const opener =
+    key === 'gwm'
+      ? root.value?.querySelector<HTMLElement>('a[href="https://gwm.kbrdn.dev"]')
+      : document.querySelector<HTMLElement>(`header .segment[href="${key}"]`)
+  opener?.focus()
+}
+
 // A new page closes it
 const route = useRoute()
 watch(
@@ -154,10 +170,11 @@ watch(
 
 <template>
   <div
+    ref="root"
     class="notch relative mx-auto w-(--notch-w)"
     @mouseenter="keep"
     @mouseleave="close()"
-    @keydown.esc="close(0)"
+    @keydown.esc="onEscape"
   >
     <!-- The line on top: the announcement, or the name of the page whose menu is open -->
     <Transition name="swap-up" mode="out-in">
@@ -172,7 +189,6 @@ watch(
         rel="noopener noreferrer"
         class="eyebrow flex h-7 items-center justify-center gap-2 px-4 transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
         @mouseenter="open('gwm')"
-        @focus="open('gwm')"
       >
         <UIcon name="i-heroicons-rocket-launch" class="size-3.5 shrink-0 text-primary-500" />
         <span class="truncate">{{ t('banner.gwm') }}</span>
