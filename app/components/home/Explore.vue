@@ -138,7 +138,7 @@ const reducedMotion = useReducedMotion()
         <!-- Client only: the scene follows the colour mode, unknown to the server. Hovered,
              it depixelates down to the crisp picture. -->
         <div
-          class="relative min-h-64 overflow-hidden rounded-2xl bg-neutral-200 dark:bg-neutral-900"
+          class="relative min-h-64 overflow-hidden rounded-[1rem] bg-neutral-200 dark:bg-neutral-900"
         >
           <ClientOnly>
             <div class="absolute inset-0">

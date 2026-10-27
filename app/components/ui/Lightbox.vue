@@ -26,7 +26,7 @@ function onClick(event: MouseEvent) {
 <template>
   <dialog ref="dialog" class="lightbox" :aria-label="picture?.alt" @close="close" @click="onClick">
     <figure v-if="picture" class="panel">
-      <img :src="picture.src" :alt="picture.alt" class="lightbox-picture rounded-2xl" />
+      <img :src="picture.src" :alt="picture.alt" class="lightbox-picture rounded-[1rem]" />
       <figcaption class="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3">
         <span class="eyebrow truncate">{{ picture.alt }}</span>
         <button
