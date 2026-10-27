@@ -369,6 +369,8 @@ export default {
     repo: 'Repository',
     releases: 'Releases',
     install: 'Install',
+    demo: 'Demo',
+    preview: 'Preview',
     status: {
       released: 'Available',
       inDevelopment: 'In development',
