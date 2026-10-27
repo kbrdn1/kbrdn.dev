@@ -70,7 +70,7 @@ export default {
     projects: 'PROJETS',
     skills: 'STACK & COMPÉTENCES',
     parcours: 'PARCOURS',
-    activity: 'ACTIVITE',
+    activity: 'ACTIVITÉ',
     blog: 'BLOG',
     sponsor: 'Sponsoriser sur GitHub',
   },

@@ -13,7 +13,7 @@ const items = computed(() => [
   { id: 'latest-posts', text: t('sections.blog'), level: 2 },
   { id: 'skills', text: t('sections.skills'), level: 2 },
   { id: 'projects', text: t('sections.projects'), level: 2 },
-  { id: 'activity', text: t('sections.activity'), level: 3 },
+  { id: 'activity', text: t('sections.activity'), level: 2 },
   { id: 'experience', text: t('sections.parcours'), level: 2 },
 ])
 
