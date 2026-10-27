@@ -475,6 +475,18 @@ export default {
 
   // /activity
   activityPage: {
+    now: {
+      title: 'Right now',
+      learning: 'Learning',
+      gameDev: 'Game development',
+      reading: 'Reading',
+      symposium: 'The Symposium',
+      plato: 'Plato',
+      openTo: 'Open to',
+      role: 'A role',
+      project: 'A project',
+      write: 'Write a message',
+    },
     seoTitle: 'Activity · Kylian Bardini',
     seoDescription:
       "Kylian Bardini's open source work and recent GitHub activity, read live from his public repositories.",

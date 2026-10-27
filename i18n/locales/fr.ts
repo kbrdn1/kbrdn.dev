@@ -475,6 +475,18 @@ export default {
 
   // /activity
   activityPage: {
+    now: {
+      title: 'En ce moment',
+      learning: 'En apprentissage',
+      gameDev: 'Développement de jeux',
+      reading: 'En lecture',
+      symposium: 'Le Banquet',
+      plato: 'Platon',
+      openTo: 'Ouvert à',
+      role: 'Un poste',
+      project: 'Un projet',
+      write: 'Écrire un message',
+    },
     seoTitle: 'Activité · Kylian Bardini',
     seoDescription:
       "L'open source de Kylian Bardini et son activité GitHub récente, lue en direct depuis ses dépôts publics.",

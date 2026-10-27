@@ -30,6 +30,22 @@ const { data, status } = useFetch('/api/github/activity', {
 })
 const items = computed(() => data.value?.items ?? [])
 
+// Right now. Book titles stay as published; the open-to list follows /contact's topics.
+const LEARNING = computed(() => [
+  { label: 'Godot', icon: 'i-simple-icons-godotengine' },
+  { label: 'Blender', icon: 'i-simple-icons-blender' },
+  { label: t('activityPage.now.gameDev'), icon: 'i-lucide-gamepad-2' },
+])
+const READING = computed(() => [
+  { title: "BLEACH: Can't Fear Your Own World", author: 'Ryohgo Narita' },
+  { title: t('activityPage.now.symposium'), author: t('activityPage.now.plato') },
+])
+const OPEN_TO = computed(() => [
+  t('activityPage.now.role'),
+  t('activityPage.now.project'),
+  'Open source',
+])
+
 // The feed grows by 20 entries at a time
 const PAGE = 20
 const limit = ref(PAGE)
@@ -151,6 +167,57 @@ const TAG: Record<string, string> = {
         </p>
       </ClientOnly>
     </section>
+
+    <!-- Right now: what is being learnt, read, and what is welcome -->
+    <UiPanel :title="t('activityPage.now.title')">
+      <div
+        class="panel-card grid gap-6 p-5 sm:p-6 md:grid-cols-3 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
+      >
+        <div class="md:pr-6">
+          <p class="eyebrow">{{ t('activityPage.now.learning') }}</p>
+          <ul class="mt-3 flex flex-wrap gap-1.5">
+            <li
+              v-for="topic in LEARNING"
+              :key="topic.label"
+              class="inline-flex h-7 items-center gap-1.5 rounded-full border border-(--control-border) px-2.5 text-xs text-neutral-700 dark:text-neutral-300"
+            >
+              <UIcon :name="topic.icon" class="size-3.5 text-neutral-500" aria-hidden="true" />
+              {{ topic.label }}
+            </li>
+          </ul>
+        </div>
+        <div class="md:px-6">
+          <p class="eyebrow">{{ t('activityPage.now.reading') }}</p>
+          <ul class="mt-3 space-y-3">
+            <li v-for="book in READING" :key="book.title" class="flex gap-2.5">
+              <UIcon
+                name="i-lucide-book-open"
+                class="mt-0.5 size-4 shrink-0 text-neutral-500"
+                aria-hidden="true"
+              />
+              <span>
+                <span class="block text-sm text-neutral-900 dark:text-neutral-100">
+                  {{ book.title }}
+                </span>
+                <span class="eyebrow mt-0.5 block">{{ book.author }}</span>
+              </span>
+            </li>
+          </ul>
+        </div>
+        <div class="md:pl-6">
+          <p class="eyebrow">{{ t('activityPage.now.openTo') }}</p>
+          <ul class="mt-3 flex flex-wrap gap-1.5">
+            <li v-for="item in OPEN_TO" :key="item" class="tag text-green-700 dark:text-green-500">
+              {{ item }}
+            </li>
+          </ul>
+          <NuxtLink to="/contact" class="btn btn-outline btn-sm mt-4">
+            {{ t('activityPage.now.write') }}
+            <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+          </NuxtLink>
+        </div>
+      </div>
+    </UiPanel>
 
     <!-- Open source, shared with /experience -->
     <section aria-labelledby="activity-open-source-heading">
