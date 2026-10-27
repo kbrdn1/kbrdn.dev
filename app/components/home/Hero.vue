@@ -87,11 +87,9 @@ onUnmounted(() => {
         <UiScrambleText :text="name" />
       </h1>
 
-      <!-- Rotating title: the old one rises out, the next comes up from below -->
+      <!-- Rotating title, rolling letter by letter like the figures' reels -->
       <p class="text-xl text-primary-500 sm:text-2xl" style="font-family: 'Fenix', serif">
-        <Transition name="swap-up" mode="out-in">
-          <span :key="currentTitle" class="inline-block">{{ currentTitle }}</span>
-        </Transition>
+        <UiRollingText :text="currentTitle" />
       </p>
 
       <!-- A face, small, beside the handle: the photo, the drawing on hover -->
