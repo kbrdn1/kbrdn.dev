@@ -144,12 +144,15 @@ migrates `[Unreleased]` into that file and empties this one — see
   under `prefers-reduced-motion`.
 - **A pixel scene in the pages' hero**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Beside the hero, under
-  it on a phone, a small loop in the theme's palette: a crab climbs the
-  mountain to its flag on `/experience`, an invader sits on a terminal typing
-  its lines on `/apps`, another fills a contribution graph on `/activity`, a
-  canary in glasses reads in its armchair on `/blog`, a bird posts a letter on
-  `/contact`. It plays only on screen; its first frame under
-  `prefers-reduced-motion`.
+  it on a phone, a detailed loop in the theme's palette with no background, the
+  sun by day, the moon and stars by night: a crab climbs the mountain's trail to
+  its flag and cheers in confetti on `/experience`; an invader sits on a monitor
+  typing gwm's commands on `/apps`; another fills a contribution graph on
+  `/activity`; on `/blog`, a writing nook at night after Kirokaze's and
+  Waneella's rooms, rain over the city, the article typed then sent off as a
+  paper plane, a ginger cat asleep on the books; a bird posts a letter on
+  `/contact`. It plays only on screen and holds still under
+  `prefers-reduced-motion`. The pages' OG images show the same scene.
 - **What is going on right now, on `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
   what is being read, and what is welcome, with a link to write.
@@ -322,6 +325,10 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ### Fixed
 
+- **An OG image could come in the other language**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Both languages share
+  the pages' paths, and the image rendered first was served to the other one
+  from the cache; each language now has its own.
 - **The contribution chart's arrow keys lost the focus**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). They looked for the
   selected tab across the whole page, so focus jumped to the featured projects'
