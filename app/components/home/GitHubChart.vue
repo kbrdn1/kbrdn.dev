@@ -231,14 +231,13 @@ function hideTooltip() {
   tooltipData.value = null
 }
 
-// Arrow keys cycle through the tabs
+// Arrow keys cycle through the tabs, focus following within this tablist only: other tab sets
+// on the page (featured projects, open source) carry an aria-selected too
+const tablist = ref<HTMLElement>()
 function switchTab(step: 1 | -1) {
   const index = tabs.indexOf(activeTab.value)
   activeTab.value = tabs[(index + step + tabs.length) % tabs.length]!
-  nextTick(() => {
-    const el = document.querySelector(`[aria-selected="true"]`) as HTMLElement
-    el?.focus()
-  })
+  nextTick(() => tablist.value?.querySelector<HTMLElement>('[aria-selected="true"]')?.focus())
 }
 </script>
 
@@ -246,7 +245,7 @@ function switchTab(step: 1 | -1) {
   <UiPanel :title="t('github.title')">
     <template #actions>
       <!-- Tabs: a segmented control, the active view filled -->
-      <div class="segmented" role="tablist" aria-label="Contribution view">
+      <div ref="tablist" class="segmented" role="tablist" aria-label="Contribution view">
         <button
           v-for="tab in tabs"
           :key="tab"
