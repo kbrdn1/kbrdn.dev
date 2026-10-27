@@ -53,7 +53,7 @@ const { current, stepOf } = useTocSteps(
               stepOf(item.id) === current
                 ? 'text-neutral-900 dark:text-neutral-100'
                 : stepOf(item.id) < current
-                  ? 'text-neutral-500'
+                  ? 'text-neutral-500 dark:text-neutral-400'
                   : 'text-neutral-600 dark:text-neutral-400',
             )
           "
@@ -71,7 +71,7 @@ const { current, stepOf } = useTocSteps(
             'row flex w-full items-center gap-2 py-1 pr-2 pl-9 text-left text-xs leading-snug',
             activeHeading === item.id
               ? 'text-(--accent-text)'
-              : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300',
           )
         "
         @click="emit('scroll-to', item.id)"

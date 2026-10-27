@@ -339,7 +339,9 @@ function switchTab(step: 1 | -1) {
             </p>
             <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
               <UiRollingNumber :value="stats.avgPerDay" />
-              <span class="text-base text-neutral-500">{{ t('github.perDay') }}</span>
+              <span class="text-base text-neutral-500 dark:text-neutral-400">{{
+                t('github.perDay')
+              }}</span>
             </p>
           </div>
         </div>

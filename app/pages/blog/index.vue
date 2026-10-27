@@ -247,7 +247,9 @@ const { postUrl } = useBlogUrl()
                 <UiTag v-if="post.tags?.length" :label="post.tags[0]!" variant="auto" />
                 <p class="ml-auto shrink-0 text-2xl text-green-600 dark:text-green-500">
                   <UiRollingNumber :value="readingTime(post.body)" />
-                  <span class="text-base text-neutral-500">/ {{ t('blog.readingTime') }}</span>
+                  <span class="text-base text-neutral-500 dark:text-neutral-400"
+                    >/ {{ t('blog.readingTime') }}</span
+                  >
                 </p>
               </div>
               <h3

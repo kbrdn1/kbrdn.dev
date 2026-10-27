@@ -131,7 +131,10 @@ const STATUS_CLASS: Record<string, string> = {
       :class="{ 'opacity-80': app.status === 'archived' }"
     >
       <template #actions>
-        <span v-if="releases?.[app.repo]?.version" class="tag text-neutral-500">
+        <span
+          v-if="releases?.[app.repo]?.version"
+          class="tag text-neutral-500 dark:text-neutral-400"
+        >
           {{ releases[app.repo]!.version }}
         </span>
         <span :class="cn('tag mr-2', STATUS_CLASS[app.status])">

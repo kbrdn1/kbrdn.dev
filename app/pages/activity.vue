@@ -123,14 +123,14 @@ const icon = (item: Item) =>
 
 // Type tag colours: the tag tints itself from its text colour
 const TAG: Record<string, string> = {
-  push: 'text-neutral-500',
+  push: 'text-neutral-500 dark:text-neutral-400',
   pr: 'text-purple-600 dark:text-purple-500',
   issue: 'text-green-700 dark:text-green-500',
   comment: 'text-sky-600 dark:text-sky-500',
   release: 'text-primary-600 dark:text-primary-500',
   create: 'text-primary-600 dark:text-primary-500',
   star: 'text-yellow-700 dark:text-yellow-500',
-  fork: 'text-neutral-500',
+  fork: 'text-neutral-500 dark:text-neutral-400',
 }
 </script>
 
