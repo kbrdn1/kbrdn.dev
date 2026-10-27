@@ -87,6 +87,30 @@ migrates `[Unreleased]` into that file and empties this one — see
   to the crisp picture, and a new picture sweeps in block by block; at once
   under `prefers-reduced-motion`. Banners go through IPX at a few hundred pixels
   instead of the 11 MB originals.
+- **An activity page, `/activity`**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The open source work
+  (shared with `/experience`), the contribution chart, and the recent public
+  GitHub activity read live and told in plain words, day by day: pushes folded
+  per branch and day, comments per issue, pull requests merged or opened. Cached
+  ten minutes server side; the page says when GitHub was last checked.
+- **A contact page, `/contact`**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The form leaves the
+  footer for its own page (after isrod.eu): name, email, company, the topic as
+  chips, the message, with the details beside it. The footer keeps a button to
+  it and signs with the logo.
+- **The new theme spreads from the button**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A circle grows from
+  the theme button over a still snapshot of the old theme, edged with a halo in
+  the new theme's colour (yellow to light, orange to dark, cyan to glass),
+  instead of every colour fading on its own. A plain switch without view
+  transitions or under `prefers-reduced-motion`.
+- **Numbers roll in**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The figures in view
+  (open source counts, contribution totals, reading times, the carousel's
+  position, the 404's pixels in place) spin one turn of a slot machine reel when
+  they appear, blurred while fast, and roll to the new value when it changes.
+  The server renders the final value; copied text and screen readers get the
+  number alone.
 
 ### Changed
 
@@ -162,6 +186,29 @@ migrates `[Unreleased]` into that file and empties this one — see
   segmented control; the announcement banner hangs under it as a notch with
   concave shoulders, on every page. The footer, the music player and the table
   of contents take the panel surfaces too.
+- **The roles strip follows the reading on `/experience`**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Once scrolled away,
+  it comes back compact under the navbar, marks the role or degree being read
+  with a sliding ink and keeps the address on its anchor; anchors scroll
+  smoothly.
+- **Motion, everywhere the same**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Pages cross-fade
+  through view transitions and every panel comes in as it is scrolled to (what
+  is on screen at load stays put). Segmented controls get one pill that glides
+  to the active segment. A new slide, track or hero title leaves on one side and
+  comes in from the other, and in the player only the cover and title move.
+  Refilled lists (blog, contribution calendars, open source) drop their old
+  items at once and bring the new ones in one after the other.
+- **The error page lives in the site**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Navbar, footer and the
+  three themes, an intro like the other pages, and the status code in pixels
+  in a panel: drag them with a mouse, pen or finger, a counter says how many are
+  back in place. Any status shows its own code.
+- **Blog cards and the table of contents**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Cards after an event
+  card (banner on top, reading time, one meta line); the table of contents as a
+  checklist of the sections read. The music player's controls and listing in
+  the panel style.
 
 ### Fixed
 
@@ -169,6 +216,16 @@ migrates `[Unreleased]` into that file and empties this one — see
   ([#84](https://github.com/kbrdn1/kbrdn.dev/issues/84)). Its longest install
   line set the width of the whole column, and the card clipped the text and the
   video on the right; the line now scrolls inside its code block.
+- **The contact form trusted what it received**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Every field went into
+  the email's HTML as is: they are now escaped, capped in length and required to
+  be strings (an array crashed the route), the topic limited to a closed list.
+- **Glass lost its blur while things moved**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Fades on a wrapper
+  (page transitions, section entrances, the compact strip, the player) turned
+  the panels' blur off until they ended; and an unlayered global colour
+  transition overrode every transition of the components, so the strip's ink
+  jumped and focus rings snapped.
 
 ## Past releases
 
