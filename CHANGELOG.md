@@ -110,8 +110,26 @@ migrates `[Unreleased]` into that file and empties this one — see
   Bankai): he grows out of the pixel, plays a move drawn at random (never the
   same twice in a row; three are specials whose Getsuga Tenshō flies across the
   screen), then folds back; every third click calls him again. The
-  sprites load on the first triple click (123 KB). Mouse and trackpad only,
-  never under `prefers-reduced-motion`.
+  sprites load on the first triple click (123 KB). A shift click turns the
+  pixel into a sight that tightens on each click, the system pointer a cross.
+  Mouse and trackpad only, never under `prefers-reduced-motion`.
+- **Illustrations full size**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A click on an
+  illustration of `/experience` or a picture of an article opens it crisp and
+  full size in a native dialog (Escape, a click beside it or its button close
+  it).
+- **Where the companies, clients and schools live**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Under each entry of
+  `/experience`, links to flippad.com and jewely.fr, the clients' sites
+  (bijouterie-julian.com, crown-dp.com, martin-media.fr), the school's, and the
+  projects' own site and article.
+- **Share an article from the device**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Where the browser has
+  one, a button opens the device's share sheet (Web Share), beside Copy link.
+- **Featured projects, personal and professional**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Two tabs on the home:
+  the repositories pinned on GitHub, and the projects built at Jewely x Flippad,
+  each card leading to it on `/experience`.
 - **What is going on right now, on `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
   what is being read, and what is welcome, with a link to write.
@@ -258,6 +276,17 @@ migrates `[Unreleased]` into that file and empties this one — see
   three themes, an intro like the other pages, and the status code in pixels
   in a panel: drag them with a mouse, pen or finger, a counter says how many are
   back in place. Any status shows its own code.
+- **OG images as the site's components**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Pages share a profile
+  panel on the pixel field (badge, name, title in Fenix, stack, figures on the
+  home, the drawn portrait, a button to the site); articles the blog's card
+  (banner, tag and reading time, title and summary, date and tags, Read), on
+  the field tinted with the blog's blue. The README's banner follows the same
+  design.
+- **Sections swing in**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Below the fold, each
+  panel comes in slightly turned and off to one side, from the left and the
+  right in turn.
 - **Blog cards and the table of contents**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Cards after an event
   card (banner on top, reading time, one meta line), frosting the banner's edge
@@ -268,6 +297,9 @@ migrates `[Unreleased]` into that file and empties this one — see
 
 ### Fixed
 
+- **Activity sat under Projects in the home's table of contents**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)), and its French label
+  had lost its accent.
 - **The gwm card on `/apps` overflowed on mobile**
   ([#84](https://github.com/kbrdn1/kbrdn.dev/issues/84)). Its longest install
   line set the width of the whole column, and the card clipped the text and the
