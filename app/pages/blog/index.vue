@@ -242,7 +242,10 @@ const { postUrl } = useBlogUrl()
                 <UiPixelImage :src="bannerOf(post)" class="size-full" reveal />
               </div>
             </ClientOnly>
-            <div class="panel-card relative z-10 mx-1 flex flex-1 flex-col overflow-hidden p-5">
+            <!-- In glass, a translucent card: it frosts the banner's edge it covers -->
+            <div
+              class="panel-card relative z-10 mx-1 flex flex-1 flex-col overflow-hidden p-5 blur:backdrop-blur-xl blur:backdrop-saturate-150"
+            >
               <UiPixelCanvas />
               <div class="flex items-start justify-between gap-3">
                 <UiTag v-if="post.tags?.length" :label="post.tags[0]!" variant="auto" />
