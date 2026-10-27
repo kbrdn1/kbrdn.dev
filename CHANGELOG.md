@@ -145,9 +145,11 @@ migrates `[Unreleased]` into that file and empties this one — see
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The figures in view
   (open source counts, contribution totals, reading times, the carousel's
   position, the 404's pixels in place) spin one turn of a slot machine reel when
-  they appear, blurred while fast, and roll to the new value when it changes.
+  they appear, blurred while fast, and roll to the new value when it changes;
+  so do the table of contents' counter and step. Text rolls the same way, letter
+  by letter: the hero's rotating title, the mobile table of contents' section.
   The server renders the final value; copied text and screen readers get the
-  number alone.
+  plain value.
 
 ### Changed
 
@@ -249,8 +251,8 @@ migrates `[Unreleased]` into that file and empties this one — see
   seen through the pixel layer. Each entry unfolds its stack, what was done and
   its links. Figures on top (years at work, client projects, open source tools,
   degrees) roll in. On a phone, no rail: the sticky strip of roles tells where
-  the reader is. The home's Parcours section shows the same figures and the same
-  timeline, one line per stop.
+  the reader is. The home's Parcours section shows the same timeline, one line
+  per stop, and its About the same figures.
 - **The error page lives in the site**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Navbar, footer and the
   three themes, an intro like the other pages, and the status code in pixels
@@ -261,8 +263,8 @@ migrates `[Unreleased]` into that file and empties this one — see
   card (banner on top, reading time, one meta line), frosting the banner's edge
   in glass, and a hatched card for the next post in the empty slot of an odd
   page; the table of contents as a
-  checklist of the sections read, the mobile one included. The music player's controls and listing in
-  the panel style.
+  checklist of the sections read in the accent, the mobile one included. The
+  music player's controls and listing in the panel style.
 
 ### Fixed
 
