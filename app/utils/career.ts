@@ -12,6 +12,8 @@ export interface Experience {
   endDate: string | null
   technologies: string[]
   tasksCount: number
+  /** An illustration beside the summary (public/images/projects) */
+  image?: string
 }
 
 export interface Study {
@@ -32,6 +34,8 @@ export const EXPERIENCES: Experience[] = [
     key: 'flippad',
     company: 'Jewely x Flippad',
     logo: '/images/logos/jewely-x-flippad.png',
+    // flippad.com and jewely.fr, cut on the bias
+    image: '/images/projects/jewely-x-flippad.webp',
     startDate: '2023-10',
     endDate: '2026-09',
     technologies: [

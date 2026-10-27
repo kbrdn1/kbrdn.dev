@@ -342,6 +342,7 @@ const list = (key: string, count: number) =>
               :detail="t(`experiences.${exp.key}.role`)"
               :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.type`)}`"
               :summary="t(`experiencePage.summaries.${exp.key}`)"
+              :image="exp.image"
               :stack="exp.technologies"
               :items-label="t('experiencePage.missions')"
               :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
