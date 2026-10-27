@@ -346,16 +346,17 @@ function switchTab(step: 1 | -1) {
 
         <UiAutoHeight>
           <!-- Recent and Annual views: one grid per calendar -->
+          <!-- Both views stay mounted, only their rows change: switching, the old rows close
+               one after the other while the new ones open, instead of a view vanishing -->
           <TransitionGroup
-            v-if="activeTab !== 'monthly'"
             tag="div"
-            class="space-y-6"
+            class="space-y-6 empty:hidden"
             :css="false"
             @enter="rowEnter"
             @leave="rowLeave"
           >
             <div
-              v-for="(calendar, index) in visibleCalendars"
+              v-for="(calendar, index) in activeTab === 'monthly' ? [] : visibleCalendars"
               :key="calendar.key"
               class="space-y-2"
               :style="{ '--i': index }"
@@ -414,15 +415,14 @@ function switchTab(step: 1 | -1) {
 
           <!-- Monthly View - Last 12 months -->
           <TransitionGroup
-            v-else
             tag="div"
-            class="space-y-4"
+            class="space-y-4 empty:hidden"
             :css="false"
             @enter="rowEnter"
             @leave="rowLeave"
           >
             <div
-              v-for="(month, index) in visibleMonths"
+              v-for="(month, index) in activeTab === 'monthly' ? visibleMonths : []"
               :key="`${month.year}-${month.name}`"
               class="space-y-2"
               :style="{ '--i': index }"

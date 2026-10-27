@@ -5,14 +5,22 @@
 // morphs, the old rows closing while the new ones open, never both at full height. At
 // once under reduced motion.
 
-const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+// In: quick then soft. Out: in-out, so a row is seen fading rather than gone at once
+const EASE_IN = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const EASE_OUT = 'cubic-bezier(0.65, 0, 0.35, 1)'
 const BLUR = 'blur(6px)'
+// Rows going away first, the new ones after: Vue runs leaves during the render and enters
+// right after it, so an enter that follows a leave this closely belongs to the same swap
+const HANDOFF = 350
+let leftAt = -Infinity
 
 const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
-// A tall row takes longer than a short one, at about the same speed
-const timeFor = (height: number) => Math.round(Math.min(700, 220 + height * 0.8))
-// The row's place in the list, capped so a long list does not keep the last ones waiting
-const delay = (el: HTMLElement) => Math.min(Number(el.style.getPropertyValue('--i')) || 0, 8) * 45
+// A tall row takes longer than a short one, at about the same speed; slow enough to be
+// followed row by row
+const timeFor = (height: number) => Math.round(Math.min(1100, 450 + height * 1.2))
+// The row's place in the list, one after the other at a readable pace, capped so a long
+// list does not keep the last ones waiting
+const delay = (el: HTMLElement) => Math.min(Number(el.style.getPropertyValue('--i')) || 0, 10) * 110
 
 export function rowEnter(el: Element, done: () => void) {
   const row = el as HTMLElement
@@ -30,13 +38,19 @@ export function rowEnter(el: Element, done: () => void) {
       },
       { height: `${height}px`, opacity: 1, filter: 'blur(0px)', overflow: 'hidden' },
     ],
-    { duration: timeFor(height), easing: EASE, delay: delay(row), fill: 'backwards' },
+    {
+      duration: timeFor(height),
+      easing: EASE_IN,
+      delay: delay(row) + (performance.now() - leftAt < 100 ? HANDOFF : 0),
+      fill: 'backwards',
+    },
   ).onfinish = () => done()
 }
 
 export function rowLeave(el: Element, done: () => void) {
   const row = el as HTMLElement
   if (still()) return done()
+  leftAt = performance.now()
   const height = row.offsetHeight
   row.animate(
     [
@@ -50,6 +64,6 @@ export function rowLeave(el: Element, done: () => void) {
         overflow: 'hidden',
       },
     ],
-    { duration: timeFor(height), easing: EASE, delay: delay(row) / 2, fill: 'forwards' },
+    { duration: timeFor(height) * 1.4, easing: EASE_OUT, delay: delay(row), fill: 'forwards' },
   ).onfinish = () => done()
 }

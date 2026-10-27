@@ -76,9 +76,6 @@ const STATUS_CLASS: Record<string, string> = {
   report: 'text-sky-500',
 }
 
-const mounted = ref(false)
-onMounted(() => (mounted.value = true))
-
 // "PR #403295" / "ISSUE #2689", from the link: the number is not stored on its own
 const reference = (url: string) =>
   `${url.includes('/pull/') ? 'PR' : 'ISSUE'} #${url.split('/').pop()}`
@@ -167,19 +164,18 @@ const reference = (url: string) =>
 
       <div :id="`${headingId}-panel`" role="tabpanel" :aria-labelledby="`${headingId}-tab-${tab}`">
         <UiAutoHeight>
-          <!-- Projects. Rows come in one after the other on a tab switch or a search (not on
-               the first render: what the server sent stays put) -->
+          <!-- Both lists stay mounted, only their rows change: on a tab switch or a search,
+               the rows that go close one after the other while the new ones open -->
+          <!-- Projects -->
           <TransitionGroup
-            v-if="tab === 'projectsLabel'"
             tag="ul"
             :css="false"
             @enter="rowEnter"
             @leave="rowLeave"
-            :appear="mounted"
-            class="divide-y divide-(--card-border)"
+            class="divide-y divide-(--card-border) empty:hidden"
           >
             <li
-              v-for="(project, i) in shownProjects"
+              v-for="(project, i) in tab === 'projectsLabel' ? shownProjects : []"
               :key="project.key"
               class="relative isolate flex gap-4 overflow-hidden px-2 py-4 sm:px-3"
               :style="{ '--i': i }"
@@ -248,16 +244,14 @@ const reference = (url: string) =>
 
           <!-- Contributions and reports -->
           <TransitionGroup
-            v-else
             tag="ul"
             :css="false"
             @enter="rowEnter"
             @leave="rowLeave"
-            :appear="mounted"
-            class="divide-y divide-(--card-border)"
+            class="divide-y divide-(--card-border) empty:hidden"
           >
             <li
-              v-for="(item, i) in shownUpstream"
+              v-for="(item, i) in tab === 'projectsLabel' ? [] : shownUpstream"
               :key="item.key"
               class="flex gap-4 px-2 py-4 sm:px-3"
               :style="{ '--i': i }"

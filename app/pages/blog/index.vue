@@ -200,17 +200,18 @@ const { postUrl } = useBlogUrl()
       </div>
 
       <UiAutoHeight>
+        <!-- The three views stay mounted, only their rows change: switching view, tag or
+             page, the old rows close one after the other while the new ones open -->
         <!-- List view: a card per post -->
         <TransitionGroup
-          v-if="viewMode === 'list' && paginatedPosts.length > 0"
           tag="div"
-          class="mt-1 space-y-1"
+          class="mt-1 space-y-1 empty:hidden"
           :css="false"
           @enter="rowEnter"
           @leave="rowLeave"
         >
           <BlogPostRow
-            v-for="(post, index) in paginatedPosts"
+            v-for="(post, index) in viewMode === 'list' ? paginatedPosts : []"
             :key="post.path"
             :post="post"
             :show-author="true"
@@ -220,9 +221,8 @@ const { postUrl } = useBlogUrl()
 
         <!-- Cards view: the banner on top, through the pixel layer -->
         <TransitionGroup
-          v-else-if="viewMode === 'cards' && paginatedPosts.length > 0"
           tag="div"
-          class="mt-1 grid grid-cols-1 gap-1 sm:grid-cols-2"
+          class="mt-1 grid grid-cols-1 gap-1 empty:hidden sm:grid-cols-2"
           :css="false"
           @enter="rowEnter"
           @leave="rowLeave"
@@ -231,7 +231,7 @@ const { postUrl } = useBlogUrl()
                  bottom edge (tag and reading time, title, summary, then date, author and tags
                  between dashed rules), the call to read in the footer -->
           <NuxtLink
-            v-for="(post, index) in paginatedPosts"
+            v-for="(post, index) in viewMode === 'cards' ? paginatedPosts : []"
             :key="post.path"
             :to="postUrl(post)"
             class="panel group relative isolate flex flex-col overflow-hidden p-0 transition-colors hover:border-primary-500/50"
@@ -295,31 +295,30 @@ const { postUrl } = useBlogUrl()
         </TransitionGroup>
 
         <!-- Compact view: dashed rows in one card -->
-        <div
-          v-else-if="viewMode === 'compact' && paginatedPosts.length > 0"
-          class="panel-card mt-1 px-5"
+        <TransitionGroup
+          tag="ul"
+          class="panel-card mt-1 divide-y divide-dashed divide-(--card-border) px-5 empty:hidden"
+          :css="false"
+          @enter="rowEnter"
+          @leave="rowLeave"
         >
-          <TransitionGroup
-            tag="ul"
-            class="divide-y divide-dashed divide-(--card-border)"
-            :css="false"
-            @enter="rowEnter"
-            @leave="rowLeave"
+          <li
+            v-for="(post, index) in viewMode === 'compact' ? paginatedPosts : []"
+            :key="post.path"
+            :style="{ '--i': index }"
           >
-            <li v-for="(post, index) in paginatedPosts" :key="post.path" :style="{ '--i': index }">
-              <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
-                <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
-                  {{ formatDate(post.publishedAt) }}
-                </span>
-                <span
-                  class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
-                >
-                  {{ post.title }}
-                </span>
-              </NuxtLink>
-            </li>
-          </TransitionGroup>
-        </div>
+            <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+              <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
+                {{ formatDate(post.publishedAt) }}
+              </span>
+              <span
+                class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
+              >
+                {{ post.title }}
+              </span>
+            </NuxtLink>
+          </li>
+        </TransitionGroup>
 
         <!-- Empty state -->
         <div
