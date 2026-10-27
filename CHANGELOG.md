@@ -91,7 +91,8 @@ migrates `[Unreleased]` into that file and empties this one — see
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Hovering or focusing
   a page in the navbar opens the notch under it into that page's menu: a line of
   context, its sections (the latest posts for the blog) and an illustration that
-  follows the link under the pointer; it widens as it opens, and the navbar's
+  follows the link under the pointer and stays on the last one; it widens as it
+  opens, and the navbar's
   pill moves to the page whose menu is open. The announcement opens gwm's, which
   now leads to gwm.kbrdn.dev. Desktop only.
 - **A face on the site**
@@ -99,6 +100,12 @@ migrates `[Unreleased]` into that file and empties this one — see
   `/contact`'s details, through the pixel layer; a small round photo beside the
   hero's handle, the drawn avatar on hover; and the hero's mascot now takes turns
   with drawn portraits of me. Re-encoded without metadata.
+- **A pixel on the pointer**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A pixel in the accent
+  sits on the pointer's tip; now and then it grows block by block into an arcade
+  invader, steps off in one of a D-pad's eight directions, twitches through its
+  two frames, sometimes turns into another one, then shrinks back onto the tip.
+  Mouse and trackpad only, never under `prefers-reduced-motion`.
 - **What is going on right now, on `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
   what is being read, and what is welcome, with a link to write.
@@ -236,7 +243,8 @@ migrates `[Unreleased]` into that file and empties this one — see
   seen through the pixel layer. Each entry unfolds its stack, what was done and
   its links. Figures on top (years at work, client projects, open source tools,
   degrees) roll in. On a phone, no rail: the sticky strip of roles tells where
-  the reader is.
+  the reader is. The home's Parcours section shows the same figures and the same
+  timeline, one line per stop.
 - **The error page lives in the site**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Navbar, footer and the
   three themes, an intro like the other pages, and the status code in pixels
@@ -244,7 +252,9 @@ migrates `[Unreleased]` into that file and empties this one — see
   back in place. Any status shows its own code.
 - **Blog cards and the table of contents**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Cards after an event
-  card (banner on top, reading time, one meta line); the table of contents as a
+  card (banner on top, reading time, one meta line), frosting the banner's edge
+  in glass, and a hatched card for the next post in the empty slot of an odd
+  page; the table of contents as a
   checklist of the sections read, the mobile one included. The music player's controls and listing in
   the panel style.
 
