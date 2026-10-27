@@ -38,3 +38,9 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* A panel swinging in (rotated, off to one side) must not widen the page: clip, not
+   hidden, so nothing becomes a scroll container and sticky bars still stick */
+body {
+  overflow-x: clip;
+}

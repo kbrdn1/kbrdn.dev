@@ -168,6 +168,7 @@
     transition:
       opacity 0.6s var(--ease-out-quint),
       translate 0.6s var(--ease-out-quint),
+      rotate 0.7s var(--ease-out-quint),
       background-color 0.2s ease,
       border-color 0.2s ease;
   }
@@ -177,6 +178,17 @@
   .panel[data-hidden] {
     opacity: 0;
     translate: 0 1.5rem;
+  }
+
+  /* Swung in slightly, from one side or the other in turn (Panel.vue) */
+  .panel[data-hidden="left"] {
+    translate: -1rem 1.5rem;
+    rotate: -1.5deg;
+  }
+
+  .panel[data-hidden="right"] {
+    translate: 1rem 1.5rem;
+    rotate: 1.5deg;
   }
 
   .panel-card {
