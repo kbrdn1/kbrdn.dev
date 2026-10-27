@@ -20,6 +20,16 @@ const { data: latestPosts } = await useAsyncData(
 )
 
 const { formatDate } = useFormatDate()
+
+// Featured projects: personal (the repositories pinned on GitHub) or professional (the
+// Jewely x Flippad projects of /experience)
+const TABS = ['perso', 'pro'] as const
+const featured = ref<(typeof TABS)[number]>('perso')
+function switchTab(step: number) {
+  const next = TABS[(TABS.indexOf(featured.value) + step + TABS.length) % TABS.length]!
+  featured.value = next
+  nextTick(() => document.getElementById(`featured-${next}`)?.focus())
+}
 const { postUrl } = useBlogUrl()
 
 // SEO metadata
@@ -176,10 +186,46 @@ const content = computed(() => {
         <!-- Featured Projects -->
         <section id="projects">
           <UiPanel :title="t('projects.title')">
-            <HomeProjects />
-            <template #meta>github.com/kbrdn1</template>
+            <template #actions>
+              <div class="segmented" role="tablist" :aria-label="t('projects.title')">
+                <button
+                  v-for="tab in TABS"
+                  :id="`featured-${tab}`"
+                  :key="tab"
+                  type="button"
+                  role="tab"
+                  class="segment"
+                  :aria-selected="featured === tab"
+                  :aria-controls="`featured-${tab}-panel`"
+                  :tabindex="featured === tab ? 0 : -1"
+                  @click="featured = tab"
+                  @keydown.right.prevent="switchTab(1)"
+                  @keydown.left.prevent="switchTab(-1)"
+                >
+                  {{ t(`projects.tabs.${tab}`) }}
+                </button>
+                <UiSegmentInk />
+              </div>
+            </template>
+            <UiAutoHeight>
+              <Transition :name="featured === 'pro' ? 'swap-next' : 'swap-prev'" mode="out-in">
+                <div
+                  :id="`featured-${featured}-panel`"
+                  :key="featured"
+                  role="tabpanel"
+                  :aria-labelledby="`featured-${featured}`"
+                >
+                  <HomeProjects v-if="featured === 'perso'" />
+                  <HomeWork v-else />
+                </div>
+              </Transition>
+            </UiAutoHeight>
+            <template #meta>
+              {{ featured === 'perso' ? 'github.com/kbrdn1' : 'Jewely x Flippad' }}
+            </template>
             <template #footer>
               <a
+                v-if="featured === 'perso'"
                 href="https://github.com/kbrdn1?tab=repositories"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -192,6 +238,10 @@ const content = computed(() => {
                   aria-hidden="true"
                 />
               </a>
+              <NuxtLink v-else to="/experience#experience" class="btn btn-outline btn-sm">
+                <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </NuxtLink>
             </template>
           </UiPanel>
         </section>

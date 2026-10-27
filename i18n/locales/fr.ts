@@ -211,6 +211,8 @@ export default {
   // Projects Section
   projects: {
     title: 'Projets en vedette',
+    tabs: { perso: 'Perso', pro: 'Pro' },
+    next: { eyebrow: 'À suivre', text: 'Le prochain projet, peut-être le vôtre' },
     viewAll: 'Voir tout sur GitHub',
     demo: 'Démo',
     stats: {

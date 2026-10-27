@@ -211,6 +211,8 @@ export default {
   // Projects Section
   projects: {
     title: 'Featured Projects',
+    tabs: { perso: 'Personal', pro: 'Work' },
+    next: { eyebrow: 'Up next', text: 'The next project, maybe yours' },
     viewAll: 'View all on GitHub',
     demo: 'Demo',
     stats: {
