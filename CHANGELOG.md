@@ -90,8 +90,21 @@ migrates `[Unreleased]` into that file and empties this one — see
 - **The navbar's notch opens into menus**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Hovering or focusing
   a page in the navbar opens the notch under it into that page's menu: a line of
-  context, its sections (the latest posts for the blog) and an illustration; the
-  announcement opens gwm's, which now leads to gwm.kbrdn.dev. Desktop only.
+  context, its sections (the latest posts for the blog) and an illustration that
+  follows the link under the pointer; it widens as it opens, and the navbar's
+  pill moves to the page whose menu is open. The announcement opens gwm's, which
+  now leads to gwm.kbrdn.dev. Desktop only.
+- **A face on the site**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A portrait in
+  `/contact`'s details, through the pixel layer; a small round photo beside the
+  hero's handle, the drawn avatar on hover; and the hero's mascot now takes turns
+  with drawn portraits of me. Re-encoded without metadata.
+- **What is going on right now, on `/activity`**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). What is being learnt,
+  what is being read, and what is welcome, with a link to write.
+- **The blog's blue in its dither**
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The dither field takes
+  an optional second colour in slow patches; the blog's layout uses its sky blue.
 - **A CV to download**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Between the roles and
   the degrees on `/experience`, and in `/contact`'s details, in the site's
@@ -221,7 +234,7 @@ migrates `[Unreleased]` into that file and empties this one — see
   configurator, Assmat Facile, the ERP) with their client, role and period, and
   an illustration from their public site, their README or their maker's site
   seen through the pixel layer. Each entry unfolds its stack, what was done and
-  its links. Figures on top (months at work, client projects, open source tools,
+  its links. Figures on top (years at work, client projects, open source tools,
   degrees) roll in. On a phone, no rail: the sticky strip of roles tells where
   the reader is.
 - **The error page lives in the site**
