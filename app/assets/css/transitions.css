@@ -2,6 +2,51 @@
    Animations & Transitions
    ═══════════════════════════════════════════════════ */
 
+/* Theme switch (ThemeToggle): the new mode spreads from the button in a circle over a still
+   snapshot of the old one, a halo in the new mode's colour along the edge. No cross-fade,
+   and no colour transitions: the new page is live, they would tween behind the circle. */
+html[data-theme-switch]::view-transition-old(root),
+html[data-theme-switch]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html[data-theme-switch] *,
+html[data-theme-switch] *::before,
+html[data-theme-switch] *::after {
+  transition: none !important;
+}
+
+@property --halo-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Inside the new page, so the circle cuts it at the edge: only its inner glow shows */
+.theme-halo {
+  --halo: var(--color-primary-500);
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--halo-x) var(--halo-y),
+    transparent calc(var(--halo-r) - 9rem),
+    color-mix(in srgb, var(--halo) 16%, transparent) calc(var(--halo-r) - 2.5rem),
+    color-mix(in srgb, var(--halo) 60%, transparent) calc(var(--halo-r) - 2px),
+    transparent var(--halo-r)
+  );
+}
+
+.theme-halo[data-mode="light"] {
+  --halo: var(--color-yellow-500);
+}
+
+.theme-halo[data-mode="blur"] {
+  --halo: var(--color-cyan-500);
+}
+
 /* Nav entrance animation */
 @keyframes nav-fade-in {
   from {
