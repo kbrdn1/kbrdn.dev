@@ -45,6 +45,18 @@ export default {
     switchLanguage: 'Changer de langue',
   },
 
+  // The navbar's notch menus
+  navMenu: {
+    home: "Le portfolio en bref : qui je suis, ce que j'écris, ce que j'utilise et ce que je construis.",
+    experience: "Trois ans chez Jewely x Flippad et leurs projets, les formations, l'open source.",
+    apps: 'Les outils pour le terminal que je publie, en Rust et en Go.',
+    activity: "L'open source et l'activité GitHub récente, lue en direct.",
+    blog: 'Les derniers articles, et tous les autres.',
+    contact: 'Un poste, un projet, une question : un message suffit.',
+    gwm: 'Le gestionnaire de worktrees git, CLI et TUI, en Rust : un seul binaire, sans la CLI git.',
+    gwmApps: 'Sur la page Apps',
+  },
+
   // Theme toggle
   themeSwitch: {
     toLight: 'Passer en mode clair',

@@ -45,6 +45,18 @@ export default {
     switchLanguage: 'Switch language',
   },
 
+  // The navbar's notch menus
+  navMenu: {
+    home: 'The portfolio at a glance: who I am, what I write, what I use and what I build.',
+    experience: 'Three years at Jewely x Flippad and their projects, the degrees, the open source.',
+    apps: 'The terminal tools I publish, in Rust and Go.',
+    activity: 'The open source and the recent GitHub activity, read live.',
+    blog: 'The latest posts, and all the others.',
+    contact: 'A role, a project, a question: a short message is enough.',
+    gwm: 'The git worktree manager, CLI and TUI, in Rust: a single binary, no git CLI needed.',
+    gwmApps: 'On the Apps page',
+  },
+
   // Theme toggle
   themeSwitch: {
     toLight: 'Switch to light mode',

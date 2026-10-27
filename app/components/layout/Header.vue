@@ -5,6 +5,8 @@ const { t } = useI18n()
 const { links, isActive } = useSiteNav()
 
 const showBrandMenu = ref(false)
+// The notch's menus: opened from the nav items, closed once the pointer leaves the header
+const menu = useNavMenu()
 
 // Close menu on click outside or Escape key
 function handleClickOutside(e: MouseEvent) {
@@ -35,7 +37,11 @@ const isMobileMenuOpen = ref(false)
 </script>
 
 <template>
-  <header :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')">
+  <header
+    :class="cn('fixed inset-x-0 top-3 z-50 px-4 sm:px-6', 'nav-entrance')"
+    @mouseenter="menu.keep"
+    @mouseleave="menu.close()"
+  >
     <!-- Detached from the top: a panel as wide as the home's panels -->
     <div class="panel notched mx-auto max-w-[61rem] p-0">
       <div class="hidden md:flex items-center h-12 gap-2 px-1.5">
@@ -97,6 +103,8 @@ const isMobileMenuOpen = ref(false)
             :to="link.to"
             :aria-current="isActive(link.to) ? 'page' : undefined"
             class="segment"
+            @mouseenter="menu.open(link.to)"
+            @focus="menu.open(link.to)"
           >
             <UiScrambleText :text="link.label" effect="link" />
           </NuxtLink>
@@ -217,7 +225,7 @@ const isMobileMenuOpen = ref(false)
         </nav>
       </UiExpand>
     </div>
-    <!-- The announcement, as a notch under the navbar -->
-    <HomeBanner />
+    <!-- The announcement, as a notch under the navbar, and the pages' menus -->
+    <LayoutNotch />
   </header>
 </template>
