@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // One role or degree on /experience, laid out like an editorial spread (after
 // isrod.eu/fr/experience): the story on the left, a rail on the right with the stack and
-// the first missions; "Show more" unfolds the rest.
+// the first missions; "Show more" unfolds the rest. Nested, it is a project of the role
+// above it: set in, a rule on its left, "↳" and the client over its name, its links last.
 import { useI18n } from '#imports'
 
 const props = withDefaults(
@@ -17,8 +18,13 @@ const props = withDefaults(
     items: string[]
     /** Missions shown before "Show more". */
     preview?: number
+    /** A project under the role above */
+    nested?: boolean
+    /** Over the title, in place of the index */
+    eyebrow?: string
+    links?: { label: string; to: string; external?: boolean }[]
   }>(),
-  { logo: undefined, preview: 2 },
+  { logo: undefined, preview: 2, eyebrow: undefined, links: () => [] },
 )
 
 const { t } = useI18n()
@@ -29,10 +35,19 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
 
 <template>
   <!-- scroll-mt-40: an anchor lands under the navbar, its notch and the compact strip -->
-  <article :id="id" class="panel-card grid scroll-mt-40 gap-8 p-6 sm:p-8 md:grid-cols-12">
+  <article
+    :id="id"
+    :class="
+      cn(
+        'panel-card relative grid scroll-mt-40 gap-8 p-6 sm:p-8 md:grid-cols-12',
+        nested &&
+          'md:ml-10 md:before:absolute md:before:inset-y-4 md:before:-left-6 md:before:w-px md:before:bg-primary-500/40',
+      )
+    "
+  >
     <header class="md:col-span-7">
       <span class="eyebrow block">
-        {{ String(index).padStart(2, '0') }}
+        {{ eyebrow ?? String(index).padStart(2, '0') }}
       </span>
       <div class="mt-2 flex items-center gap-3">
         <!-- The logos are opaque squares: they fill a rounded tile, like an avatar -->
@@ -88,6 +103,24 @@ const shown = computed(() => (open.value ? props.items : props.items.slice(0, pr
           <li v-for="item in shown" :key="item" class="flex gap-2">
             <span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary-500" aria-hidden="true" />
             <span>{{ item }}</span>
+          </li>
+        </ul>
+      </div>
+      <div v-if="links.length">
+        <h4 class="eyebrow">
+          {{ t('experiencePage.links') }}
+        </h4>
+        <ul class="mt-2 space-y-1.5">
+          <li v-for="link in links" :key="link.to">
+            <NuxtLink
+              :to="link.to"
+              :target="link.external ? '_blank' : undefined"
+              :rel="link.external ? 'noopener noreferrer' : undefined"
+              class="text-sm text-neutral-900 underline decoration-(--card-border) underline-offset-4 transition-colors hover:text-(--accent-text) hover:decoration-current dark:text-neutral-100"
+            >
+              {{ link.label }}
+              <span aria-hidden="true">{{ link.external ? '↗' : '→' }}</span>
+            </NuxtLink>
           </li>
         </ul>
       </div>

@@ -26,30 +26,75 @@ if (import.meta.server) {
 const period = (start: string, end: string | null) =>
   `${formatMonth(start, locale.value)} — ${end ? formatMonth(end, locale.value) : t('experiences.present')}`
 
-// Every role and degree, most recent first, for the strip at the top.
+// Every role and degree, most recent first, for the strip at the top; a role's projects
+// right after it, marked "↳" (isrod.eu's sub-entries), out of the numbering.
+interface TimelineItem {
+  id: string
+  start: string
+  end: string | null
+  name: string
+  logo?: string
+  detail: string
+  nested?: boolean
+  n?: number
+}
+const projectsOf = (id: string) => PROJECTS.filter((p) => p.parent === id)
+// The client, unless it is the product itself (Assmat Facile): then the role says more
+const clientOf = (p: (typeof PROJECTS)[number]) => {
+  const client = t(`experiencePage.work.${p.key}.client`)
+  return client === p.name ? null : client
+}
 const timeline = computed(() =>
-  [
-    ...EXPERIENCES.map((e) => ({
-      id: e.id,
-      start: e.startDate,
-      end: e.endDate,
-      name: e.company,
-      logo: e.logo,
-      detail: t(`experiences.${e.key}.role`),
-    })),
-    ...STUDIES.map((s) => ({
-      id: s.id,
-      start: s.startDate,
-      end: s.endDate,
-      name: s.school,
-      logo: s.logo,
-      detail: t(`studies.${s.key}.degree`),
-    })),
-  ].sort((a, b) => b.start.localeCompare(a.start)),
+  (
+    [
+      ...EXPERIENCES.map((e) => ({
+        id: e.id,
+        start: e.startDate,
+        end: e.endDate,
+        name: e.company,
+        logo: e.logo,
+        detail: t(`experiences.${e.key}.role`),
+      })),
+      ...STUDIES.map((s) => ({
+        id: s.id,
+        start: s.startDate,
+        end: s.endDate,
+        name: s.school,
+        logo: s.logo,
+        detail: t(`studies.${s.key}.degree`),
+      })),
+    ] as TimelineItem[]
+  )
+    .sort((a, b) => b.start.localeCompare(a.start))
+    .flatMap((item, i): TimelineItem[] => [
+      { ...item, n: i + 1 },
+      ...projectsOf(item.id).map((p) => ({
+        id: p.id,
+        start: p.startDate,
+        end: p.endDate,
+        name: p.name,
+        detail: clientOf(p) ?? t(`experiencePage.work.${p.key}.role`),
+        nested: true,
+      })),
+    ]),
 )
 
-const years = (item: { start: string; end: string | null }) =>
-  `${item.start.slice(0, 4)}–${item.end ? item.end.slice(0, 4) : ''}`
+// A project's links: its public site, the blog post about it
+const { postUrl } = useBlogUrl()
+const projectLinks = (p: (typeof PROJECTS)[number]) => [
+  ...(p.site
+    ? [{ label: t(`experiencePage.work.${p.key}.site`), to: p.site, external: true }]
+    : []),
+  ...(p.article
+    ? [{ label: t(`experiencePage.work.${p.key}.article`), to: postUrl({ path: p.article }) }]
+    : []),
+]
+
+// "2023–2026", "2026" when it starts and ends the same year, "2024–" while it runs
+const years = (item: { start: string; end: string | null }) => {
+  const [from, to] = [item.start.slice(0, 4), item.end?.slice(0, 4) ?? '']
+  return from === to ? from : `${from}–${to}`
+}
 
 // Scroll spy: the role or degree being read (the first article in a band across the middle
 // of the viewport), and whether the full strip has scrolled away under the navbar. Then a
@@ -158,18 +203,24 @@ const list = (key: string, count: number) =>
         <nav :aria-label="t('experiencePage.timeline')" class="overflow-x-auto">
           <div ref="baseList" class="relative min-w-max">
             <ol class="flex gap-1">
-              <li v-for="(item, i) in timeline" :key="item.id">
+              <li v-for="item in timeline" :key="item.id">
                 <a
                   :href="`#${item.id}`"
                   :data-id="item.id"
                   :aria-current="activeId === item.id ? 'location' : undefined"
-                  class="panel-card group block w-60 p-4 transition-colors hover:border-primary-500/50"
+                  :class="
+                    cn(
+                      'panel-card group block p-4 transition-colors hover:border-primary-500/50',
+                      item.nested ? 'w-52' : 'w-60',
+                    )
+                  "
                 >
                   <span class="eyebrow block">
-                    {{ String(i + 1).padStart(2, '0') }} · {{ years(item) }}
+                    {{ item.nested ? '↳' : String(item.n).padStart(2, '0') }} · {{ years(item) }}
                   </span>
                   <span class="mt-3 flex items-center gap-3">
                     <NuxtImg
+                      v-if="item.logo"
                       :src="item.logo"
                       alt=""
                       width="32"
@@ -220,12 +271,14 @@ const list = (key: string, count: number) =>
               class="panel-card flex shrink-0 items-center gap-2 py-1.5 pr-3 pl-1.5 transition-colors hover:border-primary-500/50"
             >
               <NuxtImg
+                v-if="item.logo"
                 :src="item.logo"
                 alt=""
                 width="24"
                 height="24"
                 class="size-6 shrink-0 rounded-md object-cover"
               />
+              <span v-else class="eyebrow pl-1" aria-hidden="true">↳</span>
               <span class="text-xs whitespace-nowrap text-neutral-900 dark:text-neutral-100">
                 {{ item.name }}
               </span>
@@ -247,19 +300,37 @@ const list = (key: string, count: number) =>
           <UiScrambleText :text="t('experiencePage.experienceLabel')" />
         </h2>
         <div class="space-y-1">
-          <ExperienceSpread
-            v-for="(exp, i) in EXPERIENCES"
-            :id="exp.id"
-            :key="exp.id"
-            :index="i + 1"
-            :title="exp.company"
-            :logo="exp.logo"
-            :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.role`)} · ${t(`experiences.${exp.key}.type`)}`"
-            :summary="t(`experiencePage.summaries.${exp.key}`)"
-            :stack="exp.technologies"
-            :items-label="t('experiencePage.missions')"
-            :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
-          />
+          <template v-for="(exp, i) in EXPERIENCES" :key="exp.id">
+            <ExperienceSpread
+              :id="exp.id"
+              :index="i + 1"
+              :title="exp.company"
+              :logo="exp.logo"
+              :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.role`)} · ${t(`experiences.${exp.key}.type`)}`"
+              :summary="t(`experiencePage.summaries.${exp.key}`)"
+              :stack="exp.technologies"
+              :items-label="t('experiencePage.missions')"
+              :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
+            />
+            <!-- Its projects, set in under it -->
+            <ExperienceSpread
+              v-for="project in projectsOf(exp.id)"
+              :id="project.id"
+              :key="project.id"
+              nested
+              :index="0"
+              :eyebrow="`↳ ${clientOf(project) ?? ''}`"
+              :title="project.name"
+              :meta="`${period(project.startDate, project.endDate)} · ${t(`experiencePage.work.${project.key}.role`)}`"
+              :summary="t(`experiencePage.work.${project.key}.summary`)"
+              :stack="project.technologies"
+              :items-label="t('experiencePage.highlights')"
+              :items="
+                list(`experiencePage.work.${project.key}.highlights`, project.highlightsCount)
+              "
+              :links="projectLinks(project)"
+            />
+          </template>
         </div>
       </UiPanel>
     </section>

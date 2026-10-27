@@ -46,7 +46,7 @@ export const EXPERIENCES: Experience[] = [
       'Hono.js',
       'Prisma',
     ],
-    tasksCount: 5,
+    tasksCount: 3,
   },
   {
     id: 'virtual-immersion',
@@ -57,6 +57,121 @@ export const EXPERIENCES: Experience[] = [
     endDate: '2023-09',
     technologies: ['Symfony', 'Laravel', 'React', 'WordPress', 'MySQL', 'Tailwind CSS'],
     tasksCount: 4,
+  },
+]
+
+// The projects of a role, shown under it on /experience (after isrod.eu's "↳" entries).
+// Only Kylian's own share of each, checked in the repositories' history: the products of
+// clients he worked on, not tooling. Text in experiencePage.work.<key>.
+export interface Project {
+  id: string
+  key: string
+  /** The Experience it belongs to */
+  parent: string
+  name: string
+  startDate: string
+  endDate: string | null
+  technologies: string[]
+  highlightsCount: number
+  /** Public site, when the product has one */
+  site?: string
+  /** Content path of a blog post about it ("To read") */
+  article?: string
+}
+
+// Most recent first, like the strip
+export const PROJECTS: Project[] = [
+  {
+    id: 'jewely-ecommerce',
+    key: 'jewelyEcommerce',
+    parent: 'flippad',
+    name: 'Jewely E-commerce',
+    startDate: '2026-06',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel 13',
+      'PHP 8.5',
+      'Vue 3',
+      'Inertia',
+      'TypeScript',
+      'MySQL',
+      'Redis',
+      'Docker Swarm',
+      'GitHub Actions',
+    ],
+    highlightsCount: 4,
+  },
+  {
+    id: 'fiches-pedagogiques',
+    key: 'fichesPedagogiques',
+    parent: 'flippad',
+    name: 'Fiches Pédagogiques',
+    startDate: '2024-10',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel 13',
+      'PHP 8.5',
+      'MySQL',
+      'Redis',
+      'Elasticsearch',
+      'Stripe',
+      'Nuxt 4',
+      'TypeScript',
+      'Go',
+      'AWS',
+    ],
+    highlightsCount: 4,
+    site: 'https://www.fichespedagogiques.com',
+    article: '/blogs/fiches-pedagogiques',
+  },
+  {
+    id: 'jewely-configurator',
+    key: 'jewelyConfigurator',
+    parent: 'flippad',
+    name: 'Jewely Configurator',
+    startDate: '2024-04',
+    endDate: '2024-10',
+    technologies: [
+      'Vue 3',
+      'Pinia',
+      'Panda CSS',
+      'Hono',
+      'Prisma',
+      'AWS Lambda',
+      'WooCommerce',
+      'Bun',
+    ],
+    highlightsCount: 3,
+  },
+  {
+    id: 'assmat-facile',
+    key: 'assmatFacile',
+    parent: 'flippad',
+    name: 'Assmat Facile',
+    startDate: '2024-01',
+    endDate: '2026-06',
+    technologies: [
+      'Symfony 5.4',
+      'PHP 8.1',
+      'Doctrine',
+      'MySQL',
+      'Stripe',
+      'React',
+      'TypeScript',
+      'Heroku',
+    ],
+    highlightsCount: 4,
+    site: 'https://www.assmat-facile.fr',
+  },
+  {
+    id: 'jewely-erp',
+    key: 'jewelyErp',
+    parent: 'flippad',
+    name: 'Jewely ERP',
+    startDate: '2023-10',
+    endDate: '2024-01',
+    technologies: ['Laravel', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
+    highlightsCount: 3,
   },
 ]
 

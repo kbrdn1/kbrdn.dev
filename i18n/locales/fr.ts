@@ -221,10 +221,8 @@ export default {
       type: 'CDI (anciennement alternance)',
       tasks: [
         'Déploiement production et pré-production sur AWS et Heroku via GitHub Actions (API Gateway, Lambda, EC2, S3, CloudWatch, etc.)',
-        'Développement de fonctionnalités sur Jewely ERP destiné aux bijouteries de luxe (paiements en plusieurs fois Alma et amélioration continue de différents services)',
-        "Création d'un configurateur de bijoux multi-marques et personnalisable destiné aux bijouteries de luxe",
-        'Développement de la partie Back-Office du site Assmat-Facile (gestions utilisateurs, financières via Stripe, génération de rapport annuel, exports des données et de statistiques)',
-        'Refonte complète from scratch du site Fiches Pédagogiques (chef de projet et en charge du développement de la partie Backend)',
+        'Montées de version des produits (Laravel 12 puis 13, PHP 8.5) et de leurs dépendances',
+        'Versioning SemVer, changelogs par version et procédures de release, avec la CI qui va avec',
       ],
     },
     virtualImmersion: {
@@ -296,9 +294,74 @@ export default {
     skills: 'Acquis',
     more: 'En savoir plus',
     less: 'Réduire',
+    highlights: 'Réalisations',
+    links: 'Liens',
+    work: {
+      jewelyEcommerce: {
+        client: 'Louis Julian et Crown DP',
+        role: 'Reprise et évolutions',
+        summary:
+          "Le CMS e-commerce multi-boutiques de Jewely, qui fait tourner les sites des bijouteries-horlogeries Louis Julian et Crown DP. Repris en juin 2026 sur une base existante : je l'ai outillé pour livrer, mis à jour et fait évoluer jusqu'à mon départ.",
+        highlights: [
+          'Versioning SemVer, un changelog par version et une procédure de release : de la v1.0.0 à la v1.11.1 en trois mois',
+          'Montée vers Laravel 13 et PHP 8.5, Inertia 3 et Vite 7, passage à Bun',
+          "Fonctionnalités et moyens de paiement activables boutique par boutique, intégration de l'API de stock d'une marque horlogère",
+          'Référencement récupéré (sitemap, redirections des anciennes URLs, données structurées), tableau de bord en TypeScript strict, CI de tests',
+        ],
+      },
+      fichesPedagogiques: {
+        client: 'Martin Media',
+        role: 'Chef de projet et développeur back-end',
+        summary:
+          "Une plateforme de ressources pédagogiques pour l'école primaire, de la petite section au CM2 : catalogue de fiches, recherche, vente et abonnements, licences d'établissement et back-office. Refaite de zéro : j'ai créé l'API et en ai écrit l'essentiel, puis repris une large part du front en 2026.",
+        highlights: [
+          "Refonte mise en production avec la v1.0.0 en mai 2026, 63 versions publiées avec leur changelog sur l'API",
+          "Migration de l'ancienne base, plusieurs millions d'enregistrements en environ une heure, par un outil réécrit en Go",
+          "Recherche Elasticsearch avec analyseur français, abonnements Stripe aux webhooks idempotents, licences d'établissement et mandats administratifs",
+          'Double authentification, connexion Google, aperçus FFmpeg et PDF, montées vers Laravel 12 puis 13',
+        ],
+        site: 'fichespedagogiques.com',
+        article: "L'article sur la refonte",
+      },
+      jewelyConfigurator: {
+        client: 'Jewely',
+        role: 'Conception et développement',
+        summary:
+          "Un configurateur de bijoux multi-marques livré en plugin WordPress : le client personnalise une pièce, voit le prix changer en temps réel et l'ajoute au panier WooCommerce. Construit presque seul, du plugin à l'API.",
+        highlights: [
+          "Trois applications dans un monorepo Bun : le plugin, le back-office et l'API",
+          'Back-office des marques, collections, modèles, configurations et guides des tailles',
+          "API serverless en Hono et Prisma sur AWS Lambda, reliée à l'API REST de WooCommerce",
+        ],
+      },
+      assmatFacile: {
+        client: 'Assmat Facile',
+        role: 'Développeur full stack',
+        summary:
+          "Une application web pour les parents qui emploient une assistante maternelle : contrats, bulletins de paie, paiements, calculateurs et abonnements. Reprise sur une base existante : j'en ai construit le back-office et fait évoluer le paiement.",
+        highlights: [
+          "Back-office d'administration : utilisateurs, finance et remboursements, statistiques (chiffre d'affaires, churn, paiements), exports et rapport annuel",
+          'Abonnement par mandat administratif pour les relais petite enfance : bons de commande et factures en PDF, e-mails, tâches planifiées',
+          'Refonte du tunnel de paiement et des webhooks Stripe, montants bruts et nets',
+          "Mise à jour annuelle des paramètres réglementaires (SMIC, taux de cotisations) jusqu'en 2026",
+        ],
+        site: 'assmat-facile.fr',
+      },
+      jewelyErp: {
+        client: 'Jewely',
+        role: 'Développeur full stack, en alternance',
+        summary:
+          "L'ERP des bijouteries de luxe de Jewely : stock, ventes, réparations, clients, facturation et reporting, déployé chez chaque client. Mes premiers mois chez Flippad, sur l'API et les écrans.",
+        highlights: [
+          "Endpoints de l'API : employés, fournisseurs, catégories, emplacements, images produits, réparations et commandes",
+          'Écrans des commandes et des réparations',
+          'Paiement en plusieurs fois avec Alma, demandes de paiement par SMS et e-mail',
+        ],
+      },
+    },
     summaries: {
       flippad:
-        "Trois ans chez Jewely x Flippad, d'abord en alternance puis en CDI : un ERP pour les bijouteries de luxe, un configurateur de bijoux multi-marques, le back-office d'Assmat-Facile et la refonte de Fiches Pédagogiques, déployés sur AWS et Heroku par GitHub Actions.",
+        "Trois ans chez Jewely x Flippad, d'abord en alternance puis en CDI : un ERP pour les bijouteries de luxe, un configurateur de bijoux multi-marques, le back-office d'Assmat-Facile, la refonte de Fiches Pédagogiques, puis la reprise du e-commerce Jewely, déployés sur AWS et Heroku par GitHub Actions. Le détail de chaque projet suit.",
       virtualImmersion:
         "Un an d'alternance chez Virtual Immersion : une API de gestion de fichiers en Symfony, de la réalité mixte sur WordPress et la navigation sur la carte d'un parc animalier en React.",
       mnsMaster:
