@@ -22,14 +22,27 @@ const currentTitleIndex = ref(0)
 
 const currentTitle = computed(() => props.titles[currentTitleIndex.value] || '')
 
-// The mascot is alive: it floats (CSS), and changes expression every few seconds and when
-// the pointer comes over it. Every mood is stacked and cross-faded, so a swap never flashes.
-const MOODS = ['hoodie', 'hoodie-happy', 'side-eye', 'hoodie-cool', 'grin', 'smug'] as const
-const mood = ref(0)
+// The mascot is alive: it floats (CSS), and every few seconds or when the pointer comes
+// over it, it turns into one of the drawn portraits of me, then back into the mascot in
+// another mood. Every picture is stacked and cross-faded, so a swap never flashes.
+const MASCOT = ['hoodie', 'hoodie-happy', 'side-eye', 'hoodie-cool', 'grin', 'smug']
+const PORTRAITS = 9 // public/images/me/pp/1..9.webp, neutral outfits
+// Each picture once in the stack; the order alternates mascot and portrait, until every
+// portrait has had its turn (the mascot's moods come round again)
+const MOODS = [
+  ...MASCOT.map((mood) => `/images/mascot/${mood}.webp`),
+  ...Array.from({ length: PORTRAITS }, (_, i) => `/images/me/pp/${i + 1}.webp`),
+]
+const ORDER = Array.from({ length: PORTRAITS }, (_, i) => [
+  i % MASCOT.length,
+  MASCOT.length + i,
+]).flat()
+const step = ref(0)
+const mood = computed(() => ORDER[step.value])
 const reducedMotion = useReducedMotion()
 
 function nextMood() {
-  mood.value = (mood.value + 1) % MOODS.length
+  step.value = (step.value + 1) % ORDER.length
 }
 
 let interval: ReturnType<typeof setInterval> | undefined
@@ -123,7 +136,7 @@ onUnmounted(() => {
       <img
         v-for="(m, i) in MOODS"
         :key="m"
-        :src="`/images/mascot/${m}.webp`"
+        :src="m"
         width="224"
         height="224"
         alt=""
