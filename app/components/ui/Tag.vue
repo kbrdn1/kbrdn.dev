@@ -70,7 +70,7 @@ const variantClasses = computed(() => {
     <span
       :class="
         cn(
-          'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
+          'inline-block rounded-full font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
           variantClasses,
         )
       "
@@ -82,7 +82,7 @@ const variantClasses = computed(() => {
     v-else
     :class="
       cn(
-        'inline-block font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
+        'inline-block rounded-full font-mono text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 uppercase tracking-wider border',
         variantClasses,
       )
     "

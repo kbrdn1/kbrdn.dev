@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   post: {
     path: string
     title: string
@@ -13,62 +13,50 @@ defineProps<{
 
 const { formatDate } = useFormatDate()
 const { postUrl } = useBlogUrl()
+
+// The banner, resized by IPX: the pixel layer only needs a few hundred pixels of it
+const $img = useImage()
+const colorMode = useColorMode()
+const banner = computed(() =>
+  $img(
+    props.post.bannerImage ||
+      (isDarkMode(colorMode.value) ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'),
+    { width: 640, format: 'webp' },
+  ),
+)
 </script>
 
 <template>
+  <!-- A card, after disarto's notes panel: date and author in mono, the title, the summary,
+       and the banner through the pixel layer on the right -->
   <NuxtLink
     :to="postUrl(post)"
-    class="relative isolate flex items-center gap-6 py-5 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3 overflow-hidden"
+    class="panel-card group relative isolate flex overflow-hidden transition-colors hover:border-primary-500/50"
   >
     <UiPixelCanvas />
-    <!-- Thumbnail fade (if banner) -->
-    <ClientOnly v-if="post.banner">
-      <div class="absolute right-0 top-0 bottom-0 w-48 overflow-hidden">
-        <NuxtImg
-          :src="
-            post.bannerImage ||
-            (isDarkMode($colorMode.value)
-              ? '/images/banners/dark.jpg'
-              : '/images/banners/light.jpg')
-          "
-          alt=""
-          class="w-full h-full object-cover"
-        />
-        <UiDitherCanvas class="absolute inset-0 h-full w-full" />
-        <div
-          class="absolute inset-0 bg-gradient-to-l from-transparent to-[#f0eeeb] dark:to-[#121212]"
-        />
-      </div>
-    </ClientOnly>
-
-    <!-- Date & Author -->
-    <div class="shrink-0 w-28 sm:w-36 relative z-10">
-      <span v-if="post.publishedAt" class="block text-[10px] sm:text-xs font-mono text-neutral-500">
-        {{ formatDate(post.publishedAt) }}
-      </span>
-      <span v-if="showAuthor" class="block text-[10px] font-mono text-neutral-400 mt-0.5">
-        Kylian Bardini
-      </span>
-    </div>
-
-    <!-- Title + Description -->
-    <div class="flex-1 min-w-0 relative z-10">
-      <span
-        class="block text-sm sm:text-base font-medium text-primary-500 group-hover:text-primary-400 transition-colors"
-        style="font-family: 'Fenix', serif"
+    <div class="relative z-10 min-w-0 flex-1 p-5">
+      <p class="eyebrow">
+        <template v-if="post.publishedAt">{{ formatDate(post.publishedAt) }}</template>
+        <template v-if="showAuthor"> · Kylian Bardini</template>
+      </p>
+      <h3
+        class="mt-2 text-lg text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
       >
         {{ post.title }}
-      </span>
-      <span
+      </h3>
+      <p
         v-if="post.description"
-        class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1 overflow-hidden whitespace-nowrap"
-        style="
-          mask-image: linear-gradient(to right, black 50%, transparent);
-          -webkit-mask-image: linear-gradient(to right, black 50%, transparent);
-        "
+        class="mt-1 line-clamp-2 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400"
       >
         {{ post.description }}
-      </span>
+      </p>
     </div>
+    <ClientOnly v-if="post.banner">
+      <div class="relative hidden w-56 shrink-0 sm:block">
+        <div class="absolute inset-1.5 overflow-hidden rounded-[10px]">
+          <UiPixelImage :src="banner" class="size-full" reveal />
+        </div>
+      </div>
+    </ClientOnly>
   </NuxtLink>
 </template>

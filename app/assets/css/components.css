@@ -164,8 +164,8 @@
     color: var(--label);
   }
 
-  /* Pill segmented control: the active segment (aria-selected, aria-current) is filled
-     and bordered */
+  /* Pill segmented control: the active segment (aria-selected, aria-pressed, aria-current)
+     is filled and bordered */
   .segmented {
     display: inline-flex;
     align-items: center;
@@ -201,6 +201,7 @@
   }
 
   .segment[aria-selected="true"],
+  .segment[aria-pressed="true"],
   .segment[aria-current="page"] {
     border-color: var(--control-border);
     background: var(--control-bg);
