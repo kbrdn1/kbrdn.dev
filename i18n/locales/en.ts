@@ -605,6 +605,11 @@ export default {
   },
 
   // Blog Section
+  lightbox: {
+    open: 'Enlarge the illustration: {name}',
+    close: 'Close',
+  },
+
   blog: {
     toc: 'Contents',
     read: 'Read',

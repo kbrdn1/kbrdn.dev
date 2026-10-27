@@ -2,9 +2,11 @@
 // One stop on /experience's vertical timeline (ExperienceTimeline draws the rail): the
 // years on the left (the end over the start), a point on the rail, then the entry; on a
 // phone, the entry alone. A role gets a large point and its logo, its
-// projects a small one under it, a degree a diamond. The title is a disclosure (heading
-// around a button, the accordion pattern): the stack, what was done and the links unfold
-// on their height. The entry being read in the strip lights its point.
+// projects a small one under it, a degree a diamond. Under the summary, the links (the
+// company's, the clients', the school's site). The title is a disclosure (heading around a
+// button, the accordion pattern): the stack and what was done unfold on their height. The
+// illustration opens full size (UiLightbox). The entry being read in the strip lights its
+// point.
 import { useI18n } from '#imports'
 
 const props = defineProps<{
@@ -29,6 +31,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const open = ref(false)
+const lightbox = useLightbox()
 
 const from = computed(() => props.start.slice(0, 4))
 const to = computed(() => props.end?.slice(0, 4) ?? '')
@@ -126,16 +129,39 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
           >
             {{ summary }}
           </p>
+          <p v-if="links?.length" class="eyebrow mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <template v-for="(link, i) in links" :key="link.to">
+              <span v-if="i" aria-hidden="true">/</span>
+              <NuxtLink
+                :to="link.to"
+                :target="link.external ? '_blank' : undefined"
+                :rel="link.external ? 'noopener noreferrer' : undefined"
+                class="underline underline-offset-4 hover:text-(--accent-text)"
+              >
+                {{ link.label }} {{ link.external ? '↗' : '→' }}
+              </NuxtLink>
+            </template>
+          </p>
         </div>
-        <!-- Through the pixel layer, crisp on hover; client only like every pixel picture -->
-        <div
+        <!-- Through the pixel layer, crisp on hover; client only like every pixel picture.
+             A click opens it full size. -->
+        <button
           v-if="image"
-          class="mt-4 aspect-[16/10] overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) md:mt-3 dark:bg-neutral-900"
+          type="button"
+          class="group/zoom relative mt-4 block aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) md:mt-3 dark:bg-neutral-900"
+          :aria-label="t('lightbox.open', { name: title })"
+          @click="lightbox.open(image, title)"
         >
           <ClientOnly>
             <UiPixelImage :src="image" alt="" class="size-full" reveal />
           </ClientOnly>
-        </div>
+          <span
+            class="icon-btn absolute top-2 right-2 size-7 bg-(--card-bg) opacity-0 transition-opacity group-hover/zoom:opacity-100 group-focus-visible/zoom:opacity-100"
+            aria-hidden="true"
+          >
+            <UIcon name="i-lucide-maximize-2" class="size-3.5" />
+          </span>
+        </button>
       </div>
 
       <UiExpand :open="open">
@@ -163,19 +189,6 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
               </li>
             </ul>
           </div>
-          <p v-if="links?.length" class="eyebrow flex flex-wrap items-center gap-x-2">
-            <template v-for="(link, i) in links" :key="link.to">
-              <span v-if="i" aria-hidden="true">/</span>
-              <NuxtLink
-                :to="link.to"
-                :target="link.external ? '_blank' : undefined"
-                :rel="link.external ? 'noopener noreferrer' : undefined"
-                class="underline underline-offset-4 hover:text-(--accent-text)"
-              >
-                {{ link.label }} {{ link.external ? '↗' : '→' }}
-              </NuxtLink>
-            </template>
-          </p>
         </div>
       </UiExpand>
     </div>

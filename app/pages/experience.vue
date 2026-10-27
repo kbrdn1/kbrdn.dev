@@ -81,9 +81,14 @@ const timeline = computed(() =>
 
 const cvUrl = useCvUrl()
 
-// A project's links: its public site, the blog post about it
+// Sites as entry links: a company's, a school's, a project's clients'
+const siteLinks = (sites?: { label: string; url: string }[]) =>
+  (sites ?? []).map((site) => ({ label: site.label, to: site.url, external: true }))
+
+// A project's links: its clients, its public site, the blog post about it
 const { postUrl } = useBlogUrl()
 const projectLinks = (p: (typeof PROJECTS)[number]) => [
+  ...siteLinks(p.clients),
   ...(p.site
     ? [{ label: t(`experiencePage.work.${p.key}.site`), to: p.site, external: true }]
     : []),
@@ -331,6 +336,7 @@ const list = (key: string, count: number) =>
               :stack="exp.technologies"
               :items-label="t('experiencePage.missions')"
               :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
+              :links="siteLinks(exp.sites)"
               :active="activeId === exp.id"
             />
             <ExperienceEntry
@@ -405,6 +411,7 @@ const list = (key: string, count: number) =>
             :stack="study.technologies"
             :items-label="t('experiencePage.skills')"
             :items="list(`studies.${study.key}.skills`, study.skillsCount)"
+            :links="siteLinks(study.sites)"
             :active="activeId === study.id"
           />
         </ExperienceTimeline>

@@ -14,6 +14,14 @@ export interface Experience {
   tasksCount: number
   /** An illustration beside the summary (public/images/projects) */
   image?: string
+  /** Where the company lives online */
+  sites?: Site[]
+}
+
+/** A company's, a client's or a school's site, its domain as label */
+export interface Site {
+  label: string
+  url: string
 }
 
 export interface Study {
@@ -26,6 +34,7 @@ export interface Study {
   endDate: string | null
   technologies: string[]
   skillsCount: number
+  sites?: Site[]
 }
 
 export const EXPERIENCES: Experience[] = [
@@ -36,6 +45,10 @@ export const EXPERIENCES: Experience[] = [
     logo: '/images/logos/jewely-x-flippad.png',
     // flippad.com and jewely.fr, cut on the bias
     image: '/images/projects/jewely-x-flippad.webp',
+    sites: [
+      { label: 'flippad.com', url: 'https://www.flippad.com' },
+      { label: 'jewely.fr', url: 'https://www.jewely.fr' },
+    ],
     startDate: '2023-10',
     endDate: '2026-09',
     technologies: [
@@ -83,6 +96,8 @@ export interface Project {
   article?: string
   /** An illustration: its public site, its README or its maker's site (public/images/projects) */
   image?: string
+  /** The clients' sites */
+  clients?: Site[]
 }
 
 // Most recent first, like the strip
@@ -107,6 +122,10 @@ export const PROJECTS: Project[] = [
     ],
     highlightsCount: 4,
     image: '/images/projects/jewely-ecommerce.webp',
+    clients: [
+      { label: 'bijouterie-julian.com', url: 'https://www.bijouterie-julian.com' },
+      { label: 'crown-dp.com', url: 'https://www.crown-dp.com' },
+    ],
   },
   {
     id: 'fiches-pedagogiques',
@@ -131,6 +150,7 @@ export const PROJECTS: Project[] = [
     site: 'https://www.fichespedagogiques.com',
     article: '/blogs/fiches-pedagogiques',
     image: '/images/projects/fiches-pedagogiques.webp',
+    clients: [{ label: 'martin-media.fr', url: 'https://martin-media.fr' }],
   },
   {
     id: 'jewely-configurator',
@@ -151,6 +171,7 @@ export const PROJECTS: Project[] = [
     ],
     highlightsCount: 3,
     image: '/images/projects/jewely-configurator.webp',
+    clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
   },
   {
     id: 'assmat-facile',
@@ -183,6 +204,7 @@ export const PROJECTS: Project[] = [
     technologies: ['Laravel', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
     highlightsCount: 3,
     image: '/images/projects/jewely-erp.webp',
+    clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
   },
 ]
 
@@ -192,6 +214,7 @@ export const STUDIES: Study[] = [
     key: 'mnsMaster',
     school: 'Metz Numeric School',
     logo: '/images/logos/mns.jpeg',
+    sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
     level: 'Master',
     startDate: '2023-10',
     endDate: '2025-10',
@@ -215,6 +238,7 @@ export const STUDIES: Study[] = [
     key: 'mnsLicence',
     school: 'Metz Numeric School',
     logo: '/images/logos/mns.jpeg',
+    sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
     level: 'Licence',
     startDate: '2022-10',
     endDate: '2023-09',

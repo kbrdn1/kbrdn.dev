@@ -606,6 +606,11 @@ export default {
   },
 
   // Blog Section
+  lightbox: {
+    open: 'Agrandir l’illustration : {name}',
+    close: 'Fermer',
+  },
+
   blog: {
     toc: 'Sommaire',
     read: 'Lire',
