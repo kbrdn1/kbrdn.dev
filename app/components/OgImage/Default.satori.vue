@@ -67,7 +67,7 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 </script>
 
 <template>
-  <div class="h-full w-full flex relative overflow-hidden" style="background: #0c0c0e;">
+  <div class="h-full w-full flex relative overflow-hidden" style="font-family: 'Inter OG'; background: #0c0c0e;">
     <!-- The site's dither field, frozen (scripts/og-dither.ts) -->
     <img src="/images/og/dither.png" alt="" style="position: absolute; top: 0; left: 0; width: 1200px; height: 630px;" />
     <!-- The construction lines, along the panel's sides -->
