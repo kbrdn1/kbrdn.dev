@@ -59,7 +59,7 @@ jobs:
       # pas le tag, d'où la préférence donnée à l'input, ici et au checkout.
       # fetch-depth: 0 : le contrôle d'ascendance plus bas a besoin de
       # l'historique, un clone superficiel ne le permet pas.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # `refs/tags/` explicite, et pas le nom nu : `actions/checkout`
           # résout un nom nu comme n'importe quelle ref, donc une branche
@@ -134,7 +134,7 @@ jobs:
     outputs:
       sha: ${{ steps.sha.outputs.value }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ needs.resolve.outputs.tag }}
 
@@ -146,10 +146,10 @@ jobs:
         run: echo "value=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Setup buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Login GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -201,7 +201,7 @@ jobs:
       # là où :main et :dev sont mutables et ne désignent que « le dernier ».
       - name: Build & push
         if: steps.exists.outputs.found != 'true'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
@@ -278,8 +278,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
+          NUXT_APP_SECRET: ${{ secrets.NUXT_APP_SECRET }}
         run: |
-          REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN deploy"
+          REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN NUXT_APP_SECRET=$NUXT_APP_SECRET deploy"
           ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_USER@$VPS_HOST" "$REMOTE_CMD"
 
       # Vérifie depuis l'extérieur que c'est bien cette version qui sert le
@@ -332,7 +333,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ needs.resolve.outputs.tag }}
 

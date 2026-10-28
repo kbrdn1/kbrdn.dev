@@ -13,7 +13,7 @@
 # au bit près à ce que sert la prod (linux x64).
 #
 # Au passage, le <head> de ces pages (#88) : <html lang>, une seule
-# canonical, des JSON-LD qui se lisent et ont tous un @type ; et le
+# canonical, les hreflang, des JSON-LD qui se lisent et ont tous un @type ; et le
 # sitemap, qui doit lister l'article. Rien d'autre ne rend ces balises.
 #
 # Un changement volontaire d'une image OG (texte du hero, article, composant
@@ -46,7 +46,12 @@ if curl -s -m 2 -o /dev/null "$BASE"; then
   exit 2
 fi
 
-OUT="$(mktemp -d)"
+# OG_SMOKE_OUT : la CI fixe le dossier pour publier les rendus quand ils diffèrent
+OUT="${OG_SMOKE_OUT:-$(mktemp -d)}"
+mkdir -p "$OUT"
+# nuxt-og-image 7 signe les URLs /_og/* et répond 500 sans secret. Un secret
+# jetable suffit : il entre dans l'URL, pas dans les pixels.
+export NUXT_APP_SECRET="${NUXT_APP_SECRET:-$(openssl rand -hex 32)}"
 # node et pas bun : sous bun, ipx ne résout pas `ofetch` depuis
 # .output/server/node_modules et le serveur meurt au démarrage.
 PORT=$PORT HOST=127.0.0.1 node "$ROOT/.output/server/index.mjs" > "$OUT/server.log" 2>&1 &
@@ -76,6 +81,7 @@ for entry in "${PAGES[@]}"; do
     if (!/<html[^>]* lang="(en|fr)"/.test(html)) errors.push("pas de lang sur <html>")
     const canonicals = (html.match(/rel="canonical"/g) ?? []).length
     if (canonicals !== 1) errors.push(`${canonicals} canonical`)
+    if (!/hreflang="x-default"/.test(html)) errors.push("pas de hreflang x-default")
     const blocks = [...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/g)]
     if (!blocks.length) errors.push("pas de JSON-LD")
     for (const [, block] of blocks) {
@@ -125,7 +131,8 @@ else
 fi
 
 if [[ $FAILED -eq 0 ]]; then
-  rm -rf "$OUT"
+  # Le dossier d'OG_SMOKE_OUT appartient à l'appelant : on n'efface que le nôtre
+  [[ -n "${OG_SMOKE_OUT:-}" ]] || rm -rf "$OUT"
 else
   # Un 500 de satori laisse sa trace ici, pas dans la réponse.
   echo "--- server.log"

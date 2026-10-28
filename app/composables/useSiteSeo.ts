@@ -107,13 +107,13 @@ export function useSiteSeo({ indexable = true } = {}) {
           { key: 'canonical', rel: 'canonical', href: () => url(route.path) },
           ...(['fr', 'en'] as const).map((code) => ({
             key: `hreflang-${code}`,
-            rel: 'alternate',
+            rel: 'alternate' as const,
             hreflang: code,
             href: () => url(switchLocalePath(code) || '/'),
           })),
           {
             key: 'hreflang-x-default',
-            rel: 'alternate',
+            rel: 'alternate' as const,
             hreflang: 'x-default',
             href: () => url(switchLocalePath('fr') || '/'),
           },

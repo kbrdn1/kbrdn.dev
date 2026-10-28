@@ -22,6 +22,13 @@ RUN bun install --frozen-lockfile --ignore-scripts
 # ============================================
 FROM base AS builder
 
+# Node pour `nuxt build`, comme sur le runner de la CI : sans lui, le shebang de
+# nuxt tombe sur le shim node de bun, et nuxt-og-image 7 appelle
+# `findPackageJSON` de node:module (Node ≥ 22.14), que bun n'implémente pas.
+# /usr/bin/node passe devant /usr/local/bun-node-fallback-bin dans le PATH.
+# Le runtime reste bun (CMD) : rien dans .output n'en dépend.
+RUN apk add --no-cache nodejs
+
 # Identité du build, figée dans le bundle via runtimeConfig et renvoyée par
 # /api/health. Le contexte de build ne contient pas .git (cf. .dockerignore),
 # donc le sha ne peut venir que d'ici. APP_VERSION est vide hors release : le

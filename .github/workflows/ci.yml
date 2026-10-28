@@ -28,19 +28,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
+      # Le cache global de bun seulement, jamais node_modules : la restore-key
+      # ramène un node_modules construit sur un autre lock, et bun ne purge pas
+      # les dossiers imbriqués périmés (ERR_MODULE_NOT_FOUND sur la PR #66).
       - name: Cache Bun deps
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
+          path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
@@ -81,6 +82,18 @@ jobs:
       # Les images OG sont rendues à la requête : aucun step au-dessus ne les
       # exécute. Sert .output et compare /, /blog et un article à leurs
       # références (scripts/og-smoke/), puis vérifie leur <head> (lang,
-      # canonical, JSON-LD) et le sitemap ; détail dans le script.
+      # canonical, hreflang, JSON-LD) et le sitemap ; détail dans le script.
       - name: OG images and head
+        env:
+          OG_SMOKE_OUT: ${{ runner.temp }}/og-smoke
         run: ./scripts/og-smoke.sh
+
+      # Les rendus obtenus quand ils diffèrent de la référence : le runner n'a
+      # pas ImageMagick, il faut les voir pour juger l'écart.
+      - name: OG renders (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: og-smoke
+          path: ${{ runner.temp }}/og-smoke
+          if-no-files-found: ignore

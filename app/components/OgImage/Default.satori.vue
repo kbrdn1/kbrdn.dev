@@ -67,7 +67,7 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 </script>
 
 <template>
-  <div class="h-full w-full flex relative overflow-hidden" style="background: #0c0c0e;">
+  <div class="h-full w-full flex relative overflow-hidden" style="font-family: 'Inter OG'; background: #0c0c0e;">
     <!-- The site's dither field, frozen (scripts/og-dither.ts) -->
     <img src="/images/og/dither.png" alt="" style="position: absolute; top: 0; left: 0; width: 1200px; height: 630px;" />
     <!-- The construction lines, along the panel's sides -->
@@ -76,9 +76,9 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 
     <!-- The panel, centred: its height follows its content -->
     <div class="absolute flex items-center justify-center" style="top: 0; left: 0; width: 1200px; height: 630px;">
-      <div class="flex flex-col" style="width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
+      <div class="flex flex-col" style="box-sizing: border-box; width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
         <!-- Header: the handle, the window's icons -->
-        <div class="flex items-center justify-between" style="height: 52px; padding: 0 12px 0 16px;">
+        <div class="flex items-center justify-between" style="box-sizing: border-box; height: 52px; padding: 0 12px 0 16px;">
           <span style="font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: #ececf0;">@{{ handle }}</span>
           <div class="flex" style="gap: 16px;">
             <svg v-for="name in ['expand', 'close'] as const" :key="name" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
@@ -94,11 +94,11 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
               <p v-if="description" style="margin: 10px 0 0; max-width: 520px; font-size: 15px; line-height: 1.45; color: #9a9aa3;">{{ description }}</p>
             </div>
             <div class="flex" style="gap: 8px; padding-top: 4px;">
-              <span class="flex items-center" style="gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">
+              <span class="flex items-center" style="box-sizing: border-box; gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ececf0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.globe" />
                 kbrdn.dev
               </span>
-              <span class="flex items-center" style="gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #111114; background: #d4825d; border: 1px solid #d4825d; border-radius: 999px;">
+              <span class="flex items-center" style="box-sizing: border-box; gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #111114; background: #d4825d; border: 1px solid #d4825d; border-radius: 999px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111114" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.visit" />
                 Contact
               </span>
@@ -107,12 +107,12 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 
           <!-- The drawn portrait, or the page's scene, and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div v-if="sceneCells.length" class="flex items-center justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+            <div v-if="sceneCells.length" class="flex items-center justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
               <svg width="208" height="156" :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`" shape-rendering="crispEdges">
                 <rect v-for="(cell, i) in sceneCells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
               </svg>
             </div>
-            <div v-else class="flex items-end justify-center" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+            <div v-else class="flex items-end justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
               <img :src="avatar" alt="" width="196" height="196" style="width: 196px; height: 196px; margin-bottom: -24px;" />
             </div>
             <div class="flex flex-col" style="gap: 9px;">
@@ -121,11 +121,11 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[fact.icon]" />
                   {{ fact.label }}
                 </span>
-                <span v-if="fact.kind === 'ok'" class="flex items-center" style="gap: 7px; height: 28px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 999px;">
+                <span v-if="fact.kind === 'ok'" class="flex items-center" style="box-sizing: border-box; gap: 7px; height: 28px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 999px;">
                   <span style="width: 6px; height: 6px; border-radius: 999px; background: #4ade80;" />
                   {{ fact.value }}
                 </span>
-                <span v-else-if="fact.kind === 'person'" class="flex items-center" style="gap: 6px; height: 28px; padding: 0 11px 0 3px; font-size: 14px; color: #ececf0; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">
+                <span v-else-if="fact.kind === 'person'" class="flex items-center" style="box-sizing: border-box; gap: 6px; height: 28px; padding: 0 11px 0 3px; font-size: 14px; color: #ececf0; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">
                   <img src="/images/og/person.png" alt="" width="22" height="22" style="width: 22px; height: 22px; border-radius: 999px;" />
                   {{ fact.value }}
                 </span>
@@ -144,13 +144,13 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
               </div>
             </div>
             <div v-else class="flex flex-wrap" style="gap: 8px;">
-              <span v-for="tool in stack" :key="tool" style="display: flex; align-items: center; height: 30px; padding: 0 13px; font-size: 13px; color: #d4d4d8; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">{{ tool }}</span>
+              <span v-for="tool in stack" :key="tool" style="box-sizing: border-box; display: flex; align-items: center; height: 30px; padding: 0 13px; font-size: 13px; color: #d4d4d8; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">{{ tool }}</span>
             </div>
           </template>
         </div>
 
         <!-- Footer: icons, the address, a button -->
-        <div class="flex items-center justify-between" style="height: 52px; padding: 0 4px 0 16px;">
+        <div class="flex items-center justify-between" style="box-sizing: border-box; height: 52px; padding: 0 4px 0 16px;">
           <div class="flex items-center" style="gap: 16px;">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.more" />
             <span style="width: 1px; height: 20px; background: #303036;" />
@@ -158,7 +158,7 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
           </div>
           <div class="flex items-center" style="gap: 16px;">
             <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #9a9aa3;">github.com/{{ handle }}</span>
-            <span style="display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">Portfolio</span>
+            <span style="box-sizing: border-box; display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">Portfolio</span>
           </div>
         </div>
       </div>
