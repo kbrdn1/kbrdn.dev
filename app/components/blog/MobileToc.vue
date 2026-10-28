@@ -77,7 +77,10 @@ function handleScrollTo(id: string) {
           </span>
           <span class="min-w-0 flex-1">
             <span class="eyebrow block">{{ t('blog.toc') }}</span>
-            <span class="block truncate text-[13px] text-neutral-900 dark:text-neutral-100">
+            <!-- One line, cut by an ellipsis: UiRollingText wraps between words otherwise -->
+            <span
+              class="block truncate text-[13px] text-neutral-900 dark:text-neutral-100 [&_.rolling-text]:whitespace-nowrap!"
+            >
               <UiRollingText :text="activeHeadingText || steps[0]?.text || ''" />
             </span>
           </span>
