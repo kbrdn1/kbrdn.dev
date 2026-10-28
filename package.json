@@ -22,7 +22,7 @@
     "@nuxt/ui": "^4.5.1",
     "@nuxtjs/i18n": "^10.2.3",
     "@selemondev/svgl-vue": "^2.0.5",
-    "better-sqlite3": "^12.8.0",
+    "better-sqlite3": "^13.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "nuxt": "^4.4.2",
