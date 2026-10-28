@@ -6,6 +6,7 @@
 // figures on the home, the stack elsewhere), a footer (icons, the address in mono, a button).
 // Satori: every style on one line (its gradient parser fails on split values), every box
 // with several children a flex box.
+import { HEROES } from '~/utils/heroes'
 import {
   PIXEL_SCENES,
   SCENE_H,
@@ -44,17 +45,34 @@ const props = withDefaults(defineProps<{
   scene: undefined,
 })
 
-// The scene at its best moment, in the dark theme's colours (no CSS in satori)
-const sceneCells = computed(() => {
-  if (!props.scene) return []
+// The scene at its best moment, in the dark theme's colours (no CSS in satori): the page's
+// hero (utils/heroes) at its resting frame, each row's runs of a colour as one rect; else the
+// flat scene it replaced
+const sceneBox = computed(() => {
+  if (!props.scene) return undefined
   // An unknown name (the OG URL is open to anyone) draws the portrait instead; own keys
   // only, or `constructor` and the like pass for a scene
-  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return []
+  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return undefined
+  const hero = HEROES[props.scene]
+  if (hero) {
+    const art = hero.still(true).copy().over(hero.paint(hero.rest, true))
+    const cells: { x: number, y: number, w: number, h: number, fill: string, opacity: number }[] = []
+    for (let y = 0; y < art.h; y++)
+      for (let x = 0; x < art.w;) {
+        const fill = art.cells[y * art.w + x]
+        let w = 1
+        while (x + w < art.w && art.cells[y * art.w + x + w] === fill) w++
+        if (fill) cells.push({ x, y, w, h: 1, fill, opacity: 1 })
+        x += w
+      }
+    return { w: art.w, h: art.h, cells }
+  }
   const scene = PIXEL_SCENES[props.scene]
-  return [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
+  const cells = [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
     const color = sceneColor(cell.c)
     return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
   })
+  return { w: SCENE_W, h: SCENE_H, cells }
 })
 
 const handle = computed(() => props.handle.replace(/^@/, ''))
@@ -107,9 +125,9 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 
           <!-- The drawn portrait, or the page's scene, and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div v-if="sceneCells.length" class="flex items-center justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
-              <svg width="208" height="156" :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`" shape-rendering="crispEdges">
-                <rect v-for="(cell, i) in sceneCells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
+            <div v-if="sceneBox?.cells.length" class="flex items-center justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <svg width="208" height="156" :viewBox="`0 0 ${sceneBox.w} ${sceneBox.h}`" shape-rendering="crispEdges">
+                <rect v-for="(cell, i) in sceneBox.cells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
               </svg>
             </div>
             <div v-else class="flex items-end justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
