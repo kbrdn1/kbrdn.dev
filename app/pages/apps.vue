@@ -244,8 +244,10 @@ const STATUS_CLASS: Record<string, string> = {
 
         <div
           v-if="'install' in app"
-          class="mt-8 min-w-0 border-t border-dashed border-(--card-border) pt-6"
+          class="relative mt-8 min-w-0 border-t border-dashed border-(--card-border) pt-6"
         >
+          <!-- A cannon shoots an invader beside the commands -->
+          <UiCameo name="invaders" place="area" />
           <h3 class="eyebrow">{{ t('appsPage.install') }}</h3>
           <pre
             class="relative z-10 mt-3 overflow-x-auto rounded-xl border border-(--card-border) bg-neutral-50 p-4 font-mono text-xs leading-relaxed text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300"

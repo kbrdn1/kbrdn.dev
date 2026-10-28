@@ -122,8 +122,10 @@ const content = computed(() => {
 
         <section id="about">
           <UiPanel :title="t('bio.title')">
-            <div class="panel-card p-5 sm:p-6">
+            <div class="panel-card relative p-5 sm:p-6">
               <HomeBio :paragraphs="content.bio" />
+              <!-- The camera, beside the figures -->
+              <UiCameo name="camera" place="area" />
               <!-- The career in four figures, rolling in (app/utils/career.ts) -->
               <dl
                 class="mt-6 grid grid-cols-2 gap-5 border-t border-dashed border-(--card-border) pt-5 md:grid-cols-4 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
@@ -146,23 +148,27 @@ const content = computed(() => {
         <!-- Latest Blog Posts: a list, dashed rows, the date in mono -->
         <section id="latest-posts">
           <UiPanel :title="t('blog.title')">
-            <ul
-              v-if="latestPosts?.length"
-              class="panel-card divide-y divide-dashed divide-neutral-200 px-5 dark:divide-neutral-800"
-            >
-              <li v-for="post in latestPosts" :key="post.path">
-                <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
-                  <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
-                    {{ formatDate(post.publishedAt, 'short') }}
-                  </span>
-                  <span
-                    class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
-                  >
-                    {{ post.title }}
-                  </span>
-                </NuxtLinkLocale>
-              </li>
-            </ul>
+            <!-- The pencil writes beside the titles -->
+            <div class="relative">
+              <ul
+                v-if="latestPosts?.length"
+                class="panel-card divide-y divide-dashed divide-neutral-200 px-5 dark:divide-neutral-800"
+              >
+                <li v-for="post in latestPosts" :key="post.path">
+                  <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+                    <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
+                      {{ formatDate(post.publishedAt, 'short') }}
+                    </span>
+                    <span
+                      class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
+                    >
+                      {{ post.title }}
+                    </span>
+                  </NuxtLinkLocale>
+                </li>
+              </ul>
+              <UiCameo name="pencil" place="area" />
+            </div>
             <template #footer>
               <NuxtLinkLocale to="/blog" class="btn btn-outline btn-sm">
                 {{ t('blog.viewAll') }}
@@ -175,13 +181,17 @@ const content = computed(() => {
         <!-- Skills & Stack -->
         <section id="skills">
           <UiPanel :title="t('skills.title')">
-            <HomeSkills class="panel-card p-5 sm:p-6" />
+            <!-- The gears turn beside the rows of tools -->
+            <div class="relative">
+              <HomeSkills class="panel-card p-5 sm:p-6" />
+              <UiCameo name="tools" place="area" />
+            </div>
           </UiPanel>
         </section>
 
         <!-- Featured Projects -->
         <section id="projects">
-          <UiPanel :title="t('projects.title')">
+          <UiPanel :title="t('projects.title')" cameo="rocket" cameo-at="footer">
             <template #actions>
               <div class="segmented" role="tablist" :aria-label="t('projects.title')">
                 <button
@@ -253,7 +263,7 @@ const content = computed(() => {
 
         <!-- Parcours (Experience + Education) -->
         <section id="experience">
-          <UiPanel :title="t('nav.experience')">
+          <UiPanel :title="t('nav.experience')" cameo="climb" cameo-at="footer">
             <HomeParcours class="panel-card p-5 sm:p-6" />
             <template #footer>
               <NuxtLinkLocale :to="{ name: 'experience' }" class="btn btn-outline btn-sm">

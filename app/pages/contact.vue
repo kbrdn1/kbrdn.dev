@@ -206,9 +206,11 @@ const SOCIALS = [
               </p>
             </div>
 
+            <!-- The paper plane folds and takes off between the address and the button -->
             <div
-              class="flex items-center justify-between gap-3 border-t border-dashed border-(--card-border) pt-5"
+              class="relative flex items-center justify-between gap-3 border-t border-dashed border-(--card-border) pt-5"
             >
+              <UiCameo name="plane" place="area" />
               <a href="mailto:hello@kbrdn.dev" class="eyebrow underline underline-offset-4">
                 hello@kbrdn.dev
               </a>
@@ -259,7 +261,9 @@ const SOCIALS = [
           </div>
           <div class="py-4">
             <dt class="eyebrow">{{ t('contactPage.email') }}</dt>
-            <dd class="mt-1">
+            <!-- The letter, beside the address -->
+            <dd class="relative mt-1">
+              <UiCameo name="letter" place="area" />
               <a
                 href="mailto:hello@kbrdn.dev"
                 class="text-sm text-neutral-900 hover:text-(--accent-text) dark:text-neutral-100"

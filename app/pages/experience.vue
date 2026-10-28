@@ -410,27 +410,30 @@ const list = (key: string, count: number) =>
         >
           <UiScrambleText :text="t('experiencePage.educationLabel')" />
         </h2>
-        <!-- The same timeline, a diamond per degree -->
-        <ExperienceTimeline>
-          <ExperienceEntry
-            v-for="study in STUDIES"
-            :id="study.id"
-            :key="study.id"
-            kind="degree"
-            :start="study.startDate"
-            :end="study.endDate"
-            :title="study.school"
-            :logo="study.logo"
-            :detail="`${study.level} · ${t(`studies.${study.key}.degree`)}`"
-            :meta="period(study.startDate, study.endDate)"
-            :summary="t(`experiencePage.summaries.${study.key}`)"
-            :stack="study.technologies"
-            :items-label="t('experiencePage.skills')"
-            :items="list(`studies.${study.key}.skills`, study.skillsCount)"
-            :links="siteLinks(study.sites)"
-            :active="activeId === study.id"
-          />
-        </ExperienceTimeline>
+        <!-- The same timeline, a diamond per degree; a mortarboard thrown beside them -->
+        <div class="relative">
+          <ExperienceTimeline>
+            <ExperienceEntry
+              v-for="study in STUDIES"
+              :id="study.id"
+              :key="study.id"
+              kind="degree"
+              :start="study.startDate"
+              :end="study.endDate"
+              :title="study.school"
+              :logo="study.logo"
+              :detail="`${study.level} · ${t(`studies.${study.key}.degree`)}`"
+              :meta="period(study.startDate, study.endDate)"
+              :summary="t(`experiencePage.summaries.${study.key}`)"
+              :stack="study.technologies"
+              :items-label="t('experiencePage.skills')"
+              :items="list(`studies.${study.key}.skills`, study.skillsCount)"
+              :links="siteLinks(study.sites)"
+              :active="activeId === study.id"
+            />
+          </ExperienceTimeline>
+          <UiCameo name="cap" place="area" />
+        </div>
       </UiPanel>
     </section>
 
