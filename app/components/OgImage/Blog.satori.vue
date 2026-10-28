@@ -67,9 +67,9 @@ const summary = computed(() =>
 
     <!-- The panel, centred: its height follows its content -->
     <div class="absolute flex items-center justify-center" style="top: 0; left: 0; width: 1200px; height: 630px;">
-      <div class="flex flex-col" style="width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
+      <div class="flex flex-col" style="box-sizing: border-box; width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
         <!-- Header: the blog, the window's icons -->
-        <div class="flex items-center justify-between" style="height: 52px; padding: 0 12px 0 16px;">
+        <div class="flex items-center justify-between" style="box-sizing: border-box; height: 52px; padding: 0 12px 0 16px;">
           <span style="font-family: 'Monaspace Krypton', monospace; font-size: 16px; font-weight: 700;">
             <span style="color: #7dd3fc;">blog</span><span style="color: #ececf0;">@</span><span style="color: #d4825d;">kbrdn1</span>
           </span>
@@ -82,7 +82,7 @@ const summary = computed(() =>
         <div class="flex flex-col" style="padding: 24px 28px; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.07); border-radius: 18px;">
           <div class="flex justify-between" style="gap: 24px;">
             <h1 style="margin: 0; max-height: 78px; overflow: hidden; font-size: 32px; font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; color: #ececf0;">{{ title }}</h1>
-            <span class="flex items-center" style="flex-shrink: 0; gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #111114; background: #d4825d; border: 1px solid #d4825d; border-radius: 999px;">
+            <span class="flex items-center" style="box-sizing: border-box; flex-shrink: 0; gap: 7px; height: 36px; padding: 0 15px; font-size: 14px; font-weight: 500; color: #111114; background: #d4825d; border: 1px solid #d4825d; border-radius: 999px;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#111114" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.visit" />
               {{ readLabel }}
             </span>
@@ -90,7 +90,7 @@ const summary = computed(() =>
 
           <!-- The banner and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div class="flex" style="width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+            <div class="flex" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
               <img v-if="bannerImage" :src="bannerImage" alt="" width="290" height="168" style="width: 290px; height: 168px; object-fit: cover;" />
             </div>
             <div class="flex flex-col" style="gap: 9px;">
@@ -106,7 +106,7 @@ const summary = computed(() =>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.clock" />
                   {{ labels.reading }}
                 </span>
-                <span class="flex items-center" style="gap: 7px; height: 28px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 999px;">
+                <span class="flex items-center" style="box-sizing: border-box; gap: 7px; height: 28px; padding: 0 12px; font-size: 13px; font-weight: 500; color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); border-radius: 999px;">
                   <span style="width: 6px; height: 6px; border-radius: 999px; background: #4ade80;" />
                   {{ minutes }} {{ readingTimeLabel }}
                 </span>
@@ -120,7 +120,7 @@ const summary = computed(() =>
                   <span
                     v-for="tag in tags.slice(0, 3)"
                     :key="tag"
-                    :style="{ display: 'flex', alignItems: 'center', height: '26px', padding: '0 10px', fontFamily: '\'Monaspace Krypton\', monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', borderRadius: '999px', color: getTagColor(tag).color, border: `1px solid ${getTagColor(tag).border}`, background: getTagColor(tag).bg }"
+                    :style="{ boxSizing: 'border-box', display: 'flex', alignItems: 'center', height: '26px', padding: '0 10px', fontFamily: 'Monaspace Krypton, monospace', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.06em', borderRadius: '999px', color: getTagColor(tag).color, border: `1px solid ${getTagColor(tag).border}`, background: getTagColor(tag).bg }"
                   >
                     {{ tag }}
                   </span>
@@ -131,7 +131,7 @@ const summary = computed(() =>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.user" />
                   {{ labels.author }}
                 </span>
-                <span class="flex items-center" style="gap: 6px; height: 28px; padding: 0 11px 0 3px; font-size: 14px; color: #ececf0; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">
+                <span class="flex items-center" style="box-sizing: border-box; gap: 6px; height: 28px; padding: 0 11px 0 3px; font-size: 14px; color: #ececf0; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;">
                   <img src="/images/og/person.png" alt="" width="22" height="22" style="width: 22px; height: 22px; border-radius: 999px;" />
                   kbrdn1
                 </span>
@@ -147,7 +147,7 @@ const summary = computed(() =>
         </div>
 
         <!-- Footer: icons, the address, a button -->
-        <div class="flex items-center justify-between" style="height: 52px; padding: 0 4px 0 16px;">
+        <div class="flex items-center justify-between" style="box-sizing: border-box; height: 52px; padding: 0 4px 0 16px;">
           <div class="flex items-center" style="gap: 16px;">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.more" />
             <span style="width: 1px; height: 20px; background: #303036;" />
@@ -155,7 +155,7 @@ const summary = computed(() =>
           </div>
           <div class="flex items-center" style="gap: 16px;">
             <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #9a9aa3;">kbrdn.dev/blog</span>
-            <span style="display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">kbrdn.dev</span>
+            <span style="box-sizing: border-box; display: flex; align-items: center; height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; color: #ececf0; background: #1b1b1f; border: 1px solid rgba(255,255,255,0.15); border-radius: 999px;">kbrdn.dev</span>
           </div>
         </div>
       </div>
