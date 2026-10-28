@@ -129,14 +129,14 @@ const icon = (item: Item) =>
 
 // Type tag colours: the tag tints itself from its text colour
 const TAG: Record<string, string> = {
-  push: 'text-neutral-500 dark:text-neutral-400',
-  pr: 'text-purple-600 dark:text-purple-500',
-  issue: 'text-green-700 dark:text-green-500',
-  comment: 'text-sky-600 dark:text-sky-500',
-  release: 'text-primary-600 dark:text-primary-500',
-  create: 'text-primary-600 dark:text-primary-500',
-  star: 'text-yellow-700 dark:text-yellow-500',
-  fork: 'text-neutral-500 dark:text-neutral-400',
+  push: 'text-neutral-600 dark:text-neutral-400',
+  pr: 'text-purple-700 dark:text-purple-500',
+  issue: 'text-green-800 dark:text-green-500',
+  comment: 'text-sky-800 dark:text-sky-500',
+  release: 'text-primary-800 dark:text-primary-500',
+  create: 'text-primary-800 dark:text-primary-500',
+  star: 'text-yellow-800 dark:text-yellow-500',
+  fork: 'text-neutral-600 dark:text-neutral-400',
 }
 </script>
 
@@ -215,7 +215,7 @@ const TAG: Record<string, string> = {
         <div class="md:pl-6">
           <p class="eyebrow">{{ t('activityPage.now.openTo') }}</p>
           <ul class="mt-3 flex flex-wrap gap-1.5">
-            <li v-for="item in OPEN_TO" :key="item" class="tag text-green-700 dark:text-green-500">
+            <li v-for="item in OPEN_TO" :key="item" class="tag text-green-800 dark:text-green-500">
               {{ item }}
             </li>
           </ul>
@@ -356,7 +356,7 @@ const TAG: Record<string, string> = {
       <div class="panel-card flex items-center gap-5 p-6 sm:p-8">
         <UiMascot mood="hoodie-cool" :size="72" />
         <div>
-          <span class="tag text-green-700 dark:text-green-500">
+          <span class="tag text-green-800 dark:text-green-500">
             <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
             {{ t('hero.availableForHire') }}
           </span>

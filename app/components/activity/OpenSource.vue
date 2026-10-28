@@ -68,12 +68,12 @@ const STATUS_BAR: Record<string, string> = {
 }
 // Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
-  released: 'text-green-700 dark:text-green-500',
-  merged: 'text-green-700 dark:text-green-500',
-  inDevelopment: 'text-primary-500',
-  review: 'text-primary-500',
-  archived: 'text-neutral-500',
-  report: 'text-sky-500',
+  released: 'text-green-800 dark:text-green-500',
+  merged: 'text-green-800 dark:text-green-500',
+  inDevelopment: 'text-primary-800 dark:text-primary-500',
+  review: 'text-primary-800 dark:text-primary-500',
+  archived: 'text-neutral-600 dark:text-neutral-400',
+  report: 'text-sky-800 dark:text-sky-500',
 }
 
 // "PR #403295" / "ISSUE #2689", from the link: the number is not stored on its own

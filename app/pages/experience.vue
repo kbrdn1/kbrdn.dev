@@ -266,7 +266,9 @@ const list = (key: string, count: number) =>
                       >
                         {{ item.name }}
                       </span>
-                      <span class="block truncate text-xs text-neutral-500">{{ item.detail }}</span>
+                      <span class="block truncate text-xs text-neutral-500 dark:text-neutral-400">{{
+                        item.detail
+                      }}</span>
                     </span>
                   </span>
                 </a>
@@ -441,7 +443,7 @@ const list = (key: string, count: number) =>
       <div class="panel-card flex items-center gap-5 p-6 sm:p-8">
         <UiMascot mood="hoodie-cool" :size="72" />
         <div>
-          <span class="tag text-green-700 dark:text-green-500">
+          <span class="tag text-green-800 dark:text-green-500">
             <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
             {{ t('hero.availableForHire') }}
           </span>

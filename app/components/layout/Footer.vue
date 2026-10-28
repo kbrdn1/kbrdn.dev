@@ -169,7 +169,7 @@ const currentYear = new Date().getFullYear()
               <h3 class="eyebrow">
                 {{ t('footer.availability.title') }}
               </h3>
-              <span class="tag text-green-700 dark:text-green-500">
+              <span class="tag text-green-800 dark:text-green-500">
                 <span class="relative flex size-1.5" aria-hidden="true">
                   <span
                     class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"

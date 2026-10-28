@@ -41,29 +41,29 @@ function dismiss() {
         <!-- Badge -->
         <span
           v-if="badge"
-          class="tag pointer-events-none absolute top-2.5 right-2.5 text-primary-500"
+          class="tag pointer-events-none absolute top-2.5 right-2.5 text-primary-800 dark:text-primary-500"
         >
           {{ badge }}
         </span>
 
         <!-- Title overlay on image -->
         <div class="pointer-events-none absolute bottom-0 left-0 right-0 p-3">
-          <h4 class="text-sm font-medium leading-snug text-white">
+          <p class="text-sm font-medium leading-snug text-white">
             {{ title }}
-          </h4>
+          </p>
         </div>
       </div>
 
       <!-- No image: title in body -->
       <div v-else class="p-3 pb-0">
         <div class="flex items-start justify-between gap-2">
-          <h4
+          <p
             class="text-sm font-bold text-neutral-900 dark:text-neutral-100 leading-snug"
             style="font-family: 'Fenix', serif"
           >
             {{ title }}
-          </h4>
-          <span v-if="badge" class="tag shrink-0 text-primary-500">
+          </p>
+          <span v-if="badge" class="tag shrink-0 text-primary-800 dark:text-primary-500">
             {{ badge }}
           </span>
         </div>

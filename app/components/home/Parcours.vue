@@ -109,7 +109,9 @@ const rows = computed<Row[]>(() => [
               </span>
               <span class="eyebrow block truncate sm:hidden">{{ row.years }}</span>
             </span>
-            <span class="ml-auto hidden truncate text-xs text-neutral-500 md:block">
+            <span
+              class="ml-auto hidden truncate text-xs text-neutral-500 md:block dark:text-neutral-400"
+            >
               {{ row.detail }}
             </span>
           </NuxtLink>

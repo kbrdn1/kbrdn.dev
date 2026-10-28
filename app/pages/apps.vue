@@ -165,12 +165,12 @@ const STATUS_CLASS: Record<string, string> = {
       :title="app.name"
       :subtitle="app.language"
       class="scroll-mt-28"
-      :class="{ 'opacity-80': app.status === 'archived' }"
+      :class="{ '[&_img]:opacity-80': app.status === 'archived' }"
     >
       <template #actions>
         <span
           v-if="releases?.[app.repo]?.version"
-          class="tag text-neutral-500 dark:text-neutral-400"
+          class="tag text-neutral-600 dark:text-neutral-400"
         >
           {{ releases[app.repo]!.version }}
         </span>

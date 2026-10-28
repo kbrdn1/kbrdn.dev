@@ -202,3 +202,19 @@
   font-family: "Fenix", serif;
   font-style: italic;
 }
+
+/* Light: the articles' links (Nuxt UI's text-primary) one step darker than --ui-primary,
+   which also colours the dither: 600 is 3.9:1 on the page, 700 is 5.2:1 */
+.light .prose-blog a {
+  color: var(--color-primary-700);
+}
+
+/* The code's tokens keep their theme's hue, moved to 4.5:1 on the block: material-theme-
+   lighter falls to 1.7:1 on the light block, palenight's comments to 3.5:1 on the dark one.
+   Measured on every token colour of both themes: 55% of the colour on black, 85% on white. */
+html.light .prose-blog .shiki span {
+  color: color-mix(in srgb, var(--shiki-light) 55%, black);
+}
+html:is(.dark, .blur) .prose-blog .shiki span {
+  color: color-mix(in srgb, var(--shiki-dark) 85%, white);
+}

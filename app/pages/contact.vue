@@ -253,7 +253,7 @@ const SOCIALS = [
           <div class="py-4">
             <dt class="eyebrow">{{ t('contactPage.availability') }}</dt>
             <dd class="mt-2">
-              <span class="tag text-green-700 dark:text-green-500">
+              <span class="tag text-green-800 dark:text-green-500">
                 <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
                 {{ t('hero.availableForHire') }}
               </span>

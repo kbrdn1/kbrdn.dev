@@ -70,7 +70,7 @@ onUnmounted(() => {
     class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
   >
     <div class="min-w-0 flex-1">
-      <span v-if="isHirable" class="tag mb-5 text-green-700 dark:text-green-500">
+      <span v-if="isHirable" class="tag mb-5 text-green-800 dark:text-green-500">
         <span class="relative flex size-1.5" aria-hidden="true">
           <span
             class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"
