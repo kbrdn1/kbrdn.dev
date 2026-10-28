@@ -26,9 +26,8 @@ function steps(art: Raster, g: number, dark: boolean) {
   }
 }
 
-// The crab, its feet's middle at (x, y): shell, eyes up on stalks, claws, three legs a side.
-// The career's hero (utils/heroes) climbs with it too
-export function crab(
+// The crab, its feet's middle at (x, y): shell, eyes up on stalks, claws, three legs a side
+function crab(
   art: Raster,
   x: number,
   y: number,
