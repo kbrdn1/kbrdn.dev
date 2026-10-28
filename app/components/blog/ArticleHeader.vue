@@ -46,16 +46,12 @@ const banner = computed(() =>
           </template>
         </ClientOnly>
         <div class="p-4 sm:p-6">
-          <!-- The slot (the listen button) sits on the meta line, right-aligned -->
-          <div class="flex items-center justify-between gap-3">
-            <p class="eyebrow">
-              <time v-if="post.publishedAt" :datetime="post.publishedAt">
-                {{ formatDate(post.publishedAt, 'long') }}
-              </time>
-              · {{ readingTime }} {{ t('blog.readingTime') }}
-            </p>
-            <slot />
-          </div>
+          <p class="eyebrow">
+            <time v-if="post.publishedAt" :datetime="post.publishedAt">
+              {{ formatDate(post.publishedAt, 'long') }}
+            </time>
+            · {{ readingTime }} {{ t('blog.readingTime') }}
+          </p>
           <h1
             class="mt-3 text-3xl tracking-tight text-neutral-900 sm:text-4xl lg:text-5xl dark:text-neutral-100"
             :lang="lang"

@@ -91,10 +91,11 @@ function onCanPlay() {
   }
 }
 
-// The article reader takes the dock: the music stops instead of talking over it, including the
-// next track still loading after one ended (onCanPlay would start it)
-const dock = useDock()
-watch(dock, (value) => {
+// One voice at a time: the music says it plays (the audio's play event), and stops when the
+// article reader starts, including the next track still loading after one ended (onCanPlay
+// would start it)
+const nowPlaying = usePlaying()
+watch(nowPlaying, (value) => {
   if (value !== 'speech') return
   shouldAutoPlay.value = false
   if (!isPlaying.value) return
@@ -495,6 +496,7 @@ function formatTime(seconds: number): string {
         @ended="onAudioEnded"
         @loadedmetadata="onTimeUpdate"
         @canplay="onCanPlay"
+        @play="nowPlaying = 'music'"
       />
     </div>
   </div>

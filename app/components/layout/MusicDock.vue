@@ -5,12 +5,7 @@
 // playing across pages and layouts. The player, and its /api/music fetch, only mounts on
 // first open, then stays mounted while hidden so playback carries on.
 const { t } = useI18n()
-// Shared with the article reader: opening one closes the other
-const dock = useDock()
-const open = computed({
-  get: () => dock.value === 'music',
-  set: (value) => (dock.value = value ? 'music' : null),
-})
+const open = ref(false)
 const loaded = ref(false)
 const toggleButton = ref<HTMLButtonElement>()
 

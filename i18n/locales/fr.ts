@@ -148,18 +148,11 @@ export default {
 
   // Article reader (speech synthesis)
   listen: {
-    listen: 'Écouter',
+    listen: "Écouter l'article",
     from: "Écouter à partir d'ici",
-    player: "Lecture de l'article",
-    play: 'Lecture',
-    pause: 'Pause',
-    previous: 'Section précédente',
-    next: 'Section suivante',
-    showList: 'Afficher les sections',
-    hideList: 'Masquer les sections',
-    sections: 'Sections',
-    close: 'Fermer la lecture',
-    progress: 'Progression de la lecture',
+    pause: 'Mettre en pause',
+    // Not the table of contents' "reading progress", which follows the scroll
+    progress: "Progression de l'écoute",
     sentenceOf: 'Phrase {n} sur {total}',
     voice: 'Voix : {name}',
   },
