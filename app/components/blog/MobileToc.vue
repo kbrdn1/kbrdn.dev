@@ -20,7 +20,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const open = ref(false)
-const { playing, started, sectionId } = props.reader
+const { playing, started, sectionId, progress: listened } = props.reader
+// The bar never grows (the music card and the page's scroll padding sit on its closed height):
+// listening, its ticks show the listening progress, and the seekable slider opens in the panel,
+// where the ticks fold away meanwhile. One bar at a time
+const barProgress = computed(() => (started.value ? listened.value : (props.progress ?? 0)))
 
 const { steps, current } = useTocSteps(
   () => props.items,
@@ -42,6 +46,7 @@ function handleScrollTo(id: string) {
       :aria-label="t('blog.toc')"
     >
       <UiExpand :open="open">
+        <BlogReaderBar :reader="reader" class="px-1.5 pt-1 pb-2.5" />
         <div
           id="mobile-toc"
           class="panel-card mb-1 max-h-[55vh] overflow-y-auto p-1.5 scrollbar-none"
@@ -54,9 +59,6 @@ function handleScrollTo(id: string) {
           />
         </div>
       </UiExpand>
-
-      <!-- Listening: the reader's slider opens above the bar, whose scroll ticks fold away -->
-      <BlogReaderBar :reader="reader" class="px-3 pt-2.5" />
 
       <!-- The reader's play beside the bar, not inside it: the bar is a button -->
       <div class="flex items-center gap-2 pl-2">
@@ -88,19 +90,19 @@ function handleScrollTo(id: string) {
             :class="
               cn(
                 'ticks h-3 shrink-0 bg-neutral-300 transition-[width,opacity] duration-300 ease-out-quint dark:bg-neutral-700',
-                started ? 'w-0 opacity-0' : 'w-10',
+                started && open ? 'w-0 opacity-0' : 'w-10',
               )
             "
-            :aria-hidden="started || undefined"
+            :aria-hidden="(started && open) || undefined"
             role="progressbar"
-            :aria-valuenow="progress ?? 0"
+            :aria-valuenow="Math.round(barProgress)"
             aria-valuemin="0"
             aria-valuemax="100"
-            :aria-label="t('blog.readingProgress')"
+            :aria-label="started ? t('listen.progress') : t('blog.readingProgress')"
           >
             <span
               class="block h-full bg-primary-500 transition-[width] duration-300"
-              :style="{ width: `${progress ?? 0}%` }"
+              :style="{ width: `${barProgress}%` }"
             />
           </span>
           <span class="eyebrow shrink-0 tabular-nums">

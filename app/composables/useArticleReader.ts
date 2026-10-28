@@ -58,8 +58,8 @@ export function useArticleReader(title: () => string, lang: () => string) {
   const index = ref(0)
   const playing = ref(false)
   const total = computed(() => sentences.value.length)
-  // From the first play to the end of the article (or its language changing): the progress
-  // bar stays open meanwhile, paused on the first sentence or seeked back to it included
+  // From the first play until the article changes language: the progress bar stays open,
+  // paused on the first sentence, seeked back to it or at the article's end included
   const started = ref(false)
   const progress = computed(() => (total.value ? (index.value / total.value) * 100 : 0))
   // The heading of the section being read ('' during the title)
@@ -88,10 +88,9 @@ export function useArticleReader(title: () => string, lang: () => string) {
     utterance.onend = () => {
       if (utterance !== current) return
       if (i + 1 < total.value) return speak(i + 1)
-      // The end: the next play starts over
+      // The end: the next play starts over, the progress bar stays (with the focus it may have)
       current = undefined
       playing.value = false
-      started.value = false
       index.value = 0
     }
     utterance.onerror = () => {
