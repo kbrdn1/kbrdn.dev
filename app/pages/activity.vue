@@ -19,6 +19,11 @@ useSiteOgImage('Default', {
   subtitle: t('activityPage.ogSubtitle'),
   scene: 'commits',
 })
+usePageSchema(
+  'CollectionPage',
+  () => ({ name: t('activityPage.seoTitle'), description: t('activityPage.seoDescription') }),
+  { trail: () => [{ name: t('nav.activity'), path: '/activity' }] },
+)
 
 const { data, status } = useFetch('/api/github/activity', {
   server: false,

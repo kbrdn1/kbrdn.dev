@@ -19,6 +19,16 @@ useSiteOgImage('Default', {
   subtitle: t('experiencePage.ogSubtitle'),
   scene: 'climb',
 })
+const person = usePersonRef()
+usePageSchema(
+  'ProfilePage',
+  () => ({
+    name: t('experiencePage.seoTitle'),
+    description: t('experiencePage.seoDescription'),
+    mainEntity: person,
+  }),
+  { trail: () => [{ name: t('nav.experience'), path: '/experience' }] },
+)
 
 const period = (start: string, end: string | null) =>
   `${formatMonth(start, locale.value)} – ${end ? formatMonth(end, locale.value) : t('experiences.present')}`

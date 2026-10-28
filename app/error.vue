@@ -12,6 +12,8 @@ const code = computed(() => String(props.error.status ?? props.error.statusCode 
 const notFound = computed(() => code.value === '404')
 
 useSeoMeta({ title: () => (notFound.value ? t('error.title') : t('error.titleOther')) })
+// app.vue's head, minus what an error page must not claim (canonical, JSON-LD)
+useSiteSeo({ indexable: false })
 
 // A 5×7 pixel font, one row per string
 const FONT: Record<string, string[]> = {

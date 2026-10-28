@@ -15,8 +15,11 @@ const { data: posts } = await useAsyncData(
 
 // SEO metadata
 useSeoMeta({
-  title: t('blog.title'),
-  description: t('blog.description'),
+  title: () => `${t('blog.title')} · Kylian Bardini`,
+  description: () => t('blog.description'),
+  ogTitle: () => t('blog.title'),
+  ogDescription: () => t('blog.description'),
+  twitterCard: 'summary_large_image',
 })
 
 useSiteOgImage('Default', {
@@ -25,6 +28,35 @@ useSiteOgImage('Default', {
   description: t('blog.description'),
   scene: 'blog',
 })
+
+// The blog and its posts, newest first
+const siteUrl = useSiteUrl()
+const person = usePersonRef()
+usePageSchema(
+  'CollectionPage',
+  () => ({ name: t('blog.title'), description: t('blog.description') }),
+  {
+    trail: () => [{ name: t('nav.blog'), path: '/blog' }],
+    nodes: () => [
+      {
+        '@type': 'Blog',
+        '@id': `${siteUrl('/blog')}#blog`,
+        url: siteUrl('/blog'),
+        name: t('blog.title'),
+        description: t('blog.description'),
+        author: person,
+        blogPost: [...(posts.value ?? [])]
+          .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+          .map((post) => ({
+            '@type': 'BlogPosting',
+            headline: post.title,
+            url: siteUrl(postUrl(post)),
+            ...(post.publishedAt && { datePublished: post.publishedAt }),
+          })),
+      },
+    ],
+  },
+)
 
 // Active tag filter
 const activeTag = ref<string | null>(null)

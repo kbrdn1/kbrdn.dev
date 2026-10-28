@@ -13,11 +13,10 @@ export default {
 
   // SEO
   seo: {
-    title: 'Kylian Bardini - Web Engineer',
+    title: 'Kylian Bardini · Full Stack Developer',
     description:
-      'Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.',
-    ogTitle: 'Kylian Bardini - Web Engineer',
-    ogDescription: 'Developer, Designer, Creator. Building things for the web.',
+      'Kylian Bardini, full stack developer in Nancy: TypeScript, Nuxt, Laravel, AWS and Rust. His journey, his open source terminal tools and his articles.',
+    jobTitle: 'Full Stack Developer',
   },
 
   // Hero Section
@@ -631,7 +630,6 @@ export default {
     copyLink: 'Copy link',
     linkCopied: 'Link copied!',
     moreArticles: 'More articles',
-    notFound: 'Article not found',
     nextPost: {
       eyebrow: 'Up next',
       text: "The next post's spot, still being written.",

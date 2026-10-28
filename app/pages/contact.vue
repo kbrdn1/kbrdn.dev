@@ -19,6 +19,11 @@ useSiteOgImage('Default', {
   subtitle: t('contactPage.ogSubtitle'),
   scene: 'mail',
 })
+usePageSchema(
+  'ContactPage',
+  () => ({ name: t('contactPage.seoTitle'), description: t('contactPage.seoDescription') }),
+  { trail: () => [{ name: t('nav.contact'), path: '/contact' }] },
+)
 
 const TOPICS = ['role', 'project', 'openSource', 'other'] as const
 

@@ -32,19 +32,20 @@ function switchTab(step: number) {
 }
 const { postUrl } = useBlogUrl()
 
-// SEO metadata
+// SEO metadata: the site's own words (no `pages` entry backs the home)
 useSeoMeta({
-  title: page.value?.title
-    ? `${page.value.title} - Full Stack Developer`
-    : 'Kylian Bardini - Full Stack Developer',
-  description:
-    page.value?.bio?.[0] ||
-    'Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.',
-  ogTitle: page.value?.title || 'Kylian Bardini - Full Stack Developer',
-  ogDescription:
-    page.value?.bio?.[0] || 'Developer, Designer, Creator. Building things for the web.',
+  title: () => t('seo.title'),
+  description: () => t('seo.description'),
+  ogTitle: () => t('seo.title'),
+  ogDescription: () => t('seo.description'),
   twitterCard: 'summary_large_image',
 })
+const person = usePersonRef()
+usePageSchema('ProfilePage', () => ({
+  name: t('seo.title'),
+  description: t('seo.description'),
+  mainEntity: person,
+}))
 
 useSiteOgImage('Default', {
   title: page.value?.title || 'Kylian Bardini',

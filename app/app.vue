@@ -1,3 +1,8 @@
+<script setup lang="ts">
+// The head every page shares: language, canonical, Open Graph frame, the site's JSON-LD
+useSiteSeo()
+</script>
+
 <template>
   <UApp>
     <NuxtLayout>

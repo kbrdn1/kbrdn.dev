@@ -72,6 +72,33 @@ const APPS = [
   },
 ] as const
 
+// Each app as source code (no SoftwareApplication: its rich result wants a price or a rating)
+const person = usePersonRef()
+usePageSchema(
+  'CollectionPage',
+  () => ({
+    name: t('appsPage.seoTitle'),
+    description: t('appsPage.seoDescription'),
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: APPS.map((app, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'SoftwareSourceCode',
+          name: app.name,
+          description: t(`appsPage.apps.${app.key}.tagline`),
+          codeRepository: `https://github.com/kbrdn1/${app.repo}`,
+          programmingLanguage: app.language,
+          ...('site' in app && { url: app.site }),
+          author: person,
+        },
+      })),
+    },
+  }),
+  { trail: () => [{ name: t('nav.apps'), path: '/apps' }] },
+)
+
 const { data: releases } = useFetch<Record<string, { version: string } | null>>(
   '/api/github/releases',
   { server: false, lazy: true, default: () => ({}) },

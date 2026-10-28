@@ -17,6 +17,9 @@ const { data: post } = await useAsyncData(
   },
   { watch: [locale] },
 )
+// Neither language has it: a real 404 for the reader and the crawlers, not an empty 200
+if (!post.value)
+  throw createError({ statusCode: 404, statusMessage: 'Article not found', fatal: true })
 
 // Fetch related posts (recent posts excluding current)
 const { data: relatedPosts } = await useAsyncData(
@@ -70,20 +73,59 @@ async function copyLink() {
   }
 }
 
-if (post.value) {
-  useSeoMeta({
-    title: post.value.title,
-    description: post.value.description,
-  })
-  useSiteOgImage('Blog', {
-    title: post.value.title,
-    description: post.value.description,
-    date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
-    tags: post.value.tags || [],
-    minutes: minutes.value,
-    bannerImage: post.value.bannerImage,
-  })
-}
+// The language the article is written in: the other one's when it isn't translated yet
+const postLang = computed(() => (post.value?.id.startsWith('blog_fr') ? 'fr' : 'en'))
+const siteUrl = useSiteUrl()
+const person = usePersonRef()
+useSeoMeta({
+  title: () => post.value?.title,
+  description: () => post.value?.description,
+  ogTitle: () => post.value?.title,
+  ogDescription: () => post.value?.description,
+  ogType: 'article',
+  articlePublishedTime: () => post.value?.publishedAt,
+  articleAuthor: [siteUrl('/')],
+  articleTag: () => post.value?.tags ?? [],
+  twitterCard: 'summary_large_image',
+})
+usePageSchema(
+  'WebPage',
+  () => ({ name: post.value?.title ?? '', description: post.value?.description }),
+  {
+    trail: () => [
+      { name: t('nav.blog'), path: '/blog' },
+      { name: post.value?.title ?? '', path: route.path },
+    ],
+    nodes: () => [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${siteUrl(route.path)}#article`,
+        mainEntityOfPage: { '@id': `${siteUrl(route.path)}#webpage` },
+        isPartOf: { '@id': `${siteUrl('/blog')}#blog` },
+        headline: post.value?.title,
+        description: post.value?.description,
+        inLanguage: postLang.value,
+        ...(post.value?.publishedAt && {
+          datePublished: post.value.publishedAt,
+          dateModified: post.value.publishedAt,
+        }),
+        ...(post.value?.bannerImage && { image: siteUrl(post.value.bannerImage) }),
+        keywords: post.value?.tags?.join(', '),
+        timeRequired: `PT${minutes.value}M`,
+        author: person,
+        publisher: person,
+      },
+    ],
+  },
+)
+useSiteOgImage('Blog', {
+  title: post.value.title,
+  description: post.value.description,
+  date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
+  tags: post.value.tags || [],
+  minutes: minutes.value,
+  bannerImage: post.value.bannerImage,
+})
 
 // Table of contents
 interface TocItem {
@@ -243,12 +285,6 @@ function scrollToHeading(id: string) {
           <BlogBackLink />
         </footer>
       </article>
-
-      <!-- 404 state -->
-      <div v-else class="w-full max-w-3xl mx-auto px-6 py-24 text-center">
-        <p class="text-lg text-neutral-500 mb-6">{{ t('blog.notFound') }}</p>
-        <BlogBackLink />
-      </div>
     </div>
 
     <!-- Mobile TOC -->
