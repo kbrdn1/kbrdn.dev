@@ -22,6 +22,7 @@
 #   GITHUB_TOKEN       (obligatoire pour github contribs)
 #   RESEND_API_KEY     (obligatoire pour contact form)
 #   NUXT_STUDIO_TOKEN  (optionnel)
+#   NUXT_APP_SECRET    (obligatoire, ≥ 32 caractères : signe les URLs /_og/*)
 
 set -euo pipefail
 
@@ -147,6 +148,11 @@ else
   fi
 
   : "${IMAGE:?--image ou --build requis}"
+  # Sans lui le conteneur passe healthy mais toutes les images OG répondent 500 :
+  # rien d'autre ne le verrait, donc on refuse ici.
+  NUXT_APP_SECRET="${NUXT_APP_SECRET:-}"
+  [[ ${#NUXT_APP_SECRET} -ge 32 ]] \
+    || die "NUXT_APP_SECRET absent ou < 32 caractères : les images OG répondraient 500"
 
   docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
 
@@ -165,6 +171,7 @@ else
     -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
     -e RESEND_API_KEY="${RESEND_API_KEY:-}" \
     -e NUXT_STUDIO_TOKEN="${NUXT_STUDIO_TOKEN:-}" \
+    -e NUXT_APP_SECRET="$NUXT_APP_SECRET" \
     -p "127.0.0.1:$NEW_PORT:3000" \
     --health-cmd "wget -q -O /dev/null http://127.0.0.1:3000/api/health" \
     --health-interval=5s \

@@ -50,11 +50,11 @@ expect_reject "variable inconnue"    'TOTO=1 ping'
 
 echo "commandes réellement émises par les workflows"
 # Exactement ce que construisent deploy.yml et release.yml (secrets tronqués).
-expect_ok "5 variables autorisées + ping" \
-  'ENV=prod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:v1.0.0 GITHUB_TOKEN=t RESEND_API_KEY=r NUXT_STUDIO_TOKEN=s ping' \
+expect_ok "6 variables autorisées + ping" \
+  'ENV=prod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:v1.0.0 GITHUB_TOKEN=t RESEND_API_KEY=r NUXT_STUDIO_TOKEN=s NUXT_APP_SECRET=a ping' \
   'pong from'
 expect_ok "secrets vides (NUXT_STUDIO_TOKEN non défini)" \
-  'ENV=preprod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:dev GITHUB_TOKEN=t RESEND_API_KEY= NUXT_STUDIO_TOKEN= ping' \
+  'ENV=preprod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:dev GITHUB_TOKEN=t RESEND_API_KEY= NUXT_STUDIO_TOKEN= NUXT_APP_SECRET= ping' \
   'pong from'
 
 echo "actions"
