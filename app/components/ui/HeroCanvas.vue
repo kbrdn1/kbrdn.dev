@@ -25,13 +25,7 @@ function put(target: HTMLCanvasElement, raster: ReturnType<Hero['paint']>) {
   target.width = raster.w
   target.height = raster.h
   const ctx = target.getContext('2d')!
-  const image = ctx.createImageData(raster.w, raster.h)
-  raster.cells.forEach((color, i) => {
-    if (!color) return
-    const n = parseInt(color.slice(1), 16)
-    image.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4)
-  })
-  ctx.putImageData(image, 0, 0)
+  ctx.putImageData(raster.toImage(ctx), 0, 0)
 }
 
 function draw(at: number) {

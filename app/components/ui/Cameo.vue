@@ -180,14 +180,7 @@ function run() {
   const frame = (now: number) => {
     const t = Math.max(0, now - start)
     if (t >= cameo.duration) return stop()
-    const raster = cameo.paint(t, dark())
-    image.data.fill(0)
-    raster.cells.forEach((color, i) => {
-      if (!color) return
-      const n = parseInt(color.slice(1), 16)
-      image.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4)
-    })
-    paint.putImageData(image, 0, 0)
+    paint.putImageData(cameo.paint(t, dark()).toImage(paint, image), 0, 0)
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, el.width, el.height)
     ctx.setTransform(dpr * scale, 0, 0, dpr * scale, x, y)

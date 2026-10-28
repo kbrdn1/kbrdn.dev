@@ -153,6 +153,17 @@ export class Raster {
     return this
   }
 
+  /** Its pixels as image data (into `image` when given, else a new one), empty ones clear */
+  toImage(ctx: CanvasRenderingContext2D, image = ctx.createImageData(this.w, this.h)) {
+    image.data.fill(0)
+    this.cells.forEach((color, i) => {
+      if (!color) return
+      const n = parseInt(color.slice(1), 16)
+      image.data.set([n >> 16, (n >> 8) & 255, n & 255, 255], i * 4)
+    })
+    return image
+  }
+
   /** A copy, to paint over without touching this one */
   copy() {
     const copy = new Raster(this.w, this.h)
