@@ -87,14 +87,14 @@ const appVersion = useRuntimeConfig().public.appVersion
                 {{ t('blogNav.portfolio') }}
               </h3>
               <nav :aria-label="t('blogNav.portfolio')" class="flex flex-col space-y-2">
-                <a
+                <NuxtLinkLocale
                   v-for="link in portfolioLinks"
                   :key="link.href"
-                  :href="link.href"
+                  :to="link.href"
                   class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
                 >
                   <UiScrambleText :text="link.label" effect="link" />
-                </a>
+                </NuxtLinkLocale>
               </nav>
             </div>
 
@@ -104,14 +104,14 @@ const appVersion = useRuntimeConfig().public.appVersion
                 {{ t('sections.blog') }}
               </h3>
               <nav :aria-label="t('sections.blog')" class="flex flex-col space-y-2">
-                <a
+                <NuxtLinkLocale
                   v-for="link in blogLinks"
                   :key="link.href"
-                  :href="link.href"
+                  :to="link.href"
                   class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
                 >
                   <UiScrambleText :text="link.label" effect="link" />
-                </a>
+                </NuxtLinkLocale>
               </nav>
             </div>
 
