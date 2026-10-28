@@ -148,11 +148,13 @@ else
   fi
 
   : "${IMAGE:?--image ou --build requis}"
-  # Sans lui le conteneur passe healthy mais toutes les images OG répondent 500 :
-  # rien d'autre ne le verrait, donc on refuse ici.
+  # Sans lui le conteneur passe healthy mais les images OG (nuxt-og-image 7)
+  # répondent 500 : rien d'autre ne le verrait. Un avertissement et pas un
+  # refus : un rollback vers une version d'avant la v7 n'en a pas besoin, et
+  # l'opérateur qui redéploie à la main n'a pas le secret du CI sous la main.
   NUXT_APP_SECRET="${NUXT_APP_SECRET:-}"
   [[ ${#NUXT_APP_SECRET} -ge 32 ]] \
-    || die "NUXT_APP_SECRET absent ou < 32 caractères : les images OG répondraient 500"
+    || warn "NUXT_APP_SECRET absent ou < 32 caractères : les images OG de cette version répondront 500"
 
   docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
 

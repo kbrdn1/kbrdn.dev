@@ -162,7 +162,7 @@ Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
 - `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - Nuxt Studio API
-- `NUXT_APP_SECRET` - Nuxt app secret (64 hex chars, `openssl rand -hex 32`): nuxt-og-image 7 signs the `/_og/*` URLs with it. Missing or under 32 characters, every OG image returns 500, so `scripts/deploy.sh` refuses to start a container without it. Rotating it invalidates the signed OG URLs already cached by social networks
+- `NUXT_APP_SECRET` - Nuxt app secret (64 hex chars, `openssl rand -hex 32`): nuxt-og-image 7 signs the `/_og/*` URLs with it. Missing or under 32 characters, every OG image returns 500; `scripts/deploy.sh` warns but still deploys (a rollback to a pre-v7 image does not need it). Rotating it invalidates the signed OG URLs already cached by social networks
 
 Repo-level **variables** (not secrets), passed as build-args by both workflows:
 - `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
