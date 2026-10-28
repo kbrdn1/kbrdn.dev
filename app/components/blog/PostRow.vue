@@ -29,7 +29,7 @@ const banner = computed(() =>
 <template>
   <!-- A card, after disarto's notes panel: date and author in mono, the title, the summary,
        and the banner through the pixel layer on the right -->
-  <NuxtLink
+  <NuxtLinkLocale
     :to="postUrl(post)"
     class="panel-card group relative isolate flex overflow-hidden transition-colors hover:border-primary-500/50"
   >
@@ -58,5 +58,5 @@ const banner = computed(() =>
         </div>
       </div>
     </ClientOnly>
-  </NuxtLink>
+  </NuxtLinkLocale>
 </template>

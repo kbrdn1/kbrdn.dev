@@ -49,7 +49,7 @@ usePageSchema('ProfilePage', () => ({
 
 useSiteOgImage('Default', {
   title: page.value?.title || 'Kylian Bardini',
-  subtitle: page.value?.titles?.[0] || 'Full Stack Developer',
+  subtitle: page.value?.titles?.[0] || t('seo.jobTitle'),
   handle: page.value?.handle || '@kbrdn1',
   isHirable: page.value?.isHirable ?? true,
   figures: CAREER_FIGURES.map((figure) => ({
@@ -151,7 +151,7 @@ const content = computed(() => {
               class="panel-card divide-y divide-dashed divide-neutral-200 px-5 dark:divide-neutral-800"
             >
               <li v-for="post in latestPosts" :key="post.path">
-                <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+                <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
                   <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
                     {{ formatDate(post.publishedAt, 'short') }}
                   </span>
@@ -160,14 +160,14 @@ const content = computed(() => {
                   >
                     {{ post.title }}
                   </span>
-                </NuxtLink>
+                </NuxtLinkLocale>
               </li>
             </ul>
             <template #footer>
-              <NuxtLink to="/blog" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale to="/blog" class="btn btn-outline btn-sm">
                 {{ t('blog.viewAll') }}
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </UiPanel>
         </section>
@@ -234,10 +234,10 @@ const content = computed(() => {
                   aria-hidden="true"
                 />
               </a>
-              <NuxtLink v-else to="/experience#experience" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale v-else to="/experience#experience" class="btn btn-outline btn-sm">
                 <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </UiPanel>
         </section>
@@ -252,10 +252,10 @@ const content = computed(() => {
           <UiPanel :title="t('nav.experience')">
             <HomeParcours class="panel-card p-5 sm:p-6" />
             <template #footer>
-              <NuxtLink to="/experience" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale to="/experience" class="btn btn-outline btn-sm">
                 <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </UiPanel>
         </section>

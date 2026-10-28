@@ -65,7 +65,7 @@ const rows = computed<Row[]>(() => [
       />
       <ol>
         <li v-for="row in rows" :key="row.id">
-          <NuxtLink
+          <NuxtLinkLocale
             :to="`/experience#${row.id}`"
             class="group relative isolate -mx-3 flex items-center gap-4 overflow-hidden px-3 py-2.5 transition-colors"
           >
@@ -114,7 +114,7 @@ const rows = computed<Row[]>(() => [
             >
               {{ row.detail }}
             </span>
-          </NuxtLink>
+          </NuxtLinkLocale>
         </li>
       </ol>
     </div>

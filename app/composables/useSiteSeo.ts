@@ -4,8 +4,8 @@ import { useI18n } from '#imports'
 // and the site's JSON-LD (the person and the website, referenced by @id from each page's
 // own nodes). Called once by app.vue, and by error.vue, which replaces it on errors.
 //
-// The language comes from a cookie on shared paths (no prefix): lang, og:locale and
-// inLanguage follow the language served, and the canonical is the path alone.
+// French at the root, English under /en/ (nuxt.config): each page's canonical is its own
+// language's address, hreflang points at the other one, x-default at the French root.
 
 const SAME_AS = [
   'https://github.com/kbrdn1',
@@ -53,6 +53,7 @@ export function usePageSchema(
   type: string,
   page: () => { name: string; description?: string; [key: string]: unknown },
   options: {
+    /** Unprefixed paths: they follow the page's language */
     trail?: () => { name: string; path: string }[]
     nodes?: () => Record<string, unknown>[]
   } = {},
@@ -60,6 +61,7 @@ export function usePageSchema(
   const { t, locale } = useI18n()
   const route = useRoute()
   const url = useSiteUrl()
+  const localePath = useLocalePath()
   const person = usePersonRef()
   useJsonLd('page', () => [
     {
@@ -81,7 +83,7 @@ export function usePageSchema(
                 '@type': 'ListItem',
                 position: i + 1,
                 name: crumb.name,
-                item: url(crumb.path),
+                item: url(localePath(crumb.path)),
               }),
             ),
           },
@@ -94,12 +96,29 @@ export function useSiteSeo({ indexable = true } = {}) {
   const { t, locale } = useI18n()
   const route = useRoute()
   const url = useSiteUrl()
+  const switchLocalePath = useSwitchLocalePath()
   const person = usePersonRef()
   const lang = computed(() => locale.value as keyof typeof OG_LOCALES)
 
   useHead({
     htmlAttrs: { lang },
-    link: indexable ? [{ key: 'canonical', rel: 'canonical', href: () => url(route.path) }] : [],
+    link: indexable
+      ? [
+          { key: 'canonical', rel: 'canonical', href: () => url(route.path) },
+          ...(['fr', 'en'] as const).map((code) => ({
+            key: `hreflang-${code}`,
+            rel: 'alternate',
+            hreflang: code,
+            href: () => url(switchLocalePath(code) || '/'),
+          })),
+          {
+            key: 'hreflang-x-default',
+            rel: 'alternate',
+            hreflang: 'x-default',
+            href: () => url(switchLocalePath('fr') || '/'),
+          },
+        ]
+      : [],
   })
   useSeoMeta({
     ogSiteName: 'kbrdn.dev',

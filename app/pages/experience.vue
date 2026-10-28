@@ -202,10 +202,10 @@ const list = (key: string, count: number) =>
           <a href="#open-source" class="btn btn-primary">
             {{ t('experiencePage.ctaOpenSource') }}
           </a>
-          <NuxtLink to="/blog" class="btn btn-outline">
+          <NuxtLinkLocale to="/blog" class="btn btn-outline">
             <UiScrambleText :text="t('experiencePage.ctaBlog')" effect="link" />
             <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
       <UiPixelScene scene="climb" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />

@@ -122,10 +122,10 @@ onUnmounted(() => {
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
-        <NuxtLink to="/contact" class="btn btn-primary">
+        <NuxtLinkLocale to="/contact" class="btn btn-primary">
           <UIcon name="i-heroicons-paper-airplane" class="size-4" aria-hidden="true" />
           {{ t('hero.contact') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
         <HomeSocials :links="socials" />
       </div>
     </div>

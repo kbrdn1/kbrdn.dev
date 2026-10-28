@@ -206,7 +206,7 @@ watch(
               </p>
               <ul class="mt-2">
                 <li v-for="link in menu.links" :key="link.to">
-                  <NuxtLink
+                  <NuxtLinkLocale
                     :to="link.to"
                     :target="link.external ? '_blank' : undefined"
                     :rel="link.external ? 'noopener noreferrer' : undefined"
@@ -219,7 +219,7 @@ watch(
                     <span class="eyebrow ml-auto shrink-0" aria-hidden="true">
                       {{ link.external ? '↗' : '→' }}
                     </span>
-                  </NuxtLink>
+                  </NuxtLinkLocale>
                 </li>
               </ul>
             </div>

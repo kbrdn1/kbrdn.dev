@@ -2,7 +2,7 @@ import { useI18n } from '#imports'
 
 /**
  * The site's pages, as listed by the header, the blog header and the footer, and which
- * one the current route belongs to (a blog post belongs to /blog). The home page's
+ * one the current route belongs to (a blog post belongs to /blog), in either language. The home page's
  * sections have their own table of contents (HomeToc).
  */
 export function useSiteNav() {
@@ -18,7 +18,14 @@ export function useSiteNav() {
     { to: '/contact', label: t('nav.contact') },
   ])
 
-  const isActive = (to: string) => route.path === to || route.path.startsWith(`${to}/`)
+  // The links stay unprefixed (the notch's menus are keyed by them, NuxtLinkLocale prefixes
+  // them); the route has the language's prefix: compare it with the prefixed path. The
+  // home is only active on itself, or /en would light up on every English page.
+  const localePath = useLocalePath()
+  const isActive = (to: string) => {
+    const path = localePath(to)
+    return route.path === path || (to !== '/' && route.path.startsWith(`${path}/`))
+  }
 
   return { links, isActive }
 }

@@ -33,8 +33,9 @@ UPDATE=false
 [[ "${1:-}" == "--update" ]] && UPDATE=true
 
 # nom:chemin : la home (Default avec avatar et bannière), l'index du blog
-# (Default nu) et un article (Blog : tags, bannière, Fenix).
-PAGES=(home:/ blog:/blog blog-gwm:/blog/gwm)
+# (Default nu) et un article (Blog : tags, bannière, Fenix), en français à la
+# racine ; et la home anglaise (/en), pour que les deux langues soient rendues.
+PAGES=(home:/ blog:/blog blog-gwm:/blog/gwm home-en:/en)
 
 test -f "$ROOT/.output/server/index.mjs" || { echo "pas de build : lancer bun run build" >&2; exit 2; }
 

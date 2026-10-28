@@ -136,7 +136,7 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
           <p v-if="links?.length" class="eyebrow mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
             <template v-for="(link, i) in links" :key="link.to">
               <span v-if="i" aria-hidden="true">/</span>
-              <NuxtLink
+              <NuxtLinkLocale
                 :to="link.to"
                 :target="link.external ? '_blank' : undefined"
                 :rel="link.external ? 'noopener noreferrer' : undefined"
@@ -144,7 +144,7 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
               >
                 {{ link.label }}
                 <span aria-hidden="true">{{ link.external ? '↗' : '→' }}</span>
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </p>
         </div>

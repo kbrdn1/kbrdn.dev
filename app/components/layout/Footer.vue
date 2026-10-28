@@ -72,10 +72,10 @@ const appVersion = useRuntimeConfig().public.appVersion
               {{ t('footer.contact.description') }}
             </p>
             <div class="flex flex-wrap gap-2">
-              <NuxtLink to="/contact" class="btn btn-primary btn-sm">
+              <NuxtLinkLocale to="/contact" class="btn btn-primary btn-sm">
                 <UIcon name="i-heroicons-paper-airplane" class="size-4" aria-hidden="true" />
                 {{ t('contactPage.write') }}
-              </NuxtLink>
+              </NuxtLinkLocale>
             </div>
           </div>
 

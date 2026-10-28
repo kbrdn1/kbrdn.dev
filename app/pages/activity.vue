@@ -231,10 +231,10 @@ const TAG: Record<string, string> = {
               {{ item }}
             </li>
           </ul>
-          <NuxtLink to="/contact" class="btn btn-outline btn-sm mt-4">
+          <NuxtLinkLocale to="/contact" class="btn btn-outline btn-sm mt-4">
             {{ t('activityPage.now.write') }}
             <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
     </UiPanel>

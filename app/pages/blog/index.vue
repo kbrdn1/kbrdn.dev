@@ -129,8 +129,9 @@ const postCount = computed(() => {
 const { formatDate } = useFormatDate()
 const { postUrl } = useBlogUrl()
 
-// The blog and its posts, newest first
+// The blog and its posts, newest first, at this language's addresses
 const siteUrl = useSiteUrl()
+const localePath = useLocalePath()
 const person = usePersonRef()
 usePageSchema(
   'CollectionPage',
@@ -140,8 +141,8 @@ usePageSchema(
     nodes: () => [
       {
         '@type': 'Blog',
-        '@id': `${siteUrl('/blog')}#blog`,
-        url: siteUrl('/blog'),
+        '@id': `${siteUrl(localePath('/blog'))}#blog`,
+        url: siteUrl(localePath('/blog')),
         name: t('blog.title'),
         description: t('blog.description'),
         author: person,
@@ -150,7 +151,7 @@ usePageSchema(
           .map((post) => ({
             '@type': 'BlogPosting',
             headline: post.title,
-            url: siteUrl(postUrl(post)),
+            url: siteUrl(localePath(postUrl(post))),
             ...(post.publishedAt && { datePublished: post.publishedAt }),
           })),
       },
@@ -270,7 +271,7 @@ usePageSchema(
           <!-- After disarto's event card: the banner full width on top, the card over its
                  bottom edge (tag and reading time, title, summary, then date, author and tags
                  between dashed rules), the call to read in the footer -->
-          <NuxtLink
+          <NuxtLinkLocale
             v-for="(post, index) in viewMode === 'cards' ? paginatedPosts : []"
             :key="post.path"
             :to="postUrl(post)"
@@ -336,7 +337,7 @@ usePageSchema(
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
               </span>
             </div>
-          </NuxtLink>
+          </NuxtLinkLocale>
           <!-- An odd page leaves a hole beside the last card: a hatched placeholder fills it -->
           <div
             v-if="viewMode === 'cards' && paginatedPosts.length % 2"
@@ -372,7 +373,7 @@ usePageSchema(
             :key="post.path"
             :style="{ '--i': index }"
           >
-            <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+            <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
               <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
                 {{ formatDate(post.publishedAt) }}
               </span>
@@ -381,7 +382,7 @@ usePageSchema(
               >
                 {{ post.title }}
               </span>
-            </NuxtLink>
+            </NuxtLinkLocale>
           </li>
         </TransitionGroup>
 

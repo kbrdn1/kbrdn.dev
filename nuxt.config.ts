@@ -37,18 +37,23 @@ export default defineNuxtConfig({
   },
 
   // i18n configuration
+  // French at the root, English under /en/: each language has its own URLs, so both are
+  // indexed (one URL served by a cookie only ever showed the crawlers one language). A
+  // reader's choice is kept in the cookie; the root sends a first visit in English to /en
+  // only, and a reader with no language preference (a crawler) stays on the French root.
   i18n: {
     locales: [
-      { code: 'en', name: 'English', file: 'en.ts' },
-      { code: 'fr', name: 'Français', file: 'fr.ts' },
+      { code: 'fr', name: 'Français', language: 'fr-FR', file: 'fr.ts' },
+      { code: 'en', name: 'English', language: 'en-US', file: 'en.ts' },
     ],
-    defaultLocale: 'en',
+    defaultLocale: 'fr',
     langDir: 'locales',
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
-      fallbackLocale: 'en',
+      redirectOn: 'root',
+      fallbackLocale: 'fr',
     },
   },
 

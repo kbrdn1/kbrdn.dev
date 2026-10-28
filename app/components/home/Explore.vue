@@ -127,14 +127,14 @@ const reducedMotion = useReducedMotion()
               </p>
               <div v-if="slide?.cta" class="mt-auto pt-6">
                 <!-- A new tab for the external sites only, not /blog or the mail client -->
-                <NuxtLink
+                <NuxtLinkLocale
                   :to="slide.cta.href"
                   :target="/^https?:/.test(slide.cta.href) ? '_blank' : undefined"
                   class="btn btn-primary"
                 >
                   <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
                   {{ slide.cta.label }}
-                </NuxtLink>
+                </NuxtLinkLocale>
               </div>
             </div>
           </Transition>

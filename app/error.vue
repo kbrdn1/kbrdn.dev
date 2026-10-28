@@ -182,10 +182,10 @@ onMounted(() => {
               <UIcon name="i-heroicons-arrow-path" class="size-4" aria-hidden="true" />
               {{ t('error.reset') }}
             </button>
-            <NuxtLink to="/" class="btn btn-primary btn-sm">
+            <NuxtLinkLocale to="/" class="btn btn-primary btn-sm">
               <UIcon name="i-heroicons-arrow-left-20-solid" class="size-4" aria-hidden="true" />
               {{ t('error.backHome') }}
-            </NuxtLink>
+            </NuxtLinkLocale>
           </template>
         </UiPanel>
       </div>

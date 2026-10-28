@@ -76,6 +76,7 @@ async function copyLink() {
 // The language the article is written in: the other one's when it isn't translated yet
 const postLang = computed(() => (post.value?.id.startsWith('blog_fr') ? 'fr' : 'en'))
 const siteUrl = useSiteUrl()
+const localePath = useLocalePath()
 const person = usePersonRef()
 useSeoMeta({
   title: () => post.value?.title,
@@ -94,14 +95,14 @@ usePageSchema(
   {
     trail: () => [
       { name: t('nav.blog'), path: '/blog' },
-      { name: post.value?.title ?? '', path: route.path },
+      { name: post.value?.title ?? '', path: `/blog/${slug}` },
     ],
     nodes: () => [
       {
         '@type': 'BlogPosting',
         '@id': `${siteUrl(route.path)}#article`,
         mainEntityOfPage: { '@id': `${siteUrl(route.path)}#webpage` },
-        isPartOf: { '@id': `${siteUrl('/blog')}#blog` },
+        isPartOf: { '@id': `${siteUrl(localePath('/blog'))}#blog` },
         headline: post.value?.title,
         description: post.value?.description,
         inLanguage: postLang.value,
