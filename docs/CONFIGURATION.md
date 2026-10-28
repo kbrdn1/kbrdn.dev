@@ -76,7 +76,7 @@ variables of the allowlist.
 ### GH_TOKEN
 
 1. GitHub **Settings → Developer settings → Personal access tokens**
-2. A classic token with `read:user`, or a fine-grained read-only token
+2. A classic token with the `read:user` and `repo` scopes
 3. The site ignores placeholders and tokens of 20 characters or fewer
    (`server/utils/githubToken.ts`)
 

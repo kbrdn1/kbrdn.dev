@@ -51,7 +51,7 @@ bun run fmt:check   # what CI runs
 Content is managed through `@nuxt/content` with a collection-based approach defined in `content.config.ts`:
 - **Collections**: pages, blog, projects, skills, stacks, experiences (6 total)
 - **Source Pattern**: Collection-specific patterns in `app/content/`
-- **Nuxt Studio**: Integrated for visual content editing (see `.studio/config.json`)
+- **Nuxt Studio**: disabled, `nuxt-studio` is commented out in `nuxt.config.ts` (incompatible with @nuxt/content at the time)
 - **MDC Components**: Alert, Callout, CodeGroup available in `app/components/content/`
 
 ### Directory Structure
@@ -161,7 +161,7 @@ Repo-level GitHub Actions secrets (see `docs/CONFIGURATION.md`):
 - `VPS_HOST` / `VPS_USER` / `VPS_SSH_PRIVATE_KEY` - SSH deploy target + key
 - `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
-- `NUXT_STUDIO_TOKEN` - Nuxt Studio API
+- `NUXT_STUDIO_TOKEN` - **not defined**: passed by `deploy.yml` and `release.yml`, but unused while `nuxt-studio` is disabled
 - `NUXT_APP_SECRET` - Nuxt app secret (64 hex chars, `openssl rand -hex 32`): nuxt-og-image 7 signs the `/_og/*` URLs with it. Missing or under 32 characters, every OG image returns 500; `scripts/deploy.sh` warns but still deploys (a rollback to a pre-v7 image does not need it). Rotating it invalidates the signed OG URLs already cached by social networks
 
 Repo-level **variables** (not secrets), passed as build-args by both workflows:
