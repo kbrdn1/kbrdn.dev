@@ -216,8 +216,8 @@
     color: var(--label);
   }
 
-  /* Pill segmented control: the active segment (aria-selected, aria-pressed, aria-current)
-     is tinted with the accent and bordered */
+  /* Pill segmented control: the active segment (aria-selected, aria-pressed, aria-current,
+     or aria-expanded for a disclosure) is tinted with the accent and bordered */
   .segmented {
     position: relative;
     isolation: isolate;
@@ -256,6 +256,7 @@
 
   .segment[aria-selected="true"],
   .segment[aria-pressed="true"],
+  .segment[aria-expanded="true"],
   .segment[aria-current="page"],
   .segment-ink {
     border-color: color-mix(in srgb, var(--color-primary-500) 40%, transparent);
@@ -303,7 +304,9 @@
       border-color 0.2s ease;
   }
 
-  .btn:disabled {
+  /* aria-disabled: looks disabled but keeps the focus (a disabled button drops it) */
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
     opacity: 0.5;
     cursor: not-allowed;
   }
@@ -319,7 +322,7 @@
     color: var(--color-neutral-950);
   }
 
-  .btn-primary:not(:disabled):hover {
+  .btn-primary:not(:disabled, [aria-disabled="true"]):hover {
     background: var(--color-primary-400);
   }
 
@@ -328,7 +331,7 @@
     color: var(--ui-text-highlighted);
   }
 
-  .btn-outline:not(:disabled):hover {
+  .btn-outline:not(:disabled, [aria-disabled="true"]):hover {
     background: var(--control-bg);
   }
 

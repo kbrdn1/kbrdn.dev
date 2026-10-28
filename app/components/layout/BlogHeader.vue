@@ -115,7 +115,7 @@ const isMobileMenuOpen = ref(false)
         <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />
 
         <!-- Desktop Navigation -->
-        <nav class="segmented mx-auto" aria-label="Site navigation">
+        <nav class="segmented mx-auto" :aria-label="t('nav.site')">
           <NuxtLink
             v-for="link in navLinks"
             :key="link.to"
@@ -201,7 +201,7 @@ const isMobileMenuOpen = ref(false)
             class="icon-btn md:hidden"
             :aria-expanded="isMobileMenuOpen"
             aria-controls="blog-mobile-nav"
-            :aria-label="isMobileMenuOpen ? 'Close menu' : 'Open menu'"
+            :aria-label="isMobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')"
             @click="isMobileMenuOpen = !isMobileMenuOpen"
           >
             <UIcon
@@ -218,7 +218,7 @@ const isMobileMenuOpen = ref(false)
         <nav
           id="blog-mobile-nav"
           class="py-2 border-t border-(--panel-border)"
-          aria-label="Mobile site navigation"
+          :aria-label="t('nav.siteMobile')"
         >
           <NuxtLink
             v-for="link in navLinks"

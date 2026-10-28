@@ -32,14 +32,15 @@ const { data, status } = useFetch('/api/github/activity', {
 })
 const items = computed(() => data.value?.items ?? [])
 
-// Right now. Book titles stay as published; the open-to list follows /contact's topics.
+// Right now. Book titles stay as published, in their own language (lang); the open-to list
+// follows /contact's topics.
 const LEARNING = computed(() => [
   { label: 'Godot', icon: 'i-simple-icons-godotengine' },
   { label: 'Blender', icon: 'i-simple-icons-blender' },
   { label: t('activityPage.now.gameDev'), icon: 'i-lucide-gamepad-2' },
 ])
 const READING = computed(() => [
-  { title: "BLEACH: Can't Fear Your Own World", author: 'Ryohgo Narita' },
+  { title: "BLEACH: Can't Fear Your Own World", author: 'Ryohgo Narita', lang: 'en' },
   { title: t('activityPage.now.symposium'), author: t('activityPage.now.plato') },
 ])
 const OPEN_TO = computed(() => [
@@ -48,9 +49,17 @@ const OPEN_TO = computed(() => [
   'Open source',
 ])
 
-// The feed grows by 20 entries at a time
+// The feed grows by 20 entries at a time. The focus moves to the first new entry: the button
+// goes once everything shows, and would leave the focus on nothing.
 const PAGE = 20
 const limit = ref(PAGE)
+const feed = ref<HTMLElement>()
+async function showMore() {
+  const first = limit.value
+  limit.value += PAGE
+  await nextTick()
+  feed.value?.querySelectorAll<HTMLElement>('a')[first]?.focus()
+}
 
 // Days in the reader's own timezone, newest first; today and yesterday by name
 const lang = computed(() => (locale.value === 'fr' ? 'fr-FR' : 'en-US'))
@@ -204,7 +213,10 @@ const TAG: Record<string, string> = {
                 aria-hidden="true"
               />
               <span>
-                <span class="block text-sm text-neutral-900 dark:text-neutral-100">
+                <span
+                  :lang="book.lang"
+                  class="block text-sm text-neutral-900 dark:text-neutral-100"
+                >
                   {{ book.title }}
                 </span>
                 <span class="eyebrow mt-0.5 block">{{ book.author }}</span>
@@ -276,8 +288,10 @@ const TAG: Record<string, string> = {
               {{ status === 'error' ? t('github.error') : t('activityPage.feedEmpty') }}
             </p>
 
-            <div v-else>
-              <section v-for="day in days" :key="day.key" :aria-label="day.label">
+            <!-- One section per day, unnamed: a name would make each a landmark region, and
+                 the h3 already tells the day -->
+            <div v-else ref="feed">
+              <section v-for="day in days" :key="day.key">
                 <h3
                   class="eyebrow border-b border-dashed border-(--card-border) px-2 pt-3 pb-2 first:pt-1"
                 >
@@ -333,7 +347,7 @@ const TAG: Record<string, string> = {
             v-if="limit < items.length"
             type="button"
             class="btn btn-outline btn-sm"
-            @click="limit += PAGE"
+            @click="showMore"
           >
             {{ t('activityPage.showMore') }}
           </button>

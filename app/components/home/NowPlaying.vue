@@ -191,7 +191,7 @@ function formatTime(seconds: number): string {
           <button
             type="button"
             class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 focus-visible:opacity-100 transition-opacity"
-            :aria-label="isPlaying ? 'Pause' : 'Play'"
+            :aria-label="isPlaying ? t('music.pause') : t('music.play')"
             @click="togglePlay"
           >
             <svg
@@ -318,7 +318,7 @@ function formatTime(seconds: number): string {
                   type="button"
                   class="segment size-8 cursor-pointer px-0"
                   :aria-pressed="shuffleMode"
-                  :aria-label="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')"
+                  :aria-label="t('music.shuffle')"
                   @click.prevent.stop="shuffleMode = !shuffleMode"
                 >
                   <UIcon name="i-heroicons-arrows-right-left" class="w-3.5 h-3.5" />
@@ -328,8 +328,9 @@ function formatTime(seconds: number): string {
                 <button
                   type="button"
                   class="segment size-8 cursor-pointer px-0"
-                  :aria-pressed="showListing"
-                  :aria-label="showListing ? t('music.hideList') : t('music.showList')"
+                  :aria-expanded="showListing"
+                  aria-controls="music-tracklist"
+                  :aria-label="t('music.tracklist')"
                   @click.prevent.stop="showListing = !showListing"
                 >
                   <UIcon name="i-heroicons-queue-list" class="w-3.5 h-3.5" />
@@ -348,11 +349,13 @@ function formatTime(seconds: number): string {
               class="progress-bar group/bar relative h-4 flex-1 cursor-pointer"
               role="slider"
               tabindex="0"
-              :aria-label="'Track progress'"
+              :aria-label="t('music.progress')"
               :aria-valuenow="Math.round(currentTime)"
               :aria-valuemin="0"
               :aria-valuemax="Math.round(duration)"
-              :aria-valuetext="`${formatTime(currentTime)} of ${formatTime(duration)}`"
+              :aria-valuetext="
+                t('music.timeOf', { current: formatTime(currentTime), total: formatTime(duration) })
+              "
               @mousedown="startSeek"
               @keydown.left.prevent="
                 audio && (audio.currentTime = Math.max(0, audio.currentTime - 5))
@@ -397,7 +400,7 @@ function formatTime(seconds: number): string {
           :key="index"
           type="button"
           class="group/dot cursor-pointer p-1"
-          :aria-label="`Track ${index + 1} of ${tracks.length}${currentIndex === index ? ' (current)' : ''}`"
+          :aria-label="t('music.track', { n: index + 1, total: tracks.length })"
           :aria-current="currentIndex === index ? 'true' : undefined"
           @click.prevent.stop="goToTrack(index)"
         >
@@ -416,7 +419,7 @@ function formatTime(seconds: number): string {
 
       <!-- Track listing: a card under the player, after disarto's ground station rows -->
       <UiExpand :open="showListing">
-        <div class="panel-card mt-1 max-h-56 overflow-y-auto p-1.5">
+        <div id="music-tracklist" class="panel-card mt-1 max-h-56 overflow-y-auto p-1.5">
           <button
             v-for="(t, index) in tracks"
             :key="index"

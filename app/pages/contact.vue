@@ -39,6 +39,8 @@ const isSubmitting = ref(false)
 const submitStatus = ref<'idle' | 'success' | 'error'>('idle')
 
 async function handleSubmit() {
+  // The button stays enabled (aria-disabled) so it keeps the focus: the guard is here
+  if (isSubmitting.value) return
   isSubmitting.value = true
   submitStatus.value = 'idle'
   try {
@@ -210,12 +212,7 @@ const SOCIALS = [
               <a href="mailto:hello@kbrdn.dev" class="eyebrow underline underline-offset-4">
                 hello@kbrdn.dev
               </a>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                :disabled="isSubmitting"
-                :aria-busy="isSubmitting"
-              >
+              <button type="submit" class="btn btn-primary" :aria-disabled="isSubmitting">
                 <UIcon
                   :name="isSubmitting ? 'i-heroicons-arrow-path' : 'i-heroicons-paper-airplane'"
                   :class="cn('size-4', isSubmitting && 'animate-spin')"

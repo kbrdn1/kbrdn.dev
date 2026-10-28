@@ -76,7 +76,7 @@ function handleScrollTo(id: string) {
           :aria-valuenow="progress ?? 0"
           aria-valuemin="0"
           aria-valuemax="100"
-          :aria-label="t('blog.toc')"
+          :aria-label="t('blog.readingProgress')"
         >
           <span
             class="block h-full bg-primary-500 transition-[width] duration-300"

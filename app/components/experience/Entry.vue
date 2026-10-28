@@ -100,7 +100,11 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
             >
               <UiScrambleText :text="title" />
             </span>
-            <span class="eyebrow mt-1 block">{{ detail }}</span>
+            <!-- A project's client under its role's: the arrow is drawn, not read in the
+                 button's name -->
+            <span class="eyebrow mt-1 block"
+              ><span v-if="kind === 'project'" aria-hidden="true">↳ </span>{{ detail }}</span
+            >
           </span>
           <span
             class="icon-btn mt-0.5 size-8 shrink-0 border border-(--control-border)"
@@ -138,7 +142,8 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
                 :rel="link.external ? 'noopener noreferrer' : undefined"
                 class="underline underline-offset-4 hover:text-(--accent-text)"
               >
-                {{ link.label }} {{ link.external ? '↗' : '→' }}
+                {{ link.label }}
+                <span aria-hidden="true">{{ link.external ? '↗' : '→' }}</span>
               </NuxtLink>
             </template>
           </p>

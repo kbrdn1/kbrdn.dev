@@ -11,6 +11,8 @@ const props = defineProps<{
     bannerImage?: string
   }
   readingTime: number
+  // The post's language, on its title and summary only: the rest is the page's
+  lang?: string
 }>()
 
 const { t } = useI18n()
@@ -52,6 +54,7 @@ const banner = computed(() =>
           </p>
           <h1
             class="mt-3 text-3xl tracking-tight text-neutral-900 sm:text-4xl lg:text-5xl dark:text-neutral-100"
+            :lang="lang"
             :aria-label="post.title"
           >
             <UiScrambleText :text="post.title" />
@@ -59,6 +62,7 @@ const banner = computed(() =>
           <p
             v-if="post.description"
             class="mt-4 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400"
+            :lang="lang"
           >
             {{ post.description }}
           </p>

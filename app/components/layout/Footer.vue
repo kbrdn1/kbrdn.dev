@@ -50,6 +50,8 @@ const currentYear = new Date().getFullYear()
   <!-- A panel over the dither, as wide as the navbar: the three columns in one card,
        the copyright in the panel's footer -->
   <footer class="relative w-full px-4 pt-6 pb-6 sm:px-6">
+    <!-- For the outline: the columns' h3s need an h2 above them -->
+    <h2 class="sr-only">{{ t('footer.heading') }}</h2>
     <UiDitherCanvas fade="up" class="absolute inset-0 h-full w-full" />
     <!-- The panel, and the strip on its top edge where an invader walks by now and then -->
     <div class="relative mx-auto max-w-[61rem]">

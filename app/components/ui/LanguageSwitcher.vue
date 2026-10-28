@@ -27,7 +27,7 @@ const tooltipText = computed(() => `${t('nav.switchLanguage')} (${nextLocaleName
       <button
         type="button"
         class="icon-btn cursor-pointer font-mono text-xs uppercase"
-        :aria-label="tooltipText"
+        :aria-label="`${locale.toUpperCase()}, ${tooltipText}`"
         @click="toggleLocale"
       >
         {{ locale.toUpperCase() }}

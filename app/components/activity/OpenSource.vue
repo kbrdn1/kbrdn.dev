@@ -225,7 +225,7 @@ const reference = (url: string) =>
                       rel="noopener noreferrer"
                       class="underline underline-offset-4 hover:text-(--accent-text)"
                     >
-                      {{ t('experiencePage.openSource.site') }} ↗
+                      {{ t('experiencePage.openSource.site') }} <span aria-hidden="true">↗</span>
                     </a>
                     <span v-if="'site' in project" aria-hidden="true">/</span>
                     <a
@@ -234,7 +234,7 @@ const reference = (url: string) =>
                       rel="noopener noreferrer"
                       class="underline underline-offset-4 hover:text-(--accent-text)"
                     >
-                      {{ t('experiencePage.openSource.repo') }} ↗
+                      {{ t('experiencePage.openSource.repo') }} <span aria-hidden="true">↗</span>
                     </a>
                   </p>
                 </div>
@@ -285,7 +285,7 @@ const reference = (url: string) =>
                     rel="noopener noreferrer"
                     class="underline underline-offset-4 hover:text-(--accent-text)"
                   >
-                    {{ t('experiencePage.openSource.view') }} ↗
+                    {{ t('experiencePage.openSource.view') }} <span aria-hidden="true">↗</span>
                   </a>
                 </p>
               </div>

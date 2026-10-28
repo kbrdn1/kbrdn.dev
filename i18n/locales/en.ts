@@ -42,6 +42,8 @@ export default {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     switchLanguage: 'Switch language',
+    site: 'Site navigation',
+    siteMobile: 'Mobile site navigation',
   },
 
   // The navbar's notch menus
@@ -136,6 +138,12 @@ export default {
     shuffleOff: 'Disable shuffle',
     showList: 'Show tracklist',
     hideList: 'Hide tracklist',
+    progress: 'Track progress',
+    timeOf: '{current} of {total}',
+    track: 'Track {n} of {total}',
+    // Fixed names for the toggles: their state is aria-pressed / aria-expanded
+    shuffle: 'Shuffle',
+    tracklist: 'Tracklist',
   },
 
   // Bio Section
@@ -185,6 +193,10 @@ export default {
       annual: 'Annual',
       monthly: 'Monthly',
     },
+    tabsLabel: 'Contribution view',
+    viewProfile: 'View GitHub profile',
+    // The tooltip: "3 on Mon, Oct 12, 2026"
+    on: 'on',
   },
 
   // Theme
@@ -305,6 +317,7 @@ export default {
     ctaOpenSource: 'See the open source',
     ctaBlog: 'Read the blog',
     timeline: 'Roles and education',
+    timelineCompact: 'Roles and education, quick access',
     experienceLabel: 'Experience',
     educationLabel: 'Education',
     stack: 'Stack',
@@ -621,6 +634,8 @@ export default {
 
   blog: {
     toc: 'Contents',
+    readingProgress: 'Reading progress',
+    pagination: 'Pagination',
     read: 'Read',
     title: 'Articles & Thoughts',
     description: 'Writing about web development, architecture, and tools I use.',
@@ -668,6 +683,7 @@ export default {
 
   // Footer Section
   footer: {
+    heading: 'Site footer',
     nav: {
       articles: 'Articles',
       tags: 'Tags',

@@ -42,6 +42,8 @@ export default {
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
     switchLanguage: 'Changer de langue',
+    site: 'Navigation du site',
+    siteMobile: 'Navigation mobile du site',
   },
 
   // The navbar's notch menus
@@ -136,6 +138,12 @@ export default {
     shuffleOff: 'Désactiver le mélange',
     showList: 'Afficher la liste',
     hideList: 'Masquer la liste',
+    progress: 'Progression de la piste',
+    timeOf: '{current} sur {total}',
+    track: 'Piste {n} sur {total}',
+    // Fixed names for the toggles: their state is aria-pressed / aria-expanded
+    shuffle: 'Lecture aléatoire',
+    tracklist: 'Liste des pistes',
   },
 
   // Bio Section
@@ -185,6 +193,10 @@ export default {
       annual: 'Annuel',
       monthly: 'Mensuel',
     },
+    tabsLabel: 'Vue des contributions',
+    viewProfile: 'Voir le profil GitHub',
+    // The tooltip: "3 le lun. 12 oct. 2026"
+    on: 'le',
   },
 
   // Theme
@@ -305,6 +317,7 @@ export default {
     ctaOpenSource: "Voir l'open source",
     ctaBlog: 'Lire le blog',
     timeline: 'Postes et formations',
+    timelineCompact: 'Postes et formations, accès rapide',
     experienceLabel: 'Expérience',
     educationLabel: 'Formation',
     stack: 'Stack',
@@ -622,6 +635,8 @@ export default {
 
   blog: {
     toc: 'Sommaire',
+    readingProgress: 'Progression de la lecture',
+    pagination: 'Pagination',
     read: 'Lire',
     title: 'Articles & Réflexions',
     description: "J'écris sur le développement web, l'architecture et les outils que j'utilise.",
@@ -669,6 +684,7 @@ export default {
 
   // Footer Section
   footer: {
+    heading: 'Pied de page',
     nav: {
       articles: 'Articles',
       tags: 'Tags',

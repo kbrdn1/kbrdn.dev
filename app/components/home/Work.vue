@@ -123,7 +123,7 @@ const projects = computed(() =>
         to="/contact"
         class="text-sm text-neutral-600 underline-offset-4 after:absolute after:inset-0 hover:text-(--accent-text) hover:underline dark:text-neutral-400"
       >
-        {{ t('projects.next.text') }} →
+        {{ t('projects.next.text') }} <span aria-hidden="true">→</span>
       </NuxtLink>
     </li>
   </ul>

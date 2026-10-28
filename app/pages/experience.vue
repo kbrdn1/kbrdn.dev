@@ -248,8 +248,9 @@ const list = (key: string, count: number) =>
                   "
                 >
                   <span class="eyebrow block">
-                    {{ item.nested ? '↳' : String(item.n).padStart(2, '0') }} ·
-                    {{ yearSpan(item.start, item.end) }}
+                    <span v-if="item.nested" aria-hidden="true">↳</span>
+                    <template v-else>{{ String(item.n).padStart(2, '0') }}</template>
+                    · {{ yearSpan(item.start, item.end) }}
                   </span>
                   <span class="mt-3 flex items-center gap-3">
                     <NuxtImg
@@ -293,7 +294,7 @@ const list = (key: string, count: number) =>
         <nav
           v-if="stripGone && activeId"
           ref="compactNav"
-          :aria-label="t('experiencePage.timeline')"
+          :aria-label="t('experiencePage.timelineCompact')"
           class="pointer-events-auto panel mx-auto max-w-[61rem] overflow-x-auto scrollbar-none"
         >
           <div ref="compactList" class="relative flex w-max gap-1">
@@ -362,7 +363,7 @@ const list = (key: string, count: number) =>
               :start="project.startDate"
               :end="project.endDate"
               :title="project.name"
-              :detail="`↳ ${clientOf(project) ?? exp.company}`"
+              :detail="clientOf(project) ?? exp.company"
               :meta="`${period(project.startDate, project.endDate)} · ${t(`experiencePage.work.${project.key}.role`)}`"
               :summary="t(`experiencePage.work.${project.key}.summary`)"
               :image="project.image"

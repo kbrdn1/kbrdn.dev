@@ -399,7 +399,7 @@ const { postUrl } = useBlogUrl()
         {{ String(currentPage).padStart(2, '0') }} / {{ String(totalPages).padStart(2, '0') }}
       </template>
       <template v-if="totalPages > 1" #footer>
-        <nav class="flex items-center gap-1" aria-label="Pagination">
+        <nav class="flex items-center gap-1" :aria-label="t('blog.pagination')">
           <button
             type="button"
             class="icon-btn disabled:pointer-events-none disabled:opacity-40"

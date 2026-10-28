@@ -31,21 +31,10 @@ const DEFAULT_YEARS = 2
 const DEFAULT_MONTHS = 3
 const EXPANDED_MONTHS = 12
 
-// Month labels for annual view
-const monthLabels = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
+// Month names in the page's language: short over the grids, long for the monthly view
+const monthName = (month: number, format: 'short' | 'long') =>
+  new Date(2000, month, 1).toLocaleDateString(locale.value, { month: format })
+const monthLabels = computed(() => Array.from({ length: 12 }, (_, m) => monthName(m, 'short')))
 
 // Calculate month positions based on actual week data
 function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
@@ -59,7 +48,7 @@ function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
     const month = date.getMonth()
     if (month !== lastMonth) {
       positions.push({
-        label: monthLabels[month] ?? '',
+        label: monthLabels.value[month] ?? '',
         offset: weekIndex,
       })
       lastMonth = month
@@ -81,21 +70,6 @@ const monthlyData = computed(() => {
     contributions: number
     days: { contributionCount: number; date: string }[]
   }[] = []
-
-  const monthNames = [
-    'JANUARY',
-    'FEBRUARY',
-    'MARCH',
-    'APRIL',
-    'MAY',
-    'JUNE',
-    'JULY',
-    'AUGUST',
-    'SEPTEMBER',
-    'OCTOBER',
-    'NOVEMBER',
-    'DECEMBER',
-  ]
 
   // Group all days by month from all years
   const grouped = new Map<string, { contributionCount: number; date: string }[]>()
@@ -123,7 +97,7 @@ const monthlyData = computed(() => {
     const total = days.reduce((sum, d) => sum + d.contributionCount, 0)
 
     months.push({
-      name: monthNames[month] ?? '',
+      name: monthName(month, 'long').toLocaleUpperCase(locale.value),
       year,
       contributions: total,
       days: days.sort((a, b) => a.date.localeCompare(b.date)),
@@ -216,7 +190,7 @@ function showTooltip(day: { contributionCount: number; date: string }, event: Mo
   const rect = (event.target as HTMLElement).getBoundingClientRect()
   tooltipData.value = {
     count: day.contributionCount,
-    date: new Date(day.date).toLocaleDateString('en-US', {
+    date: new Date(day.date).toLocaleDateString(locale.value, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -245,13 +219,15 @@ function switchTab(step: 1 | -1) {
   <UiPanel :title="t('github.title')">
     <template #actions>
       <!-- Tabs: a segmented control, the active view filled -->
-      <div ref="tablist" class="segmented" role="tablist" aria-label="Contribution view">
+      <div ref="tablist" class="segmented" role="tablist" :aria-label="t('github.tabsLabel')">
         <button
           v-for="tab in tabs"
+          :id="`github-tab-${tab}`"
           :key="tab"
           role="tab"
           class="segment"
           :aria-selected="activeTab === tab"
+          aria-controls="github-panel"
           :tabindex="activeTab === tab ? 0 : -1"
           @click="activeTab = tab"
           @keydown.right.prevent="switchTab(1)"
@@ -266,14 +242,20 @@ function switchTab(step: 1 | -1) {
         :href="`https://github.com/${username}`"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="View GitHub profile (opens in new window)"
+        :aria-label="`${t('github.viewProfile')} (${t('common.newTab')})`"
         class="icon-btn"
       >
         <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4" aria-hidden="true" />
       </a>
     </template>
 
-    <div class="panel-card space-y-6 p-5 sm:p-6">
+    <!-- The one panel all three tabs drive -->
+    <div
+      id="github-panel"
+      class="panel-card space-y-6 p-5 sm:p-6"
+      role="tabpanel"
+      :aria-labelledby="`github-tab-${activeTab}`"
+    >
       <!-- Loading skeleton, shaped like the default "recent" view. Also shown while idle: the
          data is fetched client-side, so the server renders this state. -->
       <template v-if="status === 'pending' || status === 'idle'">
@@ -466,6 +448,7 @@ function switchTab(step: 1 | -1) {
             (activeTab === 'monthly' && canExpandMonths)
           "
           class="btn btn-outline btn-sm w-full"
+          :aria-expanded="isExpanded"
           @click="isExpanded = !isExpanded"
         >
           <UIcon
@@ -505,8 +488,8 @@ function switchTab(step: 1 | -1) {
             "
             :style="{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }"
           >
-            <strong class="text-primary-500">{{ tooltipData.count }}</strong> on
-            {{ tooltipData.date }}
+            <strong class="text-primary-500">{{ tooltipData.count }}</strong>
+            {{ t('github.on') }} {{ tooltipData.date }}
           </div>
         </Transition>
       </Teleport>
