@@ -100,7 +100,11 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
             >
               <UiScrambleText :text="title" />
             </span>
-            <span class="eyebrow mt-1 block">{{ detail }}</span>
+            <!-- A project's client under its role's: the arrow is drawn, not read in the
+                 button's name -->
+            <span class="eyebrow mt-1 block"
+              ><span v-if="kind === 'project'" aria-hidden="true">↳ </span>{{ detail }}</span
+            >
           </span>
           <span
             class="icon-btn mt-0.5 size-8 shrink-0 border border-(--control-border)"
@@ -132,14 +136,15 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
           <p v-if="links?.length" class="eyebrow mt-3 flex flex-wrap items-center gap-x-2 gap-y-1">
             <template v-for="(link, i) in links" :key="link.to">
               <span v-if="i" aria-hidden="true">/</span>
-              <NuxtLink
+              <NuxtLinkLocale
                 :to="link.to"
                 :target="link.external ? '_blank' : undefined"
                 :rel="link.external ? 'noopener noreferrer' : undefined"
                 class="underline underline-offset-4 hover:text-(--accent-text)"
               >
-                {{ link.label }} {{ link.external ? '↗' : '→' }}
-              </NuxtLink>
+                {{ link.label }}
+                <span aria-hidden="true">{{ link.external ? '↗' : '→' }}</span>
+              </NuxtLinkLocale>
             </template>
           </p>
         </div>
@@ -148,7 +153,7 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
         <button
           v-if="image"
           type="button"
-          class="group/zoom relative mt-4 block aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) md:mt-3 dark:bg-neutral-900"
+          class="group/zoom relative mt-4 block aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-xl bg-(--placeholder) ring-1 ring-(--card-border) md:mt-3"
           :aria-label="t('lightbox.open', { name: title })"
           @click="lightbox.open(image, title)"
         >

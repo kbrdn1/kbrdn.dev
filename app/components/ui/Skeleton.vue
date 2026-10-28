@@ -31,13 +31,7 @@ const animationClasses = {
 
 <template>
   <div
-    :class="
-      cn(
-        'bg-neutral-200 dark:bg-neutral-800',
-        circle && 'rounded-full',
-        animationClasses[animation],
-      )
-    "
+    :class="cn('bg-(--placeholder)', circle && 'rounded-full', animationClasses[animation])"
     role="presentation"
     aria-hidden="true"
   />

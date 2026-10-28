@@ -10,8 +10,15 @@
 import { SHAPE_CELL_PX } from '~/utils/dither'
 
 const props = withDefaults(
-  defineProps<{ src: string; alt?: string; reveal?: boolean; loading?: 'lazy' | 'eager' }>(),
-  { alt: '', reveal: false, loading: 'lazy' },
+  defineProps<{
+    src: string
+    alt?: string
+    reveal?: boolean
+    loading?: 'lazy' | 'eager'
+    /** The side a new picture sweeps in from (a carousel: the way it turned) */
+    from?: 'left' | 'right'
+  }>(),
+  { alt: '', reveal: false, loading: 'lazy', from: 'left' },
 )
 
 const BLOCKS_MS = 550
@@ -82,7 +89,7 @@ function buildLayer(image: HTMLImageElement, width: number, height: number) {
 }
 
 // Repaint the layer: at once, or, for a new picture on the same grid, swept in block by
-// block from left to right over the old one.
+// block over the old one, from the `from` side.
 function draw(sweep = false) {
   const el = canvas.value
   const image = img.value
@@ -102,7 +109,8 @@ function draw(sweep = false) {
   if (sweep && sameGrid) {
     const order = new Float32Array(cols * rows)
     const todo = Array.from(order, (_, i) => {
-      order[i] = (i % cols) + Math.random() * JITTER * 2
+      const col = props.from === 'right' ? cols - 1 - (i % cols) : i % cols
+      order[i] = col + Math.random() * JITTER * 2
       return i
     })
     return blocks(todo, order, (i) => paintCell(ctx, i, 0))

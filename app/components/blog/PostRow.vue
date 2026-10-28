@@ -29,7 +29,7 @@ const banner = computed(() =>
 <template>
   <!-- A card, after disarto's notes panel: date and author in mono, the title, the summary,
        and the banner through the pixel layer on the right -->
-  <NuxtLink
+  <NuxtLinkLocale
     :to="postUrl(post)"
     class="panel-card group relative isolate flex overflow-hidden transition-colors hover:border-primary-500/50"
   >
@@ -53,10 +53,16 @@ const banner = computed(() =>
     </div>
     <ClientOnly v-if="post.banner">
       <div class="relative hidden w-56 shrink-0 sm:block">
-        <div class="absolute inset-1.5 overflow-hidden rounded-[10px]">
+        <div class="absolute inset-1.5 overflow-hidden rounded-[10px] bg-(--placeholder)">
           <UiPixelImage :src="banner" class="size-full" reveal />
         </div>
       </div>
+      <!-- Its column kept until mounted: the text does not reflow under the reader -->
+      <template #fallback>
+        <div class="relative hidden w-56 shrink-0 sm:block">
+          <div class="absolute inset-1.5 rounded-[10px] bg-(--placeholder)" />
+        </div>
+      </template>
     </ClientOnly>
-  </NuxtLink>
+  </NuxtLinkLocale>
 </template>

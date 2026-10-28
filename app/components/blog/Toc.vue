@@ -26,7 +26,10 @@ watch(
     if (!id || !tocListRef.value) return
     const activeBtn = tocListRef.value.querySelector(`[data-toc-id="${id}"]`) as HTMLElement
     if (activeBtn) {
-      activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      activeBtn.scrollIntoView({
+        block: 'nearest',
+        behavior: isMotionReduced() ? 'auto' : 'smooth',
+      })
     }
   },
 )
@@ -44,7 +47,7 @@ watch(
           :aria-valuenow="progress ?? 0"
           aria-valuemin="0"
           aria-valuemax="100"
-          :aria-label="t('blog.toc')"
+          :aria-label="t('blog.readingProgress')"
         >
           <div
             class="h-full bg-primary-500 transition-[width] duration-300"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
+import { TOOLTIP_CLASS } from '~/utils/tooltip'
 
 const { t, locale } = useI18n()
 
@@ -31,21 +32,10 @@ const DEFAULT_YEARS = 2
 const DEFAULT_MONTHS = 3
 const EXPANDED_MONTHS = 12
 
-// Month labels for annual view
-const monthLabels = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
+// Month names in the page's language: short over the grids, long for the monthly view
+const monthName = (month: number, format: 'short' | 'long') =>
+  new Date(2000, month, 1).toLocaleDateString(locale.value, { month: format })
+const monthLabels = computed(() => Array.from({ length: 12 }, (_, m) => monthName(m, 'short')))
 
 // Calculate month positions based on actual week data
 function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
@@ -59,7 +49,7 @@ function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
     const month = date.getMonth()
     if (month !== lastMonth) {
       positions.push({
-        label: monthLabels[month] ?? '',
+        label: monthLabels.value[month] ?? '',
         offset: weekIndex,
       })
       lastMonth = month
@@ -81,21 +71,6 @@ const monthlyData = computed(() => {
     contributions: number
     days: { contributionCount: number; date: string }[]
   }[] = []
-
-  const monthNames = [
-    'JANUARY',
-    'FEBRUARY',
-    'MARCH',
-    'APRIL',
-    'MAY',
-    'JUNE',
-    'JULY',
-    'AUGUST',
-    'SEPTEMBER',
-    'OCTOBER',
-    'NOVEMBER',
-    'DECEMBER',
-  ]
 
   // Group all days by month from all years
   const grouped = new Map<string, { contributionCount: number; date: string }[]>()
@@ -123,7 +98,7 @@ const monthlyData = computed(() => {
     const total = days.reduce((sum, d) => sum + d.contributionCount, 0)
 
     months.push({
-      name: monthNames[month] ?? '',
+      name: monthName(month, 'long').toLocaleUpperCase(locale.value),
       year,
       contributions: total,
       days: days.sort((a, b) => a.date.localeCompare(b.date)),
@@ -216,7 +191,7 @@ function showTooltip(day: { contributionCount: number; date: string }, event: Mo
   const rect = (event.target as HTMLElement).getBoundingClientRect()
   tooltipData.value = {
     count: day.contributionCount,
-    date: new Date(day.date).toLocaleDateString('en-US', {
+    date: new Date(day.date).toLocaleDateString(locale.value, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -245,13 +220,15 @@ function switchTab(step: 1 | -1) {
   <UiPanel :title="t('github.title')">
     <template #actions>
       <!-- Tabs: a segmented control, the active view filled -->
-      <div ref="tablist" class="segmented" role="tablist" aria-label="Contribution view">
+      <div ref="tablist" class="segmented" role="tablist" :aria-label="t('github.tabsLabel')">
         <button
           v-for="tab in tabs"
+          :id="`github-tab-${tab}`"
           :key="tab"
           role="tab"
           class="segment"
           :aria-selected="activeTab === tab"
+          aria-controls="github-panel"
           :tabindex="activeTab === tab ? 0 : -1"
           @click="activeTab = tab"
           @keydown.right.prevent="switchTab(1)"
@@ -266,32 +243,39 @@ function switchTab(step: 1 | -1) {
         :href="`https://github.com/${username}`"
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="View GitHub profile (opens in new window)"
+        :aria-label="`${t('github.viewProfile')} (${t('common.newTab')})`"
         class="icon-btn"
       >
         <UIcon name="i-heroicons-arrow-top-right-on-square" class="size-4" aria-hidden="true" />
       </a>
     </template>
 
-    <div class="panel-card space-y-6 p-5 sm:p-6">
+    <!-- The one panel all three tabs drive -->
+    <div
+      id="github-panel"
+      class="panel-card space-y-6 p-5 sm:p-6"
+      role="tabpanel"
+      :aria-labelledby="`github-tab-${activeTab}`"
+    >
       <!-- Loading skeleton, shaped like the default "recent" view. Also shown while idle: the
          data is fetched client-side, so the server renders this state. -->
       <template v-if="status === 'pending' || status === 'idle'">
         <!-- Stats skeleton -->
+        <!-- Line boxes of the real ones: the eyebrow's 16px and its margin, the figure's 40px -->
         <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
-          <div class="space-y-2">
-            <UiSkeleton class="h-3 w-28" />
-            <UiSkeleton class="h-9 w-20" />
+          <div>
+            <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-28" /></div>
+            <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-20" /></div>
           </div>
-          <div class="space-y-2">
-            <UiSkeleton class="h-3 w-24" />
-            <UiSkeleton class="h-9 w-24" />
+          <div>
+            <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-24" /></div>
+            <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-24" /></div>
           </div>
         </div>
 
         <!-- Calendar header skeleton -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between">
+          <div class="flex h-4 items-center justify-between">
             <UiSkeleton class="h-3 w-28" />
             <UiSkeleton class="h-3 w-32" />
           </div>
@@ -309,10 +293,17 @@ function switchTab(step: 1 | -1) {
                 />
               </div>
 
-              <!-- Grid skeleton: 53 weeks, the rolling year -->
+              <!-- Grid skeleton: 53 weeks, the rolling year, rounded like the days. Pulsing in a
+                   wave across the weeks: all at once, it read as a year without contributions -->
               <div class="flex gap-[3px]">
-                <div v-for="w in 53" :key="w" class="flex flex-col gap-[3px]">
-                  <UiSkeleton v-for="d in 7" :key="d" class="w-3 h-3" />
+                <div
+                  v-for="w in 53"
+                  :key="w"
+                  class="flex animate-pulse flex-col gap-[3px]"
+                  :style="{ animationDelay: `${w * 40}ms` }"
+                  aria-hidden="true"
+                >
+                  <div v-for="d in 7" :key="d" class="size-3 rounded-[3px] bg-(--placeholder)" />
                 </div>
               </div>
             </div>
@@ -466,6 +457,7 @@ function switchTab(step: 1 | -1) {
             (activeTab === 'monthly' && canExpandMonths)
           "
           class="btn btn-outline btn-sm w-full"
+          :aria-expanded="isExpanded"
           @click="isExpanded = !isExpanded"
         >
           <UIcon
@@ -498,15 +490,15 @@ function switchTab(step: 1 | -1) {
             v-if="tooltipData"
             :class="
               cn(
-                'fixed z-50 px-2 py-1 text-xs shadow-lg pointer-events-none',
-                'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700',
+                TOOLTIP_CLASS,
+                'pointer-events-none fixed z-50 flex items-center gap-1.5 whitespace-nowrap',
                 'transform -translate-x-1/2 -translate-y-full',
               )
             "
             :style="{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }"
           >
-            <strong class="text-primary-500">{{ tooltipData.count }}</strong> on
-            {{ tooltipData.date }}
+            <strong class="text-primary-700 dark:text-primary-500">{{ tooltipData.count }}</strong>
+            {{ t('github.on') }} {{ tooltipData.date }}
           </div>
         </Transition>
       </Teleport>

@@ -12,6 +12,8 @@ const code = computed(() => String(props.error.status ?? props.error.statusCode 
 const notFound = computed(() => code.value === '404')
 
 useSeoMeta({ title: () => (notFound.value ? t('error.title') : t('error.titleOther')) })
+// app.vue's head, minus what an error page must not claim (canonical, JSON-LD)
+useSiteSeo({ indexable: false })
 
 // A 5×7 pixel font, one row per string
 const FONT: Record<string, string[]> = {
@@ -180,10 +182,10 @@ onMounted(() => {
               <UIcon name="i-heroicons-arrow-path" class="size-4" aria-hidden="true" />
               {{ t('error.reset') }}
             </button>
-            <NuxtLink to="/" class="btn btn-primary btn-sm">
+            <NuxtLinkLocale to="/" class="btn btn-primary btn-sm">
               <UIcon name="i-heroicons-arrow-left-20-solid" class="size-4" aria-hidden="true" />
               {{ t('error.backHome') }}
-            </NuxtLink>
+            </NuxtLinkLocale>
           </template>
         </UiPanel>
       </div>

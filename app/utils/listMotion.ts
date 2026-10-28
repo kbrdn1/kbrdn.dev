@@ -4,6 +4,7 @@
 // top on the way in (--i), from the end on the way out. A list showing less shrinks
 // progressively as its removed rows close; a replaced one morphs, the old rows closing
 // before the new ones open. At once under reduced motion.
+import { isMotionReduced } from '~/composables/useReducedMotion'
 
 // In: quick then soft. Out: in-out, so a row is seen fading rather than gone at once
 const EASE_IN = 'cubic-bezier(0.22, 1, 0.36, 1)'
@@ -14,7 +15,7 @@ const BLUR = 'blur(6px)'
 const HANDOFF = 350
 let leftAt = -Infinity
 
-const still = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const still = () => isMotionReduced()
 // A tall row takes longer than a short one, at about the same speed; slow enough to be
 // followed row by row
 const timeFor = (height: number) => Math.round(Math.min(1100, 450 + height * 1.2))

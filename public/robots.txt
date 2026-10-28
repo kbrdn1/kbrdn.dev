@@ -1,2 +1,4 @@
 User-Agent: *
 Disallow:
+
+Sitemap: https://kbrdn.dev/sitemap.xml

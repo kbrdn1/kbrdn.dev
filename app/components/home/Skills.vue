@@ -83,6 +83,7 @@ const stack = [
               aria-hidden="true"
             />
             {{ name }}
+            <span class="sr-only">({{ t('common.newTab') }})</span>
           </a>
         </dd>
       </div>

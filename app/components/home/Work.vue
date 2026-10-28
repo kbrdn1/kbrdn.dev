@@ -43,8 +43,8 @@ const projects = computed(() =>
       <UiPixelCanvas />
       <div class="flex items-center justify-between gap-3">
         <!-- The whole card opens the project on /experience -->
-        <NuxtLink
-          :to="`/experience#${project.id}`"
+        <NuxtLinkLocale
+          :to="{ name: 'experience', hash: `#${project.id}` }"
           class="flex min-w-0 items-center gap-3 text-[15px] text-neutral-900 transition-colors after:absolute after:inset-0 hover:text-primary-500 dark:text-neutral-100"
         >
           <span class="icon-box size-8 overflow-hidden">
@@ -64,7 +64,7 @@ const projects = computed(() =>
             />
           </span>
           <span class="truncate">{{ project.name }}</span>
-        </NuxtLink>
+        </NuxtLinkLocale>
         <div class="flex shrink-0 items-center gap-3 text-neutral-500">
           <a
             v-if="project.site"
@@ -119,12 +119,12 @@ const projects = computed(() =>
       class="panel-card hatched relative hidden flex-col items-center justify-center gap-2 p-6 text-center sm:flex"
     >
       <p class="eyebrow">{{ t('projects.next.eyebrow') }}</p>
-      <NuxtLink
+      <NuxtLinkLocale
         to="/contact"
         class="text-sm text-neutral-600 underline-offset-4 after:absolute after:inset-0 hover:text-(--accent-text) hover:underline dark:text-neutral-400"
       >
-        {{ t('projects.next.text') }} →
-      </NuxtLink>
+        {{ t('projects.next.text') }} <span aria-hidden="true">→</span>
+      </NuxtLinkLocale>
     </li>
   </ul>
 </template>

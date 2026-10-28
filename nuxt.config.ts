@@ -1,4 +1,5 @@
 import pkg from './package.json'
+import { LOCALIZED_PAGES } from './shared/localizedPages'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -37,19 +38,34 @@ export default defineNuxtConfig({
   },
 
   // i18n configuration
+  // French at the root, English under /en/: each language has its own URLs, so both are
+  // indexed (one URL served by a cookie only ever showed the crawlers one language). A
+  // reader's choice is kept in the cookie; the root sends a first visit in English to /en
+  // only, and a reader with no language preference (a crawler) stays on the French root.
   i18n: {
     locales: [
-      { code: 'en', name: 'English', file: 'en.ts' },
-      { code: 'fr', name: 'Français', file: 'fr.ts' },
+      { code: 'fr', name: 'Français', language: 'fr-FR', file: 'fr.ts' },
+      { code: 'en', name: 'English', language: 'en-US', file: 'en.ts' },
     ],
-    defaultLocale: 'en',
+    defaultLocale: 'fr',
     langDir: 'locales',
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
+    // A page's own words in each language's URL (shared/localizedPages): /parcours,
+    // /en/journey. Links to it go by route name (localePath leaves a path as it is)
+    customRoutes: 'config',
+    pages: LOCALIZED_PAGES,
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
-      fallbackLocale: 'en',
+      redirectOn: 'root',
+      fallbackLocale: 'fr',
     },
+  },
+
+  // The old address of /parcours (and /en/journey), for the links and the indexes out there
+  routeRules: {
+    '/experience': { redirect: { to: '/parcours', statusCode: 301 } },
+    '/en/experience': { redirect: { to: '/en/journey', statusCode: 301 } },
   },
 
   // Reference to main CSS file with Claude Dark theme
@@ -93,12 +109,8 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || '',
     // Identité du build, exposée par /api/health. Figée ici au moment du
     // build : c'est ce qui rend l'image auto-descriptive, une valeur lue à
-    // l'exécution suivrait le conteneur, pas l'artefact.
-    //
-    // APP_VERSION porte la version du tag, suffixe de pré-release compris
-    // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
-    // (`1.1.0`) : sans ça deux candidats successifs seraient indiscernables.
-    appVersion: process.env.APP_VERSION || pkg.version,
+    // l'exécution suivrait le conteneur, pas l'artefact. La version est dans
+    // `public`, plus bas.
     gitSha: process.env.GIT_SHA || 'dev',
     // Figée au build elle aussi, via le build-arg APP_ENV que passent les deux
     // workflows : le déploiement traverse un wrapper sur le VPS, donc rien ne
@@ -109,6 +121,11 @@ export default defineNuxtConfig({
     // fois le build figé.
     appEnv: process.env.APP_ENV || 'local',
     public: {
+      // La version du build, publique : le footer l'affiche, /api/health la renvoie.
+      // APP_VERSION porte la version du tag, suffixe de pré-release compris
+      // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
+      // (`1.1.0`) : sans ça deux candidats successifs seraient indiscernables.
+      appVersion: process.env.APP_VERSION || pkg.version,
       // Les CV (FR, EN) sont hébergés hors du repo, qui est public : leurs adresses
       // arrivent en build-args depuis les variables du dépôt (vars.CV_URL_FR / _EN),
       // surchargeables à l'exécution par NUXT_PUBLIC_CV_URL_FR / _EN. Vides, les

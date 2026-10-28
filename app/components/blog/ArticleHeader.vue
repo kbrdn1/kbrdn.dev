@@ -11,6 +11,8 @@ const props = defineProps<{
     bannerImage?: string
   }
   readingTime: number
+  // The post's language, on its title and summary only: the rest is the page's
+  lang?: string
 }>()
 
 const { t } = useI18n()
@@ -36,11 +38,11 @@ const banner = computed(() =>
     <div class="panel">
       <div class="panel-card overflow-hidden p-1.5">
         <ClientOnly v-if="post.banner">
-          <div class="h-44 overflow-hidden rounded-[10px] sm:h-60 lg:h-72">
+          <div class="h-44 overflow-hidden rounded-[10px] bg-(--placeholder) sm:h-60 lg:h-72">
             <UiPixelImage :src="banner" loading="eager" class="size-full" reveal />
           </div>
           <template #fallback>
-            <div class="h-44 rounded-[10px] bg-neutral-200 sm:h-60 lg:h-72 dark:bg-neutral-900" />
+            <div class="h-44 rounded-[10px] bg-(--placeholder) sm:h-60 lg:h-72" />
           </template>
         </ClientOnly>
         <div class="p-4 sm:p-6">
@@ -52,6 +54,7 @@ const banner = computed(() =>
           </p>
           <h1
             class="mt-3 text-3xl tracking-tight text-neutral-900 sm:text-4xl lg:text-5xl dark:text-neutral-100"
+            :lang="lang"
             :aria-label="post.title"
           >
             <UiScrambleText :text="post.title" />
@@ -59,6 +62,7 @@ const banner = computed(() =>
           <p
             v-if="post.description"
             class="mt-4 max-w-3xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400"
+            :lang="lang"
           >
             {{ post.description }}
           </p>

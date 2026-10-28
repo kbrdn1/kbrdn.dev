@@ -9,14 +9,15 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
-const { active, open, keep, close } = useNavMenu()
+const { active, open, keep, close, dismiss } = useNavMenu()
 const { links: pages } = useSiteNav()
 const cvUrl = useCvUrl()
 const $img = useImage()
 
 interface MenuLink {
   label: string
-  to: string
+  /** A path, or a route by name where the page's address changes with the language */
+  to: string | { name: string; hash?: string }
   external?: boolean
   /** The illustration while this link is hovered or focused */
   image?: string
@@ -36,8 +37,11 @@ const GWM = '/images/apps/gwm.webp'
 const { collection } = useBlogCollection()
 const { postUrl } = useBlogUrl()
 const posts = ref<{ title: string; path: string; bannerImage?: string }[]>([])
+// Their rows hold the place while they come (skeletons)
+const postsLoading = ref(false)
 watch(active, async (key) => {
-  if (key !== '/blog' || posts.value.length) return
+  if (key !== '/blog' || posts.value.length || postsLoading.value) return
+  postsLoading.value = true
   // A failed query leaves the menu with its "all posts" link only
   posts.value = await queryCollection(collection.value)
     .order('publishedAt', 'DESC')
@@ -45,6 +49,7 @@ watch(active, async (key) => {
     .limit(3)
     .all()
     .catch(() => [])
+  postsLoading.value = false
 })
 // Another language: its own posts, fetched again on the next opening
 watch(collection, () => (posts.value = []))
@@ -66,15 +71,15 @@ const menus = computed<Record<string, Menu>>(() => ({
     links: [
       {
         label: t('experiencePage.experienceLabel'),
-        to: '/experience#experience',
+        to: { name: 'experience', hash: '#experience' },
         image: '/images/projects/jewely-x-flippad.webp',
       },
       {
         label: t('experiencePage.educationLabel'),
-        to: '/experience#education',
+        to: { name: 'experience', hash: '#education' },
         image: `${SCENES}/city-marble.webp`,
       },
-      { label: 'Open source', to: '/experience#open-source', image: GWM },
+      { label: 'Open source', to: { name: 'experience', hash: '#open-source' }, image: GWM },
     ],
     image: '/images/projects/fiches-pedagogiques.webp',
   },
@@ -156,7 +161,7 @@ function onEscape(event: KeyboardEvent) {
   const opener =
     key === 'gwm'
       ? root.value?.querySelector<HTMLElement>('a[href="https://gwm.kbrdn.dev"]')
-      : document.querySelector<HTMLElement>(`header .segment[href="${key}"]`)
+      : document.querySelector<HTMLElement>(`header .segment[data-key="${key}"]`)
   opener?.focus()
 }
 
@@ -188,7 +193,7 @@ watch(
         target="_blank"
         rel="noopener noreferrer"
         class="eyebrow flex h-7 items-center justify-center gap-2 px-4 transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
-        @mouseenter="open('gwm')"
+        @mouseenter="open('gwm', $event)"
       >
         <UIcon name="i-heroicons-rocket-launch" class="size-3.5 shrink-0 text-primary-500" />
         <span class="truncate">{{ t('banner.gwm') }}</span>
@@ -205,21 +210,29 @@ watch(
                 {{ menu.text }}
               </p>
               <ul class="mt-2">
-                <li v-for="link in menu.links" :key="link.to">
-                  <NuxtLink
+                <li
+                  v-for="i in active === '/blog' && postsLoading ? 3 : 0"
+                  :key="`loading-${i}`"
+                  class="flex h-8 items-center px-2"
+                  aria-hidden="true"
+                >
+                  <UiSkeleton class="h-3" :style="{ width: `${[78, 62, 70][i - 1]}%` }" />
+                </li>
+                <li v-for="link in menu.links" :key="link.label">
+                  <NuxtLinkLocale
                     :to="link.to"
                     :target="link.external ? '_blank' : undefined"
                     :rel="link.external ? 'noopener noreferrer' : undefined"
                     class="row group flex items-center gap-2 px-2 py-1.5 text-sm text-neutral-900 dark:text-neutral-100"
                     @mouseenter="hovered = link.image ?? hovered"
                     @focus="hovered = link.image ?? hovered"
-                    @click="close(0)"
+                    @click="dismiss"
                   >
                     <span class="truncate group-hover:text-(--accent-text)">{{ link.label }}</span>
                     <span class="eyebrow ml-auto shrink-0" aria-hidden="true">
                       {{ link.external ? '↗' : '→' }}
                     </span>
-                  </NuxtLink>
+                  </NuxtLinkLocale>
                 </li>
               </ul>
             </div>
@@ -227,7 +240,7 @@ watch(
           <!-- One picture for the whole menu: changing it sweeps the new one in, block by
                block, instead of the picture leaving with the links -->
           <div
-            class="aspect-[16/11] overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) dark:bg-neutral-900"
+            class="aspect-[16/11] overflow-hidden rounded-xl bg-(--placeholder) ring-1 ring-(--card-border)"
           >
             <ClientOnly>
               <UiPixelImage v-if="image" :src="image" alt="" class="size-full" reveal />

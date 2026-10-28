@@ -74,7 +74,6 @@ const isMobileMenuOpen = ref(false)
             type="button"
             class="flex items-center h-9 px-3 rounded-full font-mono font-bold text-sm tracking-tight transition-colors hover:bg-(--control-bg)"
             :aria-expanded="showBrandMenu"
-            aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
             @keydown.escape="showBrandMenu = false"
           >
@@ -96,7 +95,7 @@ const isMobileMenuOpen = ref(false)
               <div
                 class="overflow-hidden rounded-xl border border-(--panel-border) bg-white dark:bg-neutral-900 shadow-lg"
               >
-                <NuxtLink
+                <NuxtLinkLocale
                   to="/blog"
                   class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                   @click="showBrandMenu = false"
@@ -106,7 +105,7 @@ const isMobileMenuOpen = ref(false)
                     ><span class="text-neutral-900 dark:text-neutral-100">@</span
                     ><span class="text-primary-500">kbrdn1</span></span
                   >
-                </NuxtLink>
+                </NuxtLinkLocale>
               </div>
             </div>
           </Transition>
@@ -115,17 +114,19 @@ const isMobileMenuOpen = ref(false)
         <span class="h-5 w-px shrink-0 bg-(--panel-border)" aria-hidden="true" />
 
         <!-- Desktop Navigation: the site's pages -->
-        <nav class="segmented mx-auto" aria-label="Site navigation">
-          <NuxtLink
+        <nav class="segmented mx-auto" :aria-label="t('nav.site')">
+          <NuxtLinkLocale
             v-for="link in links"
             :key="link.to"
-            :to="link.to"
+            :to="{ name: link.name }"
             :aria-current="isActive(link.to) ? 'page' : undefined"
+            :data-key="link.to"
             class="segment"
-            @mouseenter="menu.open(link.to)"
+            @mouseenter="menu.open(link.to, $event)"
+            @click="menu.dismiss"
           >
             <UiScrambleText :text="link.label" effect="link" />
-          </NuxtLink>
+          </NuxtLinkLocale>
           <UiSegmentInk :preview="menu.active.value" />
         </nav>
 
@@ -146,6 +147,7 @@ const isMobileMenuOpen = ref(false)
           </UTooltip>
           <UiLanguageSwitcher />
           <UiThemeToggle />
+          <UiMotionToggle />
         </div>
       </div>
 
@@ -156,7 +158,6 @@ const isMobileMenuOpen = ref(false)
             type="button"
             class="flex items-center font-mono font-bold text-sm tracking-tight"
             :aria-expanded="showBrandMenu"
-            aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
             @keydown.escape="showBrandMenu = false"
           >
@@ -176,7 +177,7 @@ const isMobileMenuOpen = ref(false)
               v-if="showBrandMenu"
               class="absolute left-0 top-full z-50 mt-2 min-w-full w-max overflow-hidden rounded-xl border border-(--panel-border) bg-white dark:bg-neutral-900 shadow-lg"
             >
-              <NuxtLink
+              <NuxtLinkLocale
                 to="/blog"
                 class="flex items-center gap-3 px-4 py-2.5 text-sm font-mono font-bold transition-colors hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 @click="showBrandMenu = false"
@@ -186,13 +187,14 @@ const isMobileMenuOpen = ref(false)
                   ><span class="text-neutral-900 dark:text-neutral-100">@</span
                   ><span class="text-primary-500">kbrdn1</span></span
                 >
-              </NuxtLink>
+              </NuxtLinkLocale>
             </div>
           </Transition>
         </div>
         <div class="flex items-center gap-1">
           <UiLanguageSwitcher />
           <UiThemeToggle />
+          <UiMotionToggle />
 
           <!-- Mobile menu toggle -->
           <button
@@ -221,12 +223,12 @@ const isMobileMenuOpen = ref(false)
         <nav
           id="mobile-nav"
           class="py-2 border-t border-(--panel-border)"
-          aria-label="Mobile site navigation"
+          :aria-label="t('nav.siteMobile')"
         >
-          <NuxtLink
+          <NuxtLinkLocale
             v-for="link in links"
             :key="link.to"
-            :to="link.to"
+            :to="{ name: link.name }"
             :aria-current="isActive(link.to) ? 'page' : undefined"
             :class="
               cn(
@@ -239,7 +241,7 @@ const isMobileMenuOpen = ref(false)
             @click="isMobileMenuOpen = false"
           >
             {{ link.label }}
-          </NuxtLink>
+          </NuxtLinkLocale>
         </nav>
       </UiExpand>
     </div>

@@ -37,7 +37,7 @@ const side = count++ % 2 ? 'right' : 'left'
       <p class="eyebrow">
         <slot name="meta" />
       </p>
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <slot name="footer" />
       </div>
     </div>

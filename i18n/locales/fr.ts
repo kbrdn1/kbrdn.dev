@@ -9,15 +9,15 @@ export default {
     showMore: 'Afficher plus',
     showLess: 'Afficher moins',
     loading: 'Chargement...',
+    newTab: 'ouvre un nouvel onglet',
   },
 
   // SEO
   seo: {
-    title: 'Kylian Bardini - Ingénieur Web',
+    title: 'Kylian Bardini · Développeur Full Stack',
     description:
-      'Développeur, Designer, Créateur. Je crée des applications élégantes et performantes qui résolvent de vrais problèmes.',
-    ogTitle: 'Kylian Bardini - Ingénieur Web',
-    ogDescription: 'Développeur, Designer, Créateur. Je construis des choses pour le web.',
+      'Kylian Bardini, développeur full stack à Nancy : TypeScript, Nuxt, Laravel, AWS et Rust. Son parcours, ses outils open source pour le terminal et ses articles.',
+    jobTitle: 'Développeur Full Stack',
   },
 
   // Hero Section
@@ -42,6 +42,8 @@ export default {
     openMenu: 'Ouvrir le menu',
     closeMenu: 'Fermer le menu',
     switchLanguage: 'Changer de langue',
+    site: 'Navigation du site',
+    siteMobile: 'Navigation mobile du site',
   },
 
   // The navbar's notch menus
@@ -61,6 +63,11 @@ export default {
     toLight: 'Passer en mode clair',
     toDark: 'Passer en mode sombre',
     toBlur: 'Passer en mode verre',
+  },
+
+  // The pause control (components/ui/MotionToggle)
+  motion: {
+    pause: 'Mettre les animations en pause',
   },
 
   // Section Labels
@@ -131,6 +138,12 @@ export default {
     shuffleOff: 'Désactiver le mélange',
     showList: 'Afficher la liste',
     hideList: 'Masquer la liste',
+    progress: 'Progression de la piste',
+    timeOf: '{current} sur {total}',
+    track: 'Piste {n} sur {total}',
+    // Fixed names for the toggles: their state is aria-pressed / aria-expanded
+    shuffle: 'Lecture aléatoire',
+    tracklist: 'Liste des pistes',
   },
 
   // Bio Section
@@ -180,6 +193,10 @@ export default {
       annual: 'Annuel',
       monthly: 'Mensuel',
     },
+    tabsLabel: 'Vue des contributions',
+    viewProfile: 'Voir le profil GitHub',
+    // The tooltip: "3 le lun. 12 oct. 2026"
+    on: 'le',
   },
 
   // Theme
@@ -300,6 +317,7 @@ export default {
     ctaOpenSource: "Voir l'open source",
     ctaBlog: 'Lire le blog',
     timeline: 'Postes et formations',
+    timelineCompact: 'Postes et formations, accès rapide',
     experienceLabel: 'Expérience',
     educationLabel: 'Formation',
     stack: 'Stack',
@@ -457,6 +475,8 @@ export default {
     formSubtitle: 'Un court message suffit',
     company: 'Entreprise ou produit',
     companyPlaceholder: 'Facultatif',
+    optional: 'facultatif',
+    requiredHint: 'Tous les champs sont obligatoires, sauf mention contraire.',
     topic: 'Sujet',
     topics: {
       role: 'Un poste',
@@ -615,9 +635,12 @@ export default {
 
   blog: {
     toc: 'Sommaire',
+    readingProgress: 'Progression de la lecture',
+    pagination: 'Pagination',
     read: 'Lire',
     title: 'Articles & Réflexions',
     description: "J'écris sur le développement web, l'architecture et les outils que j'utilise.",
+    listHeading: 'Tous les articles',
     allTags: 'Tous',
     noArticles: "Pas encore d'articles. Restez connectés !",
     viewAll: 'Voir tous les articles',
@@ -632,7 +655,13 @@ export default {
     copyLink: 'Copier le lien',
     linkCopied: 'Lien copié !',
     moreArticles: "Plus d'articles",
-    notFound: 'Article non trouvé',
+    // The promo card beside an article
+    sidebar: {
+      readMore: 'En savoir plus',
+      dismiss: 'Masquer',
+      new: 'Nouveau',
+      gwm: 'Un CLI + TUI en Rust pour gérer les worktrees Git de tous vos projets, avec un bootstrap par dépôt.',
+    },
     nextPost: {
       eyebrow: 'À suivre',
       text: "La place du prochain article, en cours d'écriture.",
@@ -655,6 +684,7 @@ export default {
 
   // Footer Section
   footer: {
+    heading: 'Pied de page',
     nav: {
       articles: 'Articles',
       tags: 'Tags',

@@ -5,8 +5,9 @@ import { useI18n } from '#imports'
  * OgImage/Blog: the blog's card), with the labels of the reader's language. Server only,
  * like defineOgImage.
  *
- * One cache entry per language and page: both languages share the page's path (no prefix),
- * and the image rendered first was otherwise served to the other language too.
+ * One cache entry per language and page. The English pages live under /en/ now, but the key
+ * keeps the language: an image cached under a path shared by both languages was once served
+ * to the other one (#87), and the key costs nothing.
  */
 export function useSiteOgImage(component: 'Default' | 'Blog', props: Record<string, unknown>) {
   if (!import.meta.server) return

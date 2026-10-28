@@ -68,12 +68,12 @@ const STATUS_BAR: Record<string, string> = {
 }
 // Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
-  released: 'text-green-700 dark:text-green-500',
-  merged: 'text-green-700 dark:text-green-500',
-  inDevelopment: 'text-primary-500',
-  review: 'text-primary-500',
-  archived: 'text-neutral-500',
-  report: 'text-sky-500',
+  released: 'text-green-800 dark:text-green-500',
+  merged: 'text-green-800 dark:text-green-500',
+  inDevelopment: 'text-primary-800 dark:text-primary-500',
+  review: 'text-primary-800 dark:text-primary-500',
+  archived: 'text-neutral-600 dark:text-neutral-400',
+  report: 'text-sky-800 dark:text-sky-500',
 }
 
 // "PR #403295" / "ISSUE #2689", from the link: the number is not stored on its own
@@ -225,7 +225,7 @@ const reference = (url: string) =>
                       rel="noopener noreferrer"
                       class="underline underline-offset-4 hover:text-(--accent-text)"
                     >
-                      {{ t('experiencePage.openSource.site') }} ↗
+                      {{ t('experiencePage.openSource.site') }} <span aria-hidden="true">↗</span>
                     </a>
                     <span v-if="'site' in project" aria-hidden="true">/</span>
                     <a
@@ -234,7 +234,7 @@ const reference = (url: string) =>
                       rel="noopener noreferrer"
                       class="underline underline-offset-4 hover:text-(--accent-text)"
                     >
-                      {{ t('experiencePage.openSource.repo') }} ↗
+                      {{ t('experiencePage.openSource.repo') }} <span aria-hidden="true">↗</span>
                     </a>
                   </p>
                 </div>
@@ -285,16 +285,19 @@ const reference = (url: string) =>
                     rel="noopener noreferrer"
                     class="underline underline-offset-4 hover:text-(--accent-text)"
                   >
-                    {{ t('experiencePage.openSource.view') }} ↗
+                    {{ t('experiencePage.openSource.view') }} <span aria-hidden="true">↗</span>
                   </a>
                 </p>
               </div>
             </li>
           </TransitionGroup>
 
-          <p v-if="shown === 0" class="eyebrow py-10 text-center">
-            {{ t('experiencePage.openSource.noResults') }}
-          </p>
+          <!-- A live region from the start: the empty result is announced as the search narrows -->
+          <div role="status">
+            <p v-if="shown === 0" class="eyebrow py-10 text-center">
+              {{ t('experiencePage.openSource.noResults') }}
+            </p>
+          </div>
         </UiAutoHeight>
       </div>
     </div>

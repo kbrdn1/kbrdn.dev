@@ -15,8 +15,11 @@ const { data: posts } = await useAsyncData(
 
 // SEO metadata
 useSeoMeta({
-  title: t('blog.title'),
-  description: t('blog.description'),
+  title: () => `${t('blog.title')} · Kylian Bardini`,
+  description: () => t('blog.description'),
+  ogTitle: () => t('blog.title'),
+  ogDescription: () => t('blog.description'),
+  twitterCard: 'summary_large_image',
 })
 
 useSiteOgImage('Default', {
@@ -55,7 +58,10 @@ const bannerOf = (post: { bannerImage?: string }) =>
 const blogListRef = ref<HTMLElement | null>(null)
 
 function goToPage(page: number) {
-  blogListRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  blogListRef.value?.scrollIntoView({
+    behavior: isMotionReduced() ? 'auto' : 'smooth',
+    block: 'start',
+  })
   setTimeout(() => {
     currentPage.value = page
   }, 300)
@@ -122,6 +128,36 @@ const postCount = computed(() => {
 
 const { formatDate } = useFormatDate()
 const { postUrl } = useBlogUrl()
+
+// The blog and its posts, newest first, at this language's addresses
+const siteUrl = useSiteUrl()
+const localePath = useLocalePath()
+const person = usePersonRef()
+usePageSchema(
+  'CollectionPage',
+  () => ({ name: t('blog.title'), description: t('blog.description') }),
+  {
+    trail: () => [{ name: t('nav.blog'), path: '/blog' }],
+    nodes: () => [
+      {
+        '@type': 'Blog',
+        '@id': `${siteUrl(localePath('/blog'))}#blog`,
+        url: siteUrl(localePath('/blog')),
+        name: t('blog.title'),
+        description: t('blog.description'),
+        author: person,
+        blogPost: [...(posts.value ?? [])]
+          .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+          .map((post) => ({
+            '@type': 'BlogPosting',
+            headline: post.title,
+            url: siteUrl(localePath(postUrl(post))),
+            ...(post.publishedAt && { datePublished: post.publishedAt }),
+          })),
+      },
+    ],
+  },
+)
 </script>
 
 <template>
@@ -143,7 +179,7 @@ const { postUrl } = useBlogUrl()
           {{ t('blog.description') }}
         </p>
         <div class="mt-6 flex flex-wrap items-center gap-3">
-          <span class="eyebrow">{{ postCount }}</span>
+          <span class="eyebrow" role="status">{{ postCount }}</span>
           <a
             href="https://github.com/sponsors/kbrdn1"
             target="_blank"
@@ -202,6 +238,8 @@ const { postUrl } = useBlogUrl()
         </div>
       </div>
 
+      <!-- The posts' level in the outline, under the page's h1 (the panel has no title) -->
+      <h2 class="sr-only">{{ t('blog.listHeading') }}</h2>
       <UiAutoHeight>
         <!-- The three views stay mounted, only their rows change: switching view, tag or
              page, the old rows close one after the other while the new ones open -->
@@ -233,7 +271,7 @@ const { postUrl } = useBlogUrl()
           <!-- After disarto's event card: the banner full width on top, the card over its
                  bottom edge (tag and reading time, title, summary, then date, author and tags
                  between dashed rules), the call to read in the footer -->
-          <NuxtLink
+          <NuxtLinkLocale
             v-for="(post, index) in viewMode === 'cards' ? paginatedPosts : []"
             :key="post.path"
             :to="postUrl(post)"
@@ -241,9 +279,13 @@ const { postUrl } = useBlogUrl()
             :style="{ '--i': index }"
           >
             <ClientOnly v-if="post.banner">
-              <div class="-mb-5 h-44 overflow-hidden">
+              <div class="-mb-5 h-44 overflow-hidden bg-(--placeholder)">
                 <UiPixelImage :src="bannerOf(post)" class="size-full" reveal />
               </div>
+              <!-- Its place kept until mounted: the card does not grow under the reader -->
+              <template #fallback>
+                <div class="-mb-5 h-44 bg-(--placeholder)" />
+              </template>
             </ClientOnly>
             <!-- In glass, a translucent card: it frosts the banner's edge it covers -->
             <div
@@ -299,7 +341,7 @@ const { postUrl } = useBlogUrl()
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
               </span>
             </div>
-          </NuxtLink>
+          </NuxtLinkLocale>
           <!-- An odd page leaves a hole beside the last card: a hatched placeholder fills it -->
           <div
             v-if="viewMode === 'cards' && paginatedPosts.length % 2"
@@ -335,7 +377,7 @@ const { postUrl } = useBlogUrl()
             :key="post.path"
             :style="{ '--i': index }"
           >
-            <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+            <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
               <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
                 {{ formatDate(post.publishedAt) }}
               </span>
@@ -344,7 +386,7 @@ const { postUrl } = useBlogUrl()
               >
                 {{ post.title }}
               </span>
-            </NuxtLink>
+            </NuxtLinkLocale>
           </li>
         </TransitionGroup>
 
@@ -362,7 +404,7 @@ const { postUrl } = useBlogUrl()
         {{ String(currentPage).padStart(2, '0') }} / {{ String(totalPages).padStart(2, '0') }}
       </template>
       <template v-if="totalPages > 1" #footer>
-        <nav class="flex items-center gap-1" aria-label="Pagination">
+        <nav class="flex items-center gap-1" :aria-label="t('blog.pagination')">
           <button
             type="button"
             class="icon-btn disabled:pointer-events-none disabled:opacity-40"

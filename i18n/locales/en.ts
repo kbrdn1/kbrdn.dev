@@ -9,15 +9,15 @@ export default {
     showMore: 'Show more',
     showLess: 'Show less',
     loading: 'Loading...',
+    newTab: 'opens in a new tab',
   },
 
   // SEO
   seo: {
-    title: 'Kylian Bardini - Web Engineer',
+    title: 'Kylian Bardini · Full Stack Developer',
     description:
-      'Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.',
-    ogTitle: 'Kylian Bardini - Web Engineer',
-    ogDescription: 'Developer, Designer, Creator. Building things for the web.',
+      'Kylian Bardini, full stack developer in Nancy: TypeScript, Nuxt, Laravel, AWS and Rust. His journey, his open source terminal tools and his articles.',
+    jobTitle: 'Full Stack Developer',
   },
 
   // Hero Section
@@ -42,6 +42,8 @@ export default {
     openMenu: 'Open menu',
     closeMenu: 'Close menu',
     switchLanguage: 'Switch language',
+    site: 'Site navigation',
+    siteMobile: 'Mobile site navigation',
   },
 
   // The navbar's notch menus
@@ -61,6 +63,11 @@ export default {
     toLight: 'Switch to light mode',
     toDark: 'Switch to dark mode',
     toBlur: 'Switch to glass mode',
+  },
+
+  // The pause control (components/ui/MotionToggle)
+  motion: {
+    pause: 'Pause animations',
   },
 
   // Section Labels
@@ -131,6 +138,12 @@ export default {
     shuffleOff: 'Disable shuffle',
     showList: 'Show tracklist',
     hideList: 'Hide tracklist',
+    progress: 'Track progress',
+    timeOf: '{current} of {total}',
+    track: 'Track {n} of {total}',
+    // Fixed names for the toggles: their state is aria-pressed / aria-expanded
+    shuffle: 'Shuffle',
+    tracklist: 'Tracklist',
   },
 
   // Bio Section
@@ -180,6 +193,10 @@ export default {
       annual: 'Annual',
       monthly: 'Monthly',
     },
+    tabsLabel: 'Contribution view',
+    viewProfile: 'View GitHub profile',
+    // The tooltip: "3 on Mon, Oct 12, 2026"
+    on: 'on',
   },
 
   // Theme
@@ -300,6 +317,7 @@ export default {
     ctaOpenSource: 'See the open source',
     ctaBlog: 'Read the blog',
     timeline: 'Roles and education',
+    timelineCompact: 'Roles and education, quick access',
     experienceLabel: 'Experience',
     educationLabel: 'Education',
     stack: 'Stack',
@@ -457,6 +475,8 @@ export default {
     formSubtitle: 'A short message is enough',
     company: 'Company or product',
     companyPlaceholder: 'Optional',
+    optional: 'optional',
+    requiredHint: 'All fields are required unless marked optional.',
     topic: 'Topic',
     topics: {
       role: 'A role',
@@ -614,9 +634,12 @@ export default {
 
   blog: {
     toc: 'Contents',
+    readingProgress: 'Reading progress',
+    pagination: 'Pagination',
     read: 'Read',
     title: 'Articles & Thoughts',
     description: 'Writing about web development, architecture, and tools I use.',
+    listHeading: 'All articles',
     allTags: 'All',
     noArticles: 'No articles yet. Stay tuned!',
     viewAll: 'View all articles',
@@ -631,7 +654,13 @@ export default {
     copyLink: 'Copy link',
     linkCopied: 'Link copied!',
     moreArticles: 'More articles',
-    notFound: 'Article not found',
+    // The promo card beside an article
+    sidebar: {
+      readMore: 'Read more',
+      dismiss: 'Dismiss',
+      new: 'New',
+      gwm: 'A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap.',
+    },
     nextPost: {
       eyebrow: 'Up next',
       text: "The next post's spot, still being written.",
@@ -654,6 +683,7 @@ export default {
 
   // Footer Section
   footer: {
+    heading: 'Site footer',
     nav: {
       articles: 'Articles',
       tags: 'Tags',

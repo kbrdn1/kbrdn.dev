@@ -1,5 +1,6 @@
 import type { RouterConfig } from '@nuxt/schema'
 import { START_LOCATION } from 'vue-router'
+import { isMotionReduced } from '~/composables/useReducedMotion'
 
 // An anchor lands under the floating navbar and its notch (they end at 90px), or lower when
 // the target asks for more room (its scroll-margin-top, like /experience's entries under
@@ -12,8 +13,7 @@ const topFor = (hash: string) => {
 }
 
 // Smooth, unless the reader asked for less motion
-const behavior = (): ScrollBehavior =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+const behavior = (): ScrollBehavior => (isMotionReduced() ? 'auto' : 'smooth')
 
 export default <RouterConfig>{
   scrollBehavior(to, from, savedPosition) {

@@ -19,6 +19,16 @@ useSiteOgImage('Default', {
   subtitle: t('experiencePage.ogSubtitle'),
   scene: 'climb',
 })
+const person = usePersonRef()
+usePageSchema(
+  'ProfilePage',
+  () => ({
+    name: t('experiencePage.seoTitle'),
+    description: t('experiencePage.seoDescription'),
+    mainEntity: person,
+  }),
+  { trail: () => [{ name: t('nav.experience'), path: 'experience' }] },
+)
 
 const period = (start: string, end: string | null) =>
   `${formatMonth(start, locale.value)} – ${end ? formatMonth(end, locale.value) : t('experiences.present')}`
@@ -192,10 +202,10 @@ const list = (key: string, count: number) =>
           <a href="#open-source" class="btn btn-primary">
             {{ t('experiencePage.ctaOpenSource') }}
           </a>
-          <NuxtLink to="/blog" class="btn btn-outline">
+          <NuxtLinkLocale to="/blog" class="btn btn-outline">
             <UiScrambleText :text="t('experiencePage.ctaBlog')" effect="link" />
             <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-          </NuxtLink>
+          </NuxtLinkLocale>
         </div>
       </div>
       <UiPixelScene scene="climb" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
@@ -238,8 +248,9 @@ const list = (key: string, count: number) =>
                   "
                 >
                   <span class="eyebrow block">
-                    {{ item.nested ? '↳' : String(item.n).padStart(2, '0') }} ·
-                    {{ yearSpan(item.start, item.end) }}
+                    <span v-if="item.nested" aria-hidden="true">↳</span>
+                    <template v-else>{{ String(item.n).padStart(2, '0') }}</template>
+                    · {{ yearSpan(item.start, item.end) }}
                   </span>
                   <span class="mt-3 flex items-center gap-3">
                     <NuxtImg
@@ -256,7 +267,9 @@ const list = (key: string, count: number) =>
                       >
                         {{ item.name }}
                       </span>
-                      <span class="block truncate text-xs text-neutral-500">{{ item.detail }}</span>
+                      <span class="block truncate text-xs text-neutral-500 dark:text-neutral-400">{{
+                        item.detail
+                      }}</span>
                     </span>
                   </span>
                 </a>
@@ -281,7 +294,7 @@ const list = (key: string, count: number) =>
         <nav
           v-if="stripGone && activeId"
           ref="compactNav"
-          :aria-label="t('experiencePage.timeline')"
+          :aria-label="t('experiencePage.timelineCompact')"
           class="pointer-events-auto panel mx-auto max-w-[61rem] overflow-x-auto scrollbar-none"
         >
           <div ref="compactList" class="relative flex w-max gap-1">
@@ -350,7 +363,7 @@ const list = (key: string, count: number) =>
               :start="project.startDate"
               :end="project.endDate"
               :title="project.name"
-              :detail="`↳ ${clientOf(project) ?? exp.company}`"
+              :detail="clientOf(project) ?? exp.company"
               :meta="`${period(project.startDate, project.endDate)} · ${t(`experiencePage.work.${project.key}.role`)}`"
               :summary="t(`experiencePage.work.${project.key}.summary`)"
               :image="project.image"
@@ -431,7 +444,7 @@ const list = (key: string, count: number) =>
       <div class="panel-card flex items-center gap-5 p-6 sm:p-8">
         <UiMascot mood="hoodie-cool" :size="72" />
         <div>
-          <span class="tag text-green-700 dark:text-green-500">
+          <span class="tag text-green-800 dark:text-green-500">
             <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
             {{ t('hero.availableForHire') }}
           </span>

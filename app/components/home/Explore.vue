@@ -126,10 +126,15 @@ const reducedMotion = useReducedMotion()
                 {{ slide?.description }}
               </p>
               <div v-if="slide?.cta" class="mt-auto pt-6">
-                <NuxtLink :to="slide.cta.href" target="_blank" class="btn btn-primary">
+                <!-- A new tab for the external sites only, not /blog or the mail client -->
+                <NuxtLinkLocale
+                  :to="slide.cta.href"
+                  :target="/^https?:/.test(slide.cta.href) ? '_blank' : undefined"
+                  class="btn btn-primary"
+                >
                   <UIcon :name="slide.cta.icon" class="size-4" aria-hidden="true" />
                   {{ slide.cta.label }}
-                </NuxtLink>
+                </NuxtLinkLocale>
               </div>
             </div>
           </Transition>
@@ -137,12 +142,16 @@ const reducedMotion = useReducedMotion()
 
         <!-- Client only: the scene follows the colour mode, unknown to the server. Hovered,
              it depixelates down to the crisp picture. -->
-        <div
-          class="relative min-h-64 overflow-hidden rounded-[1rem] bg-neutral-200 dark:bg-neutral-900"
-        >
+        <div class="relative min-h-64 overflow-hidden rounded-[1rem] bg-(--placeholder)">
           <ClientOnly>
             <div class="absolute inset-0">
-              <UiPixelImage :src="scene" class="size-full" reveal />
+              <!-- The picture turns the way the slide does: from the right going on -->
+              <UiPixelImage
+                :src="scene"
+                :from="direction === 'next' ? 'right' : 'left'"
+                class="size-full"
+                reveal
+              />
             </div>
           </ClientOnly>
         </div>

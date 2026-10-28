@@ -72,10 +72,36 @@ const APPS = [
   },
 ] as const
 
-const { data: releases } = useFetch<Record<string, { version: string } | null>>(
-  '/api/github/releases',
-  { server: false, lazy: true, default: () => ({}) },
+// Each app as source code (no SoftwareApplication: its rich result wants a price or a rating)
+const person = usePersonRef()
+usePageSchema(
+  'CollectionPage',
+  () => ({
+    name: t('appsPage.seoTitle'),
+    description: t('appsPage.seoDescription'),
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: APPS.map((app, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'SoftwareSourceCode',
+          name: app.name,
+          description: t(`appsPage.apps.${app.key}.tagline`),
+          codeRepository: `https://github.com/kbrdn1/${app.repo}`,
+          programmingLanguage: app.language,
+          ...('site' in app && { url: app.site }),
+          author: person,
+        },
+      })),
+    },
+  }),
+  { trail: () => [{ name: t('nav.apps'), path: '/apps' }] },
 )
+
+const { data: releases, status: releasesStatus } = useFetch<
+  Record<string, { version: string } | null>
+>('/api/github/releases', { server: false, lazy: true, default: () => ({}) })
 
 // The demo plays only while on screen, and not at all under prefers-reduced-motion
 // (the screenshot stays as its poster, with the controls to start it by hand).
@@ -94,12 +120,20 @@ onMounted(() => {
     .forEach((v) => videoObserver!.observe(v))
 })
 onUnmounted(() => videoObserver?.disconnect())
+// The pause control stops it on the spot (its controls show), and restarts it if on screen
+watch(reducedMotion, (reduced) =>
+  document.querySelectorAll<HTMLVideoElement>('video[data-demo]').forEach((v) => {
+    const { top, bottom } = v.getBoundingClientRect()
+    if (reduced) v.pause()
+    else if (bottom > 0 && top < innerHeight) v.play().catch(() => {})
+  }),
+)
 
 // Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
-  released: 'text-green-700 dark:text-green-500',
-  inDevelopment: 'text-primary-500',
-  archived: 'text-neutral-500',
+  released: 'text-green-800 dark:text-green-500',
+  inDevelopment: 'text-primary-800 dark:text-primary-500',
+  archived: 'text-neutral-600 dark:text-neutral-400',
 }
 </script>
 
@@ -138,15 +172,19 @@ const STATUS_CLASS: Record<string, string> = {
       :title="app.name"
       :subtitle="app.language"
       class="scroll-mt-28"
-      :class="{ 'opacity-80': app.status === 'archived' }"
+      :class="{ '[&_img]:opacity-80': app.status === 'archived' }"
     >
       <template #actions>
         <span
           v-if="releases?.[app.repo]?.version"
-          class="tag text-neutral-500 dark:text-neutral-400"
+          class="tag text-neutral-600 dark:text-neutral-400"
         >
           {{ releases[app.repo]!.version }}
         </span>
+        <UiSkeleton
+          v-else-if="releasesStatus === 'pending' || releasesStatus === 'idle'"
+          class="h-6 w-14 rounded-full"
+        />
         <span :class="cn('tag mr-2', STATUS_CLASS[app.status])">
           <span class="size-1.5 rounded-full bg-current" aria-hidden="true" />
           {{ t(`appsPage.status.${app.status}`) }}
@@ -228,10 +266,14 @@ const STATUS_CLASS: Record<string, string> = {
             {{ t('video' in app ? 'appsPage.demo' : 'appsPage.preview') }}
           </figcaption>
           <div class="mt-3 overflow-hidden rounded-xl border border-(--card-border) bg-neutral-950">
+            <!-- The video's own size: no 300 by 150 box before its poster, no jump when it
+                 starts (the poster is a little wider, letterboxed on the dark card) -->
             <video
               v-if="'video' in app"
               data-demo
               :poster="app.image"
+              width="1280"
+              height="862"
               :controls="reducedMotion"
               :aria-label="t(`appsPage.apps.${app.key}.illustration`)"
               muted

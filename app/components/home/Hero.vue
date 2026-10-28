@@ -48,13 +48,15 @@ function nextMood() {
 let interval: ReturnType<typeof setInterval> | undefined
 let moodInterval: ReturnType<typeof setInterval> | undefined
 
+// Both loops hold still while motion is reduced or paused, and pick up again after
 onMounted(() => {
   if (props.titles.length > 1) {
     interval = setInterval(() => {
+      if (reducedMotion.value) return
       currentTitleIndex.value = (currentTitleIndex.value + 1) % props.titles.length
     }, 3000)
   }
-  if (!reducedMotion.value) moodInterval = setInterval(nextMood, 4000)
+  moodInterval = setInterval(() => reducedMotion.value || nextMood(), 4000)
 })
 
 onUnmounted(() => {
@@ -70,7 +72,7 @@ onUnmounted(() => {
     class="flex flex-col gap-8 py-4 sm:py-8 md:flex-row md:items-center md:justify-between md:gap-12"
   >
     <div class="min-w-0 flex-1">
-      <span v-if="isHirable" class="tag mb-5 text-green-700 dark:text-green-500">
+      <span v-if="isHirable" class="tag mb-5 text-green-800 dark:text-green-500">
         <span class="relative flex size-1.5" aria-hidden="true">
           <span
             class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"
@@ -88,7 +90,11 @@ onUnmounted(() => {
       </h1>
 
       <!-- Rotating title, rolling letter by letter like the figures' reels -->
-      <p class="text-xl text-primary-500 sm:text-2xl" style="font-family: 'Fenix', serif">
+      <!-- 700 in light: 500 is 2.7:1 on the page, under the 3:1 of large text (4.5:1 at 20px) -->
+      <p
+        class="text-xl text-primary-700 sm:text-2xl dark:text-primary-500"
+        style="font-family: 'Fenix', serif"
+      >
         <UiRollingText :text="currentTitle" />
       </p>
 
@@ -116,10 +122,10 @@ onUnmounted(() => {
       </p>
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
-        <NuxtLink to="/contact" class="btn btn-primary">
+        <NuxtLinkLocale to="/contact" class="btn btn-primary">
           <UIcon name="i-heroicons-paper-airplane" class="size-4" aria-hidden="true" />
           {{ t('hero.contact') }}
-        </NuxtLink>
+        </NuxtLinkLocale>
         <HomeSocials :links="socials" />
       </div>
     </div>

@@ -2,11 +2,14 @@
    Animations & Transitions
    ═══════════════════════════════════════════════════ */
 
-/* Page navigation (Nuxt view transitions): a focus pull. The old page blurs and fades out
-   quickly, the new one comes into focus as it rises. The navbar and its notch are left out
-   of it, captured on their own, so they stay sharp and still; named on the glass panels
-   themselves, never on the header: an ancestor with a name is a backdrop root, and the
-   navbar's glass would blur nothing. */
+/* Page navigation (Nuxt view transitions): the blocks of both pages swing on the live page
+   (plugins/view-transition), out then in; what stays of the old one fades out over the new
+   one. Over it, not crossed with it: the new page is opaque (its background) and still, a
+   plain fade, no additive blend. The navbar and its notch are left out of it, captured on
+   their own, so they stay sharp and still; named on the glass panels themselves, never on the
+   header: an ancestor with a name is a backdrop root, and the navbar's glass would blur
+   nothing. Not during the theme switch, which runs its own transition on the same
+   pseudo-elements. */
 header .panel.notched {
   view-transition-name: site-nav;
 }
@@ -15,28 +18,26 @@ header .notch {
   view-transition-name: site-notch;
 }
 
-::view-transition-old(root) {
-  animation: page-out 0.22s ease-in both;
+html:not([data-theme-switch])::view-transition-old(root) {
+  z-index: 1;
+  mix-blend-mode: normal;
+  animation: page-out 0.18s ease-in both;
 }
 
-::view-transition-new(root) {
-  animation: page-in 0.55s var(--ease-out-quint) both;
+html:not([data-theme-switch])::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation: none;
 }
 
 @keyframes page-out {
   to {
     opacity: 0;
-    filter: blur(10px);
-    transform: scale(0.985);
   }
 }
 
-@keyframes page-in {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-    transform: translateY(14px);
-  }
+/* The new page, until its blocks start from their side */
+html[data-page-enter] :is(#main-content, #main-content ~ footer) {
+  opacity: 0;
 }
 
 /* The theme switch reveals the whole screen at once, navbar included */
@@ -45,49 +46,49 @@ html[data-theme-switch] header .notch {
   view-transition-name: none;
 }
 
-/* Theme switch (ThemeToggle): the new mode spreads from the button in a circle over a still
-   snapshot of the old one, a halo in the new mode's colour along the edge. No cross-fade,
-   and no colour transitions: the new page is live, they would tween behind the circle. */
+/* Theme switch (ThemeToggle): the new mode comes through a still snapshot of the old one in a
+   dithered wave from the button, its pixels a mask the toggle animates frame by frame. No
+   cross-fade, and no colour transitions: the new page is live, they would tween behind the
+   mask. The frames are one pixel per cell, stretched: pixelated keeps their edges square. */
 html[data-theme-switch]::view-transition-old(root),
 html[data-theme-switch]::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
+html[data-theme-switch]::view-transition-new(root) {
+  mask-image: linear-gradient(transparent, transparent);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+html[data-theme-switch]::view-transition-group(theme-front),
+html[data-theme-switch]::view-transition-new(theme-front) {
+  animation: none;
+}
+
 html[data-theme-switch] *,
 html[data-theme-switch] *::before,
 html[data-theme-switch] *::after {
   transition: none !important;
+  /* The page holds still for the second the wave lasts: anything moving in it makes the
+     browser capture the whole new page again, every frame */
+  animation-play-state: paused !important;
 }
 
-@property --halo-r {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-/* Inside the new page, so the circle cuts it at the edge: only its inner glow shows */
-.theme-halo {
-  --halo: var(--color-primary-500);
+/* The wave's front, in the new mode's colour. Its own view transition layer, above the page
+   and without a mask (its pixels are all in the part already revealed): inside the page's,
+   each of its frames would have the browser capture the whole new page again */
+.theme-front {
+  view-transition-name: theme-front;
   position: fixed;
   inset: 0;
   z-index: 2147483647;
   pointer-events: none;
-  background: radial-gradient(
-    circle at var(--halo-x) var(--halo-y),
-    transparent calc(var(--halo-r) - 9rem),
-    color-mix(in srgb, var(--halo) 16%, transparent) calc(var(--halo-r) - 2.5rem),
-    color-mix(in srgb, var(--halo) 60%, transparent) calc(var(--halo-r) - 2px),
-    transparent var(--halo-r)
-  );
-}
-
-.theme-halo[data-mode="light"] {
-  --halo: var(--color-yellow-500);
-}
-
-.theme-halo[data-mode="blur"] {
-  --halo: var(--color-cyan-500);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 
 /* Nav entrance animation */
@@ -171,35 +172,98 @@ html[data-theme-switch] *::after {
   }
 }
 
-/* Swapped content (a track, a slide, the hero's title): the old one leaves on one side, the
-   next comes in from the other, so the motion says which way it went. Vue <Transition>
-   names, mode out-in. */
+/* Swapped content (a track and its cover, a slide): a lateral take on the number reels
+   (components.css). The old one rolls out on one side, the next rolls in from the other, so
+   the motion says which way it went: on the quint curve, blurred while fast (reel-blur), its
+   edges faded while it moves. Vue <Transition> names, mode out-in. */
 .swap-next-enter-active,
-.swap-prev-enter-active,
+.swap-prev-enter-active {
+  animation:
+    swap-reel-in 0.6s var(--ease-out-quint) both,
+    reel-blur 0.6s linear both,
+    reel-edge 0.6s ease-out both;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--reel-edge),
+    #000 calc(100% - var(--reel-edge)),
+    transparent
+  );
+}
+
+.swap-next-leave-active,
+.swap-prev-leave-active {
+  animation: swap-reel-out 0.18s ease-in both;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 var(--reel-edge),
+    #000 calc(100% - var(--reel-edge)),
+    transparent
+  );
+}
+
+/* Going on, everything moves left; going back, right */
+.swap-next-enter-active,
+.swap-prev-leave-active {
+  --reel-x: 2rem;
+}
+
+.swap-next-leave-active,
+.swap-prev-enter-active {
+  --reel-x: -2rem;
+}
+
+/* The faded edges close as it lands: at 0% the mask hides nothing, so dropping it at the end
+   of the animation changes nothing on screen (it used to snap the edges back at once) */
+@property --reel-edge {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 12%;
+}
+
+@keyframes reel-edge {
+  from {
+    --reel-edge: 12%;
+  }
+  70%,
+  to {
+    --reel-edge: 0%;
+  }
+}
+
+@keyframes swap-reel-in {
+  from {
+    translate: var(--reel-x) 0;
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes swap-reel-out {
+  to {
+    translate: var(--reel-x) 0;
+    opacity: 0;
+    filter: blur(2px);
+  }
+}
+
+/* The notch's lines: a plain slide up */
 .swap-up-enter-active {
   transition:
     opacity 0.35s var(--ease-out-quint),
     translate 0.35s var(--ease-out-quint);
 }
 
-.swap-next-leave-active,
-.swap-prev-leave-active,
 .swap-up-leave-active {
   transition:
     opacity 0.15s ease-in,
     translate 0.15s ease-in;
-}
-
-.swap-next-enter-from,
-.swap-prev-leave-to {
-  opacity: 0;
-  translate: 1.5rem 0;
-}
-
-.swap-next-leave-to,
-.swap-prev-enter-from {
-  opacity: 0;
-  translate: -1.5rem 0;
 }
 
 .swap-up-enter-from {

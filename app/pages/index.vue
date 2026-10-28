@@ -32,23 +32,24 @@ function switchTab(step: number) {
 }
 const { postUrl } = useBlogUrl()
 
-// SEO metadata
+// SEO metadata: the site's own words (no `pages` entry backs the home)
 useSeoMeta({
-  title: page.value?.title
-    ? `${page.value.title} - Full Stack Developer`
-    : 'Kylian Bardini - Full Stack Developer',
-  description:
-    page.value?.bio?.[0] ||
-    'Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.',
-  ogTitle: page.value?.title || 'Kylian Bardini - Full Stack Developer',
-  ogDescription:
-    page.value?.bio?.[0] || 'Developer, Designer, Creator. Building things for the web.',
+  title: () => t('seo.title'),
+  description: () => t('seo.description'),
+  ogTitle: () => t('seo.title'),
+  ogDescription: () => t('seo.description'),
   twitterCard: 'summary_large_image',
 })
+const person = usePersonRef()
+usePageSchema('ProfilePage', () => ({
+  name: t('seo.title'),
+  description: t('seo.description'),
+  mainEntity: person,
+}))
 
 useSiteOgImage('Default', {
   title: page.value?.title || 'Kylian Bardini',
-  subtitle: page.value?.titles?.[0] || 'Full Stack Developer',
+  subtitle: page.value?.titles?.[0] || t('seo.jobTitle'),
   handle: page.value?.handle || '@kbrdn1',
   isHirable: page.value?.isHirable ?? true,
   figures: CAREER_FIGURES.map((figure) => ({
@@ -150,7 +151,7 @@ const content = computed(() => {
               class="panel-card divide-y divide-dashed divide-neutral-200 px-5 dark:divide-neutral-800"
             >
               <li v-for="post in latestPosts" :key="post.path">
-                <NuxtLink :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+                <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
                   <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
                     {{ formatDate(post.publishedAt, 'short') }}
                   </span>
@@ -159,14 +160,14 @@ const content = computed(() => {
                   >
                     {{ post.title }}
                   </span>
-                </NuxtLink>
+                </NuxtLinkLocale>
               </li>
             </ul>
             <template #footer>
-              <NuxtLink to="/blog" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale to="/blog" class="btn btn-outline btn-sm">
                 {{ t('blog.viewAll') }}
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </UiPanel>
         </section>
@@ -233,10 +234,14 @@ const content = computed(() => {
                   aria-hidden="true"
                 />
               </a>
-              <NuxtLink v-else to="/experience#experience" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale
+                v-else
+                :to="{ name: 'experience', hash: '#experience' }"
+                class="btn btn-outline btn-sm"
+              >
                 <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </UiPanel>
         </section>
@@ -251,10 +256,10 @@ const content = computed(() => {
           <UiPanel :title="t('nav.experience')">
             <HomeParcours class="panel-card p-5 sm:p-6" />
             <template #footer>
-              <NuxtLink to="/experience" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale :to="{ name: 'experience' }" class="btn btn-outline btn-sm">
                 <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
-              </NuxtLink>
+              </NuxtLinkLocale>
             </template>
           </UiPanel>
         </section>
@@ -262,9 +267,6 @@ const content = computed(() => {
         <!-- Explore: a carousel, its own panel -->
         <HomeExplore />
       </div>
-
-      <!-- Footer -->
-      <LayoutFooter />
     </div>
   </div>
 </template>

@@ -102,7 +102,13 @@ Copy `.env.example` to `.env` (ignored by git):
 ```bash
 GITHUB_TOKEN=ghp_your_token_here
 RESEND_API_KEY=re_your_key_here   # optional
+CV_URL_FR=                        # gh variable get CV_URL_FR
+CV_URL_EN=                        # gh variable get CV_URL_EN
 ```
+
+Without the `CV_URL_*` values, the CV sections of `/parcours` and `/contact` stay hidden, as
+in a deploy without the variables. They are read when Nuxt starts: restart `bun run dev`
+after setting them.
 
 `bun run dev` needs no `NUXT_APP_SECRET`: Nuxt generates one for development.
 `docker compose up` and a production build served locally do: add it to `.env`.

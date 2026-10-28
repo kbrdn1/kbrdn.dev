@@ -56,9 +56,12 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
       <li v-for="i in 6" :key="i" class="panel-card flex flex-col gap-2 p-4">
         <!-- Rows sized like the real ones: name 32px, two-line description 32px, footer 16px,
              language ticks 12px -->
-        <div class="flex h-8 items-center gap-3">
-          <UiSkeleton class="size-8 rounded-[0.625rem]" />
-          <UiSkeleton class="h-4 w-32" />
+        <div class="flex h-8 items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="icon-box size-8"><UiSkeleton class="size-4 rounded" /></span>
+            <UiSkeleton class="h-4 w-32" />
+          </div>
+          <UiSkeleton circle class="size-4" />
         </div>
         <div>
           <div class="flex h-4 items-center"><UiSkeleton class="h-3 w-full" /></div>
@@ -143,7 +146,9 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
         >
           {{ repo.description }}
         </p>
-        <div class="mt-auto flex items-center gap-4 font-mono text-xs text-neutral-500">
+        <div
+          class="mt-auto flex items-center gap-4 font-mono text-xs text-neutral-500 dark:text-neutral-400"
+        >
           <span v-if="repo.language" class="inline-flex items-center gap-1.5">
             <span
               class="size-2.5"

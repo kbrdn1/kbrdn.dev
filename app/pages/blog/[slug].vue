@@ -17,6 +17,9 @@ const { data: post } = await useAsyncData(
   },
   { watch: [locale] },
 )
+// Neither language has it: a real 404 for the reader and the crawlers, not an empty 200
+if (!post.value)
+  throw createError({ statusCode: 404, statusMessage: 'Article not found', fatal: true })
 
 // Fetch related posts (recent posts excluding current)
 const { data: relatedPosts } = await useAsyncData(
@@ -70,20 +73,60 @@ async function copyLink() {
   }
 }
 
-if (post.value) {
-  useSeoMeta({
-    title: post.value.title,
-    description: post.value.description,
-  })
-  useSiteOgImage('Blog', {
-    title: post.value.title,
-    description: post.value.description,
-    date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
-    tags: post.value.tags || [],
-    minutes: minutes.value,
-    bannerImage: post.value.bannerImage,
-  })
-}
+// The language the article is written in: the other one's when it isn't translated yet
+const postLang = computed(() => (post.value?.id.startsWith('blog_fr') ? 'fr' : 'en'))
+const siteUrl = useSiteUrl()
+const localePath = useLocalePath()
+const person = usePersonRef()
+useSeoMeta({
+  title: () => post.value?.title,
+  description: () => post.value?.description,
+  ogTitle: () => post.value?.title,
+  ogDescription: () => post.value?.description,
+  ogType: 'article',
+  articlePublishedTime: () => post.value?.publishedAt,
+  articleAuthor: [siteUrl('/')],
+  articleTag: () => post.value?.tags ?? [],
+  twitterCard: 'summary_large_image',
+})
+usePageSchema(
+  'WebPage',
+  () => ({ name: post.value?.title ?? '', description: post.value?.description }),
+  {
+    trail: () => [
+      { name: t('nav.blog'), path: '/blog' },
+      { name: post.value?.title ?? '', path: `/blog/${slug}` },
+    ],
+    nodes: () => [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${siteUrl(route.path)}#article`,
+        mainEntityOfPage: { '@id': `${siteUrl(route.path)}#webpage` },
+        isPartOf: { '@id': `${siteUrl(localePath('/blog'))}#blog` },
+        headline: post.value?.title,
+        description: post.value?.description,
+        inLanguage: postLang.value,
+        ...(post.value?.publishedAt && {
+          datePublished: post.value.publishedAt,
+          dateModified: post.value.publishedAt,
+        }),
+        ...(post.value?.bannerImage && { image: siteUrl(post.value.bannerImage) }),
+        keywords: post.value?.tags?.join(', '),
+        timeRequired: `PT${minutes.value}M`,
+        author: person,
+        publisher: person,
+      },
+    ],
+  },
+)
+useSiteOgImage('Blog', {
+  title: post.value.title,
+  description: post.value.description,
+  date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
+  tags: post.value.tags || [],
+  minutes: minutes.value,
+  bannerImage: post.value.bannerImage,
+})
 
 // Table of contents
 interface TocItem {
@@ -164,7 +207,10 @@ function scrollToHeading(id: string) {
     // Under the floating navbar and its notch (they end at 90px), like the router's anchors
     const offset = 112
     const top = el.getBoundingClientRect().top + window.scrollY - offset
-    window.scrollTo({ top, behavior: 'smooth' })
+    window.scrollTo({ top, behavior: isMotionReduced() ? 'auto' : 'smooth' })
+    // The reader (and a screen reader) goes on from the heading, not from the contents
+    el.setAttribute('tabindex', '-1')
+    el.focus({ preventScroll: true })
   }
 }
 </script>
@@ -175,13 +221,15 @@ function scrollToHeading(id: string) {
     <div ref="articleRef" class="w-full flex flex-col items-center relative z-10">
       <!-- Article found -->
       <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto">
-        <BlogArticleHeader :post="post" :reading-time="minutes" />
+        <!-- The post's language on its own text, not on the article: on a fallback, the
+             header's date, the TOC, the sidebar and the footer stay in the page's -->
+        <BlogArticleHeader :post="post" :reading-time="minutes" :lang="postLang" />
 
         <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
           <!-- Main column -->
           <div class="flex-1 min-w-0">
             <!-- Article body -->
-            <div class="prose-blog">
+            <div class="prose-blog" :lang="postLang">
               <ContentRenderer :value="post" />
             </div>
           </div>
@@ -197,9 +245,9 @@ function scrollToHeading(id: string) {
               />
               <BlogSidebarCard
                 title="gwm: Git Worktree Manager"
-                description="A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap."
+                :description="t('blog.sidebar.gwm')"
                 image="/images/blog/gwm/banner.png"
-                badge="New"
+                :badge="t('blog.sidebar.new')"
                 url="https://github.com/kbrdn1/gwm-cli"
               />
             </div>
@@ -228,6 +276,9 @@ function scrollToHeading(id: string) {
                 <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
                 {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
               </button>
+              <span class="sr-only" role="status">{{
+                linkCopied ? t('blog.linkCopied') : ''
+              }}</span>
             </div>
           </div>
 
@@ -243,12 +294,6 @@ function scrollToHeading(id: string) {
           <BlogBackLink />
         </footer>
       </article>
-
-      <!-- 404 state -->
-      <div v-else class="w-full max-w-3xl mx-auto px-6 py-24 text-center">
-        <p class="text-lg text-neutral-500 mb-6">{{ t('blog.notFound') }}</p>
-        <BlogBackLink />
-      </div>
     </div>
 
     <!-- Mobile TOC -->
