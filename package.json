@@ -36,7 +36,7 @@
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.74",
     "@resvg/resvg-js": "^2.6.2",
-    "@takumi-rs/core": "^0.73.1",
+    "@takumi-rs/core": "^2.15.2",
     "baseline-browser-mapping": "^2.10.10",
     "nuxt-og-image": "^6.1.2",
     "oxfmt": "^0.68.0",
