@@ -34,7 +34,7 @@ const FOOD_MAX = 2
 const OBSTACLE_EVERY = [3000, 6500] as const
 const OBSTACLE_LIFE = 5000
 // How often it does not see an obstacle or a bird coming
-const MISS = 0.1
+const MISS = 0.15
 // How long the strip takes to empty once it is gone or shot: its explosion, its trail and what
 // it left behind on their way out (ms)
 const OUT = 500
