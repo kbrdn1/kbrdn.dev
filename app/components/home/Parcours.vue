@@ -142,34 +142,34 @@ const rows = computed<Row[]>(() => [
   border-left: 1px solid var(--control-border);
 }
 
-/* ├ the trunk through the row, and its branch to the name */
+/* The trunk down to where the branch bends off, and on past it (the span's own background:
+   from where the bend has left the line, so the two never overlap, the colour being
+   translucent), but
+   for the last. At the logos' centre: w-7 is 28px, the line at 14px */
+.tree-branch:not(.is-last) {
+  background: linear-gradient(var(--control-border), var(--control-border)) no-repeat 0.875rem
+    100% / 1px calc(50% + 0.5rem - 4px);
+}
+
 .tree-branch::before {
   content: '';
   position: absolute;
   top: 0;
-  bottom: 0;
+  bottom: calc(50% + 0.5rem);
   left: 50%;
   border-left: 1px solid var(--control-border);
 }
 
+/* ╰ the branch bends off the trunk, rounded, towards the name */
 .tree-branch::after {
   content: '';
   position: absolute;
-  top: 50%;
+  top: calc(50% - 0.5rem);
   right: -0.5rem;
   left: 50%;
-  border-top: 1px solid var(--control-border);
-}
-
-/* └ the last: the trunk bends into the branch, rounded, and stops */
-.tree-branch.is-last::before {
-  bottom: 50%;
-  width: calc(50% + 0.5rem);
+  height: calc(0.5rem + 1px);
   border-bottom: 1px solid var(--control-border);
+  border-left: 1px solid var(--control-border);
   border-bottom-left-radius: 0.5rem;
-}
-
-.tree-branch.is-last::after {
-  content: none;
 }
 </style>
