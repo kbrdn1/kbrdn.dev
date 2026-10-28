@@ -120,9 +120,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   // The new page is in: hidden until it has scrolled where it goes, so its blocks all start
   // from their side. What stays across pages (the footer) drops its way out, unseen.
   nuxtApp.hook('page:finish', () => {
+    // Whatever was decided since (the pause control pressed during the way out): never left out
+    restore()
     if (side === undefined) return
     root.dataset.pageEnter = ''
-    restore()
     // Never left hidden, whatever happens to the navigation
     fallback = setTimeout(() => {
       side = undefined
