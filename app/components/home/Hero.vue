@@ -130,11 +130,13 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <!-- Isolated: the orbit's far side goes behind the pictures, never behind the page -->
     <div
-      class="mascot-float relative mx-auto size-48 shrink-0 sm:size-56 md:mx-0"
+      class="mascot-float relative isolate mx-auto size-48 shrink-0 sm:size-56 md:mx-0"
       aria-hidden="true"
       @mouseenter="nextMood"
     >
+      <HomeOrbit />
       <img
         v-for="(m, i) in MOODS"
         :key="m"
