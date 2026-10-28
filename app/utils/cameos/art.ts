@@ -145,6 +145,21 @@ export class Raster {
       }
   }
 
+  /** Another raster of the same size laid over this one, where it is painted */
+  over(layer: Raster) {
+    layer.cells.forEach((color, i) => {
+      if (color) this.cells[i] = color
+    })
+    return this
+  }
+
+  /** A copy, to paint over without touching this one */
+  copy() {
+    const copy = new Raster(this.w, this.h)
+    copy.cells.splice(0, copy.cells.length, ...this.cells)
+    return copy
+  }
+
   /** A one-pixel outline around everything painted so far */
   outline(color: Rgb) {
     const edge: number[] = []
