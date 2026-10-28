@@ -11,7 +11,8 @@
 
 /* Scan content directory for Tailwind classes in markdown */
 @source "../../../app/content/**/*.{md,mdx}";
-/* And the app config, whose component themes (the tooltip) are written in utilities */
+/* And the app config, whose component themes are written in utilities (the tooltip's live
+   in utils/, scanned already) */
 @source "../../app.config.ts";
 
 /* Project CSS modules */

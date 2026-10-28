@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
+import { TOOLTIP_CLASS } from '~/utils/tooltip'
 
 const { t, locale } = useI18n()
 
@@ -481,14 +482,14 @@ function switchTab(step: 1 | -1) {
             v-if="tooltipData"
             :class="
               cn(
-                'fixed z-50 px-2 py-1 text-xs shadow-lg pointer-events-none',
-                'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700',
+                TOOLTIP_CLASS,
+                'pointer-events-none fixed z-50 flex items-center gap-1.5 whitespace-nowrap',
                 'transform -translate-x-1/2 -translate-y-full',
               )
             "
             :style="{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }"
           >
-            <strong class="text-primary-500">{{ tooltipData.count }}</strong>
+            <strong class="text-primary-700 dark:text-primary-500">{{ tooltipData.count }}</strong>
             {{ t('github.on') }} {{ tooltipData.date }}
           </div>
         </Transition>
