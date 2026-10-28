@@ -2,11 +2,14 @@
    Animations & Transitions
    ═══════════════════════════════════════════════════ */
 
-/* Page navigation (Nuxt view transitions): a focus pull. The old page blurs and fades out
-   quickly, the new one comes into focus as it rises. The navbar and its notch are left out
-   of it, captured on their own, so they stay sharp and still; named on the glass panels
-   themselves, never on the header: an ancestor with a name is a backdrop root, and the
-   navbar's glass would blur nothing. */
+/* Page navigation (Nuxt view transitions): the blocks of both pages swing on the live page
+   (plugins/view-transition), out then in; what stays of the old one (what is pinned on screen)
+   fades out over the new one. Over it, not crossed with it: the new page is opaque (its
+   background) and still, a plain fade, no additive blend. The
+   navbar and its notch are left out of it, captured on their own, so they stay sharp and
+   still; named on the glass panels themselves, never on the header: an ancestor with a name
+   is a backdrop root, and the navbar's glass would blur nothing. Not during the theme switch,
+   which runs its own transition on the same pseudo-elements. */
 header .panel.notched {
   view-transition-name: site-nav;
 }
@@ -15,28 +18,26 @@ header .notch {
   view-transition-name: site-notch;
 }
 
-::view-transition-old(root) {
-  animation: page-out 0.22s ease-in both;
+html:not([data-theme-switch])::view-transition-old(root) {
+  z-index: 1;
+  mix-blend-mode: normal;
+  animation: page-out 0.18s ease-in both;
 }
 
-::view-transition-new(root) {
-  animation: page-in 0.55s var(--ease-out-quint) both;
+html:not([data-theme-switch])::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation: none;
 }
 
 @keyframes page-out {
   to {
     opacity: 0;
-    filter: blur(10px);
-    transform: scale(0.985);
   }
 }
 
-@keyframes page-in {
-  from {
-    opacity: 0;
-    filter: blur(10px);
-    transform: translateY(14px);
-  }
+/* The new page, until its blocks start from their side */
+html[data-page-enter] :is(#main-content, #main-content ~ footer) {
+  opacity: 0;
 }
 
 /* The theme switch reveals the whole screen at once, navbar included */
