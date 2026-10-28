@@ -90,7 +90,11 @@ onUnmounted(() => {
       </h1>
 
       <!-- Rotating title, rolling letter by letter like the figures' reels -->
-      <p class="text-xl text-primary-500 sm:text-2xl" style="font-family: 'Fenix', serif">
+      <!-- 700 in light: 500 is 2.7:1 on the page, under the 3:1 of large text (4.5:1 at 20px) -->
+      <p
+        class="text-xl text-primary-700 sm:text-2xl dark:text-primary-500"
+        style="font-family: 'Fenix', serif"
+      >
         <UiRollingText :text="currentTitle" />
       </p>
 
