@@ -157,7 +157,7 @@ The routing logic lives in a script rather than inline YAML because getting it w
 - **Versioning**: SemVer from `1.0.0`, single source of truth in `package.json`. `GET /api/health` returns `{ status, version, sha, env }`: that is how you answer "which version is live". Cutting a version: `docs/RELEASE.md`
 
 ### Required Secrets
-Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
+Repo-level GitHub Actions secrets (see `docs/CONFIGURATION.md`):
 - `VPS_HOST` / `VPS_USER` / `VPS_SSH_PRIVATE_KEY` - SSH deploy target + key
 - `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
