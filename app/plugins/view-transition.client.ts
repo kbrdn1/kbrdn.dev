@@ -68,7 +68,11 @@ function blocks() {
   for (const root of roots)
     for (const el of root.querySelectorAll('*')) {
       const style = getComputedStyle(el)
-      if (el.matches('.panel') || style.backdropFilter !== 'none') mark(el, glassy)
+      // Not `!== 'none'`: an element that renders no box of its own (a video's <source>) has an
+      // empty computed style on recent Chromium (156, Helium), and passed for glass: the panel
+      // holding the gwm demo on /apps was walked into instead of swung
+      const glass = style.backdropFilter && style.backdropFilter !== 'none'
+      if (el.matches('.panel') || glass) mark(el, glassy)
       if (style.position === 'fixed' || style.position === 'sticky') mark(el, pinned)
     }
   const found: HTMLElement[] = []
