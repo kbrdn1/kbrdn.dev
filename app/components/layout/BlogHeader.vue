@@ -122,7 +122,8 @@ const isMobileMenuOpen = ref(false)
             :to="link.to"
             :aria-current="isActive(link.to) ? 'page' : undefined"
             class="segment"
-            @mouseenter="menu.open(link.to)"
+            @mouseenter="menu.open(link.to, $event)"
+            @click="menu.dismiss"
           >
             <UiScrambleText :text="link.label" effect="link" />
           </NuxtLinkLocale>

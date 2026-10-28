@@ -9,7 +9,7 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
-const { active, open, keep, close } = useNavMenu()
+const { active, open, keep, close, dismiss } = useNavMenu()
 const { links: pages } = useSiteNav()
 const cvUrl = useCvUrl()
 const $img = useImage()
@@ -188,7 +188,7 @@ watch(
         target="_blank"
         rel="noopener noreferrer"
         class="eyebrow flex h-7 items-center justify-center gap-2 px-4 transition-colors hover:text-neutral-900 dark:hover:text-neutral-100"
-        @mouseenter="open('gwm')"
+        @mouseenter="open('gwm', $event)"
       >
         <UIcon name="i-heroicons-rocket-launch" class="size-3.5 shrink-0 text-primary-500" />
         <span class="truncate">{{ t('banner.gwm') }}</span>
@@ -213,7 +213,7 @@ watch(
                     class="row group flex items-center gap-2 px-2 py-1.5 text-sm text-neutral-900 dark:text-neutral-100"
                     @mouseenter="hovered = link.image ?? hovered"
                     @focus="hovered = link.image ?? hovered"
-                    @click="close(0)"
+                    @click="dismiss"
                   >
                     <span class="truncate group-hover:text-(--accent-text)">{{ link.label }}</span>
                     <span class="eyebrow ml-auto shrink-0" aria-hidden="true">
