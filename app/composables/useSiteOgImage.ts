@@ -32,6 +32,9 @@ export function useSiteOgImage(component: 'Default' | 'Blog', props: Record<stri
     defineOgImage(
       'Default',
       {
+        // Empty unless the page passes one: nuxt-og-image 7 otherwise fills it with the
+        // page's SEO description, and a description hides the figures and the stack
+        description: '',
         statusText: t('hero.availableForHire'),
         location: t('footer.location.city'),
         labels: {
