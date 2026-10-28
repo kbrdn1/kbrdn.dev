@@ -35,12 +35,13 @@ jobs:
         with:
           bun-version: latest
 
+      # Le cache global de bun seulement, jamais node_modules : la restore-key
+      # ramène un node_modules construit sur un autre lock, et bun ne purge pas
+      # les dossiers imbriqués périmés (ERR_MODULE_NOT_FOUND sur la PR #66).
       - name: Cache Bun deps
         uses: actions/cache@v6
         with:
-          path: |
-            ~/.bun/install/cache
-            node_modules
+          path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
