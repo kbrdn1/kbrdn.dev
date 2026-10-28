@@ -99,7 +99,7 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 `.oxfmtrc.json` formats code only, with three deliberate exceptions; the last two break at request time, where lint, typecheck and build cannot see them:
 - Markdown and MDX (blog articles, changelogs, docs) are prose, never reformatted;
 - `app/components/OgImage/**` is rendered by satori, whose gradient parser fails on a `style` value split across lines (`/_og/*` returns 500);
-- CSS keeps double quotes (`overrides`): nuxt-og-image 6.1 only recognises the Tailwind entry through `@theme` or a double-quoted `@import "tailwindcss"` (`dist/chunks/tw4.mjs`). `main.css` has no `@theme`, so `@import 'tailwindcss'` turns that resolver off and the OG images fall back to the mono font. `theme.css` quotes alone change nothing.
+- CSS keeps double quotes (`overrides`): nuxt-og-image (6.1, still true in 7) only recognises the Tailwind entry through `@theme` or a double-quoted `@import "tailwindcss"` (`dist/chunks/tw4.mjs`). `main.css` has no `@theme`, so `@import 'tailwindcss'` turns that resolver off and the OG images fall back to the mono font. `theme.css` quotes alone change nothing.
 
 CI catches both: `scripts/og-smoke.sh` serves the build and compares the OG images of `/`, `/blog` and `/blog/gwm` byte for byte against `scripts/og-smoke/*.png` (rendering is deterministic across platforms). An intended change to an OG image (hero copy, that article, a satori component) needs `scripts/og-smoke.sh --update` after `bun run build`, and the new PNGs committed. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
 
@@ -136,7 +136,7 @@ Located in `.github/workflows/`:
 - Triggers on push to `main` (→ prod) and `dev` (→ preprod), ignoring `**.md` / `docs/` / `specs/` changes; `workflow_dispatch` supports a target env + rollback-only run
 - `resolve` job: derives env (prod/preprod) and image tag (main/dev) from the ref
 - `build` job: builds the multi-stage Docker image with buildx and pushes it to GHCR (`ghcr.io/<repo>:<tag>` + `:sha-<sha>`)
-- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) inline; writes a GitHub step summary
+- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`) inline; writes a GitHub step summary
 
 Content changes (`app/content/**.mdx`) deploy through this same pipeline: `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
 
@@ -162,6 +162,7 @@ Repo-level GitHub Actions secrets (see `docs/SECRETS.md`):
 - `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - Nuxt Studio API
+- `NUXT_APP_SECRET` - Nuxt app secret (64 hex chars, `openssl rand -hex 32`): nuxt-og-image 7 signs the `/_og/*` URLs with it. Missing or under 32 characters, every OG image returns 500, so `scripts/deploy.sh` refuses to start a container without it. Rotating it invalidates the signed OG URLs already cached by social networks
 
 Repo-level **variables** (not secrets), passed as build-args by both workflows:
 - `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
