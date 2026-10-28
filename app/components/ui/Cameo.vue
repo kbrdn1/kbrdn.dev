@@ -223,7 +223,7 @@ onBeforeUnmount(() => {
     :class="[
       'pointer-events-none',
       place === 'area'
-        ? 'absolute inset-0 z-20 border-0'
+        ? 'absolute inset-0 z-20 m-0 border-0'
         : ['relative -mx-2 min-w-0 flex-1 self-stretch', place === 'footer' ? '-my-2.5' : '-my-2'],
     ]"
     aria-hidden="true"
