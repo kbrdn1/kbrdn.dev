@@ -4,9 +4,10 @@
 // that follows its jumps, and runs back and forth. Its favourite food pops up here and there
 // over the edge: it leaps to catch it; an obstacle rises now and then in its way (a rock,
 // spikes, a cactus, a crate): it vaults it; a bird flies at it now and then at head height: it
-// ducks under; and it hops now and then for nothing. After a while it runs off, and some time later another one
-// comes. A click on it blows it up, and the next one comes as if it had left. One at a time,
-// only while the footer is in view. Decorative, never under reduced motion.
+// ducks under; and it hops now and then for nothing. Now and then it misses one, runs into it
+// and blows up. After a while it runs off, and some time later another one comes. A click on
+// it blows it up too, and the next one comes as if it had left. One at a time, only while the
+// footer is in view. Decorative, never under reduced motion.
 
 const CELL = 2
 // px/s, and px walked between two frames
@@ -32,6 +33,8 @@ const FOOD_EVERY = [1400, 3200] as const
 const FOOD_MAX = 2
 const OBSTACLE_EVERY = [3000, 6500] as const
 const OBSTACLE_LIFE = 5000
+// How often it does not see an obstacle or a bird coming
+const MISS = 0.1
 // How long the strip takes to empty once it is gone or shot: its explosion, its trail and what
 // it left behind on their way out (ms)
 const OUT = 500
@@ -151,7 +154,7 @@ const pass = ref<{
   food: { frames: ReturnType<typeof blocks>[]; w: number; h: number }
 }>()
 const foods = ref<Food[]>([])
-const obstacles = ref<{ id: number; x: number; t: number; art: number }[]>([])
+const obstacles = ref<{ id: number; x: number; t: number; art: number; miss: boolean }[]>([])
 const obstacleArts = OBSTACLES.map((art) => ({
   blocks: blocks(art),
   w: art.rows[0]!.length * CELL,
@@ -170,7 +173,7 @@ const birdArts = {
     ),
   ],
 }
-const birds = ref<{ id: number; x: number; dir: number }[]>([])
+const birds = ref<{ id: number; x: number; dir: number; miss: boolean }[]>([])
 // Ducking under a bird: two rows of its frames left out, on the ground
 const crouching = ref(false)
 const explosion = { blocks: blocks(EXPLOSION), w: EXPLOSION[0]!.length * CELL }
@@ -335,6 +338,7 @@ function step(now: number) {
           id: ++ids,
           x: dir > 0 ? width - 1 : -birdArts.w + 1,
           dir: -dir,
+          miss: Math.random() < MISS,
         })
     } else if (!obstacles.value.length && spot > width * 0.08 && spot < width * 0.92)
       obstacles.value.push({
@@ -342,6 +346,7 @@ function step(now: number) {
         x: spot,
         t: now,
         art: Math.floor(Math.random() * OBSTACLES.length),
+        miss: Math.random() < MISS,
       })
   }
   // Within reach ahead: the top of an arc of `duration` lands right over it
@@ -358,14 +363,14 @@ function step(now: number) {
     const speed = SPEED - b.dir * dir * BIRD_SPEED
     return speed > 0 && d >= 0 && d <= (speed * JUMP.duration) / 1000
   }
-  crouching.value = !jump && birds.value.some(over)
+  crouching.value = !jump && birds.value.some((b) => !b.miss && over(b))
   if (!jump && !crouching.value) {
     const food = foods.value.find((f) => ahead(f.x, JUMP.duration))
-    const obstacle = obstacles.value.find((o) =>
-      ahead(o.x, obstacleArts[o.art]!.tall ? TALL.duration : VAULT.duration),
+    const obstacle = obstacles.value.find(
+      (o) => !o.miss && ahead(o.x, obstacleArts[o.art]!.tall ? TALL.duration : VAULT.duration),
     )
     // Stays down while a bird comes
-    const waiting = birds.value.some(coming)
+    const waiting = birds.value.some((b) => !b.miss && coming(b))
     if (obstacle) jump = { start: now, ...(obstacleArts[obstacle.art]!.tall ? TALL : VAULT) }
     else if (food && !waiting) jump = { start: now, ...JUMP, food }
     else if (now > nextHop && !waiting) {
@@ -394,6 +399,23 @@ function step(now: number) {
   }
   at.x = snapped(x)
   at.y = snapped(lift)
+  // What it did not clear (missed, or landed on after a leap): it blows up there. Boxes a cell
+  // in from their sides, so a graze is not a hit; an obstacle once risen and until it sinks
+  const tall = crouching.value ? current.h - 2 * CELL : current.h
+  const hits = (left: number, bottom: number, w: number, h: number) =>
+    at.x + CELL < left + w &&
+    left + CELL < at.x + current.w &&
+    at.y < bottom + h &&
+    bottom < at.y + tall
+  if (
+    obstacles.value.some((o) => {
+      const art = obstacleArts[o.art]!
+      const age = now - o.t
+      return age > 240 && age < OBSTACLE_LIFE - 240 && hits(o.x - art.w / 2, 0, art.w, art.h)
+    }) ||
+    birds.value.some((b) => hits(b.x, current.h - CELL, birdArts.w, birdArts.h))
+  )
+    return kill()
   if (now - sampled >= TRAIL_EVERY) {
     sampled = now
     trail.value = [
