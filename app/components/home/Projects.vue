@@ -28,18 +28,23 @@ function languageSummary(repo: PinnedRepo): string {
 }
 
 // Logos of the repositories that ship one, served raw from their default branch, with a
-// light-background variant when the logo needs one. The others show their primary language.
+// light-background variant when the logo needs one: a path from `/` is this site's own file.
+// The others show their primary language. This site's logo is its own, never main's: main
+// lags dev, and the favicon follows the system's colour scheme, not the site's.
 // ponytail: curated list, one line per newly pinned repo with a logo; detect logo files
 // through the repo tree API if the pinned set starts changing often.
 const LOGOS: Record<string, { dark: string; light?: string }> = {
   'gwm-cli': { dark: 'docs/_assets/logo.svg', light: 'docs/_assets/logo-light.svg' },
-  'kbrdn.dev': { dark: 'public/favicon.svg' },
+  'kbrdn.dev': { dark: '/images/logo/k-light.svg', light: '/images/logo/k-dark.svg' },
 }
 
 function logo(repo: PinnedRepo): { dark: string; light: string } | null {
   const paths = LOGOS[repo.name]
   if (!paths) return null
-  const raw = (path: string) => `https://raw.githubusercontent.com/kbrdn1/${repo.name}/HEAD/${path}`
+  const raw = (path: string) =>
+    path.startsWith('/')
+      ? path
+      : `https://raw.githubusercontent.com/kbrdn1/${repo.name}/HEAD/${path}`
   return { dark: raw(paths.dark), light: raw(paths.light ?? paths.dark) }
 }
 </script>
