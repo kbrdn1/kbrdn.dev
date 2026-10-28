@@ -91,10 +91,13 @@ function onCanPlay() {
   }
 }
 
-// The article reader takes the dock: the music stops instead of talking over it
+// The article reader takes the dock: the music stops instead of talking over it, including the
+// next track still loading after one ended (onCanPlay would start it)
 const dock = useDock()
 watch(dock, (value) => {
-  if (value !== 'speech' || !isPlaying.value) return
+  if (value !== 'speech') return
+  shouldAutoPlay.value = false
+  if (!isPlaying.value) return
   audio.value?.pause()
   isPlaying.value = false
 })
