@@ -32,8 +32,9 @@ const FOOD_EVERY = [1400, 3200] as const
 const FOOD_MAX = 2
 const OBSTACLE_EVERY = [3000, 6500] as const
 const OBSTACLE_LIFE = 5000
-// How long the explosion stays when it is shot (ms)
-const DEATH = 420
+// How long the strip takes to empty once it is gone or shot: its explosion, its trail and what
+// it left behind on their way out (ms)
+const OUT = 500
 // A caught food bursts on the diagonals
 const BURST = [
   [1, 1],
@@ -174,6 +175,8 @@ const birds = ref<{ id: number; x: number; dir: number }[]>([])
 const crouching = ref(false)
 const explosion = { blocks: blocks(EXPLOSION), w: EXPLOSION[0]!.length * CELL }
 const dead = ref<{ x: number; y: number }>()
+// Gone or shot: what it left behind is on its way out
+const out = ref(false)
 const bursts = ref<{ id: number; x: number; y: number; tone: string }[]>([])
 const frame = ref(0)
 const foodFrame = ref(0)
@@ -251,9 +254,25 @@ function start() {
   raf = requestAnimationFrame(step)
 }
 
+// Gone through an end, or shot: the scene stops, what it left behind goes its own way out
+// (.footer-critter-out), its trail fades, then the strip empties
 function end() {
+  if (out.value) return
   cancelAnimationFrame(raf)
   raf = 0
+  out.value = true
+  // One already sinking back would rise again to sink with the rest
+  const now = performance.now()
+  obstacles.value = obstacles.value.filter((o) => now - o.t < OBSTACLE_LIFE - 240)
+  clearTimeout(timer)
+  timer = setTimeout(reset, OUT)
+}
+
+// The strip empties at once, and the next one comes later
+function reset() {
+  cancelAnimationFrame(raf)
+  raf = 0
+  out.value = false
   pass.value = undefined
   dead.value = undefined
   crouching.value = false
@@ -267,15 +286,12 @@ function end() {
 // Shot: it blows up where it stands, its blocks flying off, then the cycle goes on
 function kill() {
   const current = pass.value
-  if (!current || dead.value) return
-  cancelAnimationFrame(raf)
-  raf = 0
+  if (!current || out.value) return
   dead.value = { x: at.x + current.w / 2 - explosion.w / 2, y: at.y }
   const id = ++ids
   bursts.value.push({ id, x: at.x + current.w / 2, y: at.y + current.h / 2, tone: current.tone })
   setTimeout(() => (bursts.value = bursts.value.filter((b) => b.id !== id)), 600)
-  clearTimeout(timer)
-  timer = setTimeout(end, DEATH)
+  end()
 }
 
 function step(now: number) {
@@ -408,7 +424,7 @@ function watchBand() {
       visible = !!entry?.isIntersecting
       if (visible && !timer && !pass.value) schedule(FIRST)
       // Scrolled away: it does not run on unseen, the next one comes when the footer shows
-      else if (!visible && pass.value && !dead.value) end()
+      else if (!visible && pass.value) end()
     })
     observer.observe(band.value.parentElement ?? band.value)
     resize = new ResizeObserver(([entry]) => {
@@ -425,7 +441,7 @@ function watchBand() {
 function unwatchBand() {
   observer?.disconnect()
   resize?.disconnect()
-  if (pass.value) end()
+  if (pass.value) reset()
   clearTimeout(timer)
   timer = undefined
   cancelAnimationFrame(raf)
@@ -441,7 +457,12 @@ onBeforeUnmount(unwatchBand)
 </script>
 
 <template>
-  <div v-if="mounted && !reducedMotion" ref="band" class="footer-critter" aria-hidden="true">
+  <div
+    v-if="mounted && !reducedMotion"
+    ref="band"
+    :class="['footer-critter', out && 'footer-critter-out']"
+    aria-hidden="true"
+  >
     <template v-if="pass">
       <svg
         v-for="food in foods"
@@ -564,7 +585,7 @@ onBeforeUnmount(unwatchBand)
 
 <style scoped>
 /* A strip standing on the panel's top border, inset by its corners: the invader runs in and
-   out through its ends */
+   out through its ends, which fade on a few steps instead of cutting it in mid-air */
 .footer-critter {
   position: absolute;
   right: 1.25rem;
@@ -573,6 +594,16 @@ onBeforeUnmount(unwatchBand)
   height: 4rem;
   overflow: clip;
   pointer-events: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent 4px,
+    rgb(0 0 0 / 0.35) 4px 8px,
+    rgb(0 0 0 / 0.7) 8px 12px,
+    #000 12px calc(100% - 12px),
+    rgb(0 0 0 / 0.7) calc(100% - 12px) calc(100% - 8px),
+    rgb(0 0 0 / 0.35) calc(100% - 8px) calc(100% - 4px),
+    transparent calc(100% - 4px)
+  );
 }
 
 .footer-critter-bird {
@@ -628,6 +659,41 @@ onBeforeUnmount(unwatchBand)
 @keyframes footer-critter-bob {
   50% {
     translate: 0 -2px;
+  }
+}
+
+/* Once it is gone or shot, what it left behind goes too, each its own way and on a few steps:
+   the food shrinks back (still bobbing), an obstacle sinks into the edge, a bird flies off */
+.footer-critter-out .footer-critter-food {
+  animation:
+    footer-critter-unpop 0.24s steps(3, end) forwards,
+    footer-critter-bob 0.9s steps(1) 0.24s infinite;
+}
+
+.footer-critter-out .footer-critter-obstacle {
+  animation: footer-critter-sink 0.24s steps(3, end) forwards;
+}
+
+.footer-critter-out .footer-critter-bird {
+  animation: footer-critter-flee 0.42s steps(4, end) forwards;
+}
+
+@keyframes footer-critter-unpop {
+  to {
+    scale: 0;
+  }
+}
+
+@keyframes footer-critter-sink {
+  to {
+    scale: 1 0;
+  }
+}
+
+@keyframes footer-critter-flee {
+  to {
+    translate: 0 -1rem;
+    opacity: 0;
   }
 }
 
