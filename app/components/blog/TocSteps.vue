@@ -4,7 +4,8 @@ import type { TocItem } from '~/composables/useTocSteps'
 // The checklist of an article's sections, shared by the sidebar's table of contents and the
 // mobile one: the steps before the reader's ticked, the reader's own filled, the next ones
 // open, each subsection under its step.
-// reading: the heading of the section the article reader is reading, marked with its speaker
+// reading: the heading of the section the article reader is reading, marked with the music
+// player's equalizer
 const props = defineProps<{ items: TocItem[]; activeHeading: string; reading?: string }>()
 
 const emit = defineEmits<{ 'scroll-to': [id: string] }>()

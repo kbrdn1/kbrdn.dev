@@ -58,8 +58,9 @@ export function useArticleReader(title: () => string, lang: () => string) {
   const index = ref(0)
   const playing = ref(false)
   const total = computed(() => sentences.value.length)
-  // Started and not back at the start: the progress bar shows from the first play to the end
-  const started = computed(() => playing.value || index.value > 0)
+  // From the first play to the end of the article (or its language changing): the progress
+  // bar stays open meanwhile, paused on the first sentence or seeked back to it included
+  const started = ref(false)
   const progress = computed(() => (total.value ? (index.value / total.value) * 100 : 0))
   // The heading of the section being read ('' during the title)
   const sectionId = computed(
@@ -90,6 +91,7 @@ export function useArticleReader(title: () => string, lang: () => string) {
       // The end: the next play starts over
       current = undefined
       playing.value = false
+      started.value = false
       index.value = 0
     }
     utterance.onerror = () => {
@@ -103,6 +105,7 @@ export function useArticleReader(title: () => string, lang: () => string) {
     if (!total.value) read()
     nowPlaying.value = 'speech'
     playing.value = true
+    started.value = true
     speak(index.value)
   }
 
@@ -131,10 +134,13 @@ export function useArticleReader(title: () => string, lang: () => string) {
 
   // The article's headings, each given a button that reads from it (BlogReaderHeadings). Found
   // once mounted, to be teleported into: Nuxt UI renders them, and overriding its ProseH2/H3
-  // would lose their style and anchor
+  // would lose their style and anchor. Each is named after its own text first: inside it, the
+  // button's label would otherwise join the heading's name in a screen reader's list
   const headings = shallowRef<HTMLElement[]>([])
   function findHeadings() {
-    headings.value = [...document.querySelectorAll<HTMLElement>('.prose-blog :is(h1,h2,h3)[id]')]
+    const list = [...document.querySelectorAll<HTMLElement>('.prose-blog :is(h1,h2,h3)[id]')]
+    for (const heading of list) heading.setAttribute('aria-label', heading.textContent!.trim())
+    headings.value = list
   }
 
   // The music starting stops the reading; the article changing language starts it over, on
@@ -146,6 +152,7 @@ export function useArticleReader(title: () => string, lang: () => string) {
     pause()
     sentences.value = []
     index.value = 0
+    started.value = false
     nextTick(findHeadings)
   })
 
