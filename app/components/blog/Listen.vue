@@ -32,12 +32,15 @@ const BLOCKS = 'h1,h2,h3,h4,h5,h6,p,li,blockquote,dt,dd'
 const SKIP = 'pre,table,figure,img,svg,button,[aria-hidden="true"]'
 
 const sentences = shallowRef<{ text: string; section: number }[]>([])
-// The sections, as in the table of contents: the title, then each h1 to h3
+// The sections, as in the table of contents: the title, then each h1 to h3, and their heading's
+// id (the title has none), which a heading's button asks to read from
 const sections = shallowRef<string[]>([])
+const sectionIds = shallowRef<string[]>([])
 
 function read() {
   const list = splitSentences(props.title, props.lang).map((text) => ({ text, section: 0 }))
   const heads = [props.title]
+  const ids = ['']
   document
     .querySelector('.prose-blog')
     ?.querySelectorAll(BLOCKS)
@@ -48,12 +51,16 @@ function read() {
       own.querySelectorAll(`${BLOCKS},${SKIP}`).forEach((node) => node.remove())
       const text = own.textContent?.replace(/\s+/g, ' ').trim()
       if (!text) return
-      if (/^H[1-3]$/.test(el.tagName)) heads.push(text)
+      if (/^H[1-3]$/.test(el.tagName)) {
+        heads.push(text)
+        ids.push(el.id)
+      }
       for (const sentence of splitSentences(text, props.lang))
         list.push({ text: sentence, section: heads.length - 1 })
     })
   sentences.value = list
   sections.value = heads
+  sectionIds.value = ids
 }
 
 const index = ref(0)
@@ -141,6 +148,20 @@ function close() {
 
 const showList = ref(false)
 
+// The headings' buttons (BlogListenFrom): shown once there is a voice, and each one asks to
+// read from its heading
+const { ready, from } = useListen()
+watch(voice, (value) => (ready.value = !!value))
+watch(from, (id) => {
+  if (!id) return
+  from.value = null
+  if (!sentences.value.length) read()
+  const s = sectionIds.value.indexOf(id)
+  if (s < 0) return
+  index.value = sectionStarts.value[s] ?? 0
+  play()
+})
+
 // The player hidden (closed, or the music took the dock) stops reading; the article changing
 // language starts it over
 watch(open, (value) => {
@@ -169,6 +190,7 @@ onMounted(() => {
 
 // Leaving the article: speechSynthesis is global, it would go on reading with no player left
 onBeforeUnmount(() => {
+  ready.value = false
   if (!('speechSynthesis' in window)) return
   halt()
   speechSynthesis.removeEventListener('voiceschanged', loadVoices)

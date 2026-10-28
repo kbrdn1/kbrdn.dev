@@ -149,6 +149,7 @@ export default {
   // Article reader (speech synthesis)
   listen: {
     listen: 'Écouter',
+    from: "Écouter à partir d'ici",
     player: "Lecture de l'article",
     play: 'Lecture',
     pause: 'Pause',
