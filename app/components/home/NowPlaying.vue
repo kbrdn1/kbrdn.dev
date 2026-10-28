@@ -341,8 +341,9 @@ function formatTime(seconds: number): string {
 
           <!-- Progress bar -->
           <div class="flex items-center gap-2 mt-2">
+            <!-- Start and end times roll like the site's numbers -->
             <span class="eyebrow w-8 text-right tabular-nums">
-              {{ formatTime(currentTime) }}
+              <UiRollingNumber :value="formatTime(currentTime)" />
             </span>
             <!-- A tick slider, after disarto's cost estimate: ticks filled up to a pill handle -->
             <div
@@ -385,7 +386,7 @@ function formatTime(seconds: number): string {
               />
             </div>
             <span class="eyebrow w-8 tabular-nums">
-              {{ formatTime(duration) }}
+              <UiRollingNumber :value="formatTime(duration)" />
             </span>
           </div>
         </div>
