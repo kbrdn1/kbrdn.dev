@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Reads the article aloud with the browser's own speech synthesis (Web Speech API, what
 // TTSReader runs on): free, no key, no server, in the best voice the browser has for the
-// article's language (pickVoice). A button where it is placed, and a player in the music
-// dock's place, built from the music player's pieces. One utterance per sentence: it keeps
+// article's language (pickVoice). A button where it is placed, one after each heading to read
+// from there, and a player in the music dock's place, built from the music player's pieces. One utterance per sentence: it keeps
 // Chrome's Google voices from stopping mid-article, and the sentence is what the progress bar
 // counts and seeks to. Pausing cancels and restarts the sentence: speechSynthesis.pause() is
 // unreliable on Chrome's network voices and on Android.
@@ -148,22 +148,24 @@ function close() {
 
 const showList = ref(false)
 
-// The headings' buttons (BlogListenFrom): shown once there is a voice, and each one asks to
-// read from its heading
-const { ready, from } = useListen()
-watch(voice, (value) => (ready.value = !!value))
-watch(from, (id) => {
-  if (!id) return
-  from.value = null
+// The article's headings, each given a button that reads from it. Found once mounted and
+// teleported into: Nuxt UI renders them (ProseH2/H3), and overriding those would lose their
+// style and anchor
+const headings = shallowRef<HTMLElement[]>([])
+function findHeadings() {
+  headings.value = [...document.querySelectorAll<HTMLElement>('.prose-blog :is(h1,h2,h3)[id]')]
+}
+
+function playFrom(id: string) {
   if (!sentences.value.length) read()
   const s = sectionIds.value.indexOf(id)
   if (s < 0) return
   index.value = sectionStarts.value[s] ?? 0
   play()
-})
+}
 
 // The player hidden (closed, or the music took the dock) stops reading; the article changing
-// language starts it over
+// language starts it over, on its new headings
 watch(open, (value) => {
   if (!value) pause()
 })
@@ -173,6 +175,7 @@ watch(
     pause()
     sentences.value = []
     index.value = 0
+    nextTick(findHeadings)
   },
 )
 
@@ -183,6 +186,7 @@ function onKeydown(e: KeyboardEvent) {
 
 onMounted(() => {
   if (!('speechSynthesis' in window)) return
+  findHeadings()
   loadVoices()
   speechSynthesis.addEventListener('voiceschanged', loadVoices)
   window.addEventListener('keydown', onKeydown)
@@ -190,7 +194,6 @@ onMounted(() => {
 
 // Leaving the article: speechSynthesis is global, it would go on reading with no player left
 onBeforeUnmount(() => {
-  ready.value = false
   if (!('speechSynthesis' in window)) return
   halt()
   speechSynthesis.removeEventListener('voiceschanged', loadVoices)
@@ -215,6 +218,24 @@ onBeforeUnmount(() => {
     />
     {{ playing ? t('listen.pause') : t('listen.listen') }}
   </button>
+
+  <!-- After each heading, once there is a voice: shown while the heading is hovered or the
+       button focused, always on touch screens (no hover there). Icon only: the table of
+       contents and the reader take the heading's textContent -->
+  <template v-if="voice">
+    <Teleport v-for="heading in headings" :key="heading.id" :to="heading">
+      <UTooltip :text="t('listen.from')">
+        <button
+          type="button"
+          class="icon-btn ml-2 size-7 align-middle opacity-0 transition-opacity [:hover>&]:opacity-100 focus-visible:opacity-100 pointer-coarse:opacity-100"
+          :aria-label="t('listen.from')"
+          @click="playFrom(heading.id)"
+        >
+          <UIcon name="i-heroicons-speaker-wave-16-solid" class="size-4" aria-hidden="true" />
+        </button>
+      </UTooltip>
+    </Teleport>
+  </template>
 
   <Teleport to="body">
     <!-- The music dock's slide, from under the viewport's edge -->
