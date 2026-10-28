@@ -83,4 +83,16 @@ jobs:
       # exécute. Sert .output et compare /, /blog et un article à leurs
       # références (scripts/og-smoke/) ; détail dans le script.
       - name: OG images
+        env:
+          OG_SMOKE_OUT: ${{ runner.temp }}/og-smoke
         run: ./scripts/og-smoke.sh
+
+      # Les rendus obtenus quand ils diffèrent de la référence : le runner n'a
+      # pas ImageMagick, il faut les voir pour juger l'écart.
+      - name: OG renders (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: og-smoke
+          path: ${{ runner.temp }}/og-smoke
+          if-no-files-found: ignore

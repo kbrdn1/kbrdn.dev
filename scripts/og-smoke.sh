@@ -41,7 +41,9 @@ if curl -s -m 2 -o /dev/null "$BASE"; then
   exit 2
 fi
 
-OUT="$(mktemp -d)"
+# OG_SMOKE_OUT : la CI fixe le dossier pour publier les rendus quand ils diffèrent
+OUT="${OG_SMOKE_OUT:-$(mktemp -d)}"
+mkdir -p "$OUT"
 # nuxt-og-image 7 signe les URLs /_og/* et répond 500 sans secret. Un secret
 # jetable suffit : il entre dans l'URL, pas dans les pixels.
 export NUXT_APP_SECRET="${NUXT_APP_SECRET:-$(openssl rand -hex 32)}"
