@@ -45,13 +45,21 @@ html[data-theme-switch] header .notch {
   view-transition-name: none;
 }
 
-/* Theme switch (ThemeToggle): the new mode spreads from the button in a circle over a still
-   snapshot of the old one, a halo in the new mode's colour along the edge. No cross-fade,
-   and no colour transitions: the new page is live, they would tween behind the circle. */
+/* Theme switch (ThemeToggle): the new mode comes through a still snapshot of the old one in a
+   dithered wave from the button, its pixels a mask the toggle animates frame by frame. No
+   cross-fade, and no colour transitions: the new page is live, they would tween behind the
+   mask. The frames are one pixel per cell, stretched: pixelated keeps their edges square. */
 html[data-theme-switch]::view-transition-old(root),
 html[data-theme-switch]::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+html[data-theme-switch]::view-transition-new(root) {
+  mask-image: linear-gradient(transparent, transparent);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 
 html[data-theme-switch] *,
@@ -60,34 +68,15 @@ html[data-theme-switch] *::after {
   transition: none !important;
 }
 
-@property --halo-r {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-/* Inside the new page, so the circle cuts it at the edge: only its inner glow shows */
-.theme-halo {
-  --halo: var(--color-primary-500);
+/* The wave's front, in the new mode's colour: inside the new page, under the same mask */
+.theme-front {
   position: fixed;
   inset: 0;
   z-index: 2147483647;
   pointer-events: none;
-  background: radial-gradient(
-    circle at var(--halo-x) var(--halo-y),
-    transparent calc(var(--halo-r) - 9rem),
-    color-mix(in srgb, var(--halo) 16%, transparent) calc(var(--halo-r) - 2.5rem),
-    color-mix(in srgb, var(--halo) 60%, transparent) calc(var(--halo-r) - 2px),
-    transparent var(--halo-r)
-  );
-}
-
-.theme-halo[data-mode="light"] {
-  --halo: var(--color-yellow-500);
-}
-
-.theme-halo[data-mode="blur"] {
-  --halo: var(--color-cyan-500);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 
 /* Nav entrance animation */
