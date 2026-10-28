@@ -29,35 +29,6 @@ useSiteOgImage('Default', {
   scene: 'blog',
 })
 
-// The blog and its posts, newest first
-const siteUrl = useSiteUrl()
-const person = usePersonRef()
-usePageSchema(
-  'CollectionPage',
-  () => ({ name: t('blog.title'), description: t('blog.description') }),
-  {
-    trail: () => [{ name: t('nav.blog'), path: '/blog' }],
-    nodes: () => [
-      {
-        '@type': 'Blog',
-        '@id': `${siteUrl('/blog')}#blog`,
-        url: siteUrl('/blog'),
-        name: t('blog.title'),
-        description: t('blog.description'),
-        author: person,
-        blogPost: [...(posts.value ?? [])]
-          .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
-          .map((post) => ({
-            '@type': 'BlogPosting',
-            headline: post.title,
-            url: siteUrl(postUrl(post)),
-            ...(post.publishedAt && { datePublished: post.publishedAt }),
-          })),
-      },
-    ],
-  },
-)
-
 // Active tag filter
 const activeTag = ref<string | null>(null)
 
@@ -157,6 +128,35 @@ const postCount = computed(() => {
 
 const { formatDate } = useFormatDate()
 const { postUrl } = useBlogUrl()
+
+// The blog and its posts, newest first
+const siteUrl = useSiteUrl()
+const person = usePersonRef()
+usePageSchema(
+  'CollectionPage',
+  () => ({ name: t('blog.title'), description: t('blog.description') }),
+  {
+    trail: () => [{ name: t('nav.blog'), path: '/blog' }],
+    nodes: () => [
+      {
+        '@type': 'Blog',
+        '@id': `${siteUrl('/blog')}#blog`,
+        url: siteUrl('/blog'),
+        name: t('blog.title'),
+        description: t('blog.description'),
+        author: person,
+        blogPost: [...(posts.value ?? [])]
+          .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+          .map((post) => ({
+            '@type': 'BlogPosting',
+            headline: post.title,
+            url: siteUrl(postUrl(post)),
+            ...(post.publishedAt && { datePublished: post.publishedAt }),
+          })),
+      },
+    ],
+  },
+)
 </script>
 
 <template>
