@@ -26,8 +26,8 @@ const target = computed(() => MODES[next.value])
 // The new mode spreads from the button in a dithered wave: small square pixels of the new
 // page come through the old one in a 4×4 Bayer order, a front of the new mode's colour
 // ahead of them. Through a view transition: the old page is a still snapshot under the
-// mask, so nothing fades colour by colour. Without view transitions, under reduced motion
-// or with the site's animations paused, the mode just switches.
+// mask, so nothing fades colour by colour. Without view transitions, under reduced motion,
+// with the site's animations paused, or outside Chromium (below), the mode just switches.
 const DURATION = 1000
 const CELL = 6 // px, one pixel of the wave
 const FRAMES = 24
@@ -101,9 +101,14 @@ function waveFrames(x: number, y: number, front: number) {
   return { masks, fronts }
 }
 
+// The wave runs in Chromium only, where it is measured flash-free frame by frame. WebKit
+// applies the mask frames late: recorded on video, the page swaps between the two modes
+// several times in half a second, a seizure risk (RGAA 13.7). There, the mode just switches.
+const waveSafe = () => 'userAgentData' in navigator
+
 async function toggleTheme(event: MouseEvent) {
   const mode = next.value
-  if (!document.startViewTransition || isMotionReduced()) {
+  if (!document.startViewTransition || isMotionReduced() || !waveSafe()) {
     colorMode.preference = mode
     return
   }
@@ -115,6 +120,19 @@ async function toggleTheme(event: MouseEvent) {
     button.left + button.width / 2,
     button.top + button.height / 2,
     pixel(color, alpha),
+  )
+
+  // Every frame decoded before the wave starts, and held until it ends: an engine that
+  // decodes a mask late would drop it for a frame, and the page would flash between modes
+  const decoded = await Promise.all(
+    [...masks, ...fronts].map((url) => {
+      const image = new Image()
+      image.src = url.slice(4, -1)
+      return image.decode().then(
+        () => image,
+        () => image,
+      )
+    }),
   )
 
   // Its own view transition layer (transitions.css): inside the page's, each of its frames
@@ -144,6 +162,7 @@ async function toggleTheme(event: MouseEvent) {
   } finally {
     front.remove()
     delete root.dataset.themeSwitch
+    decoded.length = 0
   }
 }
 </script>
