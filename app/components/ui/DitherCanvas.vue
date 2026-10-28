@@ -48,8 +48,9 @@ const props = withDefaults(
 )
 
 const FRAME_MS = 1000 / 24
-// While a trail or a ripple is alive: smooth motion under the pointer.
-const ACTIVE_FRAME_MS = 1000 / 60
+// While a trail or a ripple is alive, the field draws on every frame of the display: at a
+// 60 fps cap, a 120 Hz screen saw the trail lag the cursor every other frame, plain to see
+// in orange on the dark modes.
 const MIN_CELL_PX = 4
 // Top level capped at 0.18: at 0.24 the bio (#999 on dark) drops under the 4.5:1 AA
 // contrast where a dense cell sits behind it. In light, small #666 labels on #f0eeeb
@@ -112,6 +113,10 @@ onMounted(async () => {
   let time = 0
   let frame = 0
   let lastFrame = 0
+  // At rest the field only moves when one of draw()'s three integer shifts does, about nine
+  // times a second: the other ticks would paint the same pixels, and each paint makes every
+  // glass panel above blur the field again (blur mode)
+  let drawnShifts = ''
   let resizeFrame = 0
   let onScreen = true
   // Wave field: heights now and one step back; each field cell reads the sim cell above it.
@@ -373,12 +378,16 @@ onMounted(async () => {
     // growing with the window. The new palette is drawn once by themeObserver below.
     if (document.documentElement.dataset.themeSwitch !== undefined) return
     const active = interactive && (trailing || rippling || pointer !== null)
-    const interval = active ? ACTIVE_FRAME_MS : FRAME_MS
-    const elapsed = lastFrame ? now - lastFrame : interval
-    if (elapsed < interval) return
-    lastFrame = now - (elapsed % interval)
+    const elapsed = lastFrame ? now - lastFrame : FRAME_MS
+    if (!active && elapsed < FRAME_MS) return
+    lastFrame = active ? now : now - (elapsed % FRAME_MS)
     const dt = Math.min(elapsed, 250) / 1000
     time += dt
+    const shifts = active
+      ? ''
+      : `${Math.floor(time * 3)},${Math.floor(time * -5)},${Math.floor(time * 1.5)}`
+    if (shifts && shifts === drawnShifts) return
+    drawnShifts = shifts
     if (interactive) {
       applyPointer()
       waveClock = rippling ? waveClock + dt * WAVE_RATE : 0
