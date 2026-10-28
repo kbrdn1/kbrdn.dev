@@ -95,10 +95,22 @@ export default defineNuxtPlugin((nuxtApp) => {
   // The old page's blocks, held out until the new page replaces them
   let leaving: Animation[] = []
   let fallback: ReturnType<typeof setTimeout> | undefined
+  // A video that has frames is composited apart: on a Mac, Chrome can hand it to the system's
+  // own video layer, which takes neither the page's opacity nor its blur, so it stays sharp
+  // and still while its panel swings. On the way out it is paused and hidden first; on the way
+  // in, pages start theirs once the page has settled (data-page-moving, then the page:settled
+  // event: apps.vue)
+  let hidden: HTMLVideoElement[] = []
 
   const restore = () => {
     leaving.forEach((animation) => animation.cancel())
     leaving = []
+    hidden.forEach((video) => (video.style.visibility = ''))
+    hidden = []
+  }
+  const settle = () => {
+    delete root.dataset.pageMoving
+    document.dispatchEvent(new Event('page:settled'))
   }
 
   // Out first: the navigation waits for it, so the view transition captures the old page
@@ -107,29 +119,45 @@ export default defineNuxtPlugin((nuxtApp) => {
     restore()
     const s = sideOf(to, from)
     if (s === undefined) return
-    leaving = blocks().map((block) =>
+    root.dataset.pageMoving = ''
+    const out = blocks()
+    hidden = out
+      .flatMap((block) => [...block.querySelectorAll('video')])
+      .filter((video) => video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA)
+    for (const video of hidden) {
+      video.pause()
+      video.style.visibility = 'hidden'
+    }
+    leaving = out.map((block) =>
       block.animate([off(-s, s ? 0 : -SWING.rise)], { ...LEAVE, fill: 'forwards' }),
     )
     await Promise.all(leaving.map((animation) => animation.finished.catch(() => {})))
   })
   router.afterEach((to, from, failure) => {
     // Cancelled or redirected: the old page comes back as it was
-    if (failure) restore()
+    if (failure) {
+      restore()
+      settle()
+    }
     side = failure ? undefined : sideOf(to, from)
   })
-  router.onError(restore)
+  router.onError(() => {
+    restore()
+    settle()
+  })
 
   // The new page is in: hidden until it has scrolled where it goes, so its blocks all start
   // from their side. What stays across pages (the footer) drops its way out, unseen.
   nuxtApp.hook('page:finish', () => {
     // Whatever was decided since (the pause control pressed during the way out): never left out
     restore()
-    if (side === undefined) return
+    if (side === undefined) return settle()
     root.dataset.pageEnter = ''
     // Never left hidden, whatever happens to the navigation
     fallback = setTimeout(() => {
       side = undefined
       delete root.dataset.pageEnter
+      settle()
     }, 1500)
   })
   // Nuxt scrolls in the next frame (router.options): the blocks are picked after it
@@ -142,7 +170,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (side === undefined || !('pageEnter' in root.dataset)) return
     const s = side
     side = undefined
-    blocks().forEach((block, i) =>
+    const entering = blocks().map((block, i) =>
       block.animate([off(s, SWING.rise), { opacity: 1 }], {
         duration: ENTER.duration,
         delay: Math.min(i, ENTER.maxStagger) * ENTER.stagger,
@@ -151,6 +179,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       }),
     )
     delete root.dataset.pageEnter
+    void Promise.all(entering.map((animation) => animation.finished.catch(() => {}))).then(settle)
   }
 
   nuxtApp.hook('page:view-transition:start', (transition) => {
