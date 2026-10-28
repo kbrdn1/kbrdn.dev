@@ -261,20 +261,21 @@ function switchTab(step: 1 | -1) {
          data is fetched client-side, so the server renders this state. -->
       <template v-if="status === 'pending' || status === 'idle'">
         <!-- Stats skeleton -->
+        <!-- Line boxes of the real ones: the eyebrow's 16px and its margin, the figure's 40px -->
         <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
-          <div class="space-y-2">
-            <UiSkeleton class="h-3 w-28" />
-            <UiSkeleton class="h-9 w-20" />
+          <div>
+            <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-28" /></div>
+            <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-20" /></div>
           </div>
-          <div class="space-y-2">
-            <UiSkeleton class="h-3 w-24" />
-            <UiSkeleton class="h-9 w-24" />
+          <div>
+            <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-24" /></div>
+            <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-24" /></div>
           </div>
         </div>
 
         <!-- Calendar header skeleton -->
         <div class="space-y-2">
-          <div class="flex items-center justify-between">
+          <div class="flex h-4 items-center justify-between">
             <UiSkeleton class="h-3 w-28" />
             <UiSkeleton class="h-3 w-32" />
           </div>
@@ -292,10 +293,17 @@ function switchTab(step: 1 | -1) {
                 />
               </div>
 
-              <!-- Grid skeleton: 53 weeks, the rolling year -->
+              <!-- Grid skeleton: 53 weeks, the rolling year, rounded like the days. Pulsing in a
+                   wave across the weeks: all at once, it read as a year without contributions -->
               <div class="flex gap-[3px]">
-                <div v-for="w in 53" :key="w" class="flex flex-col gap-[3px]">
-                  <UiSkeleton v-for="d in 7" :key="d" class="w-3 h-3" />
+                <div
+                  v-for="w in 53"
+                  :key="w"
+                  class="flex animate-pulse flex-col gap-[3px]"
+                  :style="{ animationDelay: `${w * 40}ms` }"
+                  aria-hidden="true"
+                >
+                  <div v-for="d in 7" :key="d" class="size-3 rounded-[3px] bg-(--placeholder)" />
                 </div>
               </div>
             </div>

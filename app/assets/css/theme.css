@@ -68,6 +68,9 @@
   --control-bg: #fff;
   --control-border: var(--color-neutral-300);
   --row-hover: rgb(0 0 0 / 0.03);
+  /* What is still to come (skeletons, image boxes): a tint, translucent so it sits on the glass
+     as on the cards */
+  --placeholder: color-mix(in srgb, var(--color-neutral-200) 60%, transparent);
   /* Small mono labels: #666 is 5.3:1 on the light panels, 3.1:1 on the dark ones */
   --label: var(--color-neutral-500);
   /* Accent text on an orange tint: primary-700 holds 4.8:1 there, primary-600 only 3.6 */
@@ -123,6 +126,7 @@
   --control-bg: rgb(255 255 255 / 0.08);
   --control-border: rgb(255 255 255 / 0.14);
   --row-hover: rgb(255 255 255 / 0.04);
+  --placeholder: rgb(255 255 255 / 0.06);
   --label: var(--color-neutral-400);
   --accent-text: var(--color-primary-500);
 

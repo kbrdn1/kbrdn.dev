@@ -180,6 +180,18 @@ const TAG: Record<string, string> = {
             <span aria-hidden="true">·</span>
             {{ t('activityPage.checked', { time: time(data.checkedAt) }) }}
           </p>
+          <div
+            v-else-if="status === 'pending' || status === 'idle'"
+            class="mt-6 flex h-4 items-center"
+            aria-hidden="true"
+          >
+            <UiSkeleton class="h-3 w-80 max-w-full" />
+          </div>
+          <template #fallback>
+            <div class="mt-6 flex h-4 items-center" aria-hidden="true">
+              <UiSkeleton class="h-3 w-80 max-w-full" />
+            </div>
+          </template>
         </ClientOnly>
       </div>
       <UiPixelScene scene="commits" class="mx-auto w-56 shrink-0 sm:w-64 md:mx-0 md:w-52 lg:w-64" />
@@ -259,25 +271,40 @@ const TAG: Record<string, string> = {
           <span v-if="items.length" class="eyebrow">
             / {{ t('activityPage.feedCount', { count: items.length }) }}
           </span>
+          <UiSkeleton v-else-if="status === 'pending' || status === 'idle'" class="h-3 w-20" />
         </div>
 
         <div class="panel-card p-2 sm:p-3">
           <UiAutoHeight>
-            <!-- Loading: rows shaped like the real ones -->
-            <ul
-              v-if="status === 'pending' || status === 'idle'"
-              class="space-y-1"
-              aria-hidden="true"
-            >
-              <li v-for="i in 6" :key="i" class="flex items-center gap-3 px-2 py-3">
-                <UiSkeleton class="size-9 rounded-[0.625rem]" />
-                <div class="flex-1 space-y-2">
-                  <UiSkeleton class="h-3.5 w-40" />
-                  <UiSkeleton class="h-3 w-64" />
+            <!-- Loading: days and rows built like the real ones (the day's dashed rule, the
+                 icon box, the repository and its tag on a 22.5px line, the description on a
+                 20px one, the time), at their height -->
+            <div v-if="status === 'pending' || status === 'idle'" aria-hidden="true">
+              <section v-for="d in 2" :key="d">
+                <div
+                  class="flex h-4 box-content items-center border-b border-dashed border-(--card-border) px-2 pt-3 pb-2 first:pt-1"
+                >
+                  <UiSkeleton class="h-3 w-24" />
                 </div>
-                <UiSkeleton class="h-3 w-12" />
-              </li>
-            </ul>
+                <ul class="divide-y divide-(--card-border)">
+                  <li v-for="i in 3" :key="i" class="flex items-start gap-3 px-2 py-3">
+                    <span class="icon-box size-9"><UiSkeleton class="size-4 rounded" /></span>
+                    <span class="min-w-0 flex-1">
+                      <span class="flex h-[22.5px] items-center gap-2.5">
+                        <UiSkeleton class="h-3.5 w-32" />
+                        <UiSkeleton class="h-5 w-16 rounded-full" />
+                      </span>
+                      <span class="mt-0.5 flex h-5 items-center">
+                        <UiSkeleton class="h-3 w-64 max-w-full" />
+                      </span>
+                    </span>
+                    <span class="flex h-4 items-center pt-1 box-content">
+                      <UiSkeleton class="h-3 w-10" />
+                    </span>
+                  </li>
+                </ul>
+              </section>
+            </div>
 
             <!-- Error, or nothing public lately: two different things to say -->
             <p
