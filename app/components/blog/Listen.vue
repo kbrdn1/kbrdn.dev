@@ -133,9 +133,10 @@ function seekAt(e: MouseEvent) {
   seek(Math.floor(((e.clientX - rect.left) / rect.width) * sentences.value.length))
 }
 
+// The button is at the top of the article: focusing it must not scroll the reader back there
 function close() {
   dock.value = null
-  trigger.value?.focus()
+  trigger.value?.focus({ preventScroll: true })
 }
 
 const showList = ref(false)
