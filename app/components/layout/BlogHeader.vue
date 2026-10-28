@@ -147,6 +147,7 @@ const isMobileMenuOpen = ref(false)
           </UTooltip>
           <UiLanguageSwitcher />
           <UiThemeToggle />
+          <UiMotionToggle />
         </div>
       </div>
 
@@ -194,6 +195,7 @@ const isMobileMenuOpen = ref(false)
         <div class="flex items-center gap-1">
           <UiLanguageSwitcher />
           <UiThemeToggle />
+          <UiMotionToggle />
 
           <!-- Mobile menu toggle -->
           <button

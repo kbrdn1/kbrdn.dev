@@ -87,7 +87,10 @@ const bannerOf = (post: { bannerImage?: string }) =>
 const blogListRef = ref<HTMLElement | null>(null)
 
 function goToPage(page: number) {
-  blogListRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  blogListRef.value?.scrollIntoView({
+    behavior: isMotionReduced() ? 'auto' : 'smooth',
+    block: 'start',
+  })
   setTimeout(() => {
     currentPage.value = page
   }, 300)

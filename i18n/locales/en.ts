@@ -62,6 +62,11 @@ export default {
     toBlur: 'Switch to glass mode',
   },
 
+  // The pause control (components/ui/MotionToggle)
+  motion: {
+    pause: 'Pause animations',
+  },
+
   // Section Labels
   sections: {
     about: 'ABOUT',

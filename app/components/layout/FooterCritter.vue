@@ -211,8 +211,8 @@ function schedule(range: readonly [number, number]) {
 
 function start() {
   width = band.value?.clientWidth ?? 0
-  // Out of view, the observer calls the next one when the footer shows again
-  if (!visible) return void (timer = undefined)
+  // Out of view, or motion paused: the observer calls the next one when it can show again
+  if (!visible || reducedMotion.value) return void (timer = undefined)
   if (document.hidden || pass.value || width < 240) return schedule(FIRST)
   let i = lastVariant
   while (i === lastVariant) i = Math.floor(Math.random() * INVADERS.length)
@@ -401,9 +401,7 @@ const foodBottom = computed(() => (pass.value ? pass.value.h + JUMP.lift - 2 * C
 let observer: IntersectionObserver | undefined
 // A rotated phone or a resized window: it turns at the new ends, what is past them goes
 let resize: ResizeObserver | undefined
-onMounted(() => {
-  mounted.value = true
-  if (reducedMotion.value) return
+function watchBand() {
   nextTick(() => {
     if (!band.value) return
     observer = new IntersectionObserver(([entry]) => {
@@ -423,13 +421,23 @@ onMounted(() => {
     })
     resize.observe(band.value)
   })
-})
-onBeforeUnmount(() => {
+}
+function unwatchBand() {
   observer?.disconnect()
   resize?.disconnect()
+  if (pass.value) end()
   clearTimeout(timer)
+  timer = undefined
   cancelAnimationFrame(raf)
+}
+onMounted(() => {
+  mounted.value = true
+  if (!reducedMotion.value) watchBand()
 })
+// The pause control (or the system setting, changed live): it goes at once, and the cycle
+// starts over when motion is back
+watch(reducedMotion, (reduced) => (reduced ? unwatchBand() : watchBand()))
+onBeforeUnmount(unwatchBand)
 </script>
 
 <template>

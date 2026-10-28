@@ -26,7 +26,10 @@ watch(
     if (!id || !tocListRef.value) return
     const activeBtn = tocListRef.value.querySelector(`[data-toc-id="${id}"]`) as HTMLElement
     if (activeBtn) {
-      activeBtn.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+      activeBtn.scrollIntoView({
+        block: 'nearest',
+        behavior: isMotionReduced() ? 'auto' : 'smooth',
+      })
     }
   },
 )

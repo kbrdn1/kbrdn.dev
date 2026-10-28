@@ -12,7 +12,7 @@ export function useReveal(el: Ref<HTMLElement | null | undefined>): Ref<boolean>
 
   onMounted(() => {
     const target = el.value
-    if (!target || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!target || isMotionReduced()) return
     if (target.getBoundingClientRect().top < window.innerHeight) return
     hidden.value = true
     observer = new IntersectionObserver(

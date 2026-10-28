@@ -36,7 +36,7 @@ async function spawn() {
 watch(text, blurFor)
 
 onMounted(() => {
-  if (!root.value || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (!root.value || isMotionReduced()) return
   observer = new IntersectionObserver(
     ([entry]) => {
       if (!entry?.isIntersecting) return

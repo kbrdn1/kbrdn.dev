@@ -91,12 +91,13 @@ function onCanPlay() {
   }
 }
 
-// Auto-rotate every 45s when not playing
+// Auto-rotate every 45s when not playing, and not while motion is reduced or paused
 let rotateInterval: ReturnType<typeof setInterval> | undefined
+const reducedMotion = useReducedMotion()
 
 onMounted(() => {
   rotateInterval = setInterval(() => {
-    if (!isPlaying.value) nextTrack()
+    if (!isPlaying.value && !reducedMotion.value) nextTrack()
   }, 45000)
 })
 

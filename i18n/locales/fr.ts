@@ -62,6 +62,11 @@ export default {
     toBlur: 'Passer en mode verre',
   },
 
+  // The pause control (components/ui/MotionToggle)
+  motion: {
+    pause: 'Mettre les animations en pause',
+  },
+
   // Section Labels
   sections: {
     about: 'A PROPOS',

@@ -3,6 +3,8 @@
 // that rejection unhandled, and it lands in the console as an error.
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('page:view-transition:start', (transition) => {
+    // The site's pause control counts as reduced motion, like the system setting
+    if (isMotionReduced()) transition.skipTransition()
     transition.ready.catch(() => {})
     transition.updateCallbackDone.catch(() => {})
   })

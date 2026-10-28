@@ -32,10 +32,7 @@ const EASING = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 async function toggleTheme(event: MouseEvent) {
   const mode = next.value
-  if (
-    !document.startViewTransition ||
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ) {
+  if (!document.startViewTransition || isMotionReduced()) {
     colorMode.preference = mode
     return
   }

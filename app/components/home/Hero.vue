@@ -48,13 +48,15 @@ function nextMood() {
 let interval: ReturnType<typeof setInterval> | undefined
 let moodInterval: ReturnType<typeof setInterval> | undefined
 
+// Both loops hold still while motion is reduced or paused, and pick up again after
 onMounted(() => {
   if (props.titles.length > 1) {
     interval = setInterval(() => {
+      if (reducedMotion.value) return
       currentTitleIndex.value = (currentTitleIndex.value + 1) % props.titles.length
     }, 3000)
   }
-  if (!reducedMotion.value) moodInterval = setInterval(nextMood, 4000)
+  moodInterval = setInterval(() => reducedMotion.value || nextMood(), 4000)
 })
 
 onUnmounted(() => {

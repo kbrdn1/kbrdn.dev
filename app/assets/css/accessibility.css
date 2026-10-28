@@ -27,6 +27,17 @@
   }
 }
 
+/* The same, from the site's pause control (UiMotionToggle): moving content can be stopped
+   from the page, not only from the system setting (RGAA 13.8) */
+html.motion-paused *,
+html.motion-paused *::before,
+html.motion-paused *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 /* Utility classes for motion-sensitive content */
 @media (prefers-reduced-motion: reduce) {
   .motion-safe {

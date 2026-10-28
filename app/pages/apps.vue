@@ -121,12 +121,20 @@ onMounted(() => {
     .forEach((v) => videoObserver!.observe(v))
 })
 onUnmounted(() => videoObserver?.disconnect())
+// The pause control stops it on the spot (its controls show), and restarts it if on screen
+watch(reducedMotion, (reduced) =>
+  document.querySelectorAll<HTMLVideoElement>('video[data-demo]').forEach((v) => {
+    const { top, bottom } = v.getBoundingClientRect()
+    if (reduced) v.pause()
+    else if (bottom > 0 && top < innerHeight) v.play().catch(() => {})
+  }),
+)
 
 // Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
-  released: 'text-green-700 dark:text-green-500',
-  inDevelopment: 'text-primary-500',
-  archived: 'text-neutral-500',
+  released: 'text-green-800 dark:text-green-500',
+  inDevelopment: 'text-primary-800 dark:text-primary-500',
+  archived: 'text-neutral-600 dark:text-neutral-400',
 }
 </script>
 
