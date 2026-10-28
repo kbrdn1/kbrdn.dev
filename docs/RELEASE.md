@@ -303,7 +303,7 @@ gh run list --workflow=deploy.yml --limit 1
 
 ⚠️ Les deux fichiers vont **ensemble** : `github-deploy.sh` n'accepte plus que
 les variables de son allowlist (`ENV`, `IMAGE`, `GITHUB_TOKEN`,
-`RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`) et refuse le reste. Ajouter une variable
+`RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`) et refuse le reste. Ajouter une variable
 au workflow sans l'ajouter à cette liste casse le déploiement ; c'est
 volontaire, un refus se voit, un `export` silencieux non. Le `ping` ci-dessus
 vérifie la chaîne complète sans rien déployer.

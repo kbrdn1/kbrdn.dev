@@ -41,7 +41,12 @@ if curl -s -m 2 -o /dev/null "$BASE"; then
   exit 2
 fi
 
-OUT="$(mktemp -d)"
+# OG_SMOKE_OUT : la CI fixe le dossier pour publier les rendus quand ils diffèrent
+OUT="${OG_SMOKE_OUT:-$(mktemp -d)}"
+mkdir -p "$OUT"
+# nuxt-og-image 7 signe les URLs /_og/* et répond 500 sans secret. Un secret
+# jetable suffit : il entre dans l'URL, pas dans les pixels.
+export NUXT_APP_SECRET="${NUXT_APP_SECRET:-$(openssl rand -hex 32)}"
 # node et pas bun : sous bun, ipx ne résout pas `ofetch` depuis
 # .output/server/node_modules et le serveur meurt au démarrage.
 PORT=$PORT HOST=127.0.0.1 node "$ROOT/.output/server/index.mjs" > "$OUT/server.log" 2>&1 &
@@ -95,7 +100,8 @@ for entry in "${PAGES[@]}"; do
 done
 
 if [[ $FAILED -eq 0 ]]; then
-  rm -rf "$OUT"
+  # Le dossier d'OG_SMOKE_OUT appartient à l'appelant : on n'efface que le nôtre
+  [[ -n "${OG_SMOKE_OUT:-}" ]] || rm -rf "$OUT"
 else
   # Un 500 de satori laisse sa trace ici, pas dans la réponse.
   echo "--- server.log"
