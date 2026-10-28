@@ -279,9 +279,13 @@ usePageSchema(
             :style="{ '--i': index }"
           >
             <ClientOnly v-if="post.banner">
-              <div class="-mb-5 h-44 overflow-hidden">
+              <div class="-mb-5 h-44 overflow-hidden bg-(--placeholder)">
                 <UiPixelImage :src="bannerOf(post)" class="size-full" reveal />
               </div>
+              <!-- Its place kept until mounted: the card does not grow under the reader -->
+              <template #fallback>
+                <div class="-mb-5 h-44 bg-(--placeholder)" />
+              </template>
             </ClientOnly>
             <!-- In glass, a translucent card: it frosts the banner's edge it covers -->
             <div

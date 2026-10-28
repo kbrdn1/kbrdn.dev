@@ -142,9 +142,7 @@ const reducedMotion = useReducedMotion()
 
         <!-- Client only: the scene follows the colour mode, unknown to the server. Hovered,
              it depixelates down to the crisp picture. -->
-        <div
-          class="relative min-h-64 overflow-hidden rounded-[1rem] bg-neutral-200 dark:bg-neutral-900"
-        >
+        <div class="relative min-h-64 overflow-hidden rounded-[1rem] bg-(--placeholder)">
           <ClientOnly>
             <div class="absolute inset-0">
               <!-- The picture turns the way the slide does: from the right going on -->

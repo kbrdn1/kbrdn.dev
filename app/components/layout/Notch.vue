@@ -36,8 +36,11 @@ const GWM = '/images/apps/gwm.webp'
 const { collection } = useBlogCollection()
 const { postUrl } = useBlogUrl()
 const posts = ref<{ title: string; path: string; bannerImage?: string }[]>([])
+// Their rows hold the place while they come (skeletons)
+const postsLoading = ref(false)
 watch(active, async (key) => {
-  if (key !== '/blog' || posts.value.length) return
+  if (key !== '/blog' || posts.value.length || postsLoading.value) return
+  postsLoading.value = true
   // A failed query leaves the menu with its "all posts" link only
   posts.value = await queryCollection(collection.value)
     .order('publishedAt', 'DESC')
@@ -45,6 +48,7 @@ watch(active, async (key) => {
     .limit(3)
     .all()
     .catch(() => [])
+  postsLoading.value = false
 })
 // Another language: its own posts, fetched again on the next opening
 watch(collection, () => (posts.value = []))
@@ -205,6 +209,14 @@ watch(
                 {{ menu.text }}
               </p>
               <ul class="mt-2">
+                <li
+                  v-for="i in active === '/blog' && postsLoading ? 3 : 0"
+                  :key="`loading-${i}`"
+                  class="flex h-8 items-center px-2"
+                  aria-hidden="true"
+                >
+                  <UiSkeleton class="h-3" :style="{ width: `${[78, 62, 70][i - 1]}%` }" />
+                </li>
                 <li v-for="link in menu.links" :key="link.to">
                   <NuxtLinkLocale
                     :to="link.to"
@@ -227,7 +239,7 @@ watch(
           <!-- One picture for the whole menu: changing it sweeps the new one in, block by
                block, instead of the picture leaving with the links -->
           <div
-            class="aspect-[16/11] overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) dark:bg-neutral-900"
+            class="aspect-[16/11] overflow-hidden rounded-xl bg-(--placeholder) ring-1 ring-(--card-border)"
           >
             <ClientOnly>
               <UiPixelImage v-if="image" :src="image" alt="" class="size-full" reveal />

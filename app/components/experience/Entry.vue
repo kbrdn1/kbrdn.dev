@@ -153,7 +153,7 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
         <button
           v-if="image"
           type="button"
-          class="group/zoom relative mt-4 block aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-xl bg-neutral-200 ring-1 ring-(--card-border) md:mt-3 dark:bg-neutral-900"
+          class="group/zoom relative mt-4 block aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-xl bg-(--placeholder) ring-1 ring-(--card-border) md:mt-3"
           :aria-label="t('lightbox.open', { name: title })"
           @click="lightbox.open(image, title)"
         >

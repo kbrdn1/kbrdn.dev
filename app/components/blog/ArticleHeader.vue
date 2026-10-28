@@ -38,11 +38,11 @@ const banner = computed(() =>
     <div class="panel">
       <div class="panel-card overflow-hidden p-1.5">
         <ClientOnly v-if="post.banner">
-          <div class="h-44 overflow-hidden rounded-[10px] sm:h-60 lg:h-72">
+          <div class="h-44 overflow-hidden rounded-[10px] bg-(--placeholder) sm:h-60 lg:h-72">
             <UiPixelImage :src="banner" loading="eager" class="size-full" reveal />
           </div>
           <template #fallback>
-            <div class="h-44 rounded-[10px] bg-neutral-200 sm:h-60 lg:h-72 dark:bg-neutral-900" />
+            <div class="h-44 rounded-[10px] bg-(--placeholder) sm:h-60 lg:h-72" />
           </template>
         </ClientOnly>
         <div class="p-4 sm:p-6">

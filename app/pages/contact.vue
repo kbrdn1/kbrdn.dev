@@ -231,9 +231,7 @@ const SOCIALS = [
       <!-- The details beside it -->
       <UiPanel :title="t('contactPage.details')">
         <!-- The person behind the address, through the pixel layer, crisp on hover -->
-        <div
-          class="panel-card mb-1 aspect-[4/5] overflow-hidden bg-neutral-200 dark:bg-neutral-900"
-        >
+        <div class="panel-card mb-1 aspect-[4/5] overflow-hidden bg-(--placeholder)">
           <ClientOnly>
             <UiPixelImage
               src="/images/me/portrait.webp"

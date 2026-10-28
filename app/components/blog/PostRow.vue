@@ -53,10 +53,16 @@ const banner = computed(() =>
     </div>
     <ClientOnly v-if="post.banner">
       <div class="relative hidden w-56 shrink-0 sm:block">
-        <div class="absolute inset-1.5 overflow-hidden rounded-[10px]">
+        <div class="absolute inset-1.5 overflow-hidden rounded-[10px] bg-(--placeholder)">
           <UiPixelImage :src="banner" class="size-full" reveal />
         </div>
       </div>
+      <!-- Its column kept until mounted: the text does not reflow under the reader -->
+      <template #fallback>
+        <div class="relative hidden w-56 shrink-0 sm:block">
+          <div class="absolute inset-1.5 rounded-[10px] bg-(--placeholder)" />
+        </div>
+      </template>
     </ClientOnly>
   </NuxtLinkLocale>
 </template>
