@@ -147,7 +147,13 @@ const reducedMotion = useReducedMotion()
         >
           <ClientOnly>
             <div class="absolute inset-0">
-              <UiPixelImage :src="scene" class="size-full" reveal />
+              <!-- The picture turns the way the slide does: from the right going on -->
+              <UiPixelImage
+                :src="scene"
+                :from="direction === 'next' ? 'right' : 'left'"
+                class="size-full"
+                reveal
+              />
             </div>
           </ClientOnly>
         </div>
