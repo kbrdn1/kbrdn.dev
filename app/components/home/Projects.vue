@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
+import type { Language } from '~/utils/career'
 
 const { t } = useI18n()
 
@@ -12,7 +13,7 @@ interface PinnedRepo {
   forks: number
   language: string | null
   languageColor: string | null
-  languages: { name: string; color: string | null; percentage: number }[]
+  languages: Language[]
 }
 
 // The repositories pinned on the GitHub profile, in their pinned order.
@@ -21,11 +22,6 @@ const { data: repos, status } = useAsyncData<PinnedRepo[]>(
   () => $fetch('/api/github/pinned', { query: { username: 'kbrdn1' } }),
   { default: () => [], server: false },
 )
-
-// "Rust 99 %, Shell 1 %": what the language bar shows, for screen readers
-function languageSummary(repo: PinnedRepo): string {
-  return repo.languages.map((lang) => `${lang.name} ${Math.round(lang.percentage)} %`).join(', ')
-}
 
 // Logos of the repositories that ship one, served raw from their default branch, with a
 // light-background variant when the logo needs one: a path from `/` is this site's own file.
@@ -173,21 +169,7 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
             <span class="sr-only">{{ t('projects.stats.forks') }}</span>
           </span>
         </div>
-        <!-- Share of the code by language, GitHub colours, cut into ticks.
-             No pointer events: a click there still opens the repository. -->
-        <div
-          v-if="repo.languages.length"
-          class="ticks pointer-events-none flex h-3 overflow-hidden bg-neutral-200 dark:bg-neutral-800"
-          role="img"
-          :aria-label="languageSummary(repo)"
-        >
-          <span
-            v-for="lang in repo.languages"
-            :key="lang.name"
-            class="h-full"
-            :style="{ width: `${lang.percentage}%`, backgroundColor: lang.color ?? undefined }"
-          />
-        </div>
+        <UiLanguageBar v-if="repo.languages.length" :languages="repo.languages" />
       </li>
     </ul>
 
