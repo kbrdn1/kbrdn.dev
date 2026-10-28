@@ -62,14 +62,22 @@ html[data-theme-switch]::view-transition-new(root) {
   image-rendering: pixelated;
 }
 
+html[data-theme-switch]::view-transition-group(theme-front),
+html[data-theme-switch]::view-transition-new(theme-front) {
+  animation: none;
+}
+
 html[data-theme-switch] *,
 html[data-theme-switch] *::before,
 html[data-theme-switch] *::after {
   transition: none !important;
 }
 
-/* The wave's front, in the new mode's colour: inside the new page, under the same mask */
+/* The wave's front, in the new mode's colour. Its own view transition layer, above the page
+   and without a mask (its pixels are all in the part already revealed): inside the page's,
+   each of its frames would have the browser capture the whole new page again */
 .theme-front {
+  view-transition-name: theme-front;
   position: fixed;
   inset: 0;
   z-index: 2147483647;

@@ -23,41 +23,46 @@ const MODES = {
 const next = computed(() => NEXT[colorMode.value as keyof typeof NEXT] ?? 'dark')
 const target = computed(() => MODES[next.value])
 
-// The new mode spreads from the button in a dithered wave: square pixels of the new page
-// come through the old one in a 4×4 Bayer order, a front of the new mode's colour ahead of
-// them. Through a view transition: the old page is a still snapshot under the mask, so
-// nothing fades colour by colour. Without view transitions, under reduced motion or with
-// the site's animations paused, the mode just switches.
+// The new mode spreads from the button in a dithered wave: small square pixels of the new
+// page come through the old one in a 4×4 Bayer order, a front of the new mode's colour
+// ahead of them. Through a view transition: the old page is a still snapshot under the
+// mask, so nothing fades colour by colour. Without view transitions, under reduced motion
+// or with the site's animations paused, the mode just switches.
 const DURATION = 1000
-const CELL = 12 // px, one pixel of the wave
+const CELL = 6 // px, one pixel of the wave
 const FRAMES = 24
 const SPREAD = 0.4 // the share of the wave given to the dither: wider, a softer front
 const FRONT = 0.07 // how far behind the front the new mode's colour lingers
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5]
+// The front's colour and opacity: the mode's own accent, frosted white for the glass
 const FRONT_COLOR = {
-  light: '--color-yellow-500',
-  dark: '--color-primary-500',
-  blur: '--color-cyan-500',
+  light: ['--color-yellow-500', 150],
+  dark: ['--color-primary-500', 150],
+  blur: ['#fff', 90],
 } as const
 
-/** The CSS colour as RGB bytes (any syntax the canvas reads: oklch, hex, rgb) */
-function rgb(color: string) {
+/** A colour (a theme variable, or any syntax the canvas reads) as one RGBA Uint32 pixel */
+function pixel(color: string, alpha: number) {
+  // The canvas does not resolve var(): the theme's value, read from the root
+  if (color.startsWith('--'))
+    color = getComputedStyle(document.documentElement).getPropertyValue(color)
   const ctx = Object.assign(document.createElement('canvas'), { width: 1, height: 1 }).getContext(
     '2d',
     { willReadFrequently: true },
   )!
   ctx.fillStyle = color
   ctx.fillRect(0, 0, 1, 1)
-  return ctx.getImageData(0, 0, 1, 1).data
+  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+  return new Uint32Array(new Uint8ClampedArray([r!, g!, b!, alpha]).buffer)[0]!
 }
 
 /**
  * The wave, frame by frame: one image per frame at one pixel per cell (stretched with
  * image-rendering: pixelated), the mask of the new page and its coloured front. A cell
- * opens when the wave (ease-out, gentle enough for the dither to show) passes its level: its distance from the
- * button, offset by its rank in the Bayer matrix.
+ * opens when the wave (ease-out, gentle enough for the dither to show) passes its level:
+ * its distance from the button, offset by its rank in the Bayer matrix.
  */
-function waveFrames(x: number, y: number, color: string) {
+function waveFrames(x: number, y: number, front: number) {
   const cols = Math.ceil(innerWidth / CELL)
   const rows = Math.ceil(innerHeight / CELL)
   const cx = x / CELL
@@ -71,16 +76,14 @@ function waveFrames(x: number, y: number, color: string) {
         (BAYER[(r % 4) * 4 + (c % 4)]! / 16) * SPREAD
 
   const canvas = Object.assign(document.createElement('canvas'), { width: cols, height: rows })
-  // In memory, not on the GPU: 50 frames read back from a GPU canvas wait each time for the
+  // In memory, not on the GPU: frames read back from a GPU canvas wait each time for the
   // page's own canvases (the dither) to flush, seconds in all
   const ctx = canvas.getContext('2d', { willReadFrequently: true })!
-  const [red, green, blue] = rgb(color)
-  const frame = (paint: (v: number) => number[] | undefined) => {
-    const image = ctx.createImageData(cols, rows)
-    level.forEach((v, i) => {
-      const px = paint(v)
-      if (px) image.data.set(px, i * 4)
-    })
+  const image = ctx.createImageData(cols, rows)
+  const pixels = new Uint32Array(image.data.buffer)
+  // Data URLs, ready the moment a frame shows: a blob URL loads asynchronously, and until it
+  // has, the mask drops out and the whole page flashes between the two modes
+  const encode = () => {
     ctx.putImageData(image, 0, 0)
     return `url(${canvas.toDataURL()})`
   }
@@ -89,8 +92,11 @@ function waveFrames(x: number, y: number, color: string) {
   for (let i = 0; i <= FRAMES; i++) {
     // Past 1 on the last frame: every cell is open, the front is gone
     const t = i === FRAMES ? 2 : 1 - (1 - i / FRAMES) ** 3
-    masks.push(frame((v) => (v < t ? [255, 255, 255, 255] : undefined)))
-    fronts.push(frame((v) => (v < t && v >= t - FRONT ? [red!, green!, blue!, 150] : undefined)))
+    for (let c = 0; c < level.length; c++) pixels[c] = level[c]! < t ? 0xffffffff : 0
+    masks.push(encode())
+    for (let c = 0; c < level.length; c++)
+      pixels[c] = level[c]! < t && level[c]! >= t - FRONT ? front : 0
+    fronts.push(encode())
   }
   return { masks, fronts }
 }
@@ -104,13 +110,15 @@ async function toggleTheme(event: MouseEvent) {
 
   const button = (event.currentTarget as HTMLElement).getBoundingClientRect()
   const root = document.documentElement
+  const [color, alpha] = FRONT_COLOR[mode]
   const { masks, fronts } = waveFrames(
     button.left + button.width / 2,
     button.top + button.height / 2,
-    getComputedStyle(root).getPropertyValue(FRONT_COLOR[mode]),
+    pixel(color, alpha),
   )
 
-  // Part of the new page, so the mask reveals the front along with the rest
+  // Its own view transition layer (transitions.css): inside the page's, each of its frames
+  // would make the browser capture the whole new page again
   const front = document.createElement('div')
   front.className = 'theme-front'
 
