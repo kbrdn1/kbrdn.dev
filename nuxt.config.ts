@@ -88,12 +88,8 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || '',
     // Identité du build, exposée par /api/health. Figée ici au moment du
     // build : c'est ce qui rend l'image auto-descriptive, une valeur lue à
-    // l'exécution suivrait le conteneur, pas l'artefact.
-    //
-    // APP_VERSION porte la version du tag, suffixe de pré-release compris
-    // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
-    // (`1.1.0`) : sans ça deux candidats successifs seraient indiscernables.
-    appVersion: process.env.APP_VERSION || pkg.version,
+    // l'exécution suivrait le conteneur, pas l'artefact. La version est dans
+    // `public`, plus bas.
     gitSha: process.env.GIT_SHA || 'dev',
     // Figée au build elle aussi, via le build-arg APP_ENV que passent les deux
     // workflows : le déploiement traverse un wrapper sur le VPS, donc rien ne
@@ -104,6 +100,11 @@ export default defineNuxtConfig({
     // fois le build figé.
     appEnv: process.env.APP_ENV || 'local',
     public: {
+      // La version du build, publique : le footer l'affiche, /api/health la renvoie.
+      // APP_VERSION porte la version du tag, suffixe de pré-release compris
+      // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
+      // (`1.1.0`) : sans ça deux candidats successifs seraient indiscernables.
+      appVersion: process.env.APP_VERSION || pkg.version,
       // Les CV (FR, EN) sont hébergés hors du repo, qui est public : leurs adresses
       // arrivent en build-args depuis les variables du dépôt (vars.CV_URL_FR / _EN),
       // surchargeables à l'exécution par NUXT_PUBLIC_CV_URL_FR / _EN. Vides, les

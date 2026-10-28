@@ -10,7 +10,11 @@
  *    depuis l'extérieur, sans accès SSH au VPS.
  */
 export default defineEventHandler(() => {
-  const { appVersion, gitSha, appEnv } = useRuntimeConfig()
+  const {
+    gitSha,
+    appEnv,
+    public: { appVersion },
+  } = useRuntimeConfig()
 
   return {
     status: 'ok',

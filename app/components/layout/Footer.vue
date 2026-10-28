@@ -44,6 +44,8 @@ const socialLinks = [
 ]
 
 const currentYear = new Date().getFullYear()
+// The build's version (APP_VERSION, else package.json), as /api/health returns it
+const appVersion = useRuntimeConfig().public.appVersion
 </script>
 
 <template>
@@ -198,7 +200,16 @@ const currentYear = new Date().getFullYear()
         </div>
 
         <template #meta>
-          &copy; {{ currentYear }} Kylian Bardini · {{ t('footer.copyright') }}
+          &copy; {{ currentYear }} Kylian Bardini · {{ t('footer.copyright') }} ·
+          <a
+            href="https://github.com/kbrdn1/kbrdn.dev/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="normal-case transition-colors hover:text-(--accent-text)"
+          >
+            <span class="sr-only">Version </span>v{{ appVersion }}
+            <span class="sr-only">({{ t('common.newTab') }})</span>
+          </a>
         </template>
         <template #footer>
           <UiLogo :size="20" class="text-neutral-900 dark:text-neutral-100" />
