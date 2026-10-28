@@ -80,6 +80,7 @@ jobs:
 
       # Les images OG sont rendues à la requête : aucun step au-dessus ne les
       # exécute. Sert .output et compare /, /blog et un article à leurs
-      # références (scripts/og-smoke/) ; détail dans le script.
-      - name: OG images
+      # références (scripts/og-smoke/), puis vérifie leur <head> (lang,
+      # canonical, JSON-LD) et le sitemap ; détail dans le script.
+      - name: OG images and head
         run: ./scripts/og-smoke.sh

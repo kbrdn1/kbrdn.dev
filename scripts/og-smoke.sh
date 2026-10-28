@@ -12,6 +12,10 @@
 # plateforme à l'autre : une référence générée sur macOS arm64 est identique
 # au bit près à ce que sert la prod (linux x64).
 #
+# Au passage, le <head> de ces pages (#88) : <html lang>, une seule
+# canonical, des JSON-LD qui se lisent et ont tous un @type ; et le
+# sitemap, qui doit lister l'article. Rien d'autre ne rend ces balises.
+#
 # Un changement volontaire d'une image OG (texte du hero, article, composant
 # satori) passe par une mise à jour explicite de la référence : `--update`,
 # puis on commite les PNG.
@@ -65,6 +69,24 @@ for entry in "${PAGES[@]}"; do
   # `|| true` : sous set -e, un serveur mort ou un rendu bloqué (-m) ferait
   # sortir le script ici sans un mot. On veut la ligne FAIL et le log.
   html=$(curl -s -m 30 "$BASE$page") || true
+  printf '%s' "$html" | node -e '
+    const html = require("fs").readFileSync(0, "utf8")
+    const errors = []
+    if (!/<html[^>]* lang="(en|fr)"/.test(html)) errors.push("pas de lang sur <html>")
+    const canonicals = (html.match(/rel="canonical"/g) ?? []).length
+    if (canonicals !== 1) errors.push(`${canonicals} canonical`)
+    const blocks = [...html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/g)]
+    if (!blocks.length) errors.push("pas de JSON-LD")
+    for (const [, block] of blocks) {
+      try {
+        if (!JSON.parse(block)["@graph"].every((node) => node["@type"])) errors.push("un nœud JSON-LD sans @type")
+      } catch (e) {
+        errors.push(`JSON-LD illisible : ${e.message}`)
+      }
+    }
+    if (errors.length) console.log(`  FAIL ${process.argv[1]} (head) : ${errors.join(", ")}`)
+    process.exit(errors.length ? 1 : 0)
+  ' "$page" || FAILED=1
   url=$(printf '%s' "$html" | sed -n 's/.*property="og:image" content="\([^"]*\)".*/\1/p' | head -1 | sed 's/&amp;/\&/g')
   if [[ -z "$url" ]]; then
     echo "  FAIL $page : pas de réponse, ou pas d'og:image dans la page"
@@ -93,6 +115,13 @@ for entry in "${PAGES[@]}"; do
     FAILED=1 DIFFERS=1
   fi
 done
+
+if curl -s -m 30 "$BASE/sitemap.xml" | grep -q '<loc>[^<]*/blog/gwm</loc>'; then
+  echo "  ok   /sitemap.xml"
+else
+  echo "  FAIL /sitemap.xml : absent, ou sans /blog/gwm"
+  FAILED=1
+fi
 
 if [[ $FAILED -eq 0 ]]; then
   rm -rf "$OUT"
