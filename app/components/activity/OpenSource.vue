@@ -87,6 +87,8 @@ const reference = (url: string) =>
       <h2 :id="headingId" class="text-[17px] text-neutral-900 dark:text-neutral-100">
         <UiScrambleText :text="t('experiencePage.openSource.title')" />
       </h2>
+      <!-- A branch merged, a star: now and then in the header's room -->
+      <UiCameo name="merge" />
     </div>
 
     <!-- The numbers, after disarto's occupancy card -->

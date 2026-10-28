@@ -171,6 +171,7 @@ const STATUS_CLASS: Record<string, string> = {
       :key="app.key"
       :title="app.name"
       :subtitle="app.language"
+      :cameo="'install' in app ? undefined : 'invaders'"
       class="scroll-mt-28"
       :class="{ '[&_img]:opacity-80': app.status === 'archived' }"
     >

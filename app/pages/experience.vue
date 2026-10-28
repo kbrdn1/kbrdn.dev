@@ -231,7 +231,7 @@ const list = (key: string, count: number) =>
 
     <!-- Strip: every role and degree, one small card each, the one being read marked -->
     <div ref="strip">
-      <UiPanel :title="t('experiencePage.timeline')">
+      <UiPanel :title="t('experiencePage.timeline')" cameo="hourglass">
         <nav :aria-label="t('experiencePage.timeline')" class="overflow-x-auto">
           <div ref="baseList" class="relative min-w-max">
             <ol class="flex gap-1">
@@ -335,48 +335,52 @@ const list = (key: string, count: number) =>
         >
           <UiScrambleText :text="t('experiencePage.experienceLabel')" />
         </h2>
-        <!-- A vertical timeline: each role, its projects under it -->
-        <ExperienceTimeline>
-          <template v-for="exp in EXPERIENCES" :key="exp.id">
-            <ExperienceEntry
-              :id="exp.id"
-              kind="role"
-              :start="exp.startDate"
-              :end="exp.endDate"
-              :title="exp.company"
-              :logo="exp.logo"
-              :detail="t(`experiences.${exp.key}.role`)"
-              :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.type`)}`"
-              :summary="t(`experiencePage.summaries.${exp.key}`)"
-              :image="exp.image"
-              :stack="exp.technologies"
-              :items-label="t('experiencePage.missions')"
-              :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
-              :links="siteLinks(exp.sites)"
-              :active="activeId === exp.id"
-            />
-            <ExperienceEntry
-              v-for="project in projectsOf(exp.id)"
-              :id="project.id"
-              :key="project.id"
-              kind="project"
-              :start="project.startDate"
-              :end="project.endDate"
-              :title="project.name"
-              :detail="clientOf(project) ?? exp.company"
-              :meta="`${period(project.startDate, project.endDate)} · ${t(`experiencePage.work.${project.key}.role`)}`"
-              :summary="t(`experiencePage.work.${project.key}.summary`)"
-              :image="project.image"
-              :stack="project.technologies"
-              :items-label="t('experiencePage.highlights')"
-              :items="
-                list(`experiencePage.work.${project.key}.highlights`, project.highlightsCount)
-              "
-              :links="projectLinks(project)"
-              :active="activeId === project.id"
-            />
-          </template>
-        </ExperienceTimeline>
+        <!-- A vertical timeline: each role, its projects under it; a crab climbing steps beside
+             them -->
+        <div class="relative">
+          <ExperienceTimeline>
+            <template v-for="exp in EXPERIENCES" :key="exp.id">
+              <ExperienceEntry
+                :id="exp.id"
+                kind="role"
+                :start="exp.startDate"
+                :end="exp.endDate"
+                :title="exp.company"
+                :logo="exp.logo"
+                :detail="t(`experiences.${exp.key}.role`)"
+                :meta="`${period(exp.startDate, exp.endDate)} · ${t(`experiences.${exp.key}.type`)}`"
+                :summary="t(`experiencePage.summaries.${exp.key}`)"
+                :image="exp.image"
+                :stack="exp.technologies"
+                :items-label="t('experiencePage.missions')"
+                :items="list(`experiences.${exp.key}.tasks`, exp.tasksCount)"
+                :links="siteLinks(exp.sites)"
+                :active="activeId === exp.id"
+              />
+              <ExperienceEntry
+                v-for="project in projectsOf(exp.id)"
+                :id="project.id"
+                :key="project.id"
+                kind="project"
+                :start="project.startDate"
+                :end="project.endDate"
+                :title="project.name"
+                :detail="clientOf(project) ?? exp.company"
+                :meta="`${period(project.startDate, project.endDate)} · ${t(`experiencePage.work.${project.key}.role`)}`"
+                :summary="t(`experiencePage.work.${project.key}.summary`)"
+                :image="project.image"
+                :stack="project.technologies"
+                :items-label="t('experiencePage.highlights')"
+                :items="
+                  list(`experiencePage.work.${project.key}.highlights`, project.highlightsCount)
+                "
+                :links="projectLinks(project)"
+                :active="activeId === project.id"
+              />
+            </template>
+          </ExperienceTimeline>
+          <UiCameo name="climb" place="area" />
+        </div>
       </UiPanel>
     </section>
 

@@ -274,6 +274,8 @@ const TAG: Record<string, string> = {
             / {{ t('activityPage.feedCount', { count: items.length }) }}
           </span>
           <UiSkeleton v-else-if="status === 'pending' || status === 'idle'" class="h-3 w-20" />
+          <!-- A bell rings the news now and then in the header's room -->
+          <UiCameo name="bell" />
         </div>
 
         <div class="panel-card p-2 sm:p-3">
