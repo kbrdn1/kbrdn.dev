@@ -82,7 +82,8 @@ export default defineNuxtConfig({
       // Inter for the OG images only (public/fonts/inter, static TTF, Latin subset). Google
       // serves Inter as a variable font, which satori cannot read: nuxt-og-image then falls
       // back to a static download whose result depends on the machine (Fenix on the CI runner).
-      { name: 'Inter OG', provider: 'local', weights: [400, 500], global: true },
+      // No preload: global would otherwise make every page download a font it never uses.
+      { name: 'Inter OG', provider: 'local', weights: [400, 500], global: true, preload: false },
     ],
   },
 
