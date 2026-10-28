@@ -5,6 +5,33 @@ withDefaults(
   }>(),
   { size: 16 },
 )
+
+// Lancée par le survol ou le focus du lien / bouton qui porte le logo (ou du logo seul),
+// l'animation va toujours au bout : `play` ne tombe qu'à sa fin, pas quand le pointeur sort.
+const root = ref<SVGSVGElement>()
+const playing = ref(false)
+let cleanup: (() => void) | undefined
+
+onMounted(() => {
+  const el = root.value
+  if (!el) return
+  const play = () => {
+    playing.value = true
+  }
+  // Event et non PointerEvent : la cible est un HTMLElement ou le <svg> lui-même
+  const onEnter = (e: Event) => {
+    if ((e as PointerEvent).pointerType !== 'touch') play()
+  }
+  const target = el.closest<HTMLElement>('a, button') ?? el
+  target.addEventListener('pointerenter', onEnter)
+  target.addEventListener('focusin', play)
+  cleanup = () => {
+    target.removeEventListener('pointerenter', onEnter)
+    target.removeEventListener('focusin', play)
+  }
+})
+
+onUnmounted(() => cleanup?.())
 </script>
 
 <template>
@@ -15,11 +42,15 @@ withDefaults(
     Version autonome pour le favicon : public/favicon.svg ; variantes : public/images/logo/
   -->
   <svg
+    ref="root"
     :width="size"
     :height="size"
     viewBox="0 0 96 96"
     aria-hidden="true"
-    class="logo shrink-0 overflow-visible"
+    class="shrink-0 overflow-visible"
+    :class="{ play: playing }"
+    @animationend="playing = false"
+    @animationcancel="playing = false"
   >
     <!-- Le svg imbriqué clippe la barre quand elle sort du cadre ; les pièces, elles, en débordent -->
     <svg width="96" height="96" overflow="hidden">
@@ -43,20 +74,17 @@ withDefaults(
 </template>
 
 <style scoped>
-/* Au survol ou au focus du lien / bouton qui porte le logo, ou du logo seul : la barre file
-   le long de sa diagonale, sort par le haut, revient par le bas, et en repassant recoupe la
-   branche, dont les pièces s'écartent puis reviennent. Mouvement réduit et bouton pause :
-   la règle globale d'accessibility.css ramène la durée à 0. */
-:is(a, button):is(:hover, :focus-visible) .bar,
-.logo:hover .bar {
+/* La barre file le long de sa diagonale, sort par le haut, revient par le bas, et en
+   repassant recoupe la branche, dont les pièces s'écartent puis reviennent. Les trois durent
+   autant : le premier animationend rend la main. Mouvement réduit et bouton pause : la règle
+   globale d'accessibility.css ramène la durée à 0, animationend tombe quand même. */
+.play .bar {
   animation: bar 820ms;
 }
-:is(a, button):is(:hover, :focus-visible) .tri,
-.logo:hover .tri {
+.play .tri {
   animation: tri 820ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
-:is(a, button):is(:hover, :focus-visible) .leg,
-.logo:hover .leg {
+.play .leg {
   animation: leg 820ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
