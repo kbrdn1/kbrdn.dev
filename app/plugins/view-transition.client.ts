@@ -47,9 +47,10 @@ function sideOf(to: RouteLocationNormalized, from: RouteLocationNormalized) {
 }
 
 // The blocks that swing: a glass element (a panel), or anything holding none, and never what
-// stays put on screen (fixed, sticky) nor what holds it (a transform would unpin it). Only
-// those in view (the new page's, once it has scrolled where it goes); panels still waiting
-// below the fold keep their own reveal (useReveal)
+// holds something pinned on screen (fixed, sticky): a transform on it would unpin it. What is
+// pinned swings itself (the tables of contents). Only those in view (the new page's, once it
+// has scrolled where it goes); panels still waiting below the fold keep their own reveal
+// (useReveal)
 function blocks() {
   const roots = [...document.querySelectorAll<HTMLElement>('#main-content, #main-content ~ footer')]
   const glassy = new Set<Element>()
@@ -72,8 +73,6 @@ function blocks() {
   const walk = (el: Element) => {
     for (const child of el.children) {
       if (!(child instanceof HTMLElement) || child.hasAttribute('data-hidden')) continue
-      const style = getComputedStyle(child)
-      if (style.position === 'fixed' || style.position === 'sticky') continue
       const holdsGlass = [...child.children].some((c) => glassy.has(c))
       const holdsPinned = [...child.children].some((c) => pinned.has(c))
       if (holdsGlass || holdsPinned) walk(child)
