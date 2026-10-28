@@ -97,3 +97,31 @@ jobs:
           name: og-smoke
           path: ${{ runner.temp }}/og-smoke
           if-no-files-found: ignore
+
+  # L'image de prod, construite comme dans deploy.yml mais sans push. Le job
+  # au-dessus build sous le Node du runner ; le Dockerfile, sous l'image bun
+  # (shim node, install --production du runner stage) : ses écarts ne se voient
+  # qu'ici, et sans ce job seulement après le merge (#94). PR seulement : sur
+  # dev et main, deploy.yml construit déjà l'image.
+  docker:
+    name: Docker image
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Lit le cache que deploy.yml écrit, n'écrit pas : le cache d'une PR ne
+      # sert qu'à elle.
+      - name: Build (no push)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          cache-from: type=gha
