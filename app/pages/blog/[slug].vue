@@ -268,8 +268,9 @@ function scrollToHeading(id: string) {
           <!-- Separator -->
           <div class="border-b border-dashed border-(--card-border)" />
 
-          <!-- Share section -->
-          <div>
+          <!-- Share section, a megaphone calling it out beside the buttons -->
+          <div class="relative">
+            <UiCameo name="megaphone" place="area" />
             <h2 class="eyebrow mb-3">{{ t('blog.shareArticle') }}</h2>
             <div class="flex flex-wrap gap-2">
               <button v-if="canShare" type="button" class="btn btn-primary btn-sm" @click="share">

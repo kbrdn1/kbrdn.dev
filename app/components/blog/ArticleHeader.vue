@@ -45,7 +45,9 @@ const banner = computed(() =>
             <div class="h-44 rounded-[10px] bg-(--placeholder) sm:h-60 lg:h-72" />
           </template>
         </ClientOnly>
-        <div class="p-4 sm:p-6">
+        <!-- A coffee for the read, beside the tags -->
+        <div class="relative p-4 sm:p-6">
+          <UiCameo name="coffee" place="area" />
           <p class="eyebrow">
             <time v-if="post.publishedAt" :datetime="post.publishedAt">
               {{ formatDate(post.publishedAt, 'long') }}
