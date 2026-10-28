@@ -42,7 +42,7 @@
     "nuxt-og-image": "^7.0.7",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
-    "satori": "^0.47.1",
+    "satori": "^0.63.2",
     "typescript": "~5.9.3",
     "vue-tsc": "^3.3.13"
   }
