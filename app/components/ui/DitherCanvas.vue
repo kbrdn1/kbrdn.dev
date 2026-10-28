@@ -368,6 +368,10 @@ onMounted(async () => {
 
   function tick(now: number) {
     frame = requestAnimationFrame(tick)
+    // Still during a theme switch (ThemeToggle): the view transition captures the new page
+    // live, and a moving full-screen field makes it capture it again every frame, the cost
+    // growing with the window. The new palette is drawn once by themeObserver below.
+    if (document.documentElement.dataset.themeSwitch !== undefined) return
     const active = interactive && (trailing || rippling || pointer !== null)
     const interval = active ? ACTIVE_FRAME_MS : FRAME_MS
     const elapsed = lastFrame ? now - lastFrame : interval

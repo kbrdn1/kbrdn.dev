@@ -71,6 +71,9 @@ html[data-theme-switch] *,
 html[data-theme-switch] *::before,
 html[data-theme-switch] *::after {
   transition: none !important;
+  /* The page holds still for the second the wave lasts: anything moving in it makes the
+     browser capture the whole new page again, every frame */
+  animation-play-state: paused !important;
 }
 
 /* The wave's front, in the new mode's colour. Its own view transition layer, above the page
