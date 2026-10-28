@@ -3,8 +3,9 @@
 // strip's ink on /experience. Dropped inside a .segmented control, it follows the segment
 // marked aria-selected, aria-pressed or aria-current: the control has nothing to wire.
 // Before it mounts (server render), the active segment keeps its own fill.
-// preview: the href of a segment to show instead of the active one, while it is previewed
-// (the navbar: the page whose menu the notch has open), back to the active one after
+// preview: the data-key of a segment to show instead of the active one, while it is previewed
+// (the navbar: the page whose menu the notch has open), back to the active one after. Not its
+// href, which carries the language and the page's own words (/en/apps, /parcours)
 const props = defineProps<{ preview?: string | null }>()
 
 const el = ref<HTMLElement>()
@@ -15,7 +16,7 @@ let observers: { disconnect(): void }[] = []
 function place() {
   const control = el.value?.parentElement
   const previewed = props.preview
-    ? control?.querySelector<HTMLElement>(`.segment[href="${props.preview}"]`)
+    ? control?.querySelector<HTMLElement>(`.segment[data-key="${props.preview}"]`)
     : null
   const active =
     previewed ??

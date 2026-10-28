@@ -16,7 +16,8 @@ const $img = useImage()
 
 interface MenuLink {
   label: string
-  to: string
+  /** A path, or a route by name where the page's address changes with the language */
+  to: string | { name: string; hash?: string }
   external?: boolean
   /** The illustration while this link is hovered or focused */
   image?: string
@@ -70,15 +71,15 @@ const menus = computed<Record<string, Menu>>(() => ({
     links: [
       {
         label: t('experiencePage.experienceLabel'),
-        to: '/experience#experience',
+        to: { name: 'experience', hash: '#experience' },
         image: '/images/projects/jewely-x-flippad.webp',
       },
       {
         label: t('experiencePage.educationLabel'),
-        to: '/experience#education',
+        to: { name: 'experience', hash: '#education' },
         image: `${SCENES}/city-marble.webp`,
       },
-      { label: 'Open source', to: '/experience#open-source', image: GWM },
+      { label: 'Open source', to: { name: 'experience', hash: '#open-source' }, image: GWM },
     ],
     image: '/images/projects/fiches-pedagogiques.webp',
   },
@@ -160,7 +161,7 @@ function onEscape(event: KeyboardEvent) {
   const opener =
     key === 'gwm'
       ? root.value?.querySelector<HTMLElement>('a[href="https://gwm.kbrdn.dev"]')
-      : document.querySelector<HTMLElement>(`header .segment[href="${key}"]`)
+      : document.querySelector<HTMLElement>(`header .segment[data-key="${key}"]`)
   opener?.focus()
 }
 
@@ -217,7 +218,7 @@ watch(
                 >
                   <UiSkeleton class="h-3" :style="{ width: `${[78, 62, 70][i - 1]}%` }" />
                 </li>
-                <li v-for="link in menu.links" :key="link.to">
+                <li v-for="link in menu.links" :key="link.label">
                   <NuxtLinkLocale
                     :to="link.to"
                     :target="link.external ? '_blank' : undefined"

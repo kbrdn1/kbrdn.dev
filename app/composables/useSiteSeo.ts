@@ -53,7 +53,8 @@ export function usePageSchema(
   type: string,
   page: () => { name: string; description?: string; [key: string]: unknown },
   options: {
-    /** Unprefixed paths: they follow the page's language */
+    /** Unprefixed paths, or route names for a page whose address changes with the language:
+     * they follow the page's language */
     trail?: () => { name: string; path: string }[]
     nodes?: () => Record<string, unknown>[]
   } = {},

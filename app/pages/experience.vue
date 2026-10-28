@@ -27,7 +27,7 @@ usePageSchema(
     description: t('experiencePage.seoDescription'),
     mainEntity: person,
   }),
-  { trail: () => [{ name: t('nav.experience'), path: '/experience' }] },
+  { trail: () => [{ name: t('nav.experience'), path: 'experience' }] },
 )
 
 const period = (start: string, end: string | null) =>

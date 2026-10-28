@@ -69,7 +69,7 @@ const rows = computed<Row[]>(() => [
     <ol class="mt-3">
       <li v-for="row in rows" :key="row.id">
         <NuxtLinkLocale
-          :to="`/experience#${row.id}`"
+          :to="{ name: 'experience', hash: `#${row.id}` }"
           class="group relative isolate -mx-3 flex items-center gap-4 overflow-hidden px-3 py-2.5 transition-colors"
         >
           <UiPixelCanvas />

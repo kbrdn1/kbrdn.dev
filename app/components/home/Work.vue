@@ -44,7 +44,7 @@ const projects = computed(() =>
       <div class="flex items-center justify-between gap-3">
         <!-- The whole card opens the project on /experience -->
         <NuxtLinkLocale
-          :to="`/experience#${project.id}`"
+          :to="{ name: 'experience', hash: `#${project.id}` }"
           class="flex min-w-0 items-center gap-3 text-[15px] text-neutral-900 transition-colors after:absolute after:inset-0 hover:text-primary-500 dark:text-neutral-100"
         >
           <span class="icon-box size-8 overflow-hidden">

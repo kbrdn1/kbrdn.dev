@@ -35,7 +35,7 @@ function section(name: unknown) {
   const page = String(name ?? '')
     .split('___')[0]!
     .split('-')[0]
-  return SITE_PAGES.findIndex(({ to }) => (to.slice(1) || 'index') === page)
+  return SITE_PAGES.findIndex(({ name }) => name === page)
 }
 
 // The side the new page comes from, or nothing to animate: the first page, the same page (an

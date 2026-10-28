@@ -5,7 +5,9 @@ const { t } = useI18n()
 // Categorized navigation links: the home page and the site's pages, the blog apart
 const { links } = useSiteNav()
 const portfolioLinks = computed(() =>
-  links.value.filter((l) => l.to !== '/blog').map((l) => ({ href: l.to, label: l.label })),
+  links.value
+    .filter((l) => l.to !== '/blog')
+    .map((l) => ({ href: l.to, name: l.name, label: l.label })),
 )
 
 const blogLinks = computed(() => [{ href: '/blog', label: t('footer.nav.articles') }])
@@ -90,7 +92,7 @@ const appVersion = useRuntimeConfig().public.appVersion
                 <NuxtLinkLocale
                   v-for="link in portfolioLinks"
                   :key="link.href"
-                  :to="link.href"
+                  :to="{ name: link.name }"
                   class="text-sm text-neutral-600 dark:text-neutral-400 hover:text-[#d4825d] transition-colors duration-200"
                 >
                   <UiScrambleText :text="link.label" effect="link" />

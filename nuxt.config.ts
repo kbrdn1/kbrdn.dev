@@ -1,4 +1,5 @@
 import pkg from './package.json'
+import { LOCALIZED_PAGES } from './shared/localizedPages'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -49,12 +50,22 @@ export default defineNuxtConfig({
     defaultLocale: 'fr',
     langDir: 'locales',
     strategy: 'prefix_except_default',
+    // A page's own words in each language's URL (shared/localizedPages): /parcours,
+    // /en/journey. Links to it go by route name (localePath leaves a path as it is)
+    customRoutes: 'config',
+    pages: LOCALIZED_PAGES,
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
       redirectOn: 'root',
       fallbackLocale: 'fr',
     },
+  },
+
+  // The old address of /parcours (and /en/journey), for the links and the indexes out there
+  routeRules: {
+    '/experience': { redirect: { to: '/parcours', statusCode: 301 } },
+    '/en/experience': { redirect: { to: '/en/journey', statusCode: 301 } },
   },
 
   // Reference to main CSS file with Claude Dark theme

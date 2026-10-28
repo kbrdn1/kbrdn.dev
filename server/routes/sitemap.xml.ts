@@ -1,11 +1,17 @@
 import { queryCollection } from '@nuxt/content/server'
+import { LOCALIZED_PAGES } from '~~/shared/localizedPages'
 
 // The pages and the articles, in both languages: French at the root, English under /en/
 // (nuxt.config). Each entry lists its two versions as alternates (and the French one as
 // x-default), so a crawler pairs them. An article untranslated in one language is still
-// listed there: the page falls back to the other language's text. Announced by robots.txt.
+// listed there: the page falls back to the other language's text. A page whose address has
+// its own words in each language (/parcours, /en/journey) is listed under them. Announced by
+// robots.txt.
 const PAGES = ['/', '/experience', '/apps', '/activity', '/blog', '/contact']
 const LANGS = { fr: '', en: '/en' } as const
+type Lang = keyof typeof LANGS
+const LANG_CODES = Object.keys(LANGS) as Lang[]
+const OWN: Record<string, Record<Lang, string>> = LOCALIZED_PAGES
 
 export default defineEventHandler(async (event) => {
   const site = getSiteConfig(event).url.replace(/\/$/, '')
@@ -20,17 +26,19 @@ export default defineEventHandler(async (event) => {
     if (!lastmod.has(path) || date > lastmod.get(path)!) lastmod.set(path, date)
   }
 
-  const href = (prefix: string, path: string) =>
-    `${site}${prefix}${path === '/' ? (prefix ? '' : '/') : path}`
+  const href = (lang: Lang, path: string) => {
+    const own = OWN[path.slice(1)]?.[lang] ?? path
+    const prefix = LANGS[lang]
+    return `${site}${prefix}${own === '/' ? (prefix ? '' : '/') : own}`
+  }
   const entry = (path: string, date?: string) =>
-    Object.values(LANGS).map((prefix) =>
+    LANG_CODES.map((lang) =>
       [
-        `  <url><loc>${href(prefix, path)}</loc>`,
-        ...Object.entries(LANGS).map(
-          ([lang, alt]) =>
-            `    <xhtml:link rel="alternate" hreflang="${lang}" href="${href(alt, path)}"/>`,
+        `  <url><loc>${href(lang, path)}</loc>`,
+        ...LANG_CODES.map(
+          (alt) => `    <xhtml:link rel="alternate" hreflang="${alt}" href="${href(alt, path)}"/>`,
         ),
-        `    <xhtml:link rel="alternate" hreflang="x-default" href="${href('', path)}"/>`,
+        `    <xhtml:link rel="alternate" hreflang="x-default" href="${href('fr', path)}"/>`,
         date ? `    <lastmod>${date}</lastmod></url>` : '  </url>',
       ].join('\n'),
     )

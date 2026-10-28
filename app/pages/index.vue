@@ -234,7 +234,11 @@ const content = computed(() => {
                   aria-hidden="true"
                 />
               </a>
-              <NuxtLinkLocale v-else to="/experience#experience" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale
+                v-else
+                :to="{ name: 'experience', hash: '#experience' }"
+                class="btn btn-outline btn-sm"
+              >
                 <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
               </NuxtLinkLocale>
@@ -252,7 +256,7 @@ const content = computed(() => {
           <UiPanel :title="t('nav.experience')">
             <HomeParcours class="panel-card p-5 sm:p-6" />
             <template #footer>
-              <NuxtLinkLocale to="/experience" class="btn btn-outline btn-sm">
+              <NuxtLinkLocale :to="{ name: 'experience' }" class="btn btn-outline btn-sm">
                 <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
                 <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
               </NuxtLinkLocale>

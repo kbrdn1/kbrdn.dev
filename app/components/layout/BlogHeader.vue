@@ -119,8 +119,9 @@ const isMobileMenuOpen = ref(false)
           <NuxtLinkLocale
             v-for="link in navLinks"
             :key="link.to"
-            :to="link.to"
+            :to="{ name: link.name }"
             :aria-current="isActive(link.to) ? 'page' : undefined"
+            :data-key="link.to"
             class="segment"
             @mouseenter="menu.open(link.to, $event)"
             @click="menu.dismiss"
@@ -224,7 +225,7 @@ const isMobileMenuOpen = ref(false)
           <NuxtLinkLocale
             v-for="link in navLinks"
             :key="link.to"
-            :to="link.to"
+            :to="{ name: link.name }"
             :aria-current="isActive(link.to) ? 'page' : undefined"
             :class="
               cn(
