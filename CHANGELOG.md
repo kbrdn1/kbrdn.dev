@@ -216,7 +216,13 @@ migrates `[Unreleased]` into that file and empties this one, see
   rising bar and two orange pieces, redrawn as SVG on a 45° grid, replaces the
   bracket monogram everywhere: header, favicon (`.svg` that follows the system
   theme, all-orange `.ico` from 16 to 256 px), OG images and the README banner.
-  The five colour variants are in `public/images/logo/`.
+  The five colour variants are in `public/images/logo/`. Every corner is
+  rounded with the same radius, 4 on the 96 grid
+  ([#101](https://github.com/kbrdn1/kbrdn.dev/issues/101)). On hover or
+  keyboard focus of the logo or the button that carries it, the bar runs along
+  its diagonal, leaves at the top, comes back from the bottom and cuts the
+  branch again on its way through: the two orange pieces spring apart, then
+  back. Still under `prefers-reduced-motion` and the site's pause button.
 - **OG images in the site's current design**
   ([#74](https://github.com/kbrdn1/kbrdn.dev/issues/74)). `#121212`
   background, the dither field frozen at the top, a grid and column border
