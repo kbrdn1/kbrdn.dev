@@ -23,32 +23,44 @@ export function isMotionReduced() {
   )
 }
 
-/** The pause control's state: read once from localStorage, then toggled by the button */
+/** The pause control's state, toggled by the button and kept in localStorage */
 export function useMotionPause() {
   function set(value: boolean) {
     paused.value = value
     document.documentElement.classList.toggle(MOTION_PAUSED_CLASS, value)
     localStorage.setItem(MOTION_PAUSED_KEY, value ? '1' : '0')
   }
-  if (import.meta.client && localStorage.getItem(MOTION_PAUSED_KEY) === '1' && !paused.value)
-    set(true)
   return { paused: readonly(paused), toggle: () => set(!paused.value) }
+}
+
+/**
+ * The stored pause, on load (plugins/motion-pause): the CSS stops at once; the state that
+ * templates read follows once the page is hydrated, so the first client render matches the
+ * server's (a mismatched attribute is never fixed in production)
+ */
+export function restoreMotionPause(afterHydration: (done: () => void) => void) {
+  if (localStorage.getItem(MOTION_PAUSED_KEY) !== '1') return
+  document.documentElement.classList.add(MOTION_PAUSED_CLASS)
+  afterHydration(() => (paused.value = true))
 }
 
 export function useReducedMotion(): Ref<boolean> {
   const media = ref(false)
 
-  // Only run on client side
+  // Read once mounted, not during setup: the server knows nothing of it, and a hydrated
+  // template must render what the server did
   if (import.meta.client) {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    media.value = mediaQuery.matches
 
     // Listen for changes
     const updateMotionPreference = (e: MediaQueryListEvent) => {
       media.value = e.matches
     }
 
-    mediaQuery.addEventListener('change', updateMotionPreference)
+    onMounted(() => {
+      media.value = mediaQuery.matches
+      mediaQuery.addEventListener('change', updateMotionPreference)
+    })
 
     onUnmounted(() => {
       mediaQuery.removeEventListener('change', updateMotionPreference)

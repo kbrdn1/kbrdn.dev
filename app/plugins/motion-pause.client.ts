@@ -1,5 +1,6 @@
-// The pause control's stored choice, applied before the page mounts: nothing starts moving
-// only to stop once the header's button loads
-export default defineNuxtPlugin(() => {
-  useMotionPause()
+// The pause control's stored choice: the CSS stops before the page shows, the components
+// follow once it is hydrated
+export default defineNuxtPlugin((nuxtApp) => {
+  // Once: the hook fires on every navigation, and would pause again what the reader resumed
+  restoreMotionPause((done) => nuxtApp.hooks.hookOnce('app:suspense:resolve', done))
 })
