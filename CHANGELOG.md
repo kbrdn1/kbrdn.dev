@@ -194,6 +194,16 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ### Changed
 
+- **Nuxt 4.6, nuxt-og-image 7 and @nuxt/fonts 1.2**
+  ([#90](https://github.com/kbrdn1/kbrdn.dev/issues/90)). The three
+  Dependabot updates (#67, #69 and the minor-and-patch group) only work
+  together: Nuxt 4.6 checks the island request hash that nuxt-og-image 6 does
+  not send. OG image URLs are now signed with the app secret: **production
+  needs `NUXT_APP_SECRET`** (at least 32 characters, a repo secret passed by
+  `deploy.yml` and `release.yml`), or every `/_og/*` request returns 500 and
+  `scripts/deploy.sh` warns. The VPS wrapper's allowlist accepts it: sync
+  `/srv/` before the first deploy that sends it (`docs/RELEASE.md`).
+
 - **The navigation leads to pages**
   ([#80](https://github.com/kbrdn1/kbrdn.dev/issues/80)). Journey, Apps and
   Blog, on every page and on mobile, instead of the home page's anchors; one
@@ -324,6 +334,15 @@ migrates `[Unreleased]` into that file and empties this one, see
   call" gives way to "Get in touch", a link to `/contact`.
 
 ### Fixed
+
+- **OG images render the same on every machine**
+  ([#90](https://github.com/kbrdn1/kbrdn.dev/issues/90)). Google serves Inter
+  as a variable font, which satori cannot read, and nuxt-og-image's fallback
+  download varied: Inter on a Mac, Fenix on the CI runner, so in production.
+  The OG templates now use `Inter OG`, a static Latin subset of Inter 400 and
+  500 in `public/fonts/inter`, never preloaded by the site. The CI no longer
+  caches `node_modules`, which bun left with stale nested packages after a
+  lockfile change.
 
 - **An OG image could come in the other language**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Both languages share
