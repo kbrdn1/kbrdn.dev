@@ -195,7 +195,9 @@ migrates `[Unreleased]` into that file and empties this one, see
   ([#104](https://github.com/kbrdn1/kbrdn.dev/issues/104)). A "Listen" button
   on the article's meta line opens a reader in the music player's place and
   style: play/pause, previous and next section, a tick bar that seeks by
-  sentence, the sections as a tracklist. It runs on the browser's own speech
+  sentence, the sections as a tracklist. Hovering a section heading shows a
+  button that reads from there (always shown on touch screens). It runs on the
+  browser's own speech
   synthesis (the Web Speech API, what TTSReader uses): free, no key, no server.
   The voice is the cleanest the browser has in the article's language (Edge's
   neural voices, then Chrome's Google voices, then downloaded system voices),
