@@ -8,8 +8,8 @@ interface Stage {
   play: () => void
 }
 const stages = new Set<Stage>()
-const FIRST = [6000, 14000] as const
-const NEXT = [25000, 50000] as const
+const FIRST = [5000, 11000] as const
+const NEXT = [18000, 38000] as const
 // Nothing ready (scrolled between panels, page hidden): looked at again soon
 const RETRY = [3000, 6000] as const
 let timer: ReturnType<typeof setTimeout> | undefined
