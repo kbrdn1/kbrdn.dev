@@ -100,7 +100,8 @@ for entry in "${PAGES[@]}"; do
 done
 
 if [[ $FAILED -eq 0 ]]; then
-  rm -rf "$OUT"
+  # Le dossier d'OG_SMOKE_OUT appartient à l'appelant : on n'efface que le nôtre
+  [[ -n "${OG_SMOKE_OUT:-}" ]] || rm -rf "$OUT"
 else
   # Un 500 de satori laisse sa trace ici, pas dans la réponse.
   echo "--- server.log"
