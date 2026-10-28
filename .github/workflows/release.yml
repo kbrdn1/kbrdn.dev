@@ -201,7 +201,7 @@ jobs:
       # là où :main et :dev sont mutables et ne désignent que « le dernier ».
       - name: Build & push
         if: steps.exists.outputs.found != 'true'
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
