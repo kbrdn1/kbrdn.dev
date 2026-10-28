@@ -104,26 +104,15 @@ const { data: releases, status: releasesStatus } = useFetch<
 >('/api/github/releases', { server: false, lazy: true, default: () => ({}) })
 
 // The demo plays only while on screen, and not at all under prefers-reduced-motion
-// (the screenshot stays as its poster, with the controls to start it by hand). Not while
-// the page swings in either: a playing video is composited apart and would not follow its
-// panel (plugins/view-transition), it starts once the page has settled.
+// (the screenshot stays as its poster, with the controls to start it by hand).
 const reducedMotion = useReducedMotion()
 let videoObserver: IntersectionObserver | undefined
-const onScreen = new WeakMap<HTMLVideoElement, boolean>()
-const settled = () =>
-  'pageMoving' in document.documentElement.dataset
-    ? new Promise((resolve) => document.addEventListener('page:settled', resolve, { once: true }))
-    : Promise.resolve()
 onMounted(() => {
   videoObserver = new IntersectionObserver((entries) => {
     for (const { target, isIntersecting } of entries) {
       const video = target as HTMLVideoElement
-      onScreen.set(video, isIntersecting)
-      if (!isIntersecting || reducedMotion.value) video.pause()
-      else
-        void settled().then(() => {
-          if (onScreen.get(video) && !reducedMotion.value) video.play().catch(() => {})
-        })
+      if (isIntersecting && !reducedMotion.value) video.play().catch(() => {})
+      else video.pause()
     }
   })
   document
