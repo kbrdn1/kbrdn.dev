@@ -11,14 +11,16 @@ import type { RouteLocationNormalized } from 'vue-router'
 // give up: the page still shows, only the animation is skipped. Nuxt leaves that rejection
 // unhandled, and it lands in the console as an error.
 
-// Off to one side (rem, deg, px), and the panels' own curves: quick out, soft end
-const SWING = { x: 2, rise: 1.5, tilt: 1.5, blur: 5 }
+// Off to one side (rem, deg, px), and the curves: quick out, soft end. In on an ease-out
+// cubic, not the panels' quint: a whole page lands at once, and on the quint a tall panel
+// (/apps' gwm) had made nearly all its way in 150 ms, as if it had not moved
+const SWING = { x: 2.5, rise: 1.5, tilt: 1.5, blur: 5 }
 const LEAVE = { duration: 220, easing: 'cubic-bezier(0.4, 0, 1, 1)' } // accelerating, seen from the start
 const ENTER = {
-  duration: 700,
-  stagger: 60,
+  duration: 800,
+  stagger: 90,
   maxStagger: 5,
-  easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  easing: 'cubic-bezier(0.33, 1, 0.68, 1)',
 }
 
 // A block off to side s (1 right, -1 left, 0 neither), dy rem down
