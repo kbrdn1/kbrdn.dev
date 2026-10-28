@@ -207,11 +207,11 @@ onBeforeUnmount(() => cancelAnimationFrame(raf))
   pointer-events: none;
 }
 
-/* His black robe on a dark page: a pale reiatsu around him. Not :global(.dark) .ichigo:
+/* His black robe on a dark page: a very dark grey reiatsu around him. Not :global(.dark) .ichigo:
    Vue compiles :global() to the bare global selector and drops what follows, so that rule
    was `.dark, .blur { filter: drop-shadow() }`, on <html>: the whole page re-shadowed on
    every frame, the dark modes' GPU cost */
 :is(.dark, .blur) .ichigo {
-  filter: drop-shadow(0 0 2px rgb(186 230 253 / 0.75));
+  filter: drop-shadow(0 0 2px var(--color-neutral-700));
 }
 </style>
