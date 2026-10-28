@@ -223,7 +223,9 @@ function scrollToHeading(id: string) {
       <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto">
         <!-- The post's language on its own text, not on the article: on a fallback, the
              header's date, the TOC, the sidebar and the footer stay in the page's -->
-        <BlogArticleHeader :post="post" :reading-time="minutes" :lang="postLang" />
+        <BlogArticleHeader :post="post" :reading-time="minutes" :lang="postLang">
+          <BlogListen :title="post.title" :lang="postLang" />
+        </BlogArticleHeader>
 
         <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
           <!-- Main column -->

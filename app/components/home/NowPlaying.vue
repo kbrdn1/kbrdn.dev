@@ -91,6 +91,14 @@ function onCanPlay() {
   }
 }
 
+// The article reader takes the dock: the music stops instead of talking over it
+const dock = useDock()
+watch(dock, (value) => {
+  if (value !== 'speech' || !isPlaying.value) return
+  audio.value?.pause()
+  isPlaying.value = false
+})
+
 // Auto-rotate every 45s when not playing, and not while motion is reduced or paused
 let rotateInterval: ReturnType<typeof setInterval> | undefined
 const reducedMotion = useReducedMotion()
