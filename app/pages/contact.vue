@@ -92,6 +92,9 @@ const SOCIALS = [
       <UiPanel :title="t('contactPage.formTitle')" :subtitle="t('contactPage.formSubtitle')">
         <ClientOnly>
           <form class="panel-card space-y-6 p-5 sm:p-6" @submit.prevent="handleSubmit">
+            <p class="text-xs text-neutral-600 dark:text-neutral-400">
+              {{ t('contactPage.requiredHint') }}
+            </p>
             <div class="grid gap-4 sm:grid-cols-2">
               <div class="space-y-1.5">
                 <label for="contact-name" class="eyebrow block">
@@ -127,7 +130,7 @@ const SOCIALS = [
 
             <div class="space-y-1.5">
               <label for="contact-company" class="eyebrow block">
-                {{ t('contactPage.company') }}
+                {{ t('contactPage.company') }} ({{ t('contactPage.optional') }})
               </label>
               <input
                 id="contact-company"
@@ -153,7 +156,7 @@ const SOCIALS = [
                     class="peer sr-only"
                   />
                   <span
-                    class="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-(--control-border) px-4 text-sm text-neutral-800 transition-colors peer-checked:border-primary-500/50 peer-checked:bg-primary-500/10 peer-checked:text-(--accent-text) peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500/50 hover:bg-(--row-hover) dark:text-neutral-200"
+                    class="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-(--control-border) px-4 text-sm text-neutral-800 transition-colors peer-checked:border-primary-500/50 peer-checked:bg-primary-500/10 peer-checked:text-(--accent-text) peer-focus-visible:ring-2 peer-focus-visible:ring-primary-700 dark:peer-focus-visible:ring-primary-500 hover:bg-(--row-hover) dark:text-neutral-200"
                   >
                     <UIcon
                       v-if="form.topic === topic"

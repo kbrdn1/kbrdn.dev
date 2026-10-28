@@ -190,7 +190,7 @@ function formatTime(seconds: number): string {
           <!-- Play overlay on cover -->
           <button
             type="button"
-            class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 transition-opacity"
+            class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 focus-visible:opacity-100 transition-opacity"
             :aria-label="isPlaying ? 'Pause' : 'Play'"
             @click="togglePlay"
           >

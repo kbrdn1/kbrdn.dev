@@ -206,7 +206,10 @@ function scrollToHeading(id: string) {
     // Under the floating navbar and its notch (they end at 90px), like the router's anchors
     const offset = 112
     const top = el.getBoundingClientRect().top + window.scrollY - offset
-    window.scrollTo({ top, behavior: 'smooth' })
+    window.scrollTo({ top, behavior: isMotionReduced() ? 'auto' : 'smooth' })
+    // The reader (and a screen reader) goes on from the heading, not from the contents
+    el.setAttribute('tabindex', '-1')
+    el.focus({ preventScroll: true })
   }
 }
 </script>
@@ -239,9 +242,9 @@ function scrollToHeading(id: string) {
               />
               <BlogSidebarCard
                 title="gwm: Git Worktree Manager"
-                description="A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap."
+                :description="t('blog.sidebar.gwm')"
                 image="/images/blog/gwm/banner.png"
-                badge="New"
+                :badge="t('blog.sidebar.new')"
                 url="https://github.com/kbrdn1/gwm-cli"
               />
             </div>
@@ -270,6 +273,9 @@ function scrollToHeading(id: string) {
                 <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
                 {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
               </button>
+              <span class="sr-only" role="status">{{
+                linkCopied ? t('blog.linkCopied') : ''
+              }}</span>
             </div>
           </div>
 

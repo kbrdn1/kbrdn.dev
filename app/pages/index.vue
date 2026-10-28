@@ -263,9 +263,6 @@ const content = computed(() => {
         <!-- Explore: a carousel, its own panel -->
         <HomeExplore />
       </div>
-
-      <!-- Footer -->
-      <LayoutFooter />
     </div>
   </div>
 </template>

@@ -9,6 +9,7 @@ export default {
     showMore: 'Show more',
     showLess: 'Show less',
     loading: 'Loading...',
+    newTab: 'opens in a new tab',
   },
 
   // SEO
@@ -461,6 +462,8 @@ export default {
     formSubtitle: 'A short message is enough',
     company: 'Company or product',
     companyPlaceholder: 'Optional',
+    optional: 'optional',
+    requiredHint: 'All fields are required unless marked optional.',
     topic: 'Topic',
     topics: {
       role: 'A role',
@@ -621,6 +624,7 @@ export default {
     read: 'Read',
     title: 'Articles & Thoughts',
     description: 'Writing about web development, architecture, and tools I use.',
+    listHeading: 'All articles',
     allTags: 'All',
     noArticles: 'No articles yet. Stay tuned!',
     viewAll: 'View all articles',
@@ -635,6 +639,13 @@ export default {
     copyLink: 'Copy link',
     linkCopied: 'Link copied!',
     moreArticles: 'More articles',
+    // The promo card beside an article
+    sidebar: {
+      readMore: 'Read more',
+      dismiss: 'Dismiss',
+      new: 'New',
+      gwm: 'A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap.',
+    },
     nextPost: {
       eyebrow: 'Up next',
       text: "The next post's spot, still being written.",

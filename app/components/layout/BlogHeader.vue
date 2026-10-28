@@ -76,7 +76,6 @@ const isMobileMenuOpen = ref(false)
             type="button"
             class="flex items-center h-9 px-3 rounded-full font-mono font-bold text-sm tracking-tight transition-colors hover:bg-(--control-bg)"
             :aria-expanded="showBrandMenu"
-            aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
             @keydown.escape="showBrandMenu = false"
           >
@@ -158,7 +157,6 @@ const isMobileMenuOpen = ref(false)
             type="button"
             class="flex items-center font-mono font-bold text-sm tracking-tight"
             :aria-expanded="showBrandMenu"
-            aria-haspopup="true"
             @click="showBrandMenu = !showBrandMenu"
             @keydown.escape="showBrandMenu = false"
           >

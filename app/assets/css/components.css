@@ -351,10 +351,15 @@
     color: var(--label);
   }
 
+  /* The border and a full ring: half a pixel of the accent was too faint to find */
   .field:focus {
     outline: none;
     border-color: var(--color-primary-500);
-    box-shadow: 0 0 0 0.5px var(--color-primary-500);
+    box-shadow: 0 0 0 2px var(--color-primary-500);
+  }
+  .light .field:focus {
+    border-color: var(--color-primary-700);
+    box-shadow: 0 0 0 2px var(--color-primary-700);
   }
 
   /* Round icon button, for the header controls */

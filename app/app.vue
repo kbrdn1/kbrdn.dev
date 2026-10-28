@@ -5,6 +5,8 @@ useSiteSeo()
 
 <template>
   <UApp>
+    <!-- Says the new page's title to screen readers on client-side navigation -->
+    <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

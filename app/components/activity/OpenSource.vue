@@ -292,9 +292,12 @@ const reference = (url: string) =>
             </li>
           </TransitionGroup>
 
-          <p v-if="shown === 0" class="eyebrow py-10 text-center">
-            {{ t('experiencePage.openSource.noResults') }}
-          </p>
+          <!-- A live region from the start: the empty result is announced as the search narrows -->
+          <div role="status">
+            <p v-if="shown === 0" class="eyebrow py-10 text-center">
+              {{ t('experiencePage.openSource.noResults') }}
+            </p>
+          </div>
         </UiAutoHeight>
       </div>
     </div>

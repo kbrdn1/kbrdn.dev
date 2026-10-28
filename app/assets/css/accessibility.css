@@ -11,6 +11,18 @@
   outline: none;
 }
 
+/* Light: primary-500 is 2.7:1 on the page, under the 3:1 a focus ring needs */
+.light :focus-visible {
+  outline-color: var(--color-primary-700);
+}
+
+/* Focus never lands under the floating navbar and its notch (90px), nor under the bottom
+   bars (the article's contents, the music button): scrolled into view, it stops short */
+html {
+  scroll-padding-top: 7rem;
+  scroll-padding-bottom: 5rem;
+}
+
 /* ═══════════════════════════════════════════════════
    Reduced Motion Support
    ═══════════════════════════════════════════════════ */

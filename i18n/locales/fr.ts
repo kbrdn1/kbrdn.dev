@@ -9,6 +9,7 @@ export default {
     showMore: 'Afficher plus',
     showLess: 'Afficher moins',
     loading: 'Chargement...',
+    newTab: 'ouvre un nouvel onglet',
   },
 
   // SEO
@@ -461,6 +462,8 @@ export default {
     formSubtitle: 'Un court message suffit',
     company: 'Entreprise ou produit',
     companyPlaceholder: 'Facultatif',
+    optional: 'facultatif',
+    requiredHint: 'Tous les champs sont obligatoires, sauf mention contraire.',
     topic: 'Sujet',
     topics: {
       role: 'Un poste',
@@ -622,6 +625,7 @@ export default {
     read: 'Lire',
     title: 'Articles & Réflexions',
     description: "J'écris sur le développement web, l'architecture et les outils que j'utilise.",
+    listHeading: 'Tous les articles',
     allTags: 'Tous',
     noArticles: "Pas encore d'articles. Restez connectés !",
     viewAll: 'Voir tous les articles',
@@ -636,6 +640,13 @@ export default {
     copyLink: 'Copier le lien',
     linkCopied: 'Lien copié !',
     moreArticles: "Plus d'articles",
+    // The promo card beside an article
+    sidebar: {
+      readMore: 'En savoir plus',
+      dismiss: 'Masquer',
+      new: 'Nouveau',
+      gwm: 'Un CLI + TUI en Rust pour gérer les worktrees Git de tous vos projets, avec un bootstrap par dépôt.',
+    },
     nextPost: {
       eyebrow: 'À suivre',
       text: "La place du prochain article, en cours d'écriture.",

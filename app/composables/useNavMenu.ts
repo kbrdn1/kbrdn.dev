@@ -7,9 +7,15 @@
  * real pointer: under it, the navbar has its own menu.
  */
 let closing: ReturnType<typeof setTimeout> | undefined
+// Content shown on hover closes on Escape without moving the pointer (WCAG 1.4.13)
+let opened: Ref<string | null> | undefined
+function onEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape' && opened) opened.value = null
+}
 
 export function useNavMenu() {
   const active = useState<string | null>('nav-menu', () => null)
+  opened = active
 
   function open(key: string) {
     // A real pointer only: on a touch screen, a hover handler that changes the page makes
@@ -18,13 +24,17 @@ export function useNavMenu() {
       return
     clearTimeout(closing)
     active.value = key
+    document.addEventListener('keydown', onEscape)
   }
   function keep() {
     clearTimeout(closing)
   }
   function close(delay = 180) {
     clearTimeout(closing)
-    closing = setTimeout(() => (active.value = null), delay)
+    closing = setTimeout(() => {
+      active.value = null
+      document.removeEventListener('keydown', onEscape)
+    }, delay)
   }
 
   return { active, open, keep, close }

@@ -178,7 +178,7 @@ const { postUrl } = useBlogUrl()
           {{ t('blog.description') }}
         </p>
         <div class="mt-6 flex flex-wrap items-center gap-3">
-          <span class="eyebrow">{{ postCount }}</span>
+          <span class="eyebrow" role="status">{{ postCount }}</span>
           <a
             href="https://github.com/sponsors/kbrdn1"
             target="_blank"
@@ -237,6 +237,8 @@ const { postUrl } = useBlogUrl()
         </div>
       </div>
 
+      <!-- The posts' level in the outline, under the page's h1 (the panel has no title) -->
+      <h2 class="sr-only">{{ t('blog.listHeading') }}</h2>
       <UiAutoHeight>
         <!-- The three views stay mounted, only their rows change: switching view, tag or
              page, the old rows close one after the other while the new ones open -->

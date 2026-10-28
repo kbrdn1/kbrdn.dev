@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from '#imports'
+
+const { t } = useI18n()
+
 withDefaults(
   defineProps<{
     title: string
@@ -17,23 +21,39 @@ withDefaults(
 
 const dismissed = ref(false)
 const isHovered = ref(false)
+// The actions open for the keyboard too: focus inside the card counts as a hover
+const focused = ref(false)
+function onFocusOut(event: FocusEvent) {
+  focused.value = (event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)
+}
 
+// The focus was on the button about to go: it moves back to what comes before the card
+const root = ref<HTMLElement>()
 function dismiss() {
+  const card = root.value
+  const before = card
+    ? [...document.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]')]
+        .filter((el) => card.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING)
+        .pop()
+    : undefined
   dismissed.value = true
+  before?.focus()
 }
 </script>
 
 <template>
-  <div v-if="!dismissed" class="w-full">
+  <div v-if="!dismissed" ref="root" class="w-full">
     <div
       class="panel-card relative isolate overflow-hidden p-1.5 transition-colors hover:border-primary-500/40"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
+      @focusin="focused = true"
+      @focusout="onFocusOut"
     >
       <UiPixelCanvas />
       <!-- Image -->
       <div v-if="image" class="relative h-36 overflow-hidden rounded-[10px]">
-        <UiPixelImage :src="image" :alt="title" class="size-full" reveal />
+        <UiPixelImage :src="image" class="size-full" reveal />
         <div
           class="pointer-events-none absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/30 to-transparent"
         />
@@ -79,7 +99,7 @@ function dismiss() {
       <!-- Hover actions (grid height animation) -->
       <div
         class="grid overflow-hidden"
-        :class="isHovered ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+        :class="isHovered || focused ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
         style="
           transition:
             grid-template-rows 250ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -94,15 +114,15 @@ function dismiss() {
               rel="noopener noreferrer"
               class="text-[11px] font-mono font-bold text-primary-500 hover:text-primary-400 transition-colors"
             >
-              Read more
+              {{ t('blog.sidebar.readMore') }}<span class="sr-only">: {{ title }}</span>
             </a>
             <button
               v-if="dismissable"
               type="button"
-              class="text-[11px] font-mono text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+              class="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors cursor-pointer"
               @click.stop="dismiss"
             >
-              Dismiss
+              {{ t('blog.sidebar.dismiss') }}
             </button>
           </div>
         </div>
