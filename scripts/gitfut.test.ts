@@ -1,6 +1,5 @@
 // Check de shared/gitfut.ts : la carte gitfut lue pour l'easter egg du hero. gitfut est un
-// tiers : un champ hors bornes doit lever (la route garde alors la dernière bonne carte), et
-// seule une URL d'avatar du CDN de GitHub passe.
+// tiers : un champ hors bornes doit lever (la route garde alors la dernière bonne carte).
 //
 // usage: bun scripts/gitfut.test.ts
 import assert from 'node:assert/strict'
@@ -27,20 +26,16 @@ const payload = {
 const card = toGitfutCard(payload)
 assert.deepEqual(card, {
   name: 'Kylian Bardini',
-  surname: 'BARDINI',
   overall: 84,
   position: 'CM',
   country: 'fr',
   language: 'TypeScript',
   finish: 'totw',
   stats: { pac: 77, sho: 63, pas: 83, dri: 75, def: 61, phy: 94 },
-  avatar:
-    'https://avatars.githubusercontent.com/u/94058709?s=96&u=c5b3b40f9080505646468991e140e9573b782898&v=4',
 })
 
-// The surname as the card prints it, accents dropped; the login when there is no name
-assert.equal(toGitfutCard({ ...payload, name: 'Zoé  Lefèvre-Hô ' }).surname, 'LEFEVRE-HO')
-assert.equal(toGitfutCard({ ...payload, name: null }).surname, 'KBRDN')
+// The login when there is no name
+assert.equal(toGitfutCard({ ...payload, name: null }).name, 'kbrdn1')
 // No country, no language: the egg skips those beats
 assert.equal(toGitfutCard({ ...payload, country: null }).country, null)
 assert.equal(
@@ -50,9 +45,6 @@ assert.equal(
 
 // Anything off throws
 const off: Record<string, unknown>[] = [
-  { avatarUrl: 'https://evil.example/a.png' },
-  { avatarUrl: 'javascript:alert(1)' },
-  { avatarUrl: 'http://avatars.githubusercontent.com/u/1' },
   { overall: 150 },
   { overall: '84' },
   { position: '<b>' },
