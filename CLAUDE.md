@@ -53,6 +53,7 @@ Content is managed through `@nuxt/content` with a collection-based approach defi
 - **Source Pattern**: Collection-specific patterns in `app/content/`
 - **Nuxt Studio**: disabled, `nuxt-studio` is commented out in `nuxt.config.ts` (incompatible with @nuxt/content at the time)
 - **MDC Components**: Alert, Callout, CodeGroup available in `app/components/content/`
+- **Article prose**: the `Prose*` components resolve to @nuxt/ui's (see `.nuxt/components.d.ts`), themed to the site's design under `ui.prose` in `app/app.config.ts`. `prose.css` only holds what crosses elements (text colour, link underline, shiki contrast): no `:deep()` there, a global sheet drops the whole rule. `ProseImg` is overridden in `app/components/content/` to open `UiLightbox`; never override `ProseH*` (it strips the headings' theme and anchor)
 
 ### Directory Structure
 ```

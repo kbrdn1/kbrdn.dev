@@ -338,6 +338,21 @@ migrates `[Unreleased]` into that file and empties this one, see
 - **The hero's button gets in touch**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The disabled "Book a
   call" gives way to "Get in touch", a link to `/contact`.
+- **Articles in the site's design**
+  ([#106](https://github.com/kbrdn1/kbrdn.dev/issues/106)). Code blocks and
+  tables are cards (1rem corners, the cards' border and surface, opaque in
+  glass), table heads are mono labels, bullets are orange as on `/experience`,
+  inline code sits on the controls' surface. Hovered links no longer get a
+  second line under their underline. Headings are unchanged. The `:deep()`
+  rules of `prose.css` never applied (a global sheet drops them): they are
+  gone, and the elements are themed through Nuxt UI's prose theme in
+  `app/app.config.ts`.
+- **Article pictures open in the site's viewer**
+  ([#106](https://github.com/kbrdn1/kbrdn.dev/issues/106)). The same one as
+  `/experience`'s illustrations, from a real button: Enter or Space opens it,
+  Escape, the close button or a click outside closes it, and focus goes back
+  to the picture. Nuxt UI's zoom, a second viewer out of the keyboard's reach,
+  is gone.
 
 ### Fixed
 
