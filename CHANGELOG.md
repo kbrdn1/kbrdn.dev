@@ -55,7 +55,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   diagonal stripes and the subtitle retypes like the titles. Still under
   `prefers-reduced-motion`.
 
-- **A journey page, `/experience`**
+- **A journey page, `/parcours`** (`/en/journey` in English)
   ([#78](https://github.com/kbrdn1/kbrdn.dev/issues/78)). Laid out like an
   editorial spread (after isrod.eu): an intro, a strip of every role and
   degree, then one spread each, the story on the left and the stack and
@@ -114,12 +114,12 @@ migrates `[Unreleased]` into that file and empties this one, see
   Mouse and trackpad only, never under `prefers-reduced-motion`.
 - **Illustrations full size**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A click on an
-  illustration of `/experience` opens it crisp and full size in a native dialog
+  illustration of `/parcours` opens it crisp and full size in a native dialog
   (Escape, a click beside it or its button close it), as an article's pictures
   already zoom.
 - **Where the companies, clients and schools live**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Under each entry of
-  `/experience`, links to flippad.com and jewely.fr, the clients' sites
+  `/parcours`, links to flippad.com and jewely.fr, the clients' sites
   (bijouterie-julian.com, crown-dp.com, martin-media.fr), the school's, and the
   projects' own site and article.
 - **Share an article from the device**
@@ -130,7 +130,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   the repositories pinned on GitHub, and the projects built at Jewely x Flippad
   in the same cards, the project's logo, its site, its client and its years, a
   bar showing when it ran within those years; each leads to it on
-  `/experience`.
+  `/parcours`.
 - **An invader on the footer's edge**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Now and then one of
   the pointer's invaders runs in on the footer's top edge, in its own colour of
@@ -146,7 +146,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Beside the hero, under
   it on a phone, a detailed loop in the theme's palette with no background, the
   sun by day, the moon and stars by night: a crab climbs the mountain's trail to
-  its flag and cheers in confetti on `/experience`; an invader sits on a monitor
+  its flag and cheers in confetti on `/parcours`; an invader sits on a monitor
   typing gwm's commands on `/apps`; another fills a contribution graph on
   `/activity`; on `/blog`, a writing nook at night after Kirokaze's and
   Waneella's rooms, rain over the city, the article typed then sent off as a
@@ -161,13 +161,13 @@ migrates `[Unreleased]` into that file and empties this one, see
   an optional second colour in slow patches; the blog's layout uses its sky blue.
 - **A CV to download**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Between the roles and
-  the degrees on `/experience`, and in `/contact`'s details, in the site's
+  the degrees on `/parcours`, and in `/contact`'s details, in the site's
   language. The PDFs are hosted outside this public repository: their addresses
   come from the repository variables `CV_URL_FR` and `CV_URL_EN` at build time;
   without them, nothing shows.
 - **An activity page, `/activity`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The open source work
-  (shared with `/experience`), the contribution chart, and the recent public
+  (shared with `/parcours`), the contribution chart, and the recent public
   GitHub activity read live and told in plain words, day by day: pushes folded
   per branch and day, comments per issue, pull requests merged or opened. Cached
   ten minutes server side; the page says when GitHub was last checked.
@@ -177,11 +177,16 @@ migrates `[Unreleased]` into that file and empties this one, see
   chips, the message, with the details beside it. The footer keeps a button to
   it and signs with the logo.
 - **The new theme spreads from the button**
-  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). A circle grows from
-  the theme button over a still snapshot of the old theme, edged with a halo in
-  the new theme's colour (yellow to light, orange to dark, cyan to glass),
-  instead of every colour fading on its own. A plain switch without view
-  transitions or under `prefers-reduced-motion`.
+  ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86),
+  [#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)). A dithered wave grows
+  from the theme button over a still snapshot of the old theme: small square
+  pixels of the new page come through in a 4×4 Bayer order, behind a front in
+  the new theme's colour (yellow to light, orange to dark, frosted white to
+  glass), instead of every colour fading on its own. Chromium only: recorded
+  under WebKit, the mask lagged and the page flashed between both themes
+  several times in half a second, so Safari and Firefox switch at once, as do
+  browsers without view transitions, `prefers-reduced-motion` and the site's
+  pause.
 - **Numbers roll in**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The figures in view
   (open source counts, contribution totals, reading times, the carousel's
@@ -243,11 +248,11 @@ migrates `[Unreleased]` into that file and empties this one, see
   show the share of each language like the pinned repositories (measured on the
   private repositories), their frameworks, and a swatch in the framework's
   colour.
-- **A banner for every post and every /experience entry**
+- **A banner for every post and every /parcours entry**
   ([#111](https://github.com/kbrdn1/kbrdn.dev/issues/111)). After two
   reference sheets: the logo in relief and the name in heavy type beside it,
   over the project's screenshot, satin ribbons in the corners on the blog,
-  metro lines on /experience (after its hero's map). Each comes light and dark
+  metro lines on /parcours (after its hero's map). Each comes light and dark
   in the site's tokens and goes through the pixel layer like every picture of
   the site; a post's OG gets that layer frozen. The studies and the Virtual
   Immersion role get an illustration too, and the article header asks IPX for
@@ -266,8 +271,37 @@ migrates `[Unreleased]` into that file and empties this one, see
   (now a declared dependency). Nothing of it loads with the page: its code
   and the card are fetched from the third click. Under reduced motion the card
   shows at once; it is announced to screen readers.
+- **Structured data and a sitemap**
+  ([#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)). Every page sets
+  `<html lang>` to the language served, a canonical and `og:url` on its own
+  path, `og:locale` with its alternate, and hreflang links between its French
+  and English versions (x-default on the French one). JSON-LD describes the
+  site (Person and WebSite everywhere, ProfilePage, CollectionPage,
+  ContactPage, Blog and BlogPosting, BreadcrumbList). `/sitemap.xml` lists the
+  pages and the posts in both languages, and `robots.txt` points to it. The
+  home now serves its own translated title and description instead of the
+  English fallback.
+- **A button that pauses every animation**
+  ([#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)). In the header: the
+  scenes, the critter, the mascots, the rotating titles and the dither field
+  stop and restart from there, as under the system's reduced motion (RGAA
+  13.8), without removing any of them.
+- **The site's version in the footer**
+  ([#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)), as `/api/health`
+  returns it.
 
 ### Changed
+
+- **French at the root, English under `/en/`**
+  ([#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)). **Addresses
+  change.** Up to 1.1.0 both languages shared the same paths and a visitor
+  without a preference got English; French now lives at the root and English
+  under `/en/`, each page with its own words where it has some (`/parcours`,
+  `/en/journey`). The pages indexed in English (`/blog/gwm`…) therefore answer
+  in French; their English version moves to `/en/…`, and hreflang pairs the
+  two. The browser's language is only read on the root, on the first visit: an
+  English browser or the language cookie leads to `/en`, a crawler without a
+  preference stays on the French root.
 
 - **The Journey menu shows the page's banners**
   ([#122](https://github.com/kbrdn1/kbrdn.dev/issues/122)). The notch's menu
@@ -354,7 +388,7 @@ migrates `[Unreleased]` into that file and empties this one, see
 - **The other pages in panels too**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). `/apps`: one card per
   app, its features ticked, then its install commands and its demo after
-  dashed rules. `/experience`: a card per role and degree, company logos as
+  dashed rules. `/parcours`: a card per role and degree, company logos as
   rounded tiles, and the open source work as a card of figures (a tick bar per
   group, coloured by status) over its lists, one at a time behind a segmented
   control. `/blog`: a filter bar, the posts as cards, the pages in the panel's
@@ -365,7 +399,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   segmented control; the announcement banner hangs under it as a notch with
   concave shoulders, on every page. The footer, the music player and the table
   of contents take the panel surfaces too.
-- **The roles strip follows the reading on `/experience`**
+- **The roles strip follows the reading on `/parcours`**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Once scrolled away,
   it comes back compact under the navbar, marks the role or degree being read
   with a sliding ink and keeps the address on its anchor; anchors scroll
@@ -382,7 +416,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   contribution calendars, open source) close their removed rows from the last
   one up and open the new ones one after the other, so a list showing less
   shrinks instead of jumping.
-- **`/experience` as a vertical timeline**
+- **`/parcours` as a vertical timeline**
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). Roles and degrees on
   a rail that fills in the accent as the page is read, the years beside it; each
   role's projects under it (Jewely E-commerce, Fiches Pédagogiques, the
@@ -424,7 +458,7 @@ migrates `[Unreleased]` into that file and empties this one, see
 - **Articles in the site's design**
   ([#106](https://github.com/kbrdn1/kbrdn.dev/issues/106)). Code blocks and
   tables are cards (1rem corners, the cards' border and surface, opaque in
-  glass), table heads are mono labels, bullets are orange as on `/experience`,
+  glass), table heads are mono labels, bullets are orange as on `/parcours`,
   inline code sits on the controls' surface. Hovered links no longer get a
   second line under their underline. Headings are unchanged. The `:deep()`
   rules of `prose.css` never applied (a global sheet drops them): they are
@@ -432,7 +466,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   `app/app.config.ts`.
 - **Article pictures open in the site's viewer**
   ([#106](https://github.com/kbrdn1/kbrdn.dev/issues/106)). The same one as
-  `/experience`'s illustrations, from a real button: Enter or Space opens it,
+  `/parcours`'s illustrations, from a real button: Enter or Space opens it,
   Escape, the close button or a click outside closes it, and focus goes back
   to the picture. Nuxt UI's zoom, a second viewer out of the keyboard's reach,
   is gone.
@@ -453,6 +487,19 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ### Fixed
 
+- **Accessibility, after an RGAA 4.1.2 audit**
+  ([#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)). Contrasts (tags and
+  statuses in light, greys in dark, the archived card on `/apps`, article links
+  and code colouring, the hero's title), a focus ring at 3:1 in light, focused
+  elements no longer hidden under the navbar, the articles' promo card and the
+  player's cover reachable from the keyboard, status messages and page changes
+  announced, heading levels, the notch's menus closed by Escape, required
+  fields flagged, article links underlined, English labels left untranslated.
+  Still not compliant, and known: the GitHub calendar (colour and mouse only),
+  the social links' hover card, link groups outside lists, and a single
+  navigation system.
+- **A missing article answered 200 with an empty page**
+  ([#88](https://github.com/kbrdn1/kbrdn.dev/issues/88)); it now answers 404.
 - **OG images render the same on every machine**
   ([#90](https://github.com/kbrdn1/kbrdn.dev/issues/90)). Google serves Inter
   as a variable font, which satori cannot read, and nuxt-og-image's fallback
