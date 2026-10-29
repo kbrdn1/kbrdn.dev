@@ -9,7 +9,7 @@ const SKIP = 'pre,table,figure,img,svg,button,[aria-hidden="true"]'
  * Reads the article aloud with the browser's own speech synthesis (Web Speech API, what
  * TTSReader runs on): free, no key, no server, in the best voice the browser has for the
  * article's language (pickVoice). Called by the article page, which hands it to both tables of
- * contents (BlogReader) and to the headings' buttons (BlogReaderHeadings).
+ * contents (BlogReaderPlay, BlogReaderBar) and to the headings' buttons (BlogReaderHeadings).
  *
  * One utterance per sentence: it keeps Chrome's Google voices from stopping mid-article, and the
  * sentence is what the progress bar counts and seeks to. Pausing cancels and restarts the

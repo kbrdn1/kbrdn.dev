@@ -1,4 +1,4 @@
-// The article reader's pure half (BlogListen): which browser voice reads, and how the text is
+// The article reader's pure half (useArticleReader): which browser voice reads, and how the text is
 // cut into utterances. Checked by scripts/speech.test.ts.
 
 type Voice = Pick<SpeechSynthesisVoice, 'name' | 'lang' | 'default'>
