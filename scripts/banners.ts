@@ -17,7 +17,7 @@
 import { Resvg, type RenderedImage } from '@resvg/resvg-js'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { SHAPE_CELL_PX, type DitherShape } from '../app/utils/dither'
+import { SHAPE_CELL_PX } from '../app/utils/dither'
 
 // Dessinée sur 1600 × 900, écrite en 2400 × 1350 : l'en-tête d'article (~1170 px de large) net
 // en densité 2
@@ -33,9 +33,10 @@ const SUBTITLE_FONT = 'public/fonts/inter/InterOG-400.ttf'
 // grand que ça : au repos, à travers le calque, une carte n'a qu'une vingtaine de cellules de haut.
 const SAFE_W = 1120
 const LOGO_H = 360
-// Le calque de l'OG : la boîte de la bannière dans OgImage/Blog.satori.vue, ses trous à son fond
+// Le calque de l'OG : la boîte de la bannière dans OgImage/Blog.satori.vue, ses trous à son fond,
+// en cercles (la forme d'une page se tire au hasard au chargement, l'OG en fige une)
 const OG_BOX = { w: 290, h: 168, gap: '#0f0f12' }
-const OG_SHAPE: DitherShape = 'circle'
+const OG_CELL = SHAPE_CELL_PX.circle
 
 type Mode = 'light' | 'dark'
 type Rgb = [number, number, number]
@@ -591,10 +592,10 @@ function compose(banner: Banner, mode: Mode, motif: typeof metro, rand: Random) 
 
 /**
  * UiPixelImage à la taille de la boîte de l'OG : l'image réduite à un texel par cellule (en
- * `cover`), chaque cellule dessinée à la forme `shape`, les trous à la couleur du fond.
+ * `cover`), chaque cellule dessinée en cercle, les trous à la couleur du fond.
  */
-function frozenLayer({ pixels, width, height }: RenderedImage, shape: DitherShape) {
-  const cell = Math.max(SHAPE_CELL_PX[shape], 6)
+function frozenLayer({ pixels, width, height }: RenderedImage) {
+  const cell = OG_CELL
   const cols = Math.ceil(OG_BOX.w / cell)
   const rows = Math.ceil(OG_BOX.h / cell)
   const scale = Math.max(cols / width, rows / height)
@@ -613,15 +614,8 @@ function frozenLayer({ pixels, width, height }: RenderedImage, shape: DitherShap
       const n = (x1! - x0!) * (y1! - y0!)
       const fill = hex(sum.map((v) => v / n) as Rgb)
       const [x, y] = [col * cell, row * cell]
-      const flip = (col + row) % 2 === 1
       shapes.push(
-        shape === 'circle'
-          ? `<circle cx="${x + cell / 2}" cy="${y + cell / 2}" r="${cell * 0.4}" fill="${fill}"/>`
-          : shape === 'diamond'
-            ? `<path d="M${x + cell / 2} ${y}l${cell / 2} ${cell / 2}-${cell / 2} ${cell / 2}-${cell / 2}-${cell / 2}Z" fill="${fill}"/>`
-            : shape === 'triangle'
-              ? `<path d="${flip ? `M${x} ${y}l${cell} ${cell}h-${cell}Z` : `M${x + cell} ${y}v${cell}h-${cell}Z`}" fill="${fill}"/>`
-              : `<rect x="${x}" y="${y}" width="${cell}" height="${cell}" fill="${fill}"/>`,
+        `<circle cx="${x + cell / 2}" cy="${y + cell / 2}" r="${cell * 0.4}" fill="${fill}"/>`,
       )
     }
   }
@@ -657,7 +651,7 @@ for (const key of keys.length ? keys : Object.keys(BANNERS)) {
       { input: rendered.asPng() },
     )
     if (mode === 'dark' && key.startsWith('blog/'))
-      writeFileSync(`${out}/cover-og.png`, frozenLayer(rendered, OG_SHAPE))
+      writeFileSync(`${out}/cover-og.png`, frozenLayer(rendered))
   }
   console.log(out)
 }
