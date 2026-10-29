@@ -206,6 +206,8 @@ onMounted(() => {
     setTimeout(announce, 150)
   } else play()
 })
+// The site's pause button, pressed while it plays: straight to the card, like the hero scenes stop
+watch(reducedMotion, (on) => on && !still.value && !folding && skip())
 
 onBeforeUnmount(() => {
   stop()
