@@ -43,7 +43,7 @@ gwm                                         # ouvre la TUI sur le repo courant
 gcd auth                                    # fuzzy-jump dans le worktree (via `gwm shell-init`)
 ```
 
-![gwm en action : créer un worktree avec son rapport de bootstrap, naviguer, supprimer, depuis la TUI](/images/blog/gwm/demo.gif)
+![gwm en action : les sessions d'agents, une note, créer un worktree avec son rapport de bootstrap, filtrer, supprimer, depuis la TUI](/images/blog/gwm/demo.gif)
 
 Sans argument, `gwm` ouvre la TUI ratatui : une table avec le nom du worktree, sa branche, son status (clean / dirty / `↑N ↓M` vs upstream) et son chemin, plus une sidebar de détails (status, issue/PR liée, arbre des fichiers modifiés, commits récents). Les sous-commandes servent les scripts et la CI.
 
@@ -158,7 +158,7 @@ Trois choses font le quotidien :
 
 - **Le keymap remappable, éditable en direct.** Toute action est rebindable, avec chords multi-touches (`g g` pour aller en haut), une palette de commandes fuzzy (`:`) qui retrouve chaque action par son nom, et un filtre (`/`) sur la liste. Le panneau **Settings** (`4`) est devenu entièrement éditable : onglets Theme / Worktree / TUI / **Keys** / All, sélecteur de layer projet ↔ global (`L`), toggles / choix / champs numériques et texte qui persistent dans le TOML et s'appliquent à chaud. L'onglet **Keys** capture une nouvelle touche en direct : on sélectionne un bind, on tape, ça écrit un array TOML validé _avant_ de toucher le disque (un conflit avorte et garde l'ancien bind) et le keymap recharge sans redémarrer. Même les touches modales (formulaire create, delete-confirm, prompt de link…) sont remappables sous des sous-tables `[tui.keys.modal.<context>]`.
 
-![l'onglet Keys du panneau Settings : capture d'un nouveau bind en direct](/images/blog/gwm/keymap.png)
+![l'onglet Keys du panneau Settings : chaque action et ses touches, Space pour en rebinder une en direct](/images/blog/gwm/keymap.png)
 
 ## Fermer la boucle GitHub : review, statusline
 
