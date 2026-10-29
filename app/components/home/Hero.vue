@@ -167,6 +167,7 @@ onUnmounted(() => {
       class="mascot-float relative isolate mx-auto size-48 shrink-0 touch-manipulation sm:size-56 md:mx-0"
       :class="{ '[animation-play-state:paused]': walkout }"
       :aria-hidden="walkout ? undefined : 'true'"
+      data-walkout
       @mouseenter="nextMood"
       @click="tap"
     >
