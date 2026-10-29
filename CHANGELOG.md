@@ -458,6 +458,14 @@ migrates `[Unreleased]` into that file and empties this one, see
   default branch's favicon, still the old logo and coloured by the system's
   theme rather than the site's.
 
+- **Animated pictures in articles arrive as committed**
+  ([#116](https://github.com/kbrdn1/kbrdn.dev/issues/116)). GIFs went through
+  the image server, which decoded and re-encoded every frame on each request,
+  with no cache: the gwm demo took 16 s to reach preprod, 1.49 MB for 884 KB
+  committed, and answered 500 in production. They are now served as static
+  files. Other pictures still go through it: it recompresses truecolor PNGs
+  smaller, though it still inflates palette ones such as the gwm article's.
+
 ## Past releases
 
 - [1.1.0](changelogs/1.1.0.md) · 2026-10-16
