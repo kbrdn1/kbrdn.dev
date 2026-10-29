@@ -3,15 +3,16 @@
 // walkout, in the illustration's box. HomeHero loads it on the fifth quick click, the card
 // already read. It grows out of the box's middle block by block, plays, then holds the card; a
 // click or Enter skips to the card (FC's "press to skip"), a click or Escape folds it back into
-// the mascot. Under reduced motion, the card at once and nothing moving. The canvas is
+// the mascot. Under reduced motion, the card at once and nothing moving. The scene is pixels;
+// gitfut's card is drawn over them sharp, at the screen's resolution. The canvas is
 // decorative: the card is announced in words, and the button that skips or goes back has the
 // focus, given back when it closes.
-import type { GitfutCard } from '~~/shared/gitfut'
-import { Raster } from '~/utils/cameos/art'
-import { walkout, type WalkoutArt } from '~/utils/heroes/walkout'
-import { GROWN } from '~/utils/pixelGrow'
+import type { GitfutWalkout } from '~~/shared/gitfut'
+import { Raster, smooth } from '~/utils/cameos/art'
+import { LEAVE, walkout, type WalkoutArt } from '~/utils/heroes/walkout'
+import { drawGrowing, GROWN } from '~/utils/pixelGrow'
 
-const props = defineProps<{ card: GitfutCard }>()
+const props = defineProps<{ card: GitfutWalkout }>()
 // `close` as it starts folding (the mascot comes back under it), `done` once folded
 const emit = defineEmits<{ close: []; done: [] }>()
 
@@ -28,20 +29,25 @@ const assets: WalkoutArt = {}
 
 let time = 0
 let level = 0
+// Leaving: ms since, the scene's own exit (LEAVE), then the fold into the mascot
 let folding = false
+let leave = -1
+let leftAt = GROWN
 let last = 0
 let raf = 0
 let art: HTMLCanvasElement | undefined
+// gitfut's card, decoded, and the canvas it is drawn on at its size on screen with its shine
+let picture: HTMLImageElement | undefined
+let face: HTMLCanvasElement | undefined
 let before: Element | null = null
 
 const dark = () => document.documentElement.matches('.dark, .blur')
 
-/** A picture as art pixels, w × h, its see-through edge cut at half */
-function picture(src: string, w: number, h: number) {
+/** A picture (a data URI from the route: readable back) as art pixels, w × h, its
+ * see-through edge cut at half */
+function pixels(src: string, w: number, h: number) {
   return new Promise<Raster>((resolve, reject) => {
     const image = new Image()
-    // GitHub's avatars and gitfut's flags send `Access-Control-Allow-Origin: *`: readable back
-    image.crossOrigin = 'anonymous'
     image.onerror = reject
     image.onload = () => {
       const paint = document.createElement('canvas')
@@ -84,17 +90,61 @@ function draw() {
   const el = canvas.value
   const ctx = el?.getContext('2d')
   if (!el || !ctx || !art) return
-  const raster = scene.paint(time, dark(), assets, level)
+  const raster = scene.paint(time, dark(), assets, level, leave)
   art.getContext('2d')!.putImageData(raster.toImage(art.getContext('2d')!), 0, 0)
   // Whole screen pixels per art pixel, unless that shrinks it by more than a fifth (HeroCanvas)
   const exact = el.width / scene.w
   const scale =
     Math.floor(exact) >= 1 && Math.floor(exact) / exact >= 0.8 ? Math.floor(exact) : exact
   const [w, h] = [scene.w * scale, scene.h * scale]
+  const [ox, oy] = [Math.round((el.width - w) / 2), Math.round((el.height - h) / 2)]
   ctx.setTransform(1, 0, 0, 1, 0, 0)
   ctx.clearRect(0, 0, el.width, el.height)
   ctx.imageSmoothingEnabled = false
-  ctx.drawImage(art, Math.round((el.width - w) / 2), Math.round((el.height - h) / 2), w, h)
+  ctx.drawImage(art, ox, oy, w, h)
+
+  // gitfut's card, sharp: squashed from its foot as it lands, a band of light across it, and
+  // block by block with the scene while it folds
+  const at = scene.card(time, leave)
+  // Decoded (HomeHero only hatches it once it is): a broken picture is never drawn
+  if (!at || !picture?.complete || !picture.naturalWidth) return
+  const [cw, ch] = [
+    Math.round(at.w * scale * (1 + at.k * 0.6)),
+    Math.round(at.h * scale * (1 - at.k)),
+  ]
+  const [cx, cy] = [
+    Math.round(ox + (at.x + at.w / 2) * scale - cw / 2),
+    Math.round(oy + (at.y + at.h) * scale - ch),
+  ]
+  face ??= document.createElement('canvas')
+  face.width = cw
+  face.height = ch
+  const paint = face.getContext('2d')!
+  paint.imageSmoothingQuality = 'high'
+  paint.drawImage(picture, 0, 0, cw, ch)
+  if (at.shine > 0 && at.shine < 1) {
+    const x = -cw * 0.6 + at.shine * cw * 2.2
+    const band = paint.createLinearGradient(x, 0, x + cw * 0.4, ch * 0.3)
+    band.addColorStop(0, 'rgb(255 255 255 / 0)')
+    band.addColorStop(0.5, 'rgb(255 255 255 / 0.55)')
+    band.addColorStop(1, 'rgb(255 255 255 / 0)')
+    paint.globalCompositeOperation = 'source-atop'
+    paint.fillStyle = band
+    paint.fillRect(0, 0, cw, ch)
+    paint.globalCompositeOperation = 'source-over'
+  }
+  // The fold's blocks are the scene's, three art pixels; its middle is the scene's
+  const block = Math.max(1, Math.round(3 * scale))
+  drawGrowing(
+    ctx,
+    face,
+    [0, 0, cw, ch],
+    [cx, cy],
+    [ox + w / 2 - cx, oy + h / 2 - cy],
+    level,
+    block,
+    76 * scale,
+  )
 }
 
 function frame(now: number) {
@@ -104,7 +154,10 @@ function frame(now: number) {
   const dt = Math.min(100, now - last)
   last = now
   if (folding) {
-    level -= (dt / GROW_MS) * GROWN
+    leave += dt
+    // The mascot comes back under it as the fold starts
+    if (leave >= LEAVE && leave - dt < LEAVE) emit('close')
+    level = leftAt * (1 - smooth(leave, LEAVE, LEAVE + GROW_MS))
     if (level <= 0) {
       stop()
       emit('done')
@@ -143,12 +196,18 @@ function skip() {
   still.value = true
 }
 
-/** Back to the mascot: folded into the middle, or at once under reduced motion */
+/** Back to the mascot: everything put away, then folded into the middle; at once under
+ * reduced motion */
 function close() {
   if (folding) return
   folding = true
-  emit('close')
-  if (reducedMotion.value) return emit('done')
+  leave = 0
+  leftAt = level
+  if (reducedMotion.value) {
+    emit('close')
+    emit('done')
+    return
+  }
   play()
 }
 
@@ -174,17 +233,13 @@ onMounted(() => {
   art = document.createElement('canvas')
   art.width = scene.w
   art.height = scene.h
-  // The portrait: GitHub's, else the mascot it is drawn from; the flag gitfut prints
-  picture(props.card.avatar, 36, 36)
-    .catch(() => picture('/images/mascot/hoodie.webp', 36, 36))
-    .then((avatar) => {
-      assets.avatar = avatar
-      // Still (reduced motion, or skipped before it came): drawn again with it
-      if (!raf) draw()
-    })
-    .catch(() => {})
-  if (props.card.country)
-    picture(`https://gitfut.com/badges/flags/${props.card.country}.png`, 30, 20)
+  // The card and the flag, both in the route's answer; still (reduced motion, or skipped
+  // before they were decoded), it is drawn again with them
+  picture = new Image()
+  picture.onload = () => raf || draw()
+  picture.src = props.card.image
+  if (props.card.flag)
+    pixels(props.card.flag, 30, 20)
       .then((flag) => {
         assets.flag = flag
         if (!raf) draw()
@@ -227,11 +282,12 @@ onBeforeUnmount(() => {
       class="walkout absolute top-1/2 left-1/2 aspect-[3/2] w-[150%] -translate-x-1/2 -translate-y-1/2"
       aria-hidden="true"
     />
-    <!-- FC's "press to skip", bottom right: Enter skips to the card, then goes back -->
+    <!-- FC's "press to skip": a click does it, so it shows only once reached from the
+         keyboard, where Enter skips to the card, then goes back -->
     <button
       ref="button"
       type="button"
-      class="eyebrow absolute -right-1/4 -bottom-7 flex cursor-pointer items-center gap-1.5 whitespace-nowrap"
+      class="eyebrow absolute -right-1/4 -bottom-7 flex cursor-pointer items-center gap-1.5 whitespace-nowrap opacity-0 focus-visible:opacity-100"
       @click.stop="press"
     >
       <i18n-t :keypath="still ? 'walkout.back' : 'walkout.skip'" tag="span" scope="global">

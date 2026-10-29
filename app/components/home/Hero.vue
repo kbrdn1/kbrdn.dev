@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { useI18n } from '#imports'
-import type { GitfutCard } from '~~/shared/gitfut'
+import type { GitfutWalkout } from '~~/shared/gitfut'
 
 const { t } = useI18n()
 
@@ -49,29 +49,46 @@ function nextMood() {
 
 // The easter egg: five quick clicks on the picture (each under TAP_GAP ms after the last), and
 // Kylian's gitfut card comes out like an FC 26 walkout (HomeWalkout), in the picture's box. Its
-// code and the card are only fetched then; if either fails, nothing happens. While it plays,
-// the moods, the orbit and the float hold still; `open` drops when it starts folding back.
+// code and the card are fetched from the third quick click on, never before, so the fifth
+// rarely waits; if either fails, nothing happens. While it plays, the moods, the orbit and the
+// float hold still; `open` drops when it starts folding back.
 const TAPS = 5
 const TAP_GAP = 600
 let taps = 0
 let lastTap = 0
 let hatching = false
-const walkout = shallowRef<{ is: Component; card: GitfutCard }>()
+let egg: Promise<[{ default: Component }, GitfutWalkout] | undefined> | undefined
+const walkout = shallowRef<{ is: Component; card: GitfutWalkout }>()
 const open = ref(false)
+
+// The card's picture decoded before it hatches: a broken one never reaches the walkout
+const fetchEgg = () =>
+  Promise.all([
+    import('./Walkout.vue'),
+    $fetch('/api/gitfut').then(async (card) => {
+      const picture = new Image()
+      picture.src = card.image
+      await picture.decode()
+      return card
+    }),
+  ]).catch(() => undefined)
 
 async function tap() {
   if (walkout.value || hatching) return
   const now = performance.now()
   taps = now - lastTap < TAP_GAP ? taps + 1 : 1
   lastTap = now
+  if (taps === 3) egg ??= fetchEgg()
   if (taps < TAPS) return
   taps = 0
   hatching = true
-  const hatched = await Promise.all([import('./Walkout.vue'), $fetch('/api/gitfut')]).catch(
-    () => undefined,
-  )
+  const hatched = await (egg ??= fetchEgg())
   hatching = false
-  if (!hatched) return
+  // A failure is not kept: the next five clicks try again
+  if (!hatched) {
+    egg = undefined
+    return
+  }
   walkout.value = { is: markRaw(hatched[0].default), card: hatched[1] }
   open.value = true
 }
@@ -188,8 +205,8 @@ onUnmounted(() => {
         height="224"
         alt=""
         draggable="false"
-        class="absolute inset-0 size-full select-none object-contain transition-opacity duration-300"
-        :class="i === mood && !open ? 'opacity-100' : 'opacity-0'"
+        class="absolute inset-0 size-full select-none object-contain transition-[opacity,scale] duration-300"
+        :class="[i === mood && !open ? 'opacity-100' : 'opacity-0', open && 'scale-75']"
       />
       <component
         :is="walkout.is"
