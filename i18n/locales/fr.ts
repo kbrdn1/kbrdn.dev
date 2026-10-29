@@ -30,6 +30,18 @@ export default {
     bookCallTip: 'Planifier un échange de 30 min pour discuter de votre projet',
   },
 
+  // Hero easter egg: the gitfut card's walkout (HomeWalkout)
+  walkout: {
+    skip: 'Appuyez sur {key} pour passer',
+    back: 'Appuyez sur {key} pour revenir',
+    enter: 'Entrée',
+    escape: 'Échap',
+    card: 'Carte gitfut de {name} : {details}.',
+    rating: 'note {n}',
+    position: 'poste {p}',
+    language: 'langage {l}',
+  },
+
   // Navigation
   nav: {
     home: 'Accueil',

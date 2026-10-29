@@ -30,6 +30,18 @@ export default {
     bookCallTip: 'Schedule a 30-min meeting to discuss your project',
   },
 
+  // Hero easter egg: the gitfut card's walkout (HomeWalkout)
+  walkout: {
+    skip: 'Press {key} to skip',
+    back: 'Press {key} to go back',
+    enter: 'Enter',
+    escape: 'Esc',
+    card: 'gitfut card of {name}: {details}.',
+    rating: 'rated {n}',
+    position: 'position {p}',
+    language: 'language {l}',
+  },
+
   // Navigation
   nav: {
     home: 'Home',
