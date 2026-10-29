@@ -231,7 +231,7 @@ const list = (key: string, count: number) =>
 
     <!-- Strip: every role and degree, one small card each, the one being read marked -->
     <div ref="strip">
-      <UiPanel :title="t('experiencePage.timeline')" cameo="hourglass">
+      <UiPanel :title="t('experiencePage.timeline')" cameo="calendar">
         <nav :aria-label="t('experiencePage.timeline')" class="overflow-x-auto">
           <div ref="baseList" class="relative min-w-max">
             <ol class="flex gap-1">
@@ -386,7 +386,9 @@ const list = (key: string, count: number) =>
 
     <!-- The CV, between the roles and the degrees; only once its address is set -->
     <UiPanel v-if="cvUrl">
-      <div class="panel-card flex flex-wrap items-center gap-x-5 gap-y-4 p-5 sm:p-6">
+      <!-- A printer prints the CV, between the text and the button -->
+      <div class="panel-card relative flex flex-wrap items-center gap-x-5 gap-y-4 p-5 sm:p-6">
+        <UiCameo name="printer" place="area" />
         <span class="icon-box size-11">
           <UIcon name="i-lucide-file-text" class="size-5 text-neutral-500" aria-hidden="true" />
         </span>

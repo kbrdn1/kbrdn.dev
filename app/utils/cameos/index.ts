@@ -4,6 +4,7 @@
 // UiPanel). What they paint with: ./art.
 import { bellCameo } from './bell'
 import { bookworm } from './bookworm'
+import { calendar } from './calendar'
 import { cameraCameo } from './camera'
 import { cap } from './cap'
 import { climb } from './climb'
@@ -16,6 +17,7 @@ import { merge } from './merge'
 import { octocat } from './octocat'
 import { pencilCameo } from './pencil'
 import { planeCameo } from './plane'
+import { printer } from './printer'
 import { rocketCameo } from './rocket'
 import { tools } from './tools'
 import { ufo } from './ufo'
@@ -40,6 +42,8 @@ export const CAMEOS = {
   megaphone: megaphoneCameo,
   merge,
   bell: bellCameo,
+  calendar,
+  printer,
 }
 
 export type CameoName = keyof typeof CAMEOS
