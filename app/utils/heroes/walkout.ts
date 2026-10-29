@@ -557,8 +557,7 @@ export function walkout(c: GitfutCard): Walkout {
       const y = Math.round(BOARD.y - 24 * (1 - pop(t, boardAt, 380)) - 30 * smooth(leave, 40, 330))
       // Two struts down to the facade, moving with it; the board, its frame, the rarity's lines,
       // the letters
-      for (const sx of [x + 7, x + w - 8])
-        art.rect(sx, y + h, 2, 26 - BOARD.y - h, p.steel[0])
+      for (const sx of [x + 7, x + w - 8]) art.rect(sx, y + h, 2, 26 - BOARD.y - h, p.steel[0])
       art.box(x, y, w, h, shades('#22222a', 0.3, 0.35))
       art.rect(x + 2, y + 2, w - 4, h - 4, '#14141a')
       const lines = linesOf(c.overall)
