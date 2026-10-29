@@ -257,6 +257,14 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ### Changed
 
+- **The Journey menu shows the page's banners**
+  ([#122](https://github.com/kbrdn1/kbrdn.dev/issues/122)). The notch's menu
+  for /parcours showed pictures picked before the banners existed; it now reads
+  them from the career data: the latest role's on Experience and as the menu's
+  picture, the latest study's on Education, in the colour mode and through IPX
+  at 480px like the blog's menu (6 to 11 KB each). No open source project has
+  a banner, so gwm's screenshot stays.
+
 - **Nuxt 4.6, nuxt-og-image 7 and @nuxt/fonts 1.2**
   ([#90](https://github.com/kbrdn1/kbrdn.dev/issues/90)). The three
   Dependabot updates (#67, #69 and the minor-and-patch group) only work
