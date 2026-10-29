@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
 import { useI18n } from '#imports'
+import type { GitfutWalkout } from '~~/shared/gitfut'
 
 const { t } = useI18n()
 
@@ -42,7 +44,60 @@ const mood = computed(() => ORDER[step.value])
 const reducedMotion = useReducedMotion()
 
 function nextMood() {
-  step.value = (step.value + 1) % ORDER.length
+  if (!walkout.value) step.value = (step.value + 1) % ORDER.length
+}
+
+// The easter egg: five quick clicks on the picture (each under TAP_GAP ms after the last), and
+// Kylian's gitfut card comes out like an FC 26 walkout (HomeWalkout), in the picture's box. Its
+// code and the card are fetched from the third quick click on, never before, so the fifth
+// rarely waits; if either fails, nothing happens. While it plays, the moods, the orbit and the
+// float hold still; `open` drops when it starts folding back.
+const TAPS = 5
+const TAP_GAP = 600
+let taps = 0
+let lastTap = 0
+let hatching = false
+let egg: Promise<[{ default: Component }, GitfutWalkout] | undefined> | undefined
+const walkout = shallowRef<{ is: Component; card: GitfutWalkout }>()
+const open = ref(false)
+
+// The card's picture decoded before it hatches: a broken one never reaches the walkout. A
+// failure is not kept, even from a burst that stopped short: the next one tries again
+const fetchEgg = () =>
+  Promise.all([
+    import('./Walkout.vue'),
+    $fetch('/api/gitfut').then(async (card) => {
+      const picture = new Image()
+      picture.src = card.image
+      await picture.decode()
+      return card
+    }),
+  ]).catch(() => {
+    egg = undefined
+    return undefined
+  })
+
+async function tap() {
+  if (walkout.value || hatching) return
+  const now = performance.now()
+  taps = now - lastTap < TAP_GAP ? taps + 1 : 1
+  lastTap = now
+  if (taps === 3) egg ??= fetchEgg()
+  if (taps < TAPS) return
+  taps = 0
+  hatching = true
+  const hatched = await (egg ??= fetchEgg())
+  hatching = false
+  if (!hatched) return
+  walkout.value = { is: markRaw(hatched[0].default), card: hatched[1] }
+  open.value = true
+}
+
+// Folded back: gone, and the mascot back even if `close` never came (an Escape before its
+// first frame)
+function folded() {
+  walkout.value = undefined
+  open.value = false
 }
 
 let interval: ReturnType<typeof setInterval> | undefined
@@ -130,13 +185,27 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Isolated: the orbit's far side goes behind the pictures, never behind the page -->
+    <!-- Isolated: the orbit's far side goes behind the pictures, never behind the page.
+         Decorative, unless the easter egg plays in it: its button and announcement are not.
+         Its float is paused inline: a utility would sit in @layer utilities and lose to the
+         unlayered .mascot-float (transitions.css). -->
     <div
-      class="mascot-float relative isolate mx-auto size-48 shrink-0 sm:size-56 md:mx-0"
-      aria-hidden="true"
+      class="mascot-float relative isolate mx-auto size-48 shrink-0 touch-manipulation sm:size-56 md:mx-0"
+      :style="walkout ? { animationPlayState: 'paused' } : undefined"
+      :aria-hidden="walkout ? undefined : 'true'"
+      data-walkout
       @mouseenter="nextMood"
+      @click="tap"
     >
-      <HomeOrbit />
+      <!-- Hidden, the orbit's observer sees it off screen and stops its clock -->
+      <Transition
+        enter-active-class="transition-opacity duration-300"
+        leave-active-class="transition-opacity duration-300"
+        enter-from-class="opacity-0"
+        leave-to-class="opacity-0"
+      >
+        <HomeOrbit v-show="!open" />
+      </Transition>
       <img
         v-for="(m, i) in MOODS"
         :key="m"
@@ -145,8 +214,15 @@ onUnmounted(() => {
         height="224"
         alt=""
         draggable="false"
-        class="absolute inset-0 size-full select-none object-contain transition-opacity duration-300"
-        :class="i === mood ? 'opacity-100' : 'opacity-0'"
+        class="absolute inset-0 size-full select-none object-contain transition-[opacity,scale] duration-300"
+        :class="[i === mood && !open ? 'opacity-100' : 'opacity-0', open && 'scale-75']"
+      />
+      <component
+        :is="walkout.is"
+        v-if="walkout"
+        :card="walkout.card"
+        @close="open = false"
+        @done="folded"
       />
     </div>
   </div>

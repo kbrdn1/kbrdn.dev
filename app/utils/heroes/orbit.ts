@@ -37,9 +37,10 @@ const BADGES: Badge[] = [
   { color: '#00add8', ink: '#ffffff', word: 'GO' },
 ]
 
-// A badge, 13 × 13: a rounded tile lit on its top left, its letters or its mark, outlined
+// A badge, 13 × 13: a rounded tile lit on its top left, its letters or its mark, outlined.
+// The hero's easter egg shows the card's language with them (walkout.ts), in this order.
 const badges = new Map<boolean, Raster[]>()
-function badgeArt(dark: boolean) {
+export function badgeArt(dark: boolean) {
   let cached = badges.get(dark)
   if (cached) return cached
   cached = BADGES.map((badge) => {

@@ -175,11 +175,14 @@ function onClick(event: MouseEvent) {
     lockTimer = setTimeout(() => sight.value && draw(SIGHT), 160)
   }
   // Not on controls, fields or code: there a triple click selects a line to copy, or is just
-  // fast clicking. The selection a triple click makes elsewhere is left as it is.
+  // fast clicking. Nor on the hero's picture, which counts its own clicks (its walkout). The
+  // selection a triple click makes elsewhere is left as it is.
   if (
     event.detail >= 3 &&
     event.detail % 3 === 0 &&
-    !(event.target as Element | null)?.closest(`${INTERACTIVE}, pre, code, [contenteditable]`)
+    !(event.target as Element | null)?.closest(
+      `${INTERACTIVE}, pre, code, [contenteditable], [data-walkout]`,
+    )
   ) {
     ichigo.value = { x: event.clientX, y: event.clientY, key: ++burstId }
     clearTimeout(ichigoTimer)

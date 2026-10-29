@@ -62,6 +62,15 @@ export default defineNuxtConfig({
     },
   },
 
+  // The hero's easter egg (HomeWalkout) is imported on its fifth click: no prefetch hint for its
+  // chunk and its styles, which every visit to the home would download for an egg few hatch
+  hooks: {
+    'build:manifest': (manifest) => {
+      for (const [key, chunk] of Object.entries(manifest))
+        if (key.includes('Walkout')) chunk.prefetch = false
+    },
+  },
+
   // The old address of /parcours (and /en/journey), for the links and the indexes out there
   routeRules: {
     '/experience': { redirect: { to: '/parcours', statusCode: 301 } },
