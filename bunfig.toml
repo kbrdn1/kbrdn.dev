@@ -1,0 +1,13 @@
+# bun fmt (Bun ≥ 1.4.4). Exceptions et raisons : CLAUDE.md, « Lint & format configuration ».
+# sortTailwindcss reste désactivé : il saute tous les fichiers d'un projet @nuxt/ui (oven-sh/bun#47229).
+[fmt]
+# Sortie d'oxfmt, pas de Prettier (le défaut sans oxfmt installé) : Prettier coupe autrement les unions de types
+flavor = "oxfmt"
+printWidth = 100
+singleQuote = true
+semi = false
+ignorePatterns = ["**/*.md", "**/*.mdx", "app/components/OgImage/**"]
+
+[[fmt.overrides]]
+files = ["**/*.css"]
+options = { singleQuote = false }

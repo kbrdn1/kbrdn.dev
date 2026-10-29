@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) >= 1.0
+- [Bun](https://bun.sh) >= 1.4.4 (`bun fmt`), or `nix develop`
 - [Git](https://git-scm.com)
 - A code editor (VS Code recommended)
 
@@ -44,7 +44,7 @@ Open [http://localhost:3000](http://localhost:3000)
 | `make lint` | Run oxlint |
 | `make typecheck` | Run TypeScript check |
 | `make clean` | Clean build artifacts |
-| `make fmt` | Format code with oxfmt |
+| `make fmt` | Format code with `bun fmt` |
 
 ## Development Workflow
 

@@ -156,8 +156,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # Les tags de registre restent mutables : republier `:v1.1.0` écraserait
-      # l'artefact d'origine. Et il ne serait pas identique : `oven/bun:1-alpine`
-      # bouge, `bun install` n'est pas figé, donc le rollback vers une version
+      # l'artefact d'origine. Et il ne serait pas identique : le tag de l'image de
+      # base reste mutable, `bun install` n'est pas figé, donc le rollback vers une version
       # ne ramènerait plus ce qui a été publié. C'est précisément la propriété
       # sur laquelle repose `--image ...:vX.Y.Z`, d'où ce garde-fou.
       - name: Image already published?

@@ -422,6 +422,14 @@ migrates `[Unreleased]` into that file and empties this one, see
   shows its new hero at its resting frame. The header's window icons and the
   footer's toolbar icons give way to the page's address (top right) and the
   site's K with its two languages, the page's one lit (bottom left).
+- **Formatting moves to `bun fmt`, Bun pinned to 1.4.4**
+  ([#119](https://github.com/kbrdn1/kbrdn.dev/issues/119)). Bun's built-in
+  formatter replaces oxfmt, configured in `bunfig.toml` to print exactly what
+  oxfmt printed: no file is reformatted, and the same exceptions hold
+  (Markdown, MDX and the satori OG components untouched, CSS in double
+  quotes). Linting stays on oxlint: Bun has no linter. CI, the Docker image and
+  the Nix dev shell all run Bun 1.4.4, the first release with `bun fmt`;
+  `flake.lock` is now committed.
 
 ### Fixed
 
