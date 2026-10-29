@@ -206,6 +206,44 @@ migrates `[Unreleased]` into that file and empties this one, see
   and images are not read. Starting a reading stops the music and the other
   way round; leaving the article stops it.
 
+- **Pixel scenes in every section**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). Now and then (a
+  first one 5 to 11 s after a page shows, then one every 18 to 38 s, one at a
+  time on the whole site), a small pixel scene grows out of a section block by
+  block like Ichigo, plays and folds back: a camera beside the About figures, a
+  pencil beside the post titles, gears beside the tools, a rocket in the
+  projects' footer, the Octocat beside the contribution graph, a crab climbing
+  steps, a mortarboard beside the degrees, a saucer in Explore's header, a sheet
+  folding into a paper plane by the contact form's button, a letter beside the
+  address, an hourglass, a flip calendar on the timeline, a printer on the CV, a
+  git merge on Open source, a bell on the activity feed, a cannon shooting an
+  invader in the apps, and on the blog a bookworm, a coffee and a megaphone. In
+  a card a scene takes the widest stretch that no text, picture or control
+  crosses, and does not play where there is none. Canvas only while one plays,
+  never under `prefers-reduced-motion`.
+- **Redrawn page heroes**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). The pixel scenes of
+  /parcours (a living metro map of the career), /apps (gwm's TUI on a retro
+  screen), /activity (an invader filling a contribution graph), /blog (a writing
+  nook, a cat asleep on the books) and /contact (a bird posting a letter at a
+  front door) are redrawn at the sections' scenes' level: shaded, outlined,
+  looping seamlessly, painted only while on screen, a resting frame under
+  reduced motion.
+- **The stack orbits the mascot**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). On the home page,
+  badges of the stack (TypeScript, Rust, Vue, Laravel, Nuxt, Go) orbit the
+  mascot like a tilted ring, behind it on the far side and in front of it on the
+  near one.
+- **A glow along the column's borders**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). From 1280 px wide, a
+  light now and then runs up or down one of the borders that frame the 80rem
+  column.
+- **Languages on the Pro cards**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). The client projects
+  show the share of each language like the pinned repositories (measured on the
+  private repositories), their frameworks, and a swatch in the framework's
+  colour.
+
 ### Changed
 
 - **Nuxt 4.6, nuxt-og-image 7 and @nuxt/fonts 1.2**
@@ -353,6 +391,12 @@ migrates `[Unreleased]` into that file and empties this one, see
   ([#86](https://github.com/kbrdn1/kbrdn.dev/issues/86)). The disabled "Book a
   call" gives way to "Get in touch", a link to `/contact`.
 
+- **OG images draw the redrawn heroes**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). A page with a scene
+  shows its new hero at its resting frame. The header's window icons and the
+  footer's toolbar icons give way to the page's address (top right) and the
+  site's K with its two languages, the page's one lit (bottom left).
+
 ### Fixed
 
 - **OG images render the same on every machine**
@@ -393,6 +437,11 @@ migrates `[Unreleased]` into that file and empties this one, see
   the panels' blur off until they ended; and an unlayered global colour
   transition overrode every transition of the components, so the strip's ink
   jumped and focus rings snapped.
+
+- **The kbrdn.dev card shows the site's logo**
+  ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). It came from the
+  default branch's favicon, still the old logo and coloured by the system's
+  theme rather than the site's.
 
 ## Past releases
 
