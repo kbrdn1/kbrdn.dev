@@ -458,6 +458,14 @@ migrates `[Unreleased]` into that file and empties this one, see
   default branch's favicon, still the old logo and coloured by the system's
   theme rather than the site's.
 
+- **Article pictures arrive as committed**
+  ([#116](https://github.com/kbrdn1/kbrdn.dev/issues/116)). They went through
+  the image server, which re-encoded them on every request with no resize, no
+  format change and no cache: the gwm demo GIF took 16 s to reach preprod, 1.49
+  MB for 884 KB committed, and answered 500 in production; PNGs came out 76 to
+  84% heavier. They are now plain static files: the gwm article's pictures
+  weigh 1.9 MB instead of 3.3 MB.
+
 ## Past releases
 
 - [1.1.0](changelogs/1.1.0.md) · 2026-10-16
