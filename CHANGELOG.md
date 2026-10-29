@@ -191,6 +191,20 @@ migrates `[Unreleased]` into that file and empties this one, see
   by letter: the hero's rotating title, the mobile table of contents' section.
   The server renders the final value; copied text and screen readers get the
   plain value.
+- **Listen to an article**
+  ([#104](https://github.com/kbrdn1/kbrdn.dev/issues/104)). The table of
+  contents reads the article aloud, sidebar and mobile bar alike: a play button
+  at its head, then, once started, the music player's tick bar that seeks by
+  sentence, in place of the scroll progress. Its steps are the sections: the
+  one being read shows the music player's equalizer, and clicking a step while
+  listening reads from there. Hovering a section heading shows a button that
+  reads from it too (always shown on touch screens). It runs on the browser's
+  own speech synthesis (the Web Speech API, what TTSReader uses): free, no key,
+  no server. The voice is the cleanest the browser has in the article's
+  language (Edge's neural voices, then Chrome's Google voices, then downloaded
+  system voices), so its quality depends on the browser. Code blocks, tables
+  and images are not read. Starting a reading stops the music and the other
+  way round; leaving the article stops it.
 
 ### Changed
 

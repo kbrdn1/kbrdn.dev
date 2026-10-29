@@ -91,6 +91,18 @@ function onCanPlay() {
   }
 }
 
+// One voice at a time: the music says it plays (the audio's play event), and stops when the
+// article reader starts, including the next track still loading after one ended (onCanPlay
+// would start it)
+const nowPlaying = usePlaying()
+watch(nowPlaying, (value) => {
+  if (value !== 'speech') return
+  shouldAutoPlay.value = false
+  if (!isPlaying.value) return
+  audio.value?.pause()
+  isPlaying.value = false
+})
+
 // Auto-rotate every 45s when not playing, and not while motion is reduced or paused
 let rotateInterval: ReturnType<typeof setInterval> | undefined
 const reducedMotion = useReducedMotion()
@@ -484,6 +496,7 @@ function formatTime(seconds: number): string {
         @ended="onAudioEnded"
         @loadedmetadata="onTimeUpdate"
         @canplay="onCanPlay"
+        @play="nowPlaying = 'music'"
       />
     </div>
   </div>

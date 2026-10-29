@@ -75,6 +75,11 @@ async function copyLink() {
 
 // The language the article is written in: the other one's when it isn't translated yet
 const postLang = computed(() => (post.value?.id.startsWith('blog_fr') ? 'fr' : 'en'))
+// Reads it aloud, from the table of contents (and from each heading)
+const reader = useArticleReader(
+  () => post.value?.title ?? '',
+  () => postLang.value,
+)
 const siteUrl = useSiteUrl()
 const localePath = useLocalePath()
 const person = usePersonRef()
@@ -202,6 +207,8 @@ const activeHeadingText = computed(() => {
 })
 
 function scrollToHeading(id: string) {
+  // While reading, a step of the table of contents reads from it too
+  if (reader.playing.value) reader.playFrom(id)
   const el = document.getElementById(id)
   if (el) {
     // Under the floating navbar and its notch (they end at 90px), like the router's anchors
@@ -232,6 +239,7 @@ function scrollToHeading(id: string) {
             <div class="prose-blog" :lang="postLang">
               <ContentRenderer :value="post" />
             </div>
+            <BlogReaderHeadings :reader="reader" />
           </div>
 
           <!-- TOC sidebar + promo card -->
@@ -241,6 +249,7 @@ function scrollToHeading(id: string) {
                 :items="tocItems"
                 :active-heading="activeHeading"
                 :progress="readProgress"
+                :reader="reader"
                 @scroll-to="scrollToHeading"
               />
               <BlogSidebarCard
@@ -302,6 +311,7 @@ function scrollToHeading(id: string) {
       :active-heading="activeHeading"
       :active-heading-text="activeHeadingText"
       :progress="readProgress"
+      :reader="reader"
       @scroll-to="scrollToHeading"
     />
   </div>

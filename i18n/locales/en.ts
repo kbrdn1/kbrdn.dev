@@ -146,6 +146,17 @@ export default {
     tracklist: 'Tracklist',
   },
 
+  // Article reader (speech synthesis)
+  listen: {
+    listen: 'Listen to the article',
+    from: 'Listen from here',
+    pause: 'Pause',
+    // Not the table of contents' "reading progress", which follows the scroll
+    progress: 'Listening progress',
+    sentenceOf: 'Sentence {n} of {total}',
+    voice: 'Voice: {name}',
+  },
+
   // Bio Section
   bio: {
     title: 'About',

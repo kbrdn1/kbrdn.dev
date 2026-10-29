@@ -146,6 +146,17 @@ export default {
     tracklist: 'Liste des pistes',
   },
 
+  // Article reader (speech synthesis)
+  listen: {
+    listen: "Écouter l'article",
+    from: "Écouter à partir d'ici",
+    pause: 'Mettre en pause',
+    // Not the table of contents' "reading progress", which follows the scroll
+    progress: "Progression de l'écoute",
+    sentenceOf: 'Phrase {n} sur {total}',
+    voice: 'Voix : {name}',
+  },
+
   // Bio Section
   bio: {
     title: 'À propos',
