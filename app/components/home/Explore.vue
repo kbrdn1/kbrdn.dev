@@ -94,7 +94,7 @@ const reducedMotion = useReducedMotion()
     @focusin="paused = true"
     @focusout="paused = false"
   >
-    <UiPanel :title="t('explore.title')">
+    <UiPanel :title="t('explore.title')" cameo="ufo">
       <template #actions>
         <button
           type="button"

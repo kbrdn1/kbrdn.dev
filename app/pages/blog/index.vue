@@ -178,7 +178,9 @@ usePageSchema(
         <p class="mt-6 max-w-2xl text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
           {{ t('blog.description') }}
         </p>
-        <div class="mt-6 flex flex-wrap items-center gap-3">
+        <!-- A bookworm, beside the count -->
+        <div class="relative mt-6 flex flex-wrap items-center gap-3">
+          <UiCameo name="bookworm" place="area" />
           <span class="eyebrow" role="status">{{ postCount }}</span>
           <a
             href="https://github.com/sponsors/kbrdn1"

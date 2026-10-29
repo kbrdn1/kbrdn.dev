@@ -12,7 +12,13 @@ import { useI18n } from '#imports'
 export function useSiteOgImage(component: 'Default' | 'Blog', props: Record<string, unknown>) {
   if (!import.meta.server) return
   const { t, locale } = useI18n()
-  const options = { cacheKey: `${locale.value}:${useRoute().path}` }
+  const path = useRoute().path
+  const options = { cacheKey: `${locale.value}:${path}` }
+  // Where the link leads, and in which language: the card's header and footer say both
+  const where = {
+    address: `kbrdn.dev${path === '/' ? '' : path.replace(/\/$/, '')}`,
+    lang: locale.value,
+  }
   if (component === 'Blog') {
     defineOgImage(
       'Blog',
@@ -25,6 +31,7 @@ export function useSiteOgImage(component: 'Default' | 'Blog', props: Record<stri
           tags: t('og.tags'),
           author: t('og.author'),
         },
+        ...where,
         ...props,
       },
       options,
@@ -44,6 +51,7 @@ export function useSiteOgImage(component: 'Default' | 'Blog', props: Record<stri
           site: t('og.site'),
           github: t('og.github'),
         },
+        ...where,
         ...props,
       },
       options,

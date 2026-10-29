@@ -1,7 +1,9 @@
 <script setup lang="ts">
-// A page's hero scene (utils/pixelScenes), drawn in the theme's palette on no background: what
-// never moves once, then what each tick draws. It plays only while on screen, and holds its
-// frame while reduced motion is on, even if it is turned on later. Decorative.
+// A page's hero scene. Those redrawn at the cameos' level (utils/heroes) play on a canvas
+// (UiHeroCanvas); the others as they were (utils/pixelScenes, which the OG images draw too), in
+// the theme's palette on no background: what never moves once, then what each tick draws. It
+// plays only while on screen, and holds its frame while reduced motion is on, even if it is
+// turned on later. Decorative.
 import {
   PIXEL_SCENES,
   SCENE_FILL,
@@ -10,8 +12,10 @@ import {
   SCENE_W,
   type PixelSceneName,
 } from '~/utils/pixelScenes'
+import { HEROES } from '~/utils/heroes'
 
 const props = defineProps<{ scene: PixelSceneName }>()
+const hero = computed(() => HEROES[props.scene])
 const scene = computed(() => PIXEL_SCENES[props.scene])
 
 const tick = ref(0)
@@ -38,7 +42,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <UiHeroCanvas v-if="hero" :hero="hero" />
   <svg
+    v-else
     ref="el"
     :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`"
     shape-rendering="crispEdges"

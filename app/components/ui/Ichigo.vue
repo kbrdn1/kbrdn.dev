@@ -49,11 +49,6 @@ const CALL = '月牙天衝'
 
 const canvas = ref<HTMLCanvasElement>()
 
-// A stable pseudo-random number per block, so the spawn's raggedness does not flicker
-const noise = (x: number, y: number) => {
-  const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453
-  return n - Math.floor(n)
-}
 const clamp = (p: number) => Math.min(1, Math.max(0, p))
 
 let raf = 0
@@ -95,25 +90,20 @@ onMounted(async () => {
   const reach = (dir > 0 ? innerWidth - X : X) + 80
 
   // A frame, around the feet, mirrored when he faces left. While it grows or folds, block by
-  // block from the tip outwards: `level` is how far the growth has gone (0 to 1.3).
+  // block from the tip outwards: `level` is how far the growth has gone (0 to GROWN).
   const drawFrame = (id: number, level: number) => {
     const [fx, fy, fw, fh, ax, ay] = atlas.frames[id]!
     ctx.setTransform(dpr * scale * dir, 0, 0, dpr * scale, X * dpr, Y * dpr)
-    if (level >= 1.3) {
-      ctx.drawImage(image, fx, fy, fw, fh, -ax, -ay, fw, fh)
-      return
-    }
-    for (let by = 0; by < fh; by += BLOCK) {
-      for (let bx = 0; bx < fw; bx += BLOCK) {
-        const order =
-          Math.hypot(bx + BLOCK / 2 - ax, by + BLOCK / 2 - ay + BELOW / scale) / 40 +
-          noise(bx, by) * 0.3
-        if (order >= level) continue
-        const w = Math.min(BLOCK, fw - bx)
-        const h = Math.min(BLOCK, fh - by)
-        ctx.drawImage(image, fx + bx, fy + by, w, h, bx - ax, by - ay, w, h)
-      }
-    }
+    drawGrowing(
+      ctx,
+      image,
+      [fx, fy, fw, fh],
+      [-ax, -ay],
+      [ax, ay - BELOW / scale],
+      level,
+      BLOCK,
+      40,
+    )
   }
 
   // The crescent, convex ahead: inside a disc, outside the same disc pushed back; a rim, a
@@ -177,7 +167,7 @@ onMounted(async () => {
 
     if (t < length) {
       const id = move.frames[Math.min(move.frames.length - 1, Math.floor(t / FRAME_MS))]!
-      drawFrame(id, Math.min(t / SPAWN_MS, (length - t) / FOLD_MS) * 1.3)
+      drawFrame(id, Math.min(t / SPAWN_MS, (length - t) / FOLD_MS) * GROWN)
     }
     const flying = t >= release && (t - release) * WAVE_SPEED < reach
     if (flying) drawWave(t - release)

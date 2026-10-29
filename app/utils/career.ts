@@ -89,6 +89,12 @@ export interface Project {
   startDate: string
   endDate: string | null
   technologies: string[]
+  /** Its frameworks, on the home's card */
+  stack: string[]
+  /** Share of the code by language, the six largest, as on GitHub's own bar: the repositories
+   * are private, measured on their clones' default branch on 2026-10-28 (bytes per language,
+   * vendored, generated and docs left out, like linguist), GitHub's colours */
+  languages: Language[]
   highlightsCount: number
   /** Public site, when the product has one */
   site?: string
@@ -100,6 +106,19 @@ export interface Project {
   logo?: string
   /** The clients' sites */
   clients?: Site[]
+}
+
+/** A framework's swatch on the home's cards, in its brand's colour; any other takes the colour
+ * of the project's main language */
+export const FRAMEWORK_COLORS: Record<string, string> = {
+  Laravel: '#FF2D20',
+  Vue: '#41B883',
+}
+
+export interface Language {
+  name: string
+  color: string | null
+  percentage: number
 }
 
 // Most recent first, like the strip
@@ -121,6 +140,15 @@ export const PROJECTS: Project[] = [
       'Redis',
       'Docker Swarm',
       'GitHub Actions',
+    ],
+    stack: ['Laravel 13'],
+    languages: [
+      { name: 'PHP', color: '#4F5D95', percentage: 40.3 },
+      { name: 'Blade', color: '#f7523f', percentage: 26.9 },
+      { name: 'Vue', color: '#41b883', percentage: 18.2 },
+      { name: 'JavaScript', color: '#f1e05a', percentage: 5.7 },
+      { name: 'SCSS', color: '#c6538c', percentage: 3.6 },
+      { name: 'CSS', color: '#663399', percentage: 2.5 },
     ],
     highlightsCount: 4,
     image: '/images/projects/jewely-ecommerce.webp',
@@ -149,6 +177,15 @@ export const PROJECTS: Project[] = [
       'Go',
       'AWS',
     ],
+    stack: ['Laravel 13', 'Nuxt 4'],
+    languages: [
+      { name: 'PHP', color: '#4F5D95', percentage: 62.3 },
+      { name: 'Vue', color: '#41b883', percentage: 15.2 },
+      { name: 'TypeScript', color: '#3178c6', percentage: 9.3 },
+      { name: 'Go', color: '#00ADD8', percentage: 6.6 },
+      { name: 'Shell', color: '#89e051', percentage: 3.1 },
+      { name: 'HTML', color: '#e34c26', percentage: 2.7 },
+    ],
     highlightsCount: 4,
     site: 'https://www.fichespedagogiques.com',
     article: '/blogs/fiches-pedagogiques',
@@ -173,6 +210,14 @@ export const PROJECTS: Project[] = [
       'WooCommerce',
       'Bun',
     ],
+    stack: ['Vue 3'],
+    languages: [
+      { name: 'TypeScript', color: '#3178c6', percentage: 74.1 },
+      { name: 'Vue', color: '#41b883', percentage: 22.9 },
+      { name: 'Shell', color: '#89e051', percentage: 2.6 },
+      { name: 'PHP', color: '#4F5D95', percentage: 0.2 },
+      { name: 'HTML', color: '#e34c26', percentage: 0.1 },
+    ],
     highlightsCount: 3,
     image: '/images/projects/jewely-configurator.webp',
     logo: '/images/logos/jewely-configurator.png',
@@ -191,9 +236,18 @@ export const PROJECTS: Project[] = [
       'Doctrine',
       'MySQL',
       'Stripe',
-      'React',
+      'React 16',
       'TypeScript',
       'Heroku',
+    ],
+    stack: ['Symfony 5.4', 'React 16'],
+    languages: [
+      { name: 'TypeScript', color: '#3178c6', percentage: 53.6 },
+      { name: 'PHP', color: '#4F5D95', percentage: 37.7 },
+      { name: 'Twig', color: '#c1d026', percentage: 7.6 },
+      { name: 'JavaScript', color: '#f1e05a', percentage: 0.5 },
+      { name: 'Go', color: '#00ADD8', percentage: 0.4 },
+      { name: 'Makefile', color: '#427819', percentage: 0.1 },
     ],
     highlightsCount: 4,
     site: 'https://www.assmat-facile.fr',
@@ -207,7 +261,16 @@ export const PROJECTS: Project[] = [
     name: 'Jewely ERP',
     startDate: '2023-10',
     endDate: '2024-01',
-    technologies: ['Laravel', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
+    technologies: ['Laravel 13', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
+    stack: ['Laravel 13'],
+    languages: [
+      { name: 'PHP', color: '#4F5D95', percentage: 59.7 },
+      { name: 'Vue', color: '#41b883', percentage: 24.6 },
+      { name: 'TypeScript', color: '#3178c6', percentage: 7.0 },
+      { name: 'Blade', color: '#f7523f', percentage: 3.3 },
+      { name: 'JavaScript', color: '#f1e05a', percentage: 2.6 },
+      { name: 'Shell', color: '#89e051', percentage: 1.7 },
+    ],
     highlightsCount: 3,
     image: '/images/projects/jewely-erp.webp',
     logo: '/images/logos/jewely.jpeg',

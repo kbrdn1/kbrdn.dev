@@ -199,9 +199,11 @@ const TAG: Record<string, string> = {
 
     <!-- Right now: what is being learnt, read, and what is welcome -->
     <UiPanel :title="t('activityPage.now.title')">
+      <!-- The hourglass, in the room the three columns leave at their foot -->
       <div
-        class="panel-card grid gap-6 p-5 sm:p-6 md:grid-cols-3 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
+        class="panel-card relative grid gap-6 p-5 sm:p-6 md:grid-cols-3 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
       >
+        <UiCameo name="hourglass" place="area" />
         <div class="md:pr-6">
           <p class="eyebrow">{{ t('activityPage.now.learning') }}</p>
           <ul class="mt-3 flex flex-wrap gap-1.5">
@@ -272,6 +274,8 @@ const TAG: Record<string, string> = {
             / {{ t('activityPage.feedCount', { count: items.length }) }}
           </span>
           <UiSkeleton v-else-if="status === 'pending' || status === 'idle'" class="h-3 w-20" />
+          <!-- A bell rings the news now and then in the header's room -->
+          <UiCameo name="bell" />
         </div>
 
         <div class="panel-card p-2 sm:p-3">

@@ -6,6 +6,7 @@
 // figures on the home, the stack elsewhere), a footer (icons, the address in mono, a button).
 // Satori: every style on one line (its gradient parser fails on split values), every box
 // with several children a flex box.
+import { HEROES } from '~/utils/heroes'
 import {
   PIXEL_SCENES,
   SCENE_H,
@@ -27,6 +28,9 @@ const props = withDefaults(defineProps<{
   figures?: { label: string, value: number | string }[]
   stack?: string[]
   avatar?: string
+  /** The page's address, and its language (useSiteOgImage) */
+  address?: string
+  lang?: string
   /** The page's pixel scene (utils/pixelScenes) in place of the portrait */
   scene?: PixelSceneName
 }>(), {
@@ -41,20 +45,39 @@ const props = withDefaults(defineProps<{
   figures: () => [],
   stack: () => ['TypeScript', 'Vue', 'Nuxt', 'Laravel', 'AWS', 'Rust'],
   avatar: '/images/og/avatar.png',
+  address: 'kbrdn.dev',
+  lang: 'fr',
   scene: undefined,
 })
 
-// The scene at its best moment, in the dark theme's colours (no CSS in satori)
-const sceneCells = computed(() => {
-  if (!props.scene) return []
+// The scene at its best moment, in the dark theme's colours (no CSS in satori): the page's
+// hero (utils/heroes) at its resting frame, each row's runs of a colour as one rect; else the
+// flat scene it replaced
+const sceneBox = computed(() => {
+  if (!props.scene) return undefined
   // An unknown name (the OG URL is open to anyone) draws the portrait instead; own keys
   // only, or `constructor` and the like pass for a scene
-  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return []
+  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return undefined
+  const hero = HEROES[props.scene]
+  if (hero) {
+    const art = hero.still(true).copy().over(hero.paint(hero.rest, true))
+    const cells: { x: number, y: number, w: number, h: number, fill: string, opacity: number }[] = []
+    for (let y = 0; y < art.h; y++)
+      for (let x = 0; x < art.w;) {
+        const fill = art.cells[y * art.w + x]
+        let w = 1
+        while (x + w < art.w && art.cells[y * art.w + x + w] === fill) w++
+        if (fill) cells.push({ x, y, w, h: 1, fill, opacity: 1 })
+        x += w
+      }
+    return { w: art.w, h: art.h, cells }
+  }
   const scene = PIXEL_SCENES[props.scene]
-  return [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
+  const cells = [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
     const color = sceneColor(cell.c)
     return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
   })
+  return { w: SCENE_W, h: SCENE_H, cells }
 })
 
 const handle = computed(() => props.handle.replace(/^@/, ''))
@@ -77,11 +100,12 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
     <!-- The panel, centred: its height follows its content -->
     <div class="absolute flex items-center justify-center" style="top: 0; left: 0; width: 1200px; height: 630px;">
       <div class="flex flex-col" style="box-sizing: border-box; width: 900px; padding: 0 6px 6px; background: #141417; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; box-shadow: 0 30px 60px -30px rgba(0,0,0,0.85);">
-        <!-- Header: the handle, the window's icons -->
+        <!-- Header: the handle, the page's address -->
         <div class="flex items-center justify-between" style="box-sizing: border-box; height: 52px; padding: 0 12px 0 16px;">
           <span style="font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: #ececf0;">@{{ handle }}</span>
-          <div class="flex" style="gap: 16px;">
-            <svg v-for="name in ['expand', 'close'] as const" :key="name" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
+          <div class="flex items-center" style="gap: 8px; font-family: 'Monaspace Krypton', monospace; font-size: 13px; color: #9a9aa3;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.link" />
+            {{ address }}
           </div>
         </div>
 
@@ -107,9 +131,9 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 
           <!-- The drawn portrait, or the page's scene, and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div v-if="sceneCells.length" class="flex items-center justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
-              <svg width="208" height="156" :viewBox="`0 0 ${SCENE_W} ${SCENE_H}`" shape-rendering="crispEdges">
-                <rect v-for="(cell, i) in sceneCells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
+            <div v-if="sceneBox?.cells.length" class="flex items-center justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <svg width="208" height="156" :viewBox="`0 0 ${sceneBox.w} ${sceneBox.h}`" shape-rendering="crispEdges">
+                <rect v-for="(cell, i) in sceneBox.cells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
               </svg>
             </div>
             <div v-else class="flex items-end justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
@@ -149,12 +173,14 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
           </template>
         </div>
 
-        <!-- Footer: icons, the address, a button -->
+        <!-- Footer: the site's K and its languages, the page's one lit; GitHub, a button -->
         <div class="flex items-center justify-between" style="box-sizing: border-box; height: 52px; padding: 0 4px 0 16px;">
-          <div class="flex items-center" style="gap: 16px;">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS.more" />
+          <div class="flex items-center" style="gap: 14px;">
+            <svg width="18" height="18" viewBox="0 0 96 96"><path d="M62.83 1.17A4 4 0 0 1 65.66 0L86.34 0A4 4 0 0 1 89.17 6.83L6.83 89.17A4 4 0 0 1 0 86.34L0 65.66A4 4 0 0 1 1.17 62.83Z" fill="#ececf0" /><path d="M0 9.66A4 4 0 0 1 6.83 6.83L21.17 21.17A4 4 0 0 1 21.17 26.83L6.83 41.17A4 4 0 0 1 0 38.34Z" fill="#d4825d" /><path d="M53.17 58.83A4 4 0 0 1 58.83 58.83L89.17 89.17A4 4 0 0 1 86.34 96L65.66 96A4 4 0 0 1 62.83 94.83L42.83 74.83A4 4 0 0 1 42.83 69.17Z" fill="#d4825d" /></svg>
             <span style="width: 1px; height: 20px; background: #303036;" />
-            <svg v-for="name in ['sparkles', 'terminal'] as const" :key="name" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a9aa3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" v-html="OG_ICONS[name]" />
+            <div class="flex items-center" style="gap: 6px;">
+              <span v-for="code in ['fr', 'en']" :key="code" :style="`box-sizing: border-box; display: flex; align-items: center; height: 24px; padding: 0 8px; font-family: 'Monaspace Krypton', monospace; font-size: 12px; letter-spacing: 0.08em; border-radius: 999px; ${code === lang ? 'color: #ececf0; border: 1px solid rgba(255,255,255,0.22);' : 'color: #55555c; border: 1px solid transparent;'}`">{{ code.toUpperCase() }}</span>
+            </div>
           </div>
           <div class="flex items-center" style="gap: 16px;">
             <span style="font-family: 'Monaspace Krypton', monospace; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: #9a9aa3;">github.com/{{ handle }}</span>

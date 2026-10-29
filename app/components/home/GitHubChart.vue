@@ -253,10 +253,12 @@ function switchTab(step: 1 | -1) {
     <!-- The one panel all three tabs drive -->
     <div
       id="github-panel"
-      class="panel-card space-y-6 p-5 sm:p-6"
+      class="panel-card relative space-y-6 p-5 sm:p-6"
       role="tabpanel"
       :aria-labelledby="`github-tab-${activeTab}`"
     >
+      <!-- The Octocat commits beside the graph -->
+      <UiCameo name="octocat" place="area" />
       <!-- Loading skeleton, shaped like the default "recent" view. Also shown while idle: the
          data is fetched client-side, so the server renders this state. -->
       <template v-if="status === 'pending' || status === 'idle'">
@@ -378,8 +380,8 @@ function switchTab(step: 1 | -1) {
                     </span>
                   </div>
 
-                  <!-- Grid -->
-                  <div class="flex gap-[3px]">
+                  <!-- Grid: drawn without text, a cameo keeps off it (UiCameo) -->
+                  <div class="flex gap-[3px]" data-cameo-solid>
                     <div
                       v-for="(week, weekIndex) in calendar.weeks"
                       :key="weekIndex"
@@ -431,7 +433,7 @@ function switchTab(step: 1 | -1) {
               </div>
 
               <!-- Month grid -->
-              <div class="flex gap-[3px] flex-wrap">
+              <div class="flex gap-[3px] flex-wrap" data-cameo-solid>
                 <div
                   v-for="day in month.days"
                   :key="day.date"

@@ -7,8 +7,17 @@ let count = 0
 // A rounded panel holding .panel-card surfaces, after disarto's widgets: a header (title,
 // a grey subtitle, actions on the right), the cards, then an optional footer (mono meta on
 // the left, buttons on the right). Below the fold, it comes in as it is scrolled to, swung
-// in slightly from one side, the next panel from the other.
-defineProps<{ title?: string; subtitle?: string }>()
+// in slightly from one side, the next panel from the other. A `cameo` plays now and then in
+// the free room of the header, or of the footer (`cameo-at`), UiCameo.
+import type { CameoName } from '~/utils/cameos'
+
+defineProps<{
+  title?: string
+  subtitle?: string
+  cameo?: CameoName
+  /** The header (by default) or the footer */
+  cameoAt?: 'header' | 'footer'
+}>()
 
 const root = ref<HTMLElement>()
 const hidden = useReveal(root)
@@ -25,6 +34,7 @@ const side = count++ % 2 ? 'right' : 'left'
         <UiScrambleText :text="title" />
         <span v-if="subtitle" class="ml-1.5 text-(--label)">{{ subtitle }}</span>
       </h2>
+      <UiCameo v-if="cameo && cameoAt !== 'footer' && title" :name="cameo" />
       <div v-if="$slots.actions" class="flex items-center gap-1.5">
         <slot name="actions" />
       </div>
@@ -37,6 +47,7 @@ const side = count++ % 2 ? 'right' : 'left'
       <p class="eyebrow">
         <slot name="meta" />
       </p>
+      <UiCameo v-if="cameo && cameoAt === 'footer'" :name="cameo" place="footer" />
       <div class="flex flex-wrap items-center gap-2">
         <slot name="footer" />
       </div>
