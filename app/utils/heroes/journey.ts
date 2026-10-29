@@ -218,15 +218,6 @@ const BODY = { light: shades('#dfe3e8', 0.22, 0.6), dark: shades('#b4bcc6', 0.3,
 const ink = (dark: boolean, on: boolean) =>
   dark ? (on ? '#e2e2e2' : '#666666') : on ? '#2e2e2e' : '#a8a39c'
 
-// A year in the three by five font, which has no 6: that one drawn here
-const SIX = ['###', '#..', '###', '#.#', '###']
-function year(art: Raster, word: string, x: number, y: number, color: Rgb) {
-  ;[...word].forEach((ch, n) => {
-    if (ch === '6') art.sprite(SIX, x + n * 4, y, { '#': color })
-    else text(art, ch, x + n * 4, y, color)
-  })
-}
-
 // A compass rose in the empty corner: four points, each lit on its top left half, north in red
 function compass(art: Raster, x: number, y: number) {
   const steel = shades('#d6d1ca', 0.32, 0.5)
@@ -269,7 +260,7 @@ function still(dark: boolean) {
   compass(stops, 95, 83)
   stops.outline(outlineOf(dark))
   art.over(stops)
-  for (const stop of STOPS) year(art, stop.year, stop.label[0], stop.label[1], ink(dark, false))
+  for (const stop of STOPS) text(art, stop.year, stop.label[0], stop.label[1], ink(dark, false))
   return art
 }
 
@@ -428,7 +419,7 @@ function paint(t: number, dark: boolean) {
   // Each stop's ring of light as it lights up, its year in full ink while lit
   STOPS.forEach((stop, i) => pulse(art, stop.p, tl - LIT[i]!, dark))
   STOPS.forEach((stop, i) => {
-    if (lit(i, tl) > 0.5) year(art, stop.year, stop.label[0], stop.label[1], ink(dark, true))
+    if (lit(i, tl) > 0.5) text(art, stop.year, stop.label[0], stop.label[1], ink(dark, true))
   })
 
   // The terminus: two fireworks go up from it into the empty sky, sparkles round it
