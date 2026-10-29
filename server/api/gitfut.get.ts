@@ -17,15 +17,18 @@ import { toGitfutCard, type GitfutWalkout } from '~~/shared/gitfut'
 const GITFUT = 'https://gitfut.com'
 const HEIGHT = 320
 
+// gitfut is slow when cold: up to 4 s for the card, 8 s for its picture even from Vercel's
+// cache (measured 2026-10-29); the server reads it once at start (plugins/gitfut.ts), so no
+// visitor waits on that
 const bytes = (path: string) =>
-  $fetch<ArrayBuffer>(`${GITFUT}${path}`, { responseType: 'arrayBuffer', timeout: 10000 }).then(
+  $fetch<ArrayBuffer>(`${GITFUT}${path}`, { responseType: 'arrayBuffer', timeout: 20000 }).then(
     (data) => Buffer.from(data),
   )
 
 export default defineCachedEventHandler(
   async (): Promise<GitfutWalkout> => {
     try {
-      const card = toGitfutCard(await $fetch(`${GITFUT}/api/card/kbrdn1`, { timeout: 5000 }))
+      const card = toGitfutCard(await $fetch(`${GITFUT}/api/card/kbrdn1`, { timeout: 15000 }))
       const [picture, flag] = await Promise.all([
         bytes('/api/card-image/kbrdn1'),
         // The flag is a nicety: without it the egg hangs a plain cloth
