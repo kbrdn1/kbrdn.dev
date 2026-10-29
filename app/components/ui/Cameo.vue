@@ -45,8 +45,8 @@ function ended(stage: Stage) {
 // - `header`, `footer`: the room between a panel row's title or meta and its buttons
 //   (Panel.vue), standing on the row's bottom edge, its canvas rising over the panel;
 // - `area`: over its positioned parent (a card, a block), standing on its bottom edge, in
-//   the widest stretch that no text, picture or control crosses: beside a list's titles, a
-//   card's figures, a block of code.
+//   the rightmost stretch wide enough that no text, picture or control crosses: beside a
+//   list's titles, a card's figures, a block of code.
 import { CAMEOS, GROW_MS, type CameoName } from '~/utils/cameos'
 
 const props = withDefaults(

@@ -218,8 +218,8 @@ migrates `[Unreleased]` into that file and empties this one, see
   address, an hourglass, a flip calendar on the timeline, a printer on the CV, a
   git merge on Open source, a bell on the activity feed, a cannon shooting an
   invader in the apps, and on the blog a bookworm, a coffee and a megaphone. In
-  a card a scene takes the widest stretch that no text, picture or control
-  crosses, and does not play where there is none. Canvas only while one plays,
+  a card a scene takes the rightmost stretch wide enough that no text, picture
+  or control crosses, and does not play where there is none. Canvas only while one plays,
   never under `prefers-reduced-motion`.
 - **Redrawn page heroes**
   ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). The pixel scenes of
