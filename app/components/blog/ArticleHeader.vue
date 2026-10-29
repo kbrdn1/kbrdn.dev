@@ -18,15 +18,15 @@ const props = defineProps<{
 const { t } = useI18n()
 const { formatDate } = useFormatDate()
 
-// The banner, resized by IPX: the pixel layer only needs a few hundred pixels of it
+// The banner, resized by IPX: twice the header's width (~1170px), the picture under the hover
+// stays sharp on a dense screen
 const $img = useImage()
 const colorMode = useColorMode()
 const banner = computed(() =>
-  $img(
-    props.post.bannerImage ||
-      (isDarkMode(colorMode.value) ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'),
-    { width: 1280, format: 'webp' },
-  ),
+  $img(blogBanner(props.post.bannerImage, isDarkMode(colorMode.value)), {
+    width: 2400,
+    format: 'webp',
+  }),
 )
 </script>
 
