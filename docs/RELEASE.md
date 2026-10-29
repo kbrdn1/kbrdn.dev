@@ -29,7 +29,7 @@ les deux ne se réveillent jamais ensemble.
 | Fichier de changelog | `changelogs/X.Y.Z.md` (**sans** préfixe `v`) |
 | Candidats | `changelogs/pre-releases/X.Y.Z-rc.N.md` |
 | Branches | `dev` → `main` |
-| `main` protégée | **oui** : PR, 1 approbation, 4 checks. Merge commit autorisé |
+| `main` protégée | **oui** : PR, 1 approbation, 5 checks (`Docker image` depuis #97), branche à jour exigée (`strict`). Merge commit autorisé |
 | Qui publie la release | **la CI** (`release.yml` sur le tag) : ne rien créer à la main |
 | Gate de vérif | `bun run lint` + `bun run fmt:check` + `bun run typecheck` + `bun run build` + `scripts/og-smoke.sh` (CI, tous bloquants). **Pas de tests** dans ce repo, hors `scripts/*.test.sh` et ce smoke test des images OG |
 | Post-release | vérification `/api/health` automatique dans le workflow |
@@ -115,7 +115,7 @@ Ouvrir une PR (obligatoire, cf. la contrainte ci-dessus), corps contenant
 🔖 chore(release): v1.1.0
 ```
 
-Attendre les 4 checks verts, puis merger en **merge commit** : jamais squash,
+Attendre les 5 checks verts, puis merger en **merge commit** : jamais squash,
 il écraserait les commits atomiques. `required_linear_history` a été désactivé
 sur `main` pour ça, comme sur `gwm-cli` et `kbrdn-docs`.
 
@@ -128,7 +128,13 @@ gh pr merge <N> --merge --admin
 ```
 
 ⚠️ `--admin` contourne aussi les checks requis : il mergerait une PR rouge,
-que `deploy.yml` enverrait en prod. Il ne vient qu'après les 4 checks verts.
+que `deploy.yml` enverrait en prod. Il ne vient qu'après les 5 checks verts.
+
+`main` exige aussi une branche à jour (`strict`), ce que `dev` n'est jamais :
+chaque merge de release laisse sur `main` un commit de merge que `dev` ne
+reçoit pas, puisque rien ne redescend de `main`. Ne pas cliquer « Update
+branch » : il mergerait `main` dans `dev`. `--admin` passe outre, comme pour
+l'approbation.
 
 ### 5. Tag, depuis `main`, APRÈS le merge
 
