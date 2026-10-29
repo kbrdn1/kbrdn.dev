@@ -3,6 +3,9 @@
 // second viewer, wired on the <img> itself, out of the keyboard's reach. A click opens the
 // picture full size in the site's one viewer (UiLightbox), as /experience's illustrations
 // do. Rendered inside a <p>: only phrasing content in the button.
+// A plain <img>, not NuxtImg: ipx re-encoded every request, no cache, no resize, no format
+// change, and served each file heavier than committed (a PNG8 regrown to truecolor, the gwm
+// demo GIF 1.49 MB and ~4.5 s of CPU for 884 KB). Optimise the file in public/ instead.
 import { useI18n } from '#imports'
 
 defineProps<{
@@ -23,7 +26,7 @@ const lightbox = useLightbox()
     :aria-label="t('lightbox.open', { name: alt })"
     @click="lightbox.open(src, alt)"
   >
-    <NuxtImg :src="src" :alt="alt" :width="width" :height="height" class="block h-auto w-full" />
+    <img :src="src" :alt="alt" :width="width" :height="height" class="block h-auto w-full" />
     <span
       class="icon-btn absolute top-2 right-2 size-7 bg-(--card-bg) opacity-0 transition-opacity group-hover/zoom:opacity-100 group-focus-visible/zoom:opacity-100"
       aria-hidden="true"
