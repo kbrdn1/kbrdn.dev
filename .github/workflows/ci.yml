@@ -30,10 +30,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # Épinglé, pas `latest` : la sortie de `bun fmt` dépend de la version
+      # (absent avant 1.4.4). Même version que le Dockerfile et flake.nix, que
+      # Dependabot ne monte pas ici : les trois se bougent ensemble.
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: 1.4.4
+
+      # Dependabot monte le tag du Dockerfile seul : sa PR échoue ici tant que
+      # ci.yml et flake.nix n'ont pas suivi. Sans l'override de flake.nix (quand
+      # nixpkgs aura la version), retirer sa ligne.
+      - name: Bun version pins
+        run: |
+          v=$(bun --version)
+          grep -q "oven/bun:$v-alpine" Dockerfile || { echo "::error file=Dockerfile::oven/bun n'est pas en $v (bun-version de ci.yml)"; exit 1; }
+          grep -q "version = \"$v\"" flake.nix || { echo "::error file=flake.nix::le bun du devShell n'est pas en $v (bun-version de ci.yml)"; exit 1; }
 
       # Le cache global de bun seulement, jamais node_modules : la restore-key
       # ramène un node_modules construit sur un autre lock, et bun ne purge pas

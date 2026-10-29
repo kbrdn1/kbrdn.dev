@@ -10,8 +10,7 @@
     "preview": "nuxt preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check",
+    "fmt:check": "bun fmt --check --no-script",
     "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
@@ -41,7 +40,6 @@
     "@types/node": "^25.5.0",
     "baseline-browser-mapping": "^2.11.32",
     "nuxt-og-image": "^7.0.7",
-    "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
     "satori": "^0.47.1",
     "typescript": "~5.9.3",

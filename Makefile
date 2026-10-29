@@ -49,9 +49,9 @@ lint: ## Run oxlint
 	@echo "Running linter..."
 	bun run lint
 
-fmt: ## Format code with oxfmt
+fmt: ## Format code with bun fmt
 	@echo "Formatting code..."
-	bun run fmt
+	bun fmt
 
 # ============================================
 # Git Helpers

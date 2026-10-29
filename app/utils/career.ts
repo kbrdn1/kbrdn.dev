@@ -12,7 +12,7 @@ export interface Experience {
   endDate: string | null
   technologies: string[]
   tasksCount: number
-  /** An illustration beside the summary (public/images/projects) */
+  /** An illustration beside the summary: its banner (scripts/banners.ts) */
   image?: string
   /** Where the company lives online */
   sites?: Site[]
@@ -35,6 +35,8 @@ export interface Study {
   technologies: string[]
   skillsCount: number
   sites?: Site[]
+  /** An illustration beside the summary: its banner (scripts/banners.ts) */
+  image?: string
 }
 
 export const EXPERIENCES: Experience[] = [
@@ -43,8 +45,7 @@ export const EXPERIENCES: Experience[] = [
     key: 'flippad',
     company: 'Jewely x Flippad',
     logo: '/images/logos/jewely-x-flippad.png',
-    // flippad.com and jewely.fr, cut on the bias
-    image: '/images/projects/jewely-x-flippad.webp',
+    image: '/images/parcours/flippad/cover.jpg',
     sites: [
       { label: 'flippad.com', url: 'https://www.flippad.com' },
       { label: 'jewely.fr', url: 'https://www.jewely.fr' },
@@ -70,6 +71,7 @@ export const EXPERIENCES: Experience[] = [
     key: 'virtualImmersion',
     company: 'Virtual Immersion',
     logo: '/images/logos/virtual-immersion.png',
+    image: '/images/parcours/virtual-immersion/cover.jpg',
     startDate: '2022-11',
     endDate: '2023-09',
     technologies: ['Symfony', 'Laravel', 'React', 'WordPress', 'MySQL', 'Tailwind CSS'],
@@ -100,7 +102,8 @@ export interface Project {
   site?: string
   /** Content path of a blog post about it ("To read") */
   article?: string
-  /** An illustration: its public site, its README or its maker's site (public/images/projects) */
+  /** An illustration: its banner (scripts/banners.ts), over its public site, its README or its
+   * maker's site (public/images/projects) */
   image?: string
   /** The product's logo, square (public/images/logos) */
   logo?: string
@@ -151,7 +154,7 @@ export const PROJECTS: Project[] = [
       { name: 'CSS', color: '#663399', percentage: 2.5 },
     ],
     highlightsCount: 4,
-    image: '/images/projects/jewely-ecommerce.webp',
+    image: '/images/parcours/jewely-ecommerce/cover.jpg',
     logo: '/images/logos/jewely.jpeg',
     clients: [
       { label: 'bijouterie-julian.com', url: 'https://www.bijouterie-julian.com' },
@@ -189,7 +192,7 @@ export const PROJECTS: Project[] = [
     highlightsCount: 4,
     site: 'https://www.fichespedagogiques.com',
     article: '/blogs/fiches-pedagogiques',
-    image: '/images/projects/fiches-pedagogiques.webp',
+    image: '/images/parcours/fiches-pedagogiques/cover.jpg',
     logo: '/images/logos/fiches-pedagogiques.png',
     clients: [{ label: 'martin-media.fr', url: 'https://martin-media.fr' }],
   },
@@ -219,7 +222,7 @@ export const PROJECTS: Project[] = [
       { name: 'HTML', color: '#e34c26', percentage: 0.1 },
     ],
     highlightsCount: 3,
-    image: '/images/projects/jewely-configurator.webp',
+    image: '/images/parcours/jewely-configurator/cover.jpg',
     logo: '/images/logos/jewely-configurator.png',
     clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
   },
@@ -251,7 +254,7 @@ export const PROJECTS: Project[] = [
     ],
     highlightsCount: 4,
     site: 'https://www.assmat-facile.fr',
-    image: '/images/projects/assmat-facile.webp',
+    image: '/images/parcours/assmat-facile/cover.jpg',
     logo: '/images/logos/assmat-facile.png',
   },
   {
@@ -272,7 +275,7 @@ export const PROJECTS: Project[] = [
       { name: 'Shell', color: '#89e051', percentage: 1.7 },
     ],
     highlightsCount: 3,
-    image: '/images/projects/jewely-erp.webp',
+    image: '/images/parcours/jewely-erp/cover.jpg',
     logo: '/images/logos/jewely.jpeg',
     clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
   },
@@ -286,6 +289,7 @@ export const STUDIES: Study[] = [
     logo: '/images/logos/mns.jpeg',
     sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
     level: 'Master',
+    image: '/images/parcours/mns-master/cover.jpg',
     startDate: '2023-10',
     endDate: '2025-10',
     technologies: [
@@ -310,6 +314,7 @@ export const STUDIES: Study[] = [
     logo: '/images/logos/mns.jpeg',
     sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
     level: 'Licence',
+    image: '/images/parcours/mns-licence/cover.jpg',
     startDate: '2022-10',
     endDate: '2023-09',
     technologies: [
@@ -333,6 +338,7 @@ export const STUDIES: Study[] = [
     school: 'CCI Longwy EESC',
     logo: '/images/logos/cci.jpg',
     level: 'BAC+2',
+    image: '/images/parcours/cci-bac2/cover.jpg',
     startDate: '2020-10',
     endDate: '2022-06',
     technologies: [

@@ -33,11 +33,11 @@ bun run postinstall
 ```
 
 ### Linting & formatting
-[oxlint](https://oxc.rs/docs/guide/usage/linter) and [oxfmt](https://oxc.rs/docs/guide/usage/formatter), both checked in CI:
+[oxlint](https://oxc.rs/docs/guide/usage/linter) and [`bun fmt`](https://bun.com/docs/format) (Bun ≥ 1.4.4), both checked in CI:
 ```bash
 bun run lint        # oxlint (.oxlintrc.json)
-bun run fmt         # oxfmt --write (.oxfmtrc.json)
-bun run fmt:check   # what CI runs
+bun fmt             # formats in place ([fmt] in bunfig.toml)
+bun run fmt:check   # bun fmt --check, what CI runs
 ```
 
 ## Architecture
@@ -93,19 +93,23 @@ These modules are in dependencies but not yet integrated into `nuxt.config.ts`, 
 ## Important Notes
 
 ### Lint & format configuration
-`.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). Known gaps in `.vue` files, checked on oxlint 1.83:
+`.oxlintrc.json` was migrated from the former `@nuxt/eslint` config (JS recommended, TypeScript strict, Vue recommended). Bun has no linter (`bun lint` only runs the `lint` script), so oxlint stays. Known gaps in `.vue` files, checked on oxlint 1.90:
 - no template rules at all: broken templates are caught by `vue-tsc` and the build;
 - `no-unused-vars` and `prefer-const` do not run on SFCs. Unused imports, locals and functions are caught instead by `vue-tsc` (`noUnusedLocals` in `nuxt.config.ts`, template usage included), stricter than ESLint was: a `_` prefix does not exempt a local. `prefer-const` is lost.
 
-`.oxfmtrc.json` formats code only, with three deliberate exceptions; the last two break at request time, where lint, typecheck and build cannot see them:
+`bunfig.toml` (`[fmt]`) carries over the former `.oxfmtrc.json` and prints byte for byte what oxfmt 0.74 printed. `flavor = "oxfmt"` is load-bearing: without oxfmt installed, `bun fmt` falls back to Prettier's flavor, which breaks union types differently. There is no `fmt` script on purpose: before Bun 1.4.4, `bun fmt` means `bun run fmt`, so a `"fmt": "bun fmt"` script would call itself forever; without one, an older Bun fails on "Script not found". Leave `sortTailwindcss` off: it skips every file of a @nuxt/ui project (oven-sh/bun#47229). The Bun version is pinned in three places that move together: `bun-version` in `ci.yml`, the `Dockerfile` base image, the `bun` override in `flake.nix` (drop it once nixpkgs ships 1.4.4, with its line in the check below). Dependabot only bumps the Dockerfile: the CI step `Bun version pins` fails until the other two follow. `fmt:check` passes `--no-script`, so a `fmt` script added later cannot stand in for the formatter.
+
+It formats code only, with three deliberate exceptions; the last two break at request time, where lint, typecheck and build cannot see them:
 - Markdown and MDX (blog articles, changelogs, docs) are prose, never reformatted;
 - `app/components/OgImage/**` is rendered by satori, whose gradient parser fails on a `style` value split across lines (`/_og/*` returns 500);
-- CSS keeps double quotes (`overrides`): nuxt-og-image (6.1, still true in 7) only recognises the Tailwind entry through `@theme` or a double-quoted `@import "tailwindcss"` (`dist/chunks/tw4.mjs`). `main.css` has no `@theme`, so `@import 'tailwindcss'` turns that resolver off and the OG images fall back to the mono font. `theme.css` quotes alone change nothing.
+- CSS keeps double quotes (`[[fmt.overrides]]`): nuxt-og-image (6.1, still true in 7) only recognises the Tailwind entry through `@theme` or a double-quoted `@import "tailwindcss"` (`dist/chunks/tw4.mjs`). `main.css` has no `@theme`, so `@import 'tailwindcss'` turns that resolver off and the OG images fall back to the mono font. `theme.css` quotes alone change nothing.
 
 CI catches both: `scripts/og-smoke.sh` serves the build and compares the OG images of `/`, `/blog`, `/blog/gwm` (French, at the root) and `/en` byte for byte against `scripts/og-smoke/*.png` (rendering is deterministic across platforms). That determinism rests on the `Inter OG` family (`public/fonts/inter`, static TTF, root `font-family` of both templates): Google serves Inter as a variable font, satori cannot read it, and nuxt-og-image's fallback download differs per machine (Inter on a Mac with Inter installed, Fenix on the CI runner and so in prod). A weight the templates start using needs its static TTF there. It also checks those pages' `<head>` (`<html lang>`, exactly one canonical, JSON-LD that parses with an `@type` on every node) and that `/sitemap.xml` lists the article: no other step renders these tags. When og-smoke fails in CI, the actual renders are uploaded as the `og-smoke` artifact. An intended change to an OG image (hero copy, that article, a satori component) needs `scripts/og-smoke.sh --update` after `bun run build`, and the new PNGs committed. The repo-wide reformat commit is listed in `.git-blame-ignore-revs`.
 
 ### Content System
 The project uses Nuxt Content v3's collection-based API (not the legacy document-driven mode). Always use `queryCollection()` instead of deprecated content APIs.
+
+**Banners**: a post's `bannerImage` and an /experience entry's `image` (`app/utils/career.ts`) are drawn by `scripts/banners.ts` (`bun scripts/banners.ts [key…]`, ImageMagick needed): `public/images/<key>/cover.jpg` (light), `cover-dark.jpg`, picked by the colour mode through `app/utils/banner.ts`, and for a post `cover-og.png`, the pixel layer frozen for the OG (satori runs no canvas). The pixel look is never baked into the JPEGs: `UiPixelImage` applies it at render, in the page's shape and gap colour. A new post or entry: one entry in `BANNERS`. A changed `blog/gwm` banner changes the og-smoke reference.
 
 ### Auto-imports
 Nuxt auto-imports components from `app/components/` and composables from `app/composables/`. No manual imports needed for these.

@@ -47,7 +47,7 @@
   },
   {
     "label": "fmt",
-    "command": "bun run fmt",
+    "command": "bun fmt",
     "reveal": "always",
     "tags": ["quality"]
   },

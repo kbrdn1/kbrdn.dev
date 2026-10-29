@@ -243,6 +243,17 @@ migrates `[Unreleased]` into that file and empties this one, see
   show the share of each language like the pinned repositories (measured on the
   private repositories), their frameworks, and a swatch in the framework's
   colour.
+- **A banner for every post and every /experience entry**
+  ([#111](https://github.com/kbrdn1/kbrdn.dev/issues/111)). After two
+  reference sheets: the logo in relief and the name in heavy type beside it,
+  over the project's screenshot, satin ribbons in the corners on the blog,
+  metro lines on /experience (after its hero's map). Each comes light and dark
+  in the site's tokens and goes through the pixel layer like every picture of
+  the site; a post's OG gets that layer frozen. The studies and the Virtual
+  Immersion role get an illustration too, and the article header asks IPX for
+  twice its width, so the picture under the hover stays sharp on a dense
+  screen. `scripts/banners.ts` draws them all: the next post's is one entry
+  away.
 - **An easter egg in the home's hero**
   ([#118](https://github.com/kbrdn1/kbrdn.dev/issues/118)). Five quick clicks
   on the mascot open a pixel walkout after EA Sports FC 26 in its box: a
@@ -423,6 +434,14 @@ migrates `[Unreleased]` into that file and empties this one, see
   shows its new hero at its resting frame. The header's window icons and the
   footer's toolbar icons give way to the page's address (top right) and the
   site's K with its two languages, the page's one lit (bottom left).
+- **Formatting moves to `bun fmt`, Bun pinned to 1.4.4**
+  ([#119](https://github.com/kbrdn1/kbrdn.dev/issues/119)). Bun's built-in
+  formatter replaces oxfmt, configured in `bunfig.toml` to print exactly what
+  oxfmt printed: no file is reformatted, and the same exceptions hold
+  (Markdown, MDX and the satori OG components untouched, CSS in double
+  quotes). Linting stays on oxlint: Bun has no linter. CI, the Docker image and
+  the Nix dev shell all run Bun 1.4.4, the first release with `bun fmt`;
+  `flake.lock` is now committed.
 
 ### Fixed
 
@@ -469,6 +488,14 @@ migrates `[Unreleased]` into that file and empties this one, see
   ([#100](https://github.com/kbrdn1/kbrdn.dev/issues/100)). It came from the
   default branch's favicon, still the old logo and coloured by the system's
   theme rather than the site's.
+
+- **Animated pictures in articles arrive as committed**
+  ([#116](https://github.com/kbrdn1/kbrdn.dev/issues/116)). GIFs went through
+  the image server, which decoded and re-encoded every frame on each request,
+  with no cache: the gwm demo took 16 s to reach preprod, 1.49 MB for 884 KB
+  committed, and answered 500 in production. They are now served as static
+  files. Other pictures still go through it: it recompresses truecolor PNGs
+  smaller, though it still inflates palette ones such as the gwm article's.
 
 ## Past releases
 

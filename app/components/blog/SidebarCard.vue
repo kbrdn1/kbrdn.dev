@@ -53,7 +53,11 @@ function dismiss() {
       <UiPixelCanvas />
       <!-- Image -->
       <div v-if="image" class="relative h-36 overflow-hidden rounded-[10px] bg-(--placeholder)">
-        <UiPixelImage :src="image" class="size-full" reveal />
+        <!-- Client only like every pixel picture: its src may follow the colour mode, which the
+             server cannot know -->
+        <ClientOnly>
+          <UiPixelImage :src="image" class="size-full" reveal />
+        </ClientOnly>
         <div
           class="pointer-events-none absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/30 to-transparent"
         />
