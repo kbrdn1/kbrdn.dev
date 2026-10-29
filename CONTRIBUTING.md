@@ -84,7 +84,7 @@ make help       # Show all commands
 make dev        # Start development server
 make build      # Build for production
 make lint       # Run linter (oxlint)
-make fmt        # Format code (oxfmt); CI runs `bun run fmt:check`
+make fmt        # Format code (bun fmt); CI runs `bun run fmt:check`
 make typecheck  # Type checking
 make clean      # Clean build artifacts
 ```
