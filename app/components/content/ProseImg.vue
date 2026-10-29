@@ -3,9 +3,10 @@
 // second viewer, wired on the <img> itself, out of the keyboard's reach. A click opens the
 // picture full size in the site's one viewer (UiLightbox), as /experience's illustrations
 // do. Rendered inside a <p>: only phrasing content in the button.
-// A plain <img>, not NuxtImg: ipx re-encoded every request, no cache, no resize, no format
-// change, and served each file heavier than committed (a PNG8 regrown to truecolor, the gwm
-// demo GIF 1.49 MB and ~4.5 s of CPU for 884 KB). Optimise the file in public/ instead.
+// A GIF skips ipx: sharp decodes and re-encodes every frame on each request, with no cache
+// (the gwm demo: 1.49 MB and ~4.5 s of CPU for 884 KB committed), and answers 400 past
+// limitInputPixels, frames included. Other pictures stay on NuxtImg: its lossless
+// recompression shrinks truecolor PNGs (7 to 31% on the blog's).
 import { useI18n } from '#imports'
 
 defineProps<{
@@ -26,7 +27,22 @@ const lightbox = useLightbox()
     :aria-label="t('lightbox.open', { name: alt })"
     @click="lightbox.open(src, alt)"
   >
-    <img :src="src" :alt="alt" :width="width" :height="height" class="block h-auto w-full" />
+    <img
+      v-if="src.toLowerCase().endsWith('.gif')"
+      :src="src"
+      :alt="alt"
+      :width="width"
+      :height="height"
+      class="block h-auto w-full"
+    />
+    <NuxtImg
+      v-else
+      :src="src"
+      :alt="alt"
+      :width="width"
+      :height="height"
+      class="block h-auto w-full"
+    />
     <span
       class="icon-btn absolute top-2 right-2 size-7 bg-(--card-bg) opacity-0 transition-opacity group-hover/zoom:opacity-100 group-focus-visible/zoom:opacity-100"
       aria-hidden="true"
