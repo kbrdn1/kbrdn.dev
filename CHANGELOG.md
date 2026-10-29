@@ -243,6 +243,18 @@ migrates `[Unreleased]` into that file and empties this one, see
   show the share of each language like the pinned repositories (measured on the
   private repositories), their frameworks, and a swatch in the framework's
   colour.
+- **An easter egg in the home's hero**
+  ([#118](https://github.com/kbrdn1/kbrdn.dev/issues/118)). Five quick clicks
+  on the mascot open a pixel walkout after EA Sports FC 26 in its box: a
+  players' tunnel the mascot walks out of, Kylian's flag, position and club
+  (his top language, as on gitfut) revealed one after the other, then his
+  [gitfut](https://gitfut.com/kbrdn1) card. A click skips to the card, another
+  folds it all back into the mascot; Escape too, Enter from the keyboard. The
+  card is read by `GET /api/gitfut`, cached 6 hours and served stale while
+  gitfut is down; its picture is made smaller once on the server with `sharp`
+  (now a declared dependency). Nothing of it loads with the page: its code
+  and the card are fetched from the third click. Under reduced motion the card
+  shows at once; it is announced to screen readers.
 
 ### Changed
 
