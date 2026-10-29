@@ -60,13 +60,15 @@ jobs:
 
       # The checks of the logic no build exercises: the dither field, the hero scenes and their
       # OG colours (kept in step with theme.css), the panels' cameos, the activity feed, the
-      # article reader's voice and utterances, the release tag routing
+      # gitfut card the hero's easter egg reads, the article reader's voice and utterances, the
+      # release tag routing
       - name: Script checks
         run: |
           bun scripts/dither.test.ts
           bun scripts/pixel-scenes.test.ts
           bun scripts/cameos.test.ts
           bun scripts/github-activity.test.ts
+          bun scripts/gitfut.test.ts
           bun scripts/speech.test.ts
           bash scripts/resolve-release-tag.test.sh
 
