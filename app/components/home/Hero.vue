@@ -61,7 +61,8 @@ let egg: Promise<[{ default: Component }, GitfutWalkout] | undefined> | undefine
 const walkout = shallowRef<{ is: Component; card: GitfutWalkout }>()
 const open = ref(false)
 
-// The card's picture decoded before it hatches: a broken one never reaches the walkout
+// The card's picture decoded before it hatches: a broken one never reaches the walkout. A
+// failure is not kept, even from a burst that stopped short: the next one tries again
 const fetchEgg = () =>
   Promise.all([
     import('./Walkout.vue'),
@@ -71,7 +72,10 @@ const fetchEgg = () =>
       await picture.decode()
       return card
     }),
-  ]).catch(() => undefined)
+  ]).catch(() => {
+    egg = undefined
+    return undefined
+  })
 
 async function tap() {
   if (walkout.value || hatching) return
@@ -84,11 +88,7 @@ async function tap() {
   hatching = true
   const hatched = await (egg ??= fetchEgg())
   hatching = false
-  // A failure is not kept: the next five clicks try again
-  if (!hatched) {
-    egg = undefined
-    return
-  }
+  if (!hatched) return
   walkout.value = { is: markRaw(hatched[0].default), card: hatched[1] }
   open.value = true
 }
@@ -186,10 +186,12 @@ onUnmounted(() => {
     </div>
 
     <!-- Isolated: the orbit's far side goes behind the pictures, never behind the page.
-         Decorative, unless the easter egg plays in it: its button and announcement are not. -->
+         Decorative, unless the easter egg plays in it: its button and announcement are not.
+         Its float is paused inline: a utility would sit in @layer utilities and lose to the
+         unlayered .mascot-float (transitions.css). -->
     <div
       class="mascot-float relative isolate mx-auto size-48 shrink-0 touch-manipulation sm:size-56 md:mx-0"
-      :class="{ '[animation-play-state:paused]': walkout }"
+      :style="walkout ? { animationPlayState: 'paused' } : undefined"
       :aria-hidden="walkout ? undefined : 'true'"
       data-walkout
       @mouseenter="nextMood"
