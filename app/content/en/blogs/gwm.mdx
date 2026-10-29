@@ -43,7 +43,7 @@ gwm                                         # opens the TUI on the current repo
 gcd auth                                    # fuzzy-jump into the worktree (via `gwm shell-init`)
 ```
 
-![gwm in action: creating a worktree with its bootstrap report, navigating, removing, from the TUI](/images/blog/gwm/demo.gif)
+![gwm in action: agent sessions, a note, creating a worktree with its bootstrap report, filtering, removing, from the TUI](/images/blog/gwm/demo.gif)
 
 With no argument, `gwm` opens the ratatui TUI: a table with the worktree name, its branch, its status (clean / dirty / `↑N ↓M` vs upstream) and its path, plus a details sidebar (status, linked issue/PR, tree of modified files, recent commits). The subcommands serve scripts and CI.
 
@@ -158,7 +158,7 @@ Three things make the day-to-day:
 
 - **The remappable keymap, editable live.** Every action is rebindable, with multi-key chords (`g g` to go to the top), a fuzzy command palette (`:`) that finds each action by name, and a filter (`/`) on the list. The **Settings** panel (`4`) has become fully editable: Theme / Worktree / TUI / **Keys** / All tabs, a project ↔ global layer selector (`L`), toggles / choices / numeric and text fields that persist to the TOML and apply live. The **Keys** tab captures a new key live: you select a bind, you type, it writes a validated TOML array _before_ touching the disk (a conflict aborts and keeps the old bind) and the keymap reloads without a restart. Even the modal keys (create form, delete-confirm, link prompt…) are remappable under `[tui.keys.modal.<context>]` subtables.
 
-![the Keys tab of the Settings panel: capturing a new bind live](/images/blog/gwm/keymap.png)
+![the Keys tab of the Settings panel: every action and its keys, Space to rebind one live](/images/blog/gwm/keymap.png)
 
 ## Closing the GitHub loop: review, statusline
 
