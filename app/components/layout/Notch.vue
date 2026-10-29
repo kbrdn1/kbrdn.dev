@@ -59,6 +59,20 @@ const banner = (src?: string) =>
     ? $img(blogBanner(src, isDarkMode(colorMode.value)), { width: 480, format: 'webp' })
     : undefined
 
+// The Parcours menu shows the page's own banners (scripts/banners.ts), read from its data: the
+// latest role's, the latest study's, the most recent by start like the page's timeline. No open
+// source project has one, gwm's screenshot stays
+function latestBanner(entries: readonly { startDate: string; image?: string }[]) {
+  const withBanner = entries.filter((entry) => entry.image)
+  return withBanner.sort((a, b) => b.startDate.localeCompare(a.startDate))[0]?.image
+}
+const ROLE_BANNER = latestBanner(EXPERIENCES)
+const STUDY_BANNER = latestBanner(STUDIES)
+const careerBanner = (src?: string) =>
+  src
+    ? $img(themedBanner(src, isDarkMode(colorMode.value)), { width: 480, format: 'webp' })
+    : undefined
+
 const menus = computed<Record<string, Menu>>(() => ({
   '/': {
     text: t('navMenu.home'),
@@ -76,16 +90,16 @@ const menus = computed<Record<string, Menu>>(() => ({
       {
         label: t('experiencePage.experienceLabel'),
         to: { name: 'experience', hash: '#experience' },
-        image: '/images/projects/jewely-x-flippad.webp',
+        image: careerBanner(ROLE_BANNER),
       },
       {
         label: t('experiencePage.educationLabel'),
         to: { name: 'experience', hash: '#education' },
-        image: `${SCENES}/city-marble.webp`,
+        image: careerBanner(STUDY_BANNER),
       },
       { label: 'Open source', to: { name: 'experience', hash: '#open-source' }, image: GWM },
     ],
-    image: '/images/projects/fiches-pedagogiques.webp',
+    image: careerBanner(ROLE_BANNER) ?? ME,
   },
   '/apps': {
     text: t('navMenu.apps'),
