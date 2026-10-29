@@ -188,6 +188,8 @@ function play() {
 
 /** Straight to the card, still */
 function skip() {
+  // Leaving already: the fold goes on, a skip would freeze it half folded
+  if (folding) return
   time = scene.duration
   level = GROWN
   stop()
@@ -252,7 +254,8 @@ onMounted(() => {
   document.addEventListener('keydown', onKey)
   before = document.activeElement
   button.value?.focus({ preventScroll: true })
-  // Reduced motion: no tunnel, the card is there, announced once the live region is in place
+  // Reduced motion: nothing moves, all of it there at once, the card announced once the live
+  // region is in place
   if (reducedMotion.value) {
     level = GROWN
     time = scene.duration

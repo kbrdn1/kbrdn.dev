@@ -93,6 +93,13 @@ async function tap() {
   open.value = true
 }
 
+// Folded back: gone, and the mascot back even if `close` never came (an Escape before its
+// first frame)
+function folded() {
+  walkout.value = undefined
+  open.value = false
+}
+
 let interval: ReturnType<typeof setInterval> | undefined
 let moodInterval: ReturnType<typeof setInterval> | undefined
 
@@ -213,7 +220,7 @@ onUnmounted(() => {
         v-if="walkout"
         :card="walkout.card"
         @close="open = false"
-        @done="walkout = undefined"
+        @done="folded"
       />
     </div>
   </div>
