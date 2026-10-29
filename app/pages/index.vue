@@ -20,37 +20,43 @@ const { data: latestPosts } = await useAsyncData(
 )
 
 const { formatDate } = useFormatDate()
+
+// Featured projects: personal (the repositories pinned on GitHub) or professional (the
+// Jewely x Flippad projects of /experience)
+const TABS = ['perso', 'pro'] as const
+const featured = ref<(typeof TABS)[number]>('perso')
+function switchTab(step: number) {
+  const next = TABS[(TABS.indexOf(featured.value) + step + TABS.length) % TABS.length]!
+  featured.value = next
+  nextTick(() => document.getElementById(`featured-${next}`)?.focus())
+}
 const { postUrl } = useBlogUrl()
 
-// SEO metadata
+// SEO metadata: the site's own words (no `pages` entry backs the home)
 useSeoMeta({
-  title: page.value?.title
-    ? `${page.value.title} - Full Stack Developer`
-    : 'Kylian Bardini - Full Stack Developer',
-  description:
-    page.value?.bio?.[0] ||
-    'Developer, Designer, Creator. Building elegant, performant applications that solve real problems and delight users.',
-  ogTitle: page.value?.title || 'Kylian Bardini - Full Stack Developer',
-  ogDescription:
-    page.value?.bio?.[0] || 'Developer, Designer, Creator. Building things for the web.',
+  title: () => t('seo.title'),
+  description: () => t('seo.description'),
+  ogTitle: () => t('seo.title'),
+  ogDescription: () => t('seo.description'),
   twitterCard: 'summary_large_image',
 })
+const person = usePersonRef()
+usePageSchema('ProfilePage', () => ({
+  name: t('seo.title'),
+  description: t('seo.description'),
+  mainEntity: person,
+}))
 
-if (import.meta.server) {
-  const requestUrl = useRequestURL()
-  const siteOrigin = requestUrl.origin
-
-  defineOgImage('Default', {
-    title: page.value?.title || 'Kylian Bardini',
-    subtitle: page.value?.titles?.[0] || 'Full Stack Developer',
-    handle: page.value?.handle || '@kbrdn1',
-    isHirable: page.value?.isHirable ?? true,
-    statusText: t('hero.availableForHire'),
-    avatarUrl: `${siteOrigin}/images/avatar.jpg`,
-    bannerText: t('banner.gwm'),
-    bannerImage: `${siteOrigin}/images/banners/dark.jpg`,
-  })
-}
+useSiteOgImage('Default', {
+  title: page.value?.title || 'Kylian Bardini',
+  subtitle: page.value?.titles?.[0] || t('seo.jobTitle'),
+  handle: page.value?.handle || '@kbrdn1',
+  isHirable: page.value?.isHirable ?? true,
+  figures: CAREER_FIGURES.map((figure) => ({
+    label: t(`experiencePage.figures.${figure.key}`),
+    value: figure.value,
+  })),
+})
 
 // Default social links with more platforms
 const defaultSocials = [
@@ -98,141 +104,179 @@ const content = computed(() => {
 
 <template>
   <div class="flex justify-center overflow-x-clip">
+    <!-- Table of contents, in the margin outside the column (wide screens only) -->
+    <HomeToc />
+
     <!-- Main content -->
     <div class="w-full flex flex-col items-center relative z-10">
-      <!-- Banner -->
-      <HomeBanner />
+      <!-- Panels, in one column -->
+      <div class="w-full max-w-5xl space-y-8 px-4 py-10 sm:px-6">
+        <HomeHero
+          :name="content.name"
+          :titles="content.titles"
+          :handle="content.handle"
+          :is-hirable="content.isHirable"
+          :calendar-link="content.calendarLink"
+          :socials="content.socials"
+        />
 
-      <!-- Hero Section - Full width with horizontal dashed border -->
-      <section class="p-6 w-full">
-        <UiAnimatedSection animation="fadeInUp" :delay="0" :duration="600">
-          <HomeHero
-            :name="content.name"
-            :titles="content.titles"
-            :is-hirable="content.isHirable"
-            :calendar-link="content.calendarLink"
-            :socials="content.socials"
-          />
-        </UiAnimatedSection>
-      </section>
-
-      <!-- About section -->
-      <main class="p-6 space-y-6 w-full max-w-5xl min-md:px-6">
-        <UiAnimatedSection
-          id="about"
-          as="section"
-          animation="fadeInUp"
-          :delay="100"
-          :duration="500"
-        >
-          <HomeSectionLabel :label="t('sections.about')" />
-          <HomeBio :paragraphs="content.bio" />
-        </UiAnimatedSection>
-
-        <!-- Latest Blog Posts -->
-        <UiAnimatedSection as="section" animation="fadeInUp" :delay="200" :duration="500">
-          <div class="flex items-center justify-between mb-3">
-            <h2 class="text-[11px] font-mono uppercase tracking-widest text-sky-400">
-              {{ t('sections.blog') }}
-            </h2>
-            <NuxtLink
-              to="/blog"
-              class="text-[10px] font-mono uppercase tracking-wider text-neutral-500 hover:text-sky-400 transition-colors"
-            >
-              {{ t('blog.viewAll') }} →
-            </NuxtLink>
-          </div>
-          <div
-            v-if="latestPosts?.length"
-            class="divide-y divide-neutral-200 dark:divide-neutral-800"
-          >
-            <NuxtLink
-              v-for="post in latestPosts"
-              :key="post.path"
-              :to="postUrl(post)"
-              class="flex items-center gap-6 py-3 group transition-colors hover:bg-neutral-50/50 dark:hover:bg-neutral-900/30 -mx-3 px-3"
-            >
-              <span
-                v-if="post.publishedAt"
-                class="shrink-0 w-28 text-xs font-mono text-neutral-500"
+        <section id="about">
+          <UiPanel :title="t('bio.title')">
+            <div class="panel-card relative p-5 sm:p-6">
+              <HomeBio :paragraphs="content.bio" />
+              <!-- The camera, beside the figures -->
+              <UiCameo name="camera" place="area" />
+              <!-- The career in four figures, rolling in (app/utils/career.ts) -->
+              <dl
+                class="mt-6 grid grid-cols-2 gap-5 border-t border-dashed border-(--card-border) pt-5 md:grid-cols-4 md:gap-0 md:divide-x md:divide-dashed md:divide-(--card-border)"
               >
-                {{ formatDate(post.publishedAt, 'short') }}
-              </span>
-              <span
-                class="text-sm font-medium text-primary-500 group-hover:text-primary-400 transition-colors truncate"
-              >
-                {{ post.title }}
-              </span>
-            </NuxtLink>
-          </div>
-        </UiAnimatedSection>
-      </main>
-
-      <!-- Skills & Stack -->
-      <section id="skills" class="p-6 w-full">
-        <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6">
-            <HomeSkills />
-          </div>
-        </UiAnimatedSection>
-      </section>
-
-      <!-- Featured Projects -->
-      <section id="projects" class="p-6 w-full">
-        <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6">
-            <HomeSectionLabel :label="t('sections.projects')" />
-            <HomeProjects />
-
-            <!-- GitHub Activity -->
-            <div class="mt-8">
-              <HomeSectionLabel :label="t('sections.activity')" />
-              <HomeGitHubChart username="kbrdn1" />
+                <div
+                  v-for="figure in CAREER_FIGURES"
+                  :key="figure.key"
+                  class="md:px-5 md:first:pl-0 md:last:pr-0"
+                >
+                  <dt class="eyebrow">{{ t(`experiencePage.figures.${figure.key}`) }}</dt>
+                  <dd class="mt-1 text-3xl tracking-tight text-neutral-900 dark:text-neutral-100">
+                    <UiRollingNumber :value="figure.value" />
+                  </dd>
+                </div>
+              </dl>
             </div>
-          </div>
-        </UiAnimatedSection>
-      </section>
+          </UiPanel>
+        </section>
 
-      <!-- Parcours (Experience + Education) - Full width -->
-      <section id="experience" class="p-6 w-full">
-        <UiAnimatedSection :delay="0" :duration="500">
-          <div class="max-w-5xl mx-auto min-md:px-6 space-y-8">
-            <HomeSectionLabel :label="t('sections.parcours')" />
-
-            <div>
-              <h3
-                class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2"
+        <!-- Latest Blog Posts: a list, dashed rows, the date in mono -->
+        <section id="latest-posts">
+          <UiPanel :title="t('blog.title')">
+            <!-- The pencil writes beside the titles -->
+            <div class="relative">
+              <ul
+                v-if="latestPosts?.length"
+                class="panel-card divide-y divide-dashed divide-neutral-200 px-5 dark:divide-neutral-800"
               >
-                {{ t('sections.experience') }}
-              </h3>
-              <HomeExperiences />
+                <li v-for="post in latestPosts" :key="post.path">
+                  <NuxtLinkLocale :to="postUrl(post)" class="group flex items-center gap-6 py-3.5">
+                    <span v-if="post.publishedAt" class="eyebrow w-28 shrink-0">
+                      {{ formatDate(post.publishedAt, 'short') }}
+                    </span>
+                    <span
+                      class="truncate text-sm text-neutral-900 transition-colors group-hover:text-primary-500 dark:text-neutral-100"
+                    >
+                      {{ post.title }}
+                    </span>
+                  </NuxtLinkLocale>
+                </li>
+              </ul>
+              <UiCameo name="pencil" place="area" />
             </div>
+            <template #footer>
+              <NuxtLinkLocale to="/blog" class="btn btn-outline btn-sm">
+                {{ t('blog.viewAll') }}
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </NuxtLinkLocale>
+            </template>
+          </UiPanel>
+        </section>
 
-            <div id="education">
-              <h3
-                class="block text-[11px] font-mono uppercase tracking-widest text-primary-500 mb-2"
+        <!-- Skills & Stack -->
+        <section id="skills">
+          <UiPanel :title="t('skills.title')">
+            <!-- The gears turn beside the rows of tools -->
+            <div class="relative">
+              <HomeSkills class="panel-card p-5 sm:p-6" />
+              <UiCameo name="tools" place="area" />
+            </div>
+          </UiPanel>
+        </section>
+
+        <!-- Featured Projects -->
+        <section id="projects">
+          <UiPanel :title="t('projects.title')" cameo="rocket" cameo-at="footer">
+            <template #actions>
+              <div class="segmented" role="tablist" :aria-label="t('projects.title')">
+                <button
+                  v-for="tab in TABS"
+                  :id="`featured-${tab}`"
+                  :key="tab"
+                  type="button"
+                  role="tab"
+                  class="segment"
+                  :aria-selected="featured === tab"
+                  :aria-controls="`featured-${tab}-panel`"
+                  :tabindex="featured === tab ? 0 : -1"
+                  @click="featured = tab"
+                  @keydown.right.prevent="switchTab(1)"
+                  @keydown.left.prevent="switchTab(-1)"
+                >
+                  {{ t(`projects.tabs.${tab}`) }}
+                </button>
+                <UiSegmentInk />
+              </div>
+            </template>
+            <UiAutoHeight>
+              <Transition :name="featured === 'pro' ? 'swap-next' : 'swap-prev'" mode="out-in">
+                <div
+                  :id="`featured-${featured}-panel`"
+                  :key="featured"
+                  role="tabpanel"
+                  :aria-labelledby="`featured-${featured}`"
+                >
+                  <HomeProjects v-if="featured === 'perso'" />
+                  <HomeWork v-else />
+                </div>
+              </Transition>
+            </UiAutoHeight>
+            <template #meta>
+              {{ featured === 'perso' ? 'github.com/kbrdn1' : 'Jewely x Flippad' }}
+            </template>
+            <template #footer>
+              <a
+                v-if="featured === 'perso'"
+                href="https://github.com/kbrdn1?tab=repositories"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-outline btn-sm"
               >
-                {{ t('sections.education') }}
-              </h3>
-              <HomeStudies />
-            </div>
-          </div>
-        </UiAnimatedSection>
-      </section>
+                <UiScrambleText :text="t('projects.viewAll')" effect="link" />
+                <UIcon
+                  name="i-heroicons-arrow-top-right-on-square"
+                  class="size-4"
+                  aria-hidden="true"
+                />
+              </a>
+              <NuxtLinkLocale
+                v-else
+                :to="{ name: 'experience', hash: '#experience' }"
+                class="btn btn-outline btn-sm"
+              >
+                <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </NuxtLinkLocale>
+            </template>
+          </UiPanel>
+        </section>
 
-      <!-- Explore Section -->
-      <HomeExplore />
+        <!-- GitHub Activity: the chart is its own panel, its tabs in the header -->
+        <section id="activity" class="scroll-mt-24">
+          <HomeGitHubChart username="kbrdn1" />
+        </section>
 
-      <!-- Footer -->
-      <UiAnimatedSection
-        as="section"
-        animation="fadeInUp"
-        :delay="0"
-        :duration="500"
-        class="w-full"
-      >
-        <LayoutFooter />
-      </UiAnimatedSection>
+        <!-- Parcours (Experience + Education) -->
+        <section id="experience">
+          <UiPanel :title="t('nav.experience')" cameo="climb" cameo-at="footer">
+            <HomeParcours class="panel-card p-5 sm:p-6" />
+            <template #footer>
+              <NuxtLinkLocale :to="{ name: 'experience' }" class="btn btn-outline btn-sm">
+                <UiScrambleText :text="t('experiencePage.teaserCta')" effect="link" />
+                <UIcon name="i-heroicons-arrow-right-20-solid" class="size-4" aria-hidden="true" />
+              </NuxtLinkLocale>
+            </template>
+          </UiPanel>
+        </section>
+
+        <!-- Explore: a carousel, its own panel -->
+        <HomeExplore />
+      </div>
     </div>
   </div>
 </template>

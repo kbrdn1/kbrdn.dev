@@ -89,15 +89,14 @@ const getDescription = (platform: string): string => {
           size="md"
           :icon="link.icon || getIcon(link.platform)"
           :aria-label="link.label"
+          class="rounded-full"
         />
 
         <template #content>
           <div class="w-72 p-3">
             <!-- Header: icon + name + handle -->
             <div class="flex items-center gap-3 mb-2">
-              <div
-                class="flex items-center justify-center w-10 h-10 border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800"
-              >
+              <div class="icon-box size-10 bg-neutral-100 dark:bg-neutral-800">
                 <UIcon
                   :name="link.icon || getIcon(link.platform)"
                   class="w-5 h-5 text-neutral-600 dark:text-neutral-300"
@@ -124,7 +123,7 @@ const getDescription = (platform: string): string => {
             <!-- GitHub stats -->
             <div
               v-if="link.platform === 'github' && githubProfile"
-              class="flex items-center mb-3 py-2 border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
+              class="flex items-center mb-3 py-2 rounded-xl border border-(--card-border) bg-neutral-50 dark:bg-neutral-900"
             >
               <div class="flex-1 text-center">
                 <p class="text-sm font-bold font-mono text-neutral-900 dark:text-neutral-100">

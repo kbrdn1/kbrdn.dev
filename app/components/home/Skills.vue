@@ -58,46 +58,35 @@ const stack = [
 </script>
 
 <template>
-  <UiAnimatedSection animation="fadeInUp">
-    <div class="space-y-6">
-      <!-- Section Header -->
-      <div class="space-y-1">
-        <span class="text-[11px] font-mono uppercase tracking-widest text-primary-500">
-          {{ t('skills.featured') }}
-        </span>
-        <h2 class="text-xl font-medium text-neutral-900 dark:text-neutral-100">
-          {{ t('skills.title') }}
-        </h2>
+  <div class="space-y-6">
+    <dl class="divide-y divide-dashed divide-neutral-200 dark:divide-neutral-800">
+      <div
+        v-for="group in stack"
+        :key="group.key"
+        class="grid gap-2 py-3 first:pt-0 last:pb-0 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4"
+      >
+        <dt class="eyebrow pt-0.5">
+          {{ t(`skills.stack.${group.key}`) }}
+        </dt>
+        <dd class="flex flex-wrap gap-x-5 gap-y-2.5">
+          <a
+            v-for="[name, icon, url] in group.tools"
+            :key="name"
+            :href="url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group inline-flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200 transition-colors hover:text-primary-500"
+          >
+            <UIcon
+              :name="icon"
+              class="size-4 shrink-0 text-neutral-500 dark:text-neutral-400 transition-colors group-hover:text-primary-500"
+              aria-hidden="true"
+            />
+            {{ name }}
+            <span class="sr-only">({{ t('common.newTab') }})</span>
+          </a>
+        </dd>
       </div>
-
-      <dl class="space-y-4">
-        <div
-          v-for="group in stack"
-          :key="group.key"
-          class="grid gap-2 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-4"
-        >
-          <dt class="text-sm text-neutral-500 dark:text-neutral-400">
-            {{ t(`skills.stack.${group.key}`) }}
-          </dt>
-          <dd class="flex flex-wrap gap-x-5 gap-y-2.5">
-            <a
-              v-for="[name, icon, url] in group.tools"
-              :key="name"
-              :href="url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="group inline-flex items-center gap-2 text-sm text-neutral-800 dark:text-neutral-200 transition-colors hover:text-primary-500"
-            >
-              <UIcon
-                :name="icon"
-                class="size-4 shrink-0 text-neutral-500 dark:text-neutral-400 transition-colors group-hover:text-primary-500"
-                aria-hidden="true"
-              />
-              {{ name }}
-            </a>
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </UiAnimatedSection>
+    </dl>
+  </div>
 </template>

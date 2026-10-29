@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)"  srcset="docs/_assets/promo.png">
     <source media="(prefers-color-scheme: light)" srcset="docs/_assets/promo-light.png">
-    <img alt="kbrdn.dev — Nuxt 4, file-based content, shipped blue/green on a tag" src="docs/_assets/promo.png" width="100%">
+    <img alt="kbrdn.dev: Nuxt 4, file-based content, shipped blue/green on a tag" src="docs/_assets/promo.png" width="100%">
   </picture>
 </p>
 
@@ -38,13 +38,13 @@ Modern portfolio website built with Nuxt 4 and Nuxt UI.
 - [Nuxt Content](https://content.nuxt.com) - File-based CMS
 - [Nuxt Fonts](https://github.com/nuxt/fonts) - Font optimization
 - [Nuxt Image](https://image.nuxt.com) - Image optimization
-- [oxlint](https://oxc.rs/docs/guide/usage/linter) / [oxfmt](https://oxc.rs/docs/guide/usage/formatter) - Linting and formatting
+- [oxlint](https://oxc.rs/docs/guide/usage/linter) / [`bun fmt`](https://bun.com/docs/format) - Linting and formatting
 
 ## 📦 Setup
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) v1.0+ (recommended) or Node.js v18+
+- [Bun](https://bun.sh) v1.4.4+ (recommended; `bun fmt` needs it) or Node.js v18+
 - Git
 
 ### Installation

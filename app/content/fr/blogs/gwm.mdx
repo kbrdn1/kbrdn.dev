@@ -1,10 +1,10 @@
 ---
-title: "Construire gwm — un gestionnaire de git worktrees en Rust (CLI + TUI)"
+title: "Construire gwm : un gestionnaire de git worktrees en Rust (CLI + TUI)"
 description: "Comment j'ai construit gwm jusqu'à la 1.0 : un binaire unique en Rust qui pilote git worktree via libgit2 vendored, avec bootstrap déclaratif, garde-fou TOFU, TUI ratatui, une API JSON + daemon, le mode workspace multi-repo, et des contrats machine gelés sous SemVer."
 publishedAt: "2026-07-06"
 tags: ["rust", "tui", "git", "cli", "open-source", "project"]
 banner: true
-bannerImage: "/images/blog/gwm/banner.png"
+bannerImage: "/images/blog/gwm/cover.jpg"
 ---
 
 ## Le problème avec les git worktrees
@@ -13,9 +13,9 @@ J'utilise les git worktrees presque tous les jours. C'est la meilleure façon qu
 
 Mais le workflow _autour_ des worktrees est aussi pénible que la primitive est puissante.
 
-Sur un projet Laravel, on avait un script bash dans `tools/worktree-manager.sh` qui orchestrait la création : `git worktree add`, puis copie du `.env.testing`, puis vérification que le `.env` copié ne pointait pas vers AWS RDS (incident vécu — `php artisan test` avec `RefreshDatabase` qui tourne sur la base de prod, on s'est fait prendre une fois, je n'ai pas envie de revivre ça), puis suppression du symlink `vendor/` qui casse l'autoload quand il est partagé entre worktrees, puis `composer install`, puis `direnv allow`.
+Sur un projet Laravel, on avait un script bash dans `tools/worktree-manager.sh` qui orchestrait la création : `git worktree add`, puis copie du `.env.testing`, puis vérification que le `.env` copié ne pointait pas vers AWS RDS (incident vécu : `php artisan test` avec `RefreshDatabase` qui tourne sur la base de prod, on s'est fait prendre une fois, je n'ai pas envie de revivre ça), puis suppression du symlink `vendor/` qui casse l'autoload quand il est partagé entre worktrees, puis `composer install`, puis `direnv allow`.
 
-Le script faisait le job, mais il était figé dans ce projet, avec sa logique anti-RDS hardcodée. Quand j'ai voulu appliquer la même hygiène à `kbrdn.dev` (Nuxt + Bun) ou à gwm lui-même (Rust), j'ai dû tout dupliquer en l'adaptant. Le wrapper Node aurait dû avoir sa logique anti-`node_modules`-symlinké, le wrapper Rust son partage incrémental de `target/`. Trois scripts, trois philosophies, trois sources de bugs — et à chaque modif, j'oubliais de propager.
+Le script faisait le job, mais il était figé dans ce projet, avec sa logique anti-RDS hardcodée. Quand j'ai voulu appliquer la même hygiène à `kbrdn.dev` (Nuxt + Bun) ou à gwm lui-même (Rust), j'ai dû tout dupliquer en l'adaptant. Le wrapper Node aurait dû avoir sa logique anti-`node_modules`-symlinké, le wrapper Rust son partage incrémental de `target/`. Trois scripts, trois philosophies, trois sources de bugs. Et à chaque modif, j'oubliais de propager.
 
 Je cherchais un outil qui :
 
@@ -24,13 +24,13 @@ Je cherchais un outil qui :
 - ouvre une **TUI** quand je veux naviguer entre worktrees sans taper trois `git worktree list | grep`,
 - soit **un seul binaire**, sans dépendance Python/Node/Bash en chaîne, qui se compile partout.
 
-J'ai écrit **gwm**. Il a franchi la **1.0** fin juin — la surface est feature-complete et, surtout, les contrats machine sont désormais gelés sous SemVer (j'y reviens à la fin). C'est la ligne 1.0 (patch 1.0.2 le jour où j'écris) que je décris ici.
+J'ai écrit **gwm**. Il a franchi la **1.0** fin juin : la surface est feature-complete et, surtout, les contrats machine sont désormais gelés sous SemVer (j'y reviens à la fin). C'est la ligne 1.0 (patch 1.0.2 le jour où j'écris) que je décris ici.
 
 ## C'est quoi gwm
 
-![gwm — la TUI ratatui, table des worktrees et sidebar de détails](/images/blog/gwm/hero.png)
+![gwm : la TUI ratatui, table des worktrees et sidebar de détails](/images/blog/gwm/hero.png)
 
-`gwm` (pour _git worktree manager_) est un outil CLI + TUI en Rust qui pilote `git worktree` via `libgit2` vendored. Un binaire unique, zéro dépendance à l'exécution — pas même le CLI `git` ou `gwq`. Le tour en 30 secondes :
+`gwm` (pour _git worktree manager_) est un outil CLI + TUI en Rust qui pilote `git worktree` via `libgit2` vendored. Un binaire unique, zéro dépendance à l'exécution, pas même le CLI `git` ou `gwq`. Le tour en 30 secondes :
 
 ```bash
 cd /chemin/vers/ton/repo
@@ -43,7 +43,7 @@ gwm                                         # ouvre la TUI sur le repo courant
 gcd auth                                    # fuzzy-jump dans le worktree (via `gwm shell-init`)
 ```
 
-![gwm en action — créer un worktree avec son rapport de bootstrap, naviguer, supprimer, depuis la TUI](/images/blog/gwm/demo.gif)
+![gwm en action : les sessions d'agents, une note, créer un worktree avec son rapport de bootstrap, filtrer, supprimer, depuis la TUI](/images/blog/gwm/demo.gif)
 
 Sans argument, `gwm` ouvre la TUI ratatui : une table avec le nom du worktree, sa branche, son status (clean / dirty / `↑N ↓M` vs upstream) et son chemin, plus une sidebar de détails (status, issue/PR liée, arbre des fichiers modifiés, commits récents). Les sous-commandes servent les scripts et la CI.
 
@@ -62,11 +62,11 @@ Rust règle plusieurs problèmes d'un coup.
 git2 = { version = "0.21", default-features = false, features = ["vendored-libgit2"] }
 ```
 
-Le reste du stack est plus convenu : `clap` (derive) pour le CLI, `ratatui` + `crossterm` pour la TUI, `serde` + `toml` pour `.gwm.toml`, `nucleo-matcher` pour le fuzzy, `sha2` pour le trust ledger (j'y reviens), `portable-pty` + `tui-term` pour les overlays PTY, `thiserror` pour l'enum d'erreur unifiée. Le MSRV est **1.86** — remonté depuis le 1.82 de la 0.9.0 par la dépendance `tui-term 0.3` qui alimente les overlays.
+Le reste du stack est plus convenu : `clap` (derive) pour le CLI, `ratatui` + `crossterm` pour la TUI, `serde` + `toml` pour `.gwm.toml`, `nucleo-matcher` pour le fuzzy, `sha2` pour le trust ledger (j'y reviens), `portable-pty` + `tui-term` pour les overlays PTY, `thiserror` pour l'enum d'erreur unifiée. Le MSRV est **1.86**, remonté depuis le 1.82 de la 0.9.0 par la dépendance `tui-term 0.3` qui alimente les overlays.
 
 ## La feature signature : le bootstrap déclaratif
 
-Le cœur de gwm, c'est le `.gwm.toml` au root du repo. Au lieu d'un script bash qui sait tout, on _déclare_ ce que doit faire le bootstrap après chaque création de worktree. Et la même config peut vivre en global dans `~/.config/gwm/config.toml`, deep-mergée _sous_ le fichier du repo (le repo gagne toujours sur conflit) — on règle une préférence une fois, tous les repos en héritent.
+Le cœur de gwm, c'est le `.gwm.toml` au root du repo. Au lieu d'un script bash qui sait tout, on _déclare_ ce que doit faire le bootstrap après chaque création de worktree. Et la même config peut vivre en global dans `~/.config/gwm/config.toml`, deep-mergée _sous_ le fichier du repo (le repo gagne toujours sur conflit) : on règle une préférence une fois, tous les repos en héritent.
 
 ```toml
 [worktree]
@@ -100,11 +100,11 @@ when = "file_exists:package.json && cmd_exists:bun"
 on_fail = "warn"
 ```
 
-Chaque primitive répond à un problème concret. Les **copies** déplacent les `.env*` et autres fichiers non-versionnés du repo principal vers le worktree. Les **guards** grep le fichier avant de le copier : si un pattern interdit matche (un hostname AWS RDS qui sent la prod), gwm _refuse_ la copie et seed depuis `.env.example`, ou abort, selon `on_match`. Les **no_symlink** suppriment les symlinks hérités qui ne devraient jamais être partagés entre worktrees — `target/` pour Rust, `vendor/` pour PHP, `node_modules/` pour Node. Les **hooks** sont les phases du cycle de vie : `pre_create`, `post_create`, `pre_bootstrap`, `post_bootstrap`, `pre_remove`, `post_remove`, chacune avec un `on_fail = abort | warn | ignore`.
+Chaque primitive répond à un problème concret. Les **copies** déplacent les `.env*` et autres fichiers non-versionnés du repo principal vers le worktree. Les **guards** grep le fichier avant de le copier : si un pattern interdit matche (un hostname AWS RDS qui sent la prod), gwm _refuse_ la copie et seed depuis `.env.example`, ou abort, selon `on_match`. Les **no_symlink** suppriment les symlinks hérités qui ne devraient jamais être partagés entre worktrees : `target/` pour Rust, `vendor/` pour PHP, `node_modules/` pour Node. Les **hooks** sont les phases du cycle de vie : `pre_create`, `post_create`, `pre_bootstrap`, `post_bootstrap`, `pre_remove`, `post_remove`, chacune avec un `on_fail = abort | warn | ignore`.
 
-Le moteur de prédicats `when` compose cinq atomes — `file_exists`, `cmd_exists`, `env_set`, `env_eq`, `glob_exists` — avec `!`, `&&`, `||` (précédence `! > && > ||`). On peut écrire `file_exists:package.json && !cmd_exists:bun` pour le fallback npm, ou `glob_exists:src/**/*.rs && !env_set:CI` pour ne lancer un build local que hors CI.
+Le moteur de prédicats `when` compose cinq atomes (`file_exists`, `cmd_exists`, `env_set`, `env_eq`, `glob_exists`) avec `!`, `&&`, `||` (précédence `! > && > ||`). On peut écrire `file_exists:package.json && !cmd_exists:bun` pour le fallback npm, ou `glob_exists:src/**/*.rs && !env_set:CI` pour ne lancer un build local que hors CI.
 
-Écrire ce fichier à la main pour chaque nouveau projet reste du boulot, alors `gwm init --preset <name>` seed une config opinionée pour une stack connue — `laravel`, `node`, `nuxt`, `rust`, `go`, `python-uv` — au lieu du template générique. `--list-presets` les liste, `--show` imprime le TOML résolu sans écrire (pratique pour le differ contre une config existante).
+Écrire ce fichier à la main pour chaque nouveau projet reste du boulot, alors `gwm init --preset <name>` seed une config opinionée pour une stack connue (`laravel`, `node`, `nuxt`, `rust`, `go`, `python-uv`) au lieu du template générique. `--list-presets` les liste, `--show` imprime le TOML résolu sans écrire (pratique pour le differ contre une config existante).
 
 Le résultat est lisible par n'importe qui qui ouvre le repo. Pas besoin de connaître Bash, pas besoin de relire 200 lignes de script. La config raconte l'histoire : voilà ce qui se passe quand on crée un worktree ici. Côté TUI, le rapport de bootstrap s'affiche dans un overlay avec un sigil par step :
 
@@ -122,11 +122,11 @@ Le `·` est volontaire : il dit « j'ai considéré ce step, il n'y avait rien �
 
 Le bootstrap exécute des commandes shell déclarées dans `.gwm.toml`. Or ce fichier est versionné dans le repo. Donc cloner le repo de quelqu'un d'autre et faire `gwm create` dedans revient à exécuter du code arbitraire écrit par l'auteur du repo. Inacceptable en l'état.
 
-![le trust gate TOFU — gwm affiche la surface de bootstrap et demande confirmation avant de rien lancer](/images/blog/gwm/trust.png)
+![le trust gate TOFU : gwm affiche la surface de bootstrap et demande confirmation avant de rien lancer](/images/blog/gwm/trust.png)
 
 La réponse est un **trust ledger TOFU** (_trust on first use_). Au premier `gwm create` / `gwm bootstrap` contre un `.gwm.toml`, gwm affiche la surface de bootstrap (copies, guards, no-symlinks, commandes) et demande confirmation avant de lancer quoi que ce soit. À l'accord, il enregistre la paire `(URL d'origine, sha256 du .gwm.toml)` dans `~/.config/gwm/trust.toml`. Tant que le fichier ne change pas d'un octet, plus de prompt. Au moindre changement de byte, re-prompt.
 
-Le hash porte sur les **octets bruts**, pas sur le TOML parsé — et c'est volontaire :
+Le hash porte sur les **octets bruts**, pas sur le TOML parsé, et c'est volontaire :
 
 ```rust
 // `rm -rf /tmp/` et `rm -rf /tmp /` ne diffèrent que d'un octet
@@ -134,54 +134,54 @@ Le hash porte sur les **octets bruts**, pas sur le TOML parsé — et c'est volo
 // On hashe les bytes, pas le TOML parsé.
 ```
 
-En CI, où le prompt interactif n'a pas de sens, on bypasse avec `--allow-bootstrap` ou `GWM_ALLOW_BOOTSTRAP=1`. Le mode forensic `--deny-bootstrap` refuse même un fichier déjà approuvé. Et `gwm trust list / revoke / show` permet d'inspecter et révoquer le ledger. Le patch 1.0.1 a fermé les deux dernières fuites : `gwm undo --bootstrap` passait à côté du gate (il ré-exécutait le shell de bootstrap sans check) — il est maintenant médié comme les autres chemins ; et le socket du daemon (voir plus bas) a été verrouillé en `0600`. C'est le genre de fonctionnalité invisible quand elle marche, mais qui fait la différence entre un outil personnel et un outil qu'on peut recommander.
+En CI, où le prompt interactif n'a pas de sens, on bypasse avec `--allow-bootstrap` ou `GWM_ALLOW_BOOTSTRAP=1`. Le mode forensic `--deny-bootstrap` refuse même un fichier déjà approuvé. Et `gwm trust list / revoke / show` permet d'inspecter et révoquer le ledger. Le patch 1.0.1 a fermé les deux dernières fuites : `gwm undo --bootstrap` passait à côté du gate (il ré-exécutait le shell de bootstrap sans check) et est maintenant médié comme les autres chemins ; et le socket du daemon (voir plus bas) a été verrouillé en `0600`. C'est le genre de fonctionnalité invisible quand elle marche, mais qui fait la différence entre un outil personnel et un outil qu'on peut recommander.
 
 ## L'interface TUI
 
-La TUI affiche une table (I/P · NAME / BRANCH / STATUS / PATH) aux largeurs adaptatives, avec une sidebar de détails responsive — côte à côte si le terminal est assez large, sinon empilée sous la liste — dont on cycle la disposition (`Space`) et la position (`v`). La colonne `I/P` rend l'état issue/PR de chaque worktree en deux pastilles `●/●`, et le worktree principal garde son `★`.
+La TUI affiche une table (I/P · NAME / BRANCH / STATUS / PATH) aux largeurs adaptatives, avec une sidebar de détails responsive (côte à côte si le terminal est assez large, sinon empilée sous la liste) dont on cycle la disposition (`Space`) et la position (`v`). La colonne `I/P` rend l'état issue/PR de chaque worktree en deux pastilles `●/●`, et le worktree principal garde son `★`.
 
-![la sidebar en disposition côte à côte — status, issue/PR, working tree, commits récents avec le graph](/images/blog/gwm/sidebar.png)
+![la sidebar en disposition côte à côte : status, issue/PR, working tree, commits récents avec le graph](/images/blog/gwm/sidebar.png)
 
-Le contenu de la sidebar (status, diff vs base, arbre des fichiers, commits, stashes) est **caché** sur l'objet `App` et invalidé seulement quand la sélection change ou au refresh. Sans cache, chaque keypress déclencherait plusieurs `git log` / `git status` sur le worktree sélectionné — la responsivité s'effondre dès qu'on tient `j` enfoncé. Une review l'avait attrapé à l'époque : « the PR says cached, but no caching is implemented ». Honteux et utile. Le patch 1.0.1 a fini le boulot : les derniers sous-process git synchrones (`git diff --shortstat`, `git status -z`, `git log`, `git stash list`) qui tournaient encore _dans_ `terminal.draw()` sont désormais déportés hors du thread d'affichage, avec un placeholder `loading…` le temps qu'un worker coalescé les recalcule.
+Le contenu de la sidebar (status, diff vs base, arbre des fichiers, commits, stashes) est **caché** sur l'objet `App` et invalidé seulement quand la sélection change ou au refresh. Sans cache, chaque keypress déclencherait plusieurs `git log` / `git status` sur le worktree sélectionné : la responsivité s'effondre dès qu'on tient `j` enfoncé. Une review l'avait attrapé à l'époque : « the PR says cached, but no caching is implemented ». Honteux et utile. Le patch 1.0.1 a fini le boulot : les derniers sous-process git synchrones (`git diff --shortstat`, `git status -z`, `git log`, `git stash list`) qui tournaient encore _dans_ `terminal.draw()` sont désormais déportés hors du thread d'affichage, avec un placeholder `loading…` le temps qu'un worker coalescé les recalcule.
 
 Le panneau de détails s'est étoffé au fil de la 1.0 :
 
-- **Working Tree en arbre.** Le `git status` du worktree se rend en arbre de fichiers nerd-font (dossiers avant fichiers, chaînes de dossiers uniques collapsées, icône par type d'extension), chaque ligne teintée par sa catégorie de changement (créé vert / modifié jaune / supprimé rouge). Un dossier untracked pathologique est borné (scan stoppé à 5000 records, rendu à 500 feuilles max avec un `… N more`) et les noms sont sanitisés avant rendu — un nom de fichier avec des bytes d'échappement ne peut pas corrompre le layout ni injecter des séquences terminal.
-- **Diff vs base + CI.** Le panneau Status montre une ligne `Diff +ins -del` de la branche contre son trunk de base, et la section Issue/PR surface l'état CI global de la PR liée (` CI passing 9/9`, ` CI failing 7/9`, ` CI running 8/9`) dérivé du `statusCheckRollup` déjà fetché — zéro requête GitHub supplémentaire.
+- **Working Tree en arbre.** Le `git status` du worktree se rend en arbre de fichiers nerd-font (dossiers avant fichiers, chaînes de dossiers uniques collapsées, icône par type d'extension), chaque ligne teintée par sa catégorie de changement (créé vert / modifié jaune / supprimé rouge). Un dossier untracked pathologique est borné (scan stoppé à 5000 records, rendu à 500 feuilles max avec un `… N more`) et les noms sont sanitisés avant rendu : un nom de fichier avec des bytes d'échappement ne peut pas corrompre le layout ni injecter des séquences terminal.
+- **Diff vs base + CI.** Le panneau Status montre une ligne `Diff +ins -del` de la branche contre son trunk de base, et la section Issue/PR surface l'état CI global de la PR liée (` CI passing 9/9`, ` CI failing 7/9`, ` CI running 8/9`) dérivé du `statusCheckRollup` déjà fetché : zéro requête GitHub supplémentaire.
 
 Trois choses font le quotidien :
 
-- **Les overlays PTY.** `l` / `L` ouvrent lazygit dans un PTY embarqué (~90 % / plein écran) _à l'intérieur_ de la TUI — pas de swap d'alternate screen, `Esc` ferme, `q` dans lazygit quitte et auto-ferme l'overlay ; `o` / `O` font pareil pour un shell `$SHELL` natif, et `r` / `R` lancent un outil de review sur la branche contre sa base (gwm-cli utilise `lumen`, mais `claude`, `codex`, `aider` ou `gh` sont câblables via `[review]`).
-- **Les thèmes.** Quatre presets role-based — `catppuccin`, `gruvbox`, `tokyo-night`, `claude-dark` — déclinés sur des rôles sémantiques (`branch`, `dirty`, `clean`, `staged`, `modified`, `accent`…) threadés à travers chaque site de rendu. On surcharge n'importe quel rôle en hex via `[theme.overrides]`.
+- **Les overlays PTY.** `l` / `L` ouvrent lazygit dans un PTY embarqué (~90 % / plein écran) _à l'intérieur_ de la TUI : pas de swap d'alternate screen, `Esc` ferme, `q` dans lazygit quitte et auto-ferme l'overlay ; `o` / `O` font pareil pour un shell `$SHELL` natif, et `r` / `R` lancent un outil de review sur la branche contre sa base (gwm-cli utilise `lumen`, mais `claude`, `codex`, `aider` ou `gh` sont câblables via `[review]`).
+- **Les thèmes.** Quatre presets role-based (`catppuccin`, `gruvbox`, `tokyo-night`, `claude-dark`) déclinés sur des rôles sémantiques (`branch`, `dirty`, `clean`, `staged`, `modified`, `accent`…) threadés à travers chaque site de rendu. On surcharge n'importe quel rôle en hex via `[theme.overrides]`.
 
-![la galerie de thèmes — ici le preset tokyo-night](/images/blog/gwm/theme.png)
+![la galerie de thèmes : ici le preset tokyo-night](/images/blog/gwm/theme.png)
 
-- **Le keymap remappable, éditable en direct.** Toute action est rebindable, avec chords multi-touches (`g g` pour aller en haut), une palette de commandes fuzzy (`:`) qui retrouve chaque action par son nom, et un filtre (`/`) sur la liste. Le panneau **Settings** (`4`) est devenu entièrement éditable — onglets Theme / Worktree / TUI / **Keys** / All, sélecteur de layer projet ↔ global (`L`), toggles / choix / champs numériques et texte qui persistent dans le TOML et s'appliquent à chaud. L'onglet **Keys** capture une nouvelle touche en direct : on sélectionne un bind, on tape, ça écrit un array TOML validé _avant_ de toucher le disque (un conflit avorte et garde l'ancien bind) et le keymap recharge sans redémarrer. Même les touches modales (formulaire create, delete-confirm, prompt de link…) sont remappables sous des sous-tables `[tui.keys.modal.<context>]`.
+- **Le keymap remappable, éditable en direct.** Toute action est rebindable, avec chords multi-touches (`g g` pour aller en haut), une palette de commandes fuzzy (`:`) qui retrouve chaque action par son nom, et un filtre (`/`) sur la liste. Le panneau **Settings** (`4`) est devenu entièrement éditable : onglets Theme / Worktree / TUI / **Keys** / All, sélecteur de layer projet ↔ global (`L`), toggles / choix / champs numériques et texte qui persistent dans le TOML et s'appliquent à chaud. L'onglet **Keys** capture une nouvelle touche en direct : on sélectionne un bind, on tape, ça écrit un array TOML validé _avant_ de toucher le disque (un conflit avorte et garde l'ancien bind) et le keymap recharge sans redémarrer. Même les touches modales (formulaire create, delete-confirm, prompt de link…) sont remappables sous des sous-tables `[tui.keys.modal.<context>]`.
 
-![l'onglet Keys du panneau Settings — capture d'un nouveau bind en direct](/images/blog/gwm/keymap.png)
+![l'onglet Keys du panneau Settings : chaque action et ses touches, Space pour en rebinder une en direct](/images/blog/gwm/keymap.png)
 
 ## Fermer la boucle GitHub : review, statusline
 
 Jusqu'à la 1.0, chaque feature worktree⇄GitHub était _sortante_ : `gwm create` crée une branche, `gwm pr` ouvre une PR. La 1.0 a ajouté la moitié _entrante_.
 
-![le pane Issue/PR sur une vraie PR — badges d'état, CI running, détection éphémère](/images/blog/gwm/github.png)
+![le pane Issue/PR sur une vraie PR : badges d'état, CI running, détection éphémère](/images/blog/gwm/github.png)
 
-**`gwm review <PR#>`** matérialise une PR existante dans un worktree isolé pour la relire / tester / corriger. Il résout la head via `gh`, fetch le ref universel `refs/pull/<N>/head` (cross-fork, valide dans n'importe quel état — open / draft / closed / merged) dans une branche locale `review/pr-<N>-<author>-<slug>`, attache le worktree, lie la PR pour que la sidebar et l'indicateur CI s'allument tout de suite, et pointe la base du diff sur `origin/<base>`. **Safe-by-default** : le bootstrap et les hooks ne tournent _pas_ (le code d'une PR fork exécuterait des commandes arbitraires) — on opte-in avec `--bootstrap` une fois qu'on a confiance.
+**`gwm review <PR#>`** matérialise une PR existante dans un worktree isolé pour la relire / tester / corriger. Il résout la head via `gh`, fetch le ref universel `refs/pull/<N>/head` (cross-fork, valide dans n'importe quel état : open / draft / closed / merged) dans une branche locale `review/pr-<N>-<author>-<slug>`, attache le worktree, lie la PR pour que la sidebar et l'indicateur CI s'allument tout de suite, et pointe la base du diff sur `origin/<base>`. **Safe-by-default** : le bootstrap et les hooks ne tournent _pas_ (le code d'une PR fork exécuterait des commandes arbitraires). On opte-in avec `--bootstrap` une fois qu'on a confiance.
 
-**`gwm statusline`** est le premier consommateur du daemon (voir plus bas) : un client léger, sans dépendance, qui rend un résumé une ligne — branche active · nombre de worktrees · dirty/ahead/behind · issue/PR — pour tmux / starship / zsh. `--watch` suit le stream `subscribe` et réimprime à chaque changement ; sans daemon joignable, il imprime une ligne vide et sort `0`, donc une substitution de prompt dégrade en rien au lieu d'erreurer.
+**`gwm statusline`** est le premier consommateur du daemon (voir plus bas) : un client léger, sans dépendance, qui rend un résumé une ligne (branche active · nombre de worktrees · dirty/ahead/behind · issue/PR) pour tmux / starship / zsh. `--watch` suit le stream `subscribe` et réimprime à chaque changement ; sans daemon joignable, il imprime une ligne vide et sort `0`, donc une substitution de prompt dégrade en rien au lieu d'erreurer.
 
 ## Sortir du repo unique : API JSON, daemon, workspace, fleet chores
 
 L'autre grand chantier de la 1.0, c'est arrêter de supposer qu'on opère sur un seul repo, un seul worktree, en sortie humaine.
 
-**API JSON + daemon.** `--format=json` sur `gwm list` / `doctor` / `path` émet un schéma stable, documenté sous `docs/schema/`, découplé des types internes. Et `gwm daemon` est un serveur JSON-RPC 2.0 sur un socket unix domain (`$XDG_RUNTIME_DIR/gwm.sock`) : méthodes `list` / `doctor` / `path` + un `subscribe` qui stream des notifications `worktrees.changed` (snapshot initial puis une par changement). La détection de changement est du polling par intervalle — choix MVP assumé (pas de dépendance de filesystem-watch, déterministe, MSRV-safe). Les éditeurs et statusbars se connectent une fois au lieu de shell-out par requête.
+**API JSON + daemon.** `--format=json` sur `gwm list` / `doctor` / `path` émet un schéma stable, documenté sous `docs/schema/`, découplé des types internes. Et `gwm daemon` est un serveur JSON-RPC 2.0 sur un socket unix domain (`$XDG_RUNTIME_DIR/gwm.sock`) : méthodes `list` / `doctor` / `path` + un `subscribe` qui stream des notifications `worktrees.changed` (snapshot initial puis une par changement). La détection de changement est du polling par intervalle, choix MVP assumé (pas de dépendance de filesystem-watch, déterministe, MSRV-safe). Les éditeurs et statusbars se connectent une fois au lieu de shell-out par requête.
 
-**Mode workspace multi-repo.** `gwm --workspace ~/Projects` ouvre la TUI sur chaque repo git un niveau sous une racine — une colonne `REPO` tague chaque ligne, le repo actif suit la sélection, donc chaque action (lazygit, sync, delete, link…) opère sur le repo du worktree surligné. `gwm list --workspace ~/Projects` imprime la table fusionnée ; `gwm create --repo <name>` désambiguë la cible. Un `gwm` nu dans un dossier qui n'est pas un repo mais contient des repos enfants propose de l'ouvrir comme workspace.
+**Mode workspace multi-repo.** `gwm --workspace ~/Projects` ouvre la TUI sur chaque repo git un niveau sous une racine : une colonne `REPO` tague chaque ligne, le repo actif suit la sélection, donc chaque action (lazygit, sync, delete, link…) opère sur le repo du worktree surligné. `gwm list --workspace ~/Projects` imprime la table fusionnée ; `gwm create --repo <name>` désambiguë la cible. Un `gwm` nu dans un dossier qui n'est pas un repo mais contient des repos enfants propose de l'ouvrir comme workspace.
 
 **Fleet chores.** Deux sous-commandes qui agissent sur _tout_ le set de worktrees d'un coup :
 
-- **`gwm exec [<slug>...] -- <cmd>`** lance une commande dans chaque worktree — tout ce qui suit `--` est forwardé verbatim — et imprime un rollup `✓ / ✗`, sortie non-zéro si un worktree échoue. Séquentiel par défaut ; `--jobs <n>` borne un parallélisme (la sortie est capturée par worktree pour ne pas s'entrelacer).
-- **`gwm clean [<slug>...]`** reporte les artefacts de build lourds (`target/`, `node_modules/`, `dist/`, `build/`) par worktree, et ne les supprime qu'avec `--yes`. Le garde-fou ne détruit **que** les dossiers que git ignore _et_ qui ne contiennent aucun fichier tracké — un `dist/` tracké ou écrit à la main est reporté « skipped » plutôt que détruit ; les symlinks ne sont jamais suivis.
+- **`gwm exec [<slug>...] -- <cmd>`** lance une commande dans chaque worktree (tout ce qui suit `--` est forwardé verbatim) et imprime un rollup `✓ / ✗`, sortie non-zéro si un worktree échoue. Séquentiel par défaut ; `--jobs <n>` borne un parallélisme (la sortie est capturée par worktree pour ne pas s'entrelacer).
+- **`gwm clean [<slug>...]`** reporte les artefacts de build lourds (`target/`, `node_modules/`, `dist/`, `build/`) par worktree, et ne les supprime qu'avec `--yes`. Le garde-fou ne détruit **que** les dossiers que git ignore _et_ qui ne contiennent aucun fichier tracké : un `dist/` tracké ou écrit à la main est reporté « skipped » plutôt que détruit ; les symlinks ne sont jamais suivis.
 
 Les deux acceptent le `--workspace` pour fan-out sur les repos enfants, et se sauvegardent en profils `[exec.profiles.*]` / `[clean.profiles.*]` dans `.gwm.toml`. Côté TUI, `x` ouvre un picker de profils exec et `X` un overlay clean qui prévisualise les artefacts récupérables derrière le même countdown de sécurité que la suppression.
 
@@ -189,35 +189,35 @@ Les deux acceptent le `--workspace` pour fan-out sur les repos enfants, et se sa
 
 Sous tout ça, une **spine async générique** introduite dès la 0.9.0 : un pattern unique pour déporter n'importe quelle opération hors du thread d'affichage. Le worker calcule des données `Send` possédées hors-thread, puis poste le résultat sur un canal `mpsc` tagué par une _génération_. Deux propriétés :
 
-- **coalescing** — si une opération du même type est déjà en vol, un second déclenchement ne lance pas un deuxième worker ;
-- **late-result drop** — si on relance avant l'arrivée du premier résultat, la génération est incrémentée et le résultat tardif est jeté (fini les données périmées qui écrasent l'état courant).
+- **coalescing** : si une opération du même type est déjà en vol, un second déclenchement ne lance pas un deuxième worker ;
+- **late-result drop** : si on relance avant l'arrivée du premier résultat, la génération est incrémentée et le résultat tardif est jeté (fini les données périmées qui écrasent l'état courant).
 
-Le refresh, le bootstrap, le sync, le fetch GitHub, la création de worktree, la suppression, et depuis la 1.0.1 la reconstruction de toute la sidebar passent par cette spine : le spinner de la statusbar s'anime avec un label, `q` / `Esc` restent réactifs, et la vue Report s'ouvre à la fin. Le trust gate TOFU, lui, reste synchrone sur le thread principal _avant_ que le worker soit lancé — on ne déporte pas une décision de sécurité.
+Le refresh, le bootstrap, le sync, le fetch GitHub, la création de worktree, la suppression, et depuis la 1.0.1 la reconstruction de toute la sidebar passent par cette spine : le spinner de la statusbar s'anime avec un label, `q` / `Esc` restent réactifs, et la vue Report s'ouvre à la fin. Le trust gate TOFU, lui, reste synchrone sur le thread principal _avant_ que le worker soit lancé : on ne déporte pas une décision de sécurité.
 
 ## La surface CLI
 
 La TUI, c'est le confort ; le CLI, c'est ce qui se scripte. gwm expose une trentaine de sous-commandes, dont les principales :
 
-- **Cycle worktree** — `init [--preset <name>]`, `create <type> <issue> <desc>`, `new <type> <desc>` (issue depuis un template puis worktree), `list [--format=json]`, `remove <pattern> [--delete-branch] [--dry-run]`, `path <pattern>`, `prune`, `bootstrap`, `sync [--merge]`.
-- **GitHub** — `link` / `unlink` / `open`, `pr` (rend le corps de PR depuis un template), `review <PR#>` (matérialise une PR), `labels push`, `milestones push`. Les branches en `<type>/#<N>-<slug>` s'auto-lient à leur issue.
-- **Machine & intégrations** — `daemon` (JSON-RPC sur socket), `statusline [--watch]`, `doctor [--format=json]`, `--format=json` sur les commandes de lecture.
-- **Fleet** — `exec [<slug>...] -- <cmd> [--jobs n] [--workspace <root>]`, `clean [<slug>...] [--yes] [--workspace <root>]`.
-- **Multiplexers & shell** — `switch`, `tmux <pattern> [--split]`, `zellij <pattern> [--split]`, `shell-init <shell>` (installe le `gcd` fuzzy-jump et les complétions).
-- **Maintenance & filets** — `undo` + `history` pour récupérer une suppression ratée, `trust`, `aliases`, `config get/set/list/validate`, `types [--gitmoji]`, `theme`, `completions`.
+- **Cycle worktree** : `init [--preset <name>]`, `create <type> <issue> <desc>`, `new <type> <desc>` (issue depuis un template puis worktree), `list [--format=json]`, `remove <pattern> [--delete-branch] [--dry-run]`, `path <pattern>`, `prune`, `bootstrap`, `sync [--merge]`.
+- **GitHub** : `link` / `unlink` / `open`, `pr` (rend le corps de PR depuis un template), `review <PR#>` (matérialise une PR), `labels push`, `milestones push`. Les branches en `<type>/#<N>-<slug>` s'auto-lient à leur issue.
+- **Machine & intégrations** : `daemon` (JSON-RPC sur socket), `statusline [--watch]`, `doctor [--format=json]`, `--format=json` sur les commandes de lecture.
+- **Fleet** : `exec [<slug>...] -- <cmd> [--jobs n] [--workspace <root>]`, `clean [<slug>...] [--yes] [--workspace <root>]`.
+- **Multiplexers & shell** : `switch`, `tmux <pattern> [--split]`, `zellij <pattern> [--split]`, `shell-init <shell>` (installe le `gcd` fuzzy-jump et les complétions).
+- **Maintenance & filets** : `undo` + `history` pour récupérer une suppression ratée, `trust`, `aliases`, `config get/set/list/validate`, `types [--gitmoji]`, `theme`, `completions`.
 
 Les filets de sécurité du quotidien : `--dry-run` sur `remove` / `prune`, le countdown de confirmation sur la suppression armée d'une branche, et `gwm undo` pour restaurer un worktree supprimé par erreur.
 
 ## La 1.0 : geler les contrats
 
-C'est le vrai sens du jalon 1.0 — pas « c'est fini », mais « ce sur quoi tu peux t'appuyer ne cassera pas sans un bump majeur ». Une **policy de stabilité** publiée liste explicitement les surfaces gelées : les sous-commandes / flags / codes de sortie du CLI, les schémas `--format=json` (baseline `SCHEMA_VERSION = 1`), le protocole JSON-RPC du daemon, et le set de sections du `.gwm.toml`. Libres de bouger en minor / patch : le layout et les couleurs de la TUI, les strings human-readable, et l'API Rust interne (le crate ship un `[lib]` uniquement comme couture de test, `#![doc(hidden)]`, sans garantie SemVer).
+C'est le vrai sens du jalon 1.0 : pas « c'est fini », mais « ce sur quoi tu peux t'appuyer ne cassera pas sans un bump majeur ». Une **policy de stabilité** publiée liste explicitement les surfaces gelées : les sous-commandes / flags / codes de sortie du CLI, les schémas `--format=json` (baseline `SCHEMA_VERSION = 1`), le protocole JSON-RPC du daemon, et le set de sections du `.gwm.toml`. Libres de bouger en minor / patch : le layout et les couleurs de la TUI, les strings human-readable, et l'API Rust interne (le crate ship un `[lib]` uniquement comme couture de test, `#![doc(hidden)]`, sans garantie SemVer).
 
-Et ce n'est pas qu'une promesse écrite : `tests/contract_tests.rs` épingle ces surfaces. Un renommage, une suppression, ou un changement de type d'un champ stable fait échouer la CI plutôt que de sortir en break accidentel. Les schémas de sortie sont en `additionalProperties: true` (un champ additif valide sous la même version, les consommateurs ignorent l'inconnu), tandis que `.gwm.toml` garde `deny_unknown_fields` (l'input rejette les typos). Le patch 1.0.1 a durci la ligne côté sécurité : drop de `serde_yml` (non maintenu, unsound — RUSTSEC-2025-0068), job `cargo audit` bloquant, et le socket du daemon verrouillé en owner-only.
+Et ce n'est pas qu'une promesse écrite : `tests/contract_tests.rs` épingle ces surfaces. Un renommage, une suppression, ou un changement de type d'un champ stable fait échouer la CI plutôt que de sortir en break accidentel. Les schémas de sortie sont en `additionalProperties: true` (un champ additif valide sous la même version, les consommateurs ignorent l'inconnu), tandis que `.gwm.toml` garde `deny_unknown_fields` (l'input rejette les typos). Le patch 1.0.1 a durci la ligne côté sécurité : drop de `serde_yml` (non maintenu, unsound : RUSTSEC-2025-0068), job `cargo audit` bloquant, et le socket du daemon verrouillé en owner-only.
 
 ## Industrialiser : tests et release
 
-Construire l'outil, c'est un truc ; l'expédier proprement, c'en est un autre. Le projet repose sur **1902 tests** répartis sur 75 fichiers d'intégration — config (layering repo + global), presets, aliases, hooks, naming, bootstrap, doctor, linking GitHub, review, launchers, overlays PTY, multiplexers, slices d'état de la TUI (keymap, palette, theme, sidebar, Settings), API JSON + daemon, fleet chores, journal undo/history, et opérations worktree libgit2 bout-en-bout, plus les contrats machine gelés. La séparation `lib` / `bin` existe précisément pour que ces tests importent l'API interne sans hack. Des benches `criterion` surveillent le cache de la sidebar et le commit graph.
+Construire l'outil, c'est un truc ; l'expédier proprement, c'en est un autre. Le projet repose sur **1902 tests** répartis sur 75 fichiers d'intégration : config (layering repo + global), presets, aliases, hooks, naming, bootstrap, doctor, linking GitHub, review, launchers, overlays PTY, multiplexers, slices d'état de la TUI (keymap, palette, theme, sidebar, Settings), API JSON + daemon, fleet chores, journal undo/history, et opérations worktree libgit2 bout-en-bout, plus les contrats machine gelés. La séparation `lib` / `bin` existe précisément pour que ces tests importent l'API interne sans hack. Des benches `criterion` surveillent le cache de la sidebar et le commit graph.
 
-Côté livraison : une branche `dev` d'intégration, une `pre-release.yml` sur les tags `-rc.N` / `-alpha.N` / `-beta.N`, une `release.yml` sur les tags stables, les cinq cibles construites à chaque fois, et dependabot configuré sur `dev`. La 1.0.0 a promu tout le train `0.10.0` (rc.1 → rc.4) le 26 juin 2026, suivie des patchs 1.0.1 (hardening + sécurité) et 1.0.2 (le premier jeu de screenshots/recordings des docs — ceux que tu vois dans cet article).
+Côté livraison : une branche `dev` d'intégration, une `pre-release.yml` sur les tags `-rc.N` / `-alpha.N` / `-beta.N`, une `release.yml` sur les tags stables, les cinq cibles construites à chaque fois, et dependabot configuré sur `dev`. La 1.0.0 a promu tout le train `0.10.0` (rc.1 → rc.4) le 26 juin 2026, suivie des patchs 1.0.1 (hardening + sécurité) et 1.0.2 (le premier jeu de screenshots/recordings des docs, ceux que tu vois dans cet article).
 
 ## Installer gwm
 
@@ -230,4 +230,4 @@ Côté livraison : une branche `dev` d'intégration, une `pre-release.yml` sur l
 | Nix flake | `nix profile install github:kbrdn1/gwm-cli` |
 | Précompilé | [releases GitHub](https://github.com/kbrdn1/gwm-cli/releases) (Linux / macOS / Windows) |
 
-Le crate est publié sous **`gwm-cli`** (le nom `gwm` sur crates.io appartient à un projet tiers sans rapport) — la commande installée reste `gwm`. Le code source est sur [github.com/kbrdn1/gwm-cli](https://github.com/kbrdn1/gwm-cli), en double licence MIT ou Apache-2.0, au choix — c'est la moitié Apache qui porte la clause de brevet explicite, celle qu'une revue juridique cherche. Une fois en place, fais `gwm init` puis `gwm` dans n'importe quel repo git — et vois si ça fait disparaître la friction qu'il a été conçu pour éliminer. C'est le seul critère qui compte pour un outil personnel.
+Le crate est publié sous **`gwm-cli`** (le nom `gwm` sur crates.io appartient à un projet tiers sans rapport) ; la commande installée reste `gwm`. Le code source est sur [github.com/kbrdn1/gwm-cli](https://github.com/kbrdn1/gwm-cli), en double licence MIT ou Apache-2.0, au choix. C'est la moitié Apache qui porte la clause de brevet explicite, celle qu'une revue juridique cherche. Une fois en place, fais `gwm init` puis `gwm` dans n'importe quel repo git, et vois si ça fait disparaître la friction qu'il a été conçu pour éliminer. C'est le seul critère qui compte pour un outil personnel.

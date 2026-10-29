@@ -17,6 +17,9 @@ const { data: post } = await useAsyncData(
   },
   { watch: [locale] },
 )
+// Neither language has it: a real 404 for the reader and the crawlers, not an empty 200
+if (!post.value)
+  throw createError({ statusCode: 404, statusMessage: 'Article not found', fatal: true })
 
 // Fetch related posts (recent posts excluding current)
 const { data: relatedPosts } = await useAsyncData(
@@ -28,13 +31,33 @@ const { data: relatedPosts } = await useAsyncData(
   { watch: [locale] },
 )
 
-// Reading time estimate (~200 words/min)
-const readingTime = computed(() => {
-  if (!post.value?.body) return 0
-  const text = JSON.stringify(post.value.body)
-  const wordCount = text.split(/\s+/).length
-  return Math.max(1, Math.ceil(wordCount / 200))
-})
+const minutes = computed(() => readingTime(post.value?.body))
+const { formatDate } = useFormatDate()
+// The gwm card beside the article: gwm's banner, in the colour mode
+const $img = useImage()
+const colorMode = useColorMode()
+const gwmBanner = computed(() =>
+  $img(blogBanner('/images/blog/gwm/cover.jpg', isDarkMode(colorMode.value)), {
+    width: 640,
+    format: 'webp',
+  }),
+)
+
+// The device's own share sheet (Web Share), where the browser has one: checked once mounted,
+// the server cannot know
+const canShare = ref(false)
+onMounted(() => (canShare.value = typeof navigator.share === 'function'))
+async function share() {
+  try {
+    await navigator.share({
+      title: post.value?.title,
+      text: post.value?.description,
+      url: window.location.href,
+    })
+  } catch {
+    // Dismissed, or refused: nothing to do
+  }
+}
 
 // Copy link functionality
 const linkCopied = ref(false)
@@ -59,22 +82,65 @@ async function copyLink() {
   }
 }
 
-if (post.value) {
-  useSeoMeta({
-    title: post.value.title,
-    description: post.value.description,
-  })
-  if (import.meta.server) {
-    defineOgImage('Blog', {
-      title: post.value.title,
-      description: post.value.description,
-      publishedAt: post.value.publishedAt,
-      tags: post.value.tags || [],
-      slug,
-      bannerImage: post.value.bannerImage || '/images/banners/dark.jpg',
-    })
-  }
-}
+// The language the article is written in: the other one's when it isn't translated yet
+const postLang = computed(() => (post.value?.id.startsWith('blog_fr') ? 'fr' : 'en'))
+// Reads it aloud, from the table of contents (and from each heading)
+const reader = useArticleReader(
+  () => post.value?.title ?? '',
+  () => postLang.value,
+)
+const siteUrl = useSiteUrl()
+const localePath = useLocalePath()
+const person = usePersonRef()
+useSeoMeta({
+  title: () => post.value?.title,
+  description: () => post.value?.description,
+  ogTitle: () => post.value?.title,
+  ogDescription: () => post.value?.description,
+  ogType: 'article',
+  articlePublishedTime: () => post.value?.publishedAt,
+  articleAuthor: [siteUrl('/')],
+  articleTag: () => post.value?.tags ?? [],
+  twitterCard: 'summary_large_image',
+})
+usePageSchema(
+  'WebPage',
+  () => ({ name: post.value?.title ?? '', description: post.value?.description }),
+  {
+    trail: () => [
+      { name: t('nav.blog'), path: '/blog' },
+      { name: post.value?.title ?? '', path: `/blog/${slug}` },
+    ],
+    nodes: () => [
+      {
+        '@type': 'BlogPosting',
+        '@id': `${siteUrl(route.path)}#article`,
+        mainEntityOfPage: { '@id': `${siteUrl(route.path)}#webpage` },
+        isPartOf: { '@id': `${siteUrl(localePath('/blog'))}#blog` },
+        headline: post.value?.title,
+        description: post.value?.description,
+        inLanguage: postLang.value,
+        ...(post.value?.publishedAt && {
+          datePublished: post.value.publishedAt,
+          dateModified: post.value.publishedAt,
+        }),
+        ...(post.value?.bannerImage && { image: siteUrl(post.value.bannerImage) }),
+        keywords: post.value?.tags?.join(', '),
+        timeRequired: `PT${minutes.value}M`,
+        author: person,
+        publisher: person,
+      },
+    ],
+  },
+)
+useSiteOgImage('Blog', {
+  title: post.value.title,
+  description: post.value.description,
+  date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
+  tags: post.value.tags || [],
+  minutes: minutes.value,
+  bannerImage: ogBanner(post.value.bannerImage),
+})
 
 // Table of contents
 interface TocItem {
@@ -127,7 +193,7 @@ onMounted(() => {
           }
         }
       },
-      { rootMargin: '-80px 0px -70% 0px' },
+      { rootMargin: '-112px 0px -70% 0px' },
     )
 
     headings.forEach((heading) => observer!.observe(heading))
@@ -150,11 +216,17 @@ const activeHeadingText = computed(() => {
 })
 
 function scrollToHeading(id: string) {
+  // While reading, a step of the table of contents reads from it too
+  if (reader.playing.value) reader.playFrom(id)
   const el = document.getElementById(id)
   if (el) {
-    const offset = 80
+    // Under the floating navbar and its notch (they end at 90px), like the router's anchors
+    const offset = 112
     const top = el.getBoundingClientRect().top + window.scrollY - offset
-    window.scrollTo({ top, behavior: 'smooth' })
+    window.scrollTo({ top, behavior: isMotionReduced() ? 'auto' : 'smooth' })
+    // The reader (and a screen reader) goes on from the heading, not from the contents
+    el.setAttribute('tabindex', '-1')
+    el.focus({ preventScroll: true })
   }
 }
 </script>
@@ -165,15 +237,18 @@ function scrollToHeading(id: string) {
     <div ref="articleRef" class="w-full flex flex-col items-center relative z-10">
       <!-- Article found -->
       <article v-if="post" class="w-full" style="max-width: 80rem; margin: 0 auto">
-        <BlogArticleHeader :post="post" :reading-time="readingTime" />
+        <!-- The post's language on its own text, not on the article: on a fallback, the
+             header's date, the TOC, the sidebar and the footer stay in the page's -->
+        <BlogArticleHeader :post="post" :reading-time="minutes" :lang="postLang" />
 
         <div class="flex gap-6 lg:gap-10 px-4 sm:px-6 lg:px-12 pb-8 sm:pb-12">
           <!-- Main column -->
           <div class="flex-1 min-w-0">
             <!-- Article body -->
-            <div class="prose-blog">
+            <div class="prose-blog" :lang="postLang">
               <ContentRenderer :value="post" />
             </div>
+            <BlogReaderHeadings :reader="reader" />
           </div>
 
           <!-- TOC sidebar + promo card -->
@@ -183,13 +258,14 @@ function scrollToHeading(id: string) {
                 :items="tocItems"
                 :active-heading="activeHeading"
                 :progress="readProgress"
+                :reader="reader"
                 @scroll-to="scrollToHeading"
               />
               <BlogSidebarCard
-                title="gwm — Git Worktree Manager"
-                description="A Rust CLI + TUI to manage Git worktrees across all your projects, with per-repo bootstrap."
-                image="/images/blog/gwm/banner.png"
-                badge="New"
+                title="gwm: Git Worktree Manager"
+                :description="t('blog.sidebar.gwm')"
+                :image="gwmBanner"
+                :badge="t('blog.sidebar.new')"
                 url="https://github.com/kbrdn1/gwm-cli"
               />
             </div>
@@ -199,30 +275,36 @@ function scrollToHeading(id: string) {
         <!-- Footer -->
         <footer class="mt-12 mb-28 lg:mb-16 space-y-8 px-6 lg:px-12">
           <!-- Separator -->
-          <div class="border-b border-neutral-200 dark:border-neutral-800" />
+          <div class="border-b border-dashed border-(--card-border)" />
 
-          <!-- Share section -->
-          <div>
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-3">
-              {{ t('blog.shareArticle') }}
-            </h2>
-            <button
-              type="button"
-              :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
-              class="inline-flex items-center gap-2 border border-neutral-200 dark:border-neutral-800 px-3 py-1.5 font-mono text-xs text-neutral-600 dark:text-neutral-400 hover:border-primary-500 hover:text-primary-500 transition-colors"
-              @click="copyLink"
-            >
-              <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-3" />
-              {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
-            </button>
+          <!-- Share section, a megaphone calling it out beside the buttons -->
+          <div class="relative">
+            <UiCameo name="megaphone" place="area" />
+            <h2 class="eyebrow mb-3">{{ t('blog.shareArticle') }}</h2>
+            <div class="flex flex-wrap gap-2">
+              <button v-if="canShare" type="button" class="btn btn-primary btn-sm" @click="share">
+                <UIcon name="i-lucide-share" class="size-4" aria-hidden="true" />
+                {{ t('blog.share') }}
+              </button>
+              <button
+                type="button"
+                :aria-label="linkCopied ? t('blog.linkCopied') : t('blog.copyLink')"
+                class="btn btn-outline btn-sm"
+                @click="copyLink"
+              >
+                <UIcon :name="linkCopied ? 'i-lucide-check' : 'i-lucide-link'" class="size-4" />
+                {{ linkCopied ? t('blog.linkCopied') : t('blog.copyLink') }}
+              </button>
+              <span class="sr-only" role="status">{{
+                linkCopied ? t('blog.linkCopied') : ''
+              }}</span>
+            </div>
           </div>
 
           <!-- More articles -->
           <div v-if="relatedPosts?.length">
-            <h2 class="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-4">
-              {{ t('blog.moreArticles') }}
-            </h2>
-            <div class="divide-y divide-neutral-200 dark:divide-neutral-800">
+            <h2 class="eyebrow mb-3">{{ t('blog.moreArticles') }}</h2>
+            <div class="panel space-y-1">
               <BlogPostRow v-for="related in relatedPosts" :key="related.path" :post="related" />
             </div>
           </div>
@@ -231,12 +313,6 @@ function scrollToHeading(id: string) {
           <BlogBackLink />
         </footer>
       </article>
-
-      <!-- 404 state -->
-      <div v-else class="w-full max-w-3xl mx-auto px-6 py-24 text-center">
-        <p class="text-lg text-neutral-500 mb-6">{{ t('blog.notFound') }}</p>
-        <BlogBackLink />
-      </div>
     </div>
 
     <!-- Mobile TOC -->
@@ -245,6 +321,7 @@ function scrollToHeading(id: string) {
       :active-heading="activeHeading"
       :active-heading-text="activeHeadingText"
       :progress="readProgress"
+      :reader="reader"
       @scroll-to="scrollToHeading"
     />
   </div>

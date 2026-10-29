@@ -2,10 +2,13 @@
    Monaspace Fonts - Variable Web Fonts
    ═══════════════════════════════════════════════════ */
 
-/* Monaspace Krypton - Mechanical/industrial for general mono */
+/* Monaspace Krypton - Mechanical/industrial for general mono. If a browser fails on the
+   variable font, it falls back to the static one (the OG images' file), not to Courier. */
 @font-face {
   font-family: "Monaspace Krypton";
-  src: url("/fonts/monaspace/MonaspaceKrypton.woff2") format("woff2-variations");
+  src:
+    url("/fonts/monaspace/MonaspaceKrypton.woff2") format("woff2-variations"),
+    url("/fonts/monaspace/MonaspaceKrypton-Static.ttf") format("truetype");
   font-weight: 200 800;
   font-style: normal;
   font-display: swap;

@@ -1,4 +1,5 @@
 import pkg from './package.json'
+import { LOCALIZED_PAGES } from './shared/localizedPages'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -37,19 +38,43 @@ export default defineNuxtConfig({
   },
 
   // i18n configuration
+  // French at the root, English under /en/: each language has its own URLs, so both are
+  // indexed (one URL served by a cookie only ever showed the crawlers one language). A
+  // reader's choice is kept in the cookie; the root sends a first visit in English to /en
+  // only, and a reader with no language preference (a crawler) stays on the French root.
   i18n: {
     locales: [
-      { code: 'en', name: 'English', file: 'en.ts' },
-      { code: 'fr', name: 'Français', file: 'fr.ts' },
+      { code: 'fr', name: 'Français', language: 'fr-FR', file: 'fr.ts' },
+      { code: 'en', name: 'English', language: 'en-US', file: 'en.ts' },
     ],
-    defaultLocale: 'en',
+    defaultLocale: 'fr',
     langDir: 'locales',
-    strategy: 'no_prefix',
+    strategy: 'prefix_except_default',
+    // A page's own words in each language's URL (shared/localizedPages): /parcours,
+    // /en/journey. Links to it go by route name (localePath leaves a path as it is)
+    customRoutes: 'config',
+    pages: LOCALIZED_PAGES,
     detectBrowserLanguage: {
       useCookie: true,
       cookieKey: 'i18n_locale',
-      fallbackLocale: 'en',
+      redirectOn: 'root',
+      fallbackLocale: 'fr',
     },
+  },
+
+  // The hero's easter egg (HomeWalkout) is imported on its fifth click: no prefetch hint for its
+  // chunk and its styles, which every visit to the home would download for an egg few hatch
+  hooks: {
+    'build:manifest': (manifest) => {
+      for (const [key, chunk] of Object.entries(manifest))
+        if (key.includes('Walkout')) chunk.prefetch = false
+    },
+  },
+
+  // The old address of /parcours (and /en/journey), for the links and the indexes out there
+  routeRules: {
+    '/experience': { redirect: { to: '/parcours', statusCode: 301 } },
+    '/en/experience': { redirect: { to: '/en/journey', statusCode: 301 } },
   },
 
   // Reference to main CSS file with Claude Dark theme
@@ -79,6 +104,11 @@ export default defineNuxtConfig({
         provider: 'local',
         src: '/fonts/monaspace/MonaspaceKrypton-Static.ttf',
       },
+      // Inter for the OG images only (public/fonts/inter, static TTF, Latin subset). Google
+      // serves Inter as a variable font, which satori cannot read: nuxt-og-image then falls
+      // back to a static download whose result depends on the machine (Fenix on the CI runner).
+      // No preload: global would otherwise make every page download a font it never uses.
+      { name: 'Inter OG', provider: 'local', weights: [400, 500], global: true, preload: false },
     ],
   },
 
@@ -88,33 +118,42 @@ export default defineNuxtConfig({
     resendApiKey: process.env.RESEND_API_KEY || '',
     // Identité du build, exposée par /api/health. Figée ici au moment du
     // build : c'est ce qui rend l'image auto-descriptive, une valeur lue à
-    // l'exécution suivrait le conteneur, pas l'artefact.
-    //
-    // APP_VERSION porte la version du tag, suffixe de pré-release compris
-    // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
-    // (`1.1.0`) — sans ça deux candidats successifs seraient indiscernables.
-    appVersion: process.env.APP_VERSION || pkg.version,
+    // l'exécution suivrait le conteneur, pas l'artefact. La version est dans
+    // `public`, plus bas.
     gitSha: process.env.GIT_SHA || 'dev',
     // Figée au build elle aussi, via le build-arg APP_ENV que passent les deux
     // workflows : le déploiement traverse un wrapper sur le VPS, donc rien ne
     // garantit qu'une variable de run atteigne le conteneur.
     //
     // Elle reste surchargeable à l'exécution, mais seulement par la convention
-    // Nuxt `NUXT_<CLÉ>` — c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
+    // Nuxt `NUXT_<CLÉ>` : c'est `NUXT_APP_ENV`, un `APP_ENV` nu est ignoré une
     // fois le build figé.
     appEnv: process.env.APP_ENV || 'local',
+    public: {
+      // La version du build, publique : le footer l'affiche, /api/health la renvoie.
+      // APP_VERSION porte la version du tag, suffixe de pré-release compris
+      // (`1.1.0-rc.2`), là où package.json ne connaît que la version cible
+      // (`1.1.0`) : sans ça deux candidats successifs seraient indiscernables.
+      appVersion: process.env.APP_VERSION || pkg.version,
+      // Les CV (FR, EN) sont hébergés hors du repo, qui est public : leurs adresses
+      // arrivent en build-args depuis les variables du dépôt (vars.CV_URL_FR / _EN),
+      // surchargeables à l'exécution par NUXT_PUBLIC_CV_URL_FR / _EN. Vides, les
+      // sections qui proposent le CV ne s'affichent pas.
+      cvUrlFr: process.env.CV_URL_FR || '',
+      cvUrlEn: process.env.CV_URL_EN || '',
+    },
   },
 
-  // Page transition
   app: {
     head: {
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
-    pageTransition: {
-      name: 'page',
-      mode: 'out-in',
-    },
   },
+
+  // Pages cross-fade through view transitions: snapshots keep the glass panels blurred, where
+  // a Vue page transition put the page under an opacity that turned their blur off. Skipped
+  // under reduced motion; browsers without them just swap the page.
+  experimental: { viewTransition: true },
 
   // Content configuration (collections defined in content.config.ts)
   content: {},

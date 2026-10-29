@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from '#imports'
+
+const { t } = useI18n()
+
 withDefaults(
   defineProps<{
     title: string
@@ -17,60 +21,73 @@ withDefaults(
 
 const dismissed = ref(false)
 const isHovered = ref(false)
+// The actions open for the keyboard too: focus inside the card counts as a hover
+const focused = ref(false)
+function onFocusOut(event: FocusEvent) {
+  focused.value = (event.currentTarget as HTMLElement).contains(event.relatedTarget as Node)
+}
 
+// The focus was on the button about to go: it moves back to what comes before the card
+const root = ref<HTMLElement>()
 function dismiss() {
+  const card = root.value
+  const before = card
+    ? [...document.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]')]
+        .filter((el) => card.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING)
+        .pop()
+    : undefined
   dismissed.value = true
+  before?.focus()
 }
 </script>
 
 <template>
-  <div v-if="!dismissed" class="w-full">
+  <div v-if="!dismissed" ref="root" class="w-full">
     <div
-      class="relative overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 transition-all duration-300 hover:border-primary-500/40"
+      class="panel-card relative isolate overflow-hidden p-1.5 transition-colors hover:border-primary-500/40"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
+      @focusin="focused = true"
+      @focusout="onFocusOut"
     >
+      <UiPixelCanvas />
       <!-- Image -->
-      <div v-if="image" class="relative h-36 overflow-hidden">
-        <img
-          :src="image"
-          :alt="title"
-          class="w-full h-full object-cover transition-transform duration-500"
-          :class="isHovered ? 'scale-105' : 'scale-100'"
-        />
+      <div v-if="image" class="relative h-36 overflow-hidden rounded-[10px] bg-(--placeholder)">
+        <!-- Client only like every pixel picture: its src may follow the colour mode, which the
+             server cannot know -->
+        <ClientOnly>
+          <UiPixelImage :src="image" class="size-full" reveal />
+        </ClientOnly>
         <div
-          class="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/30 to-transparent"
+          class="pointer-events-none absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-neutral-950/30 to-transparent"
         />
 
         <!-- Badge -->
         <span
           v-if="badge"
-          class="absolute top-2.5 right-2.5 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-primary-500 border border-primary-500/40 bg-primary-500/15"
+          class="tag pointer-events-none absolute top-2.5 right-2.5 text-primary-800 dark:text-primary-500"
         >
           {{ badge }}
         </span>
 
         <!-- Title overlay on image -->
-        <div class="absolute bottom-0 left-0 right-0 p-3">
-          <h4 class="text-sm font-bold text-white leading-snug" style="font-family: 'Fenix', serif">
+        <div class="pointer-events-none absolute bottom-0 left-0 right-0 p-3">
+          <p class="text-sm font-medium leading-snug text-white">
             {{ title }}
-          </h4>
+          </p>
         </div>
       </div>
 
       <!-- No image: title in body -->
       <div v-else class="p-3 pb-0">
         <div class="flex items-start justify-between gap-2">
-          <h4
+          <p
             class="text-sm font-bold text-neutral-900 dark:text-neutral-100 leading-snug"
             style="font-family: 'Fenix', serif"
           >
             {{ title }}
-          </h4>
-          <span
-            v-if="badge"
-            class="shrink-0 px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider text-primary-500 border border-primary-500/40 bg-primary-500/15"
-          >
+          </p>
+          <span v-if="badge" class="tag shrink-0 text-primary-800 dark:text-primary-500">
             {{ badge }}
           </span>
         </div>
@@ -86,7 +103,7 @@ function dismiss() {
       <!-- Hover actions (grid height animation) -->
       <div
         class="grid overflow-hidden"
-        :class="isHovered ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+        :class="isHovered || focused ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
         style="
           transition:
             grid-template-rows 250ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -101,15 +118,15 @@ function dismiss() {
               rel="noopener noreferrer"
               class="text-[11px] font-mono font-bold text-primary-500 hover:text-primary-400 transition-colors"
             >
-              Read more
+              {{ t('blog.sidebar.readMore') }}<span class="sr-only">: {{ title }}</span>
             </a>
             <button
               v-if="dismissable"
               type="button"
-              class="text-[11px] font-mono text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors cursor-pointer"
+              class="text-[11px] font-mono text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-300 transition-colors cursor-pointer"
               @click.stop="dismiss"
             >
-              Dismiss
+              {{ t('blog.sidebar.dismiss') }}
             </button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Check de github-deploy.sh — c'est le point d'entrée root du pipeline de
+# Check de github-deploy.sh : c'est le point d'entrée root du pipeline de
 # déploiement. Ce qu'on vérifie : l'allowlist ne laisse pas passer une variable
 # capable de détourner l'exécution (PATH en tête), et les commandes réellement
 # émises par les workflows continuent de fonctionner.
@@ -14,7 +14,7 @@ FAILED=0
 # On neutralise ça avec un faux /srv via PATH ? Non : le chemin est absolu. On
 # se limite donc aux chemins qui n'exécutent pas deploy.sh (refus d'une
 # variable, action inconnue, ping), plus une vérification que les variables
-# autorisées sont bien exportées — via `ping`, qui n'exec rien.
+# autorisées sont bien exportées, via `ping`, qui n'exec rien.
 run() {  # run <SSH_ORIGINAL_COMMAND> ; imprime stdout+stderr, renvoie le code
   SSH_ORIGINAL_COMMAND="$1" bash "$HERE/github-deploy.sh" 2>&1
 }
@@ -25,7 +25,7 @@ expect_reject() {  # une variable hors allowlist doit faire échouer AVANT tout 
   if [[ $rc -ne 0 ]] && grep -q "variable refusée" <<< "$out"; then
     echo "  ok   $desc"
   else
-    echo "  FAIL $desc — rc=$rc, sortie: $out"
+    echo "  FAIL $desc ; rc=$rc, sortie: $out"
     FAILED=1
   fi
 }
@@ -36,7 +36,7 @@ expect_ok() {  # doit aboutir (chemins sans exec)
   if [[ $rc -eq 0 ]] && grep -q "$needle" <<< "$out"; then
     echo "  ok   $desc"
   else
-    echo "  FAIL $desc — rc=$rc, sortie: $out"
+    echo "  FAIL $desc ; rc=$rc, sortie: $out"
     FAILED=1
   fi
 }
@@ -50,11 +50,11 @@ expect_reject "variable inconnue"    'TOTO=1 ping'
 
 echo "commandes réellement émises par les workflows"
 # Exactement ce que construisent deploy.yml et release.yml (secrets tronqués).
-expect_ok "5 variables autorisées + ping" \
-  'ENV=prod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:v1.0.0 GITHUB_TOKEN=t RESEND_API_KEY=r NUXT_STUDIO_TOKEN=s ping' \
+expect_ok "6 variables autorisées + ping" \
+  'ENV=prod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:v1.0.0 GITHUB_TOKEN=t RESEND_API_KEY=r NUXT_STUDIO_TOKEN=s NUXT_APP_SECRET=a ping' \
   'pong from'
 expect_ok "secrets vides (NUXT_STUDIO_TOKEN non défini)" \
-  'ENV=preprod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:dev GITHUB_TOKEN=t RESEND_API_KEY= NUXT_STUDIO_TOKEN= ping' \
+  'ENV=preprod IMAGE=ghcr.io/kbrdn1/kbrdn.dev:dev GITHUB_TOKEN=t RESEND_API_KEY= NUXT_STUDIO_TOKEN= NUXT_APP_SECRET= ping' \
   'pong from'
 
 echo "actions"
@@ -64,7 +64,7 @@ out=$(run 'ENV=prod frobnicate'); rc=$?
 if [[ $rc -ne 0 ]] && grep -q "action inconnue" <<< "$out"; then
   echo "  ok   action inconnue → exit non nul"
 else
-  echo "  FAIL action inconnue — rc=$rc, sortie: $out"
+  echo "  FAIL action inconnue ; rc=$rc, sortie: $out"
   FAILED=1
 fi
 

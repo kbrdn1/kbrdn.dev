@@ -1,0 +1,498 @@
+// The career and open source facts behind /experience and the home's Parcours teaser.
+// Text lives in i18n (experiences.*, studies.*, experiencePage.openSource.*); this file
+// only holds what does not translate: ids, dates, stacks, links. Open source entries are
+// facts checked on GitHub: `merged` and `review` are pull requests, `report` an issue.
+
+export interface Experience {
+  id: string
+  key: string
+  company: string
+  logo: string
+  startDate: string
+  endDate: string | null
+  technologies: string[]
+  tasksCount: number
+  /** An illustration beside the summary: its banner (scripts/banners.ts) */
+  image?: string
+  /** Where the company lives online */
+  sites?: Site[]
+}
+
+/** A company's, a client's or a school's site, its domain as label */
+export interface Site {
+  label: string
+  url: string
+}
+
+export interface Study {
+  id: string
+  key: string
+  school: string
+  logo: string
+  level: string
+  startDate: string
+  endDate: string | null
+  technologies: string[]
+  skillsCount: number
+  sites?: Site[]
+  /** An illustration beside the summary: its banner (scripts/banners.ts) */
+  image?: string
+}
+
+export const EXPERIENCES: Experience[] = [
+  {
+    id: 'flippad',
+    key: 'flippad',
+    company: 'Jewely x Flippad',
+    logo: '/images/logos/jewely-x-flippad.png',
+    image: '/images/parcours/flippad/cover.jpg',
+    sites: [
+      { label: 'flippad.com', url: 'https://www.flippad.com' },
+      { label: 'jewely.fr', url: 'https://www.jewely.fr' },
+    ],
+    startDate: '2023-10',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel',
+      'Vue',
+      'Nuxt',
+      'AWS',
+      'React',
+      'Symfony',
+      'Redis',
+      'Stripe',
+      'Hono.js',
+      'Prisma',
+    ],
+    tasksCount: 3,
+  },
+  {
+    id: 'virtual-immersion',
+    key: 'virtualImmersion',
+    company: 'Virtual Immersion',
+    logo: '/images/logos/virtual-immersion.png',
+    image: '/images/parcours/virtual-immersion/cover.jpg',
+    startDate: '2022-11',
+    endDate: '2023-09',
+    technologies: ['Symfony', 'Laravel', 'React', 'WordPress', 'MySQL', 'Tailwind CSS'],
+    tasksCount: 4,
+  },
+]
+
+// The projects of a role, shown under it on /experience (after isrod.eu's "↳" entries).
+// Only Kylian's own share of each, checked in the repositories' history: the products of
+// clients he worked on, not tooling. Text in experiencePage.work.<key>.
+export interface Project {
+  id: string
+  key: string
+  /** The Experience it belongs to */
+  parent: string
+  name: string
+  startDate: string
+  endDate: string | null
+  technologies: string[]
+  /** Its frameworks, on the home's card */
+  stack: string[]
+  /** Share of the code by language, the six largest, as on GitHub's own bar: the repositories
+   * are private, measured on their clones' default branch on 2026-10-28 (bytes per language,
+   * vendored, generated and docs left out, like linguist), GitHub's colours */
+  languages: Language[]
+  highlightsCount: number
+  /** Public site, when the product has one */
+  site?: string
+  /** Content path of a blog post about it ("To read") */
+  article?: string
+  /** An illustration: its banner (scripts/banners.ts), over its public site, its README or its
+   * maker's site (public/images/projects) */
+  image?: string
+  /** The product's logo, square (public/images/logos) */
+  logo?: string
+  /** The clients' sites */
+  clients?: Site[]
+}
+
+/** A framework's swatch on the home's cards, in its brand's colour; any other takes the colour
+ * of the project's main language */
+export const FRAMEWORK_COLORS: Record<string, string> = {
+  Laravel: '#FF2D20',
+  Vue: '#41B883',
+}
+
+export interface Language {
+  name: string
+  color: string | null
+  percentage: number
+}
+
+// Most recent first, like the strip
+export const PROJECTS: Project[] = [
+  {
+    id: 'jewely-ecommerce',
+    key: 'jewelyEcommerce',
+    parent: 'flippad',
+    name: 'Jewely E-commerce',
+    startDate: '2026-06',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel 13',
+      'PHP 8.5',
+      'Vue 3',
+      'Inertia',
+      'TypeScript',
+      'MySQL',
+      'Redis',
+      'Docker Swarm',
+      'GitHub Actions',
+    ],
+    stack: ['Laravel 13'],
+    languages: [
+      { name: 'PHP', color: '#4F5D95', percentage: 40.3 },
+      { name: 'Blade', color: '#f7523f', percentage: 26.9 },
+      { name: 'Vue', color: '#41b883', percentage: 18.2 },
+      { name: 'JavaScript', color: '#f1e05a', percentage: 5.7 },
+      { name: 'SCSS', color: '#c6538c', percentage: 3.6 },
+      { name: 'CSS', color: '#663399', percentage: 2.5 },
+    ],
+    highlightsCount: 4,
+    image: '/images/parcours/jewely-ecommerce/cover.jpg',
+    logo: '/images/logos/jewely.jpeg',
+    clients: [
+      { label: 'bijouterie-julian.com', url: 'https://www.bijouterie-julian.com' },
+      { label: 'crown-dp.com', url: 'https://www.crown-dp.com' },
+    ],
+  },
+  {
+    id: 'fiches-pedagogiques',
+    key: 'fichesPedagogiques',
+    parent: 'flippad',
+    name: 'Fiches Pédagogiques',
+    startDate: '2024-10',
+    endDate: '2026-09',
+    technologies: [
+      'Laravel 13',
+      'PHP 8.5',
+      'MySQL',
+      'Redis',
+      'Elasticsearch',
+      'Stripe',
+      'Nuxt 4',
+      'TypeScript',
+      'Go',
+      'AWS',
+    ],
+    stack: ['Laravel 13', 'Nuxt 4'],
+    languages: [
+      { name: 'PHP', color: '#4F5D95', percentage: 62.3 },
+      { name: 'Vue', color: '#41b883', percentage: 15.2 },
+      { name: 'TypeScript', color: '#3178c6', percentage: 9.3 },
+      { name: 'Go', color: '#00ADD8', percentage: 6.6 },
+      { name: 'Shell', color: '#89e051', percentage: 3.1 },
+      { name: 'HTML', color: '#e34c26', percentage: 2.7 },
+    ],
+    highlightsCount: 4,
+    site: 'https://www.fichespedagogiques.com',
+    article: '/blogs/fiches-pedagogiques',
+    image: '/images/parcours/fiches-pedagogiques/cover.jpg',
+    logo: '/images/logos/fiches-pedagogiques.png',
+    clients: [{ label: 'martin-media.fr', url: 'https://martin-media.fr' }],
+  },
+  {
+    id: 'jewely-configurator',
+    key: 'jewelyConfigurator',
+    parent: 'flippad',
+    name: 'Jewely Configurator',
+    startDate: '2024-04',
+    endDate: '2024-10',
+    technologies: [
+      'Vue 3',
+      'Pinia',
+      'Panda CSS',
+      'Hono',
+      'Prisma',
+      'AWS Lambda',
+      'WooCommerce',
+      'Bun',
+    ],
+    stack: ['Vue 3'],
+    languages: [
+      { name: 'TypeScript', color: '#3178c6', percentage: 74.1 },
+      { name: 'Vue', color: '#41b883', percentage: 22.9 },
+      { name: 'Shell', color: '#89e051', percentage: 2.6 },
+      { name: 'PHP', color: '#4F5D95', percentage: 0.2 },
+      { name: 'HTML', color: '#e34c26', percentage: 0.1 },
+    ],
+    highlightsCount: 3,
+    image: '/images/parcours/jewely-configurator/cover.jpg',
+    logo: '/images/logos/jewely-configurator.png',
+    clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
+  },
+  {
+    id: 'assmat-facile',
+    key: 'assmatFacile',
+    parent: 'flippad',
+    name: 'Assmat Facile',
+    startDate: '2024-01',
+    endDate: '2026-06',
+    technologies: [
+      'Symfony 5.4',
+      'PHP 8.1',
+      'Doctrine',
+      'MySQL',
+      'Stripe',
+      'React 16',
+      'TypeScript',
+      'Heroku',
+    ],
+    stack: ['Symfony 5.4', 'React 16'],
+    languages: [
+      { name: 'TypeScript', color: '#3178c6', percentage: 53.6 },
+      { name: 'PHP', color: '#4F5D95', percentage: 37.7 },
+      { name: 'Twig', color: '#c1d026', percentage: 7.6 },
+      { name: 'JavaScript', color: '#f1e05a', percentage: 0.5 },
+      { name: 'Go', color: '#00ADD8', percentage: 0.4 },
+      { name: 'Makefile', color: '#427819', percentage: 0.1 },
+    ],
+    highlightsCount: 4,
+    site: 'https://www.assmat-facile.fr',
+    image: '/images/parcours/assmat-facile/cover.jpg',
+    logo: '/images/logos/assmat-facile.png',
+  },
+  {
+    id: 'jewely-erp',
+    key: 'jewelyErp',
+    parent: 'flippad',
+    name: 'Jewely ERP',
+    startDate: '2023-10',
+    endDate: '2024-01',
+    technologies: ['Laravel 13', 'Vue 3', 'Vuex', 'MariaDB', 'Sanctum', 'Alma', 'Docker', 'AWS'],
+    stack: ['Laravel 13'],
+    languages: [
+      { name: 'PHP', color: '#4F5D95', percentage: 59.7 },
+      { name: 'Vue', color: '#41b883', percentage: 24.6 },
+      { name: 'TypeScript', color: '#3178c6', percentage: 7.0 },
+      { name: 'Blade', color: '#f7523f', percentage: 3.3 },
+      { name: 'JavaScript', color: '#f1e05a', percentage: 2.6 },
+      { name: 'Shell', color: '#89e051', percentage: 1.7 },
+    ],
+    highlightsCount: 3,
+    image: '/images/parcours/jewely-erp/cover.jpg',
+    logo: '/images/logos/jewely.jpeg',
+    clients: [{ label: 'jewely.fr', url: 'https://www.jewely.fr' }],
+  },
+]
+
+export const STUDIES: Study[] = [
+  {
+    id: 'mns-master',
+    key: 'mnsMaster',
+    school: 'Metz Numeric School',
+    logo: '/images/logos/mns.jpeg',
+    sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
+    level: 'Master',
+    image: '/images/parcours/mns-master/cover.jpg',
+    startDate: '2023-10',
+    endDate: '2025-10',
+    technologies: [
+      'C#/.NET',
+      'TypeScript',
+      'Node',
+      'Git',
+      'Docker',
+      'Kubernetes',
+      'Flutter',
+      'Hono.js',
+      'Prisma',
+      'Drizzle',
+      'Adonis.js',
+    ],
+    skillsCount: 5,
+  },
+  {
+    id: 'mns-licence',
+    key: 'mnsLicence',
+    school: 'Metz Numeric School',
+    logo: '/images/logos/mns.jpeg',
+    sites: [{ label: 'metz-numeric-school.fr', url: 'https://www.metz-numeric-school.fr' }],
+    level: 'Licence',
+    image: '/images/parcours/mns-licence/cover.jpg',
+    startDate: '2022-10',
+    endDate: '2023-09',
+    technologies: [
+      'Figma',
+      'Java',
+      'Symfony',
+      'React',
+      'MongoDB',
+      'TypeScript',
+      'Node',
+      'Git',
+      'Docker',
+      'Vue',
+      'Angular',
+    ],
+    skillsCount: 4,
+  },
+  {
+    id: 'cci-bac2',
+    key: 'cciBac2',
+    school: 'CCI Longwy EESC',
+    logo: '/images/logos/cci.jpg',
+    level: 'BAC+2',
+    image: '/images/parcours/cci-bac2/cover.jpg',
+    startDate: '2020-10',
+    endDate: '2022-06',
+    technologies: [
+      'HTML',
+      'CSS',
+      'PHP',
+      'JavaScript',
+      'SASS',
+      'jQuery',
+      'Symfony',
+      'Adobe XD',
+      'Photoshop',
+      'Illustrator',
+      'MySQL',
+      'Bootstrap',
+      'Git',
+    ],
+    skillsCount: 5,
+  },
+]
+
+/** Projects I maintain on GitHub; `status` is the site's label, not the repository's. */
+export const OPEN_SOURCE_PROJECTS = [
+  {
+    key: 'gwm',
+    name: 'gwm',
+    language: 'Rust',
+    status: 'released',
+    repo: 'https://github.com/kbrdn1/gwm-cli',
+    site: 'https://gwm.kbrdn.dev',
+    // Install channels listed in the gwm-cli README
+    channels: ['crates.io', 'Homebrew', 'Scoop', 'aqua', 'Nix', '.deb', '.rpm', 'AUR'],
+  },
+  {
+    key: 'vellum',
+    name: 'vellum',
+    language: 'Rust',
+    status: 'inDevelopment',
+    repo: 'https://github.com/kbrdn1/vellum',
+  },
+  {
+    key: 'lazycurl',
+    name: 'LazyCurl',
+    language: 'Go',
+    status: 'archived',
+    repo: 'https://github.com/kbrdn1/LazyCurl',
+  },
+  {
+    key: 'herdrPluginGwm',
+    name: 'herdr-plugin-gwm',
+    language: 'Shell',
+    status: 'released',
+    repo: 'https://github.com/kbrdn1/herdr-plugin-gwm',
+  },
+  {
+    key: 'claudeCrosstalk',
+    name: 'claude-crosstalk',
+    language: 'TypeScript',
+    status: 'released',
+    repo: 'https://github.com/kbrdn1/claude-crosstalk',
+  },
+  {
+    key: 'kbrdnDocs',
+    name: 'kbrdn-docs',
+    language: 'Astro',
+    status: 'released',
+    repo: 'https://github.com/kbrdn1/kbrdn-docs',
+  },
+] as const
+
+/** Pull requests and issues sent to projects I don't maintain, checked on GitHub. */
+export const UPSTREAM = [
+  {
+    key: 'winget',
+    repo: 'microsoft/winget-pkgs',
+    kind: 'merged',
+    url: 'https://github.com/microsoft/winget-pkgs/pull/403295',
+  },
+  {
+    key: 'aqua',
+    repo: 'aquaproj/aqua-registry',
+    kind: 'merged',
+    url: 'https://github.com/aquaproj/aqua-registry/pull/57117',
+  },
+  {
+    key: 'awesomeRatatui',
+    repo: 'ratatui/awesome-ratatui',
+    kind: 'merged',
+    url: 'https://github.com/ratatui/awesome-ratatui/pull/403',
+  },
+  {
+    key: 'nixpkgs',
+    repo: 'NixOS/nixpkgs',
+    kind: 'review',
+    url: 'https://github.com/NixOS/nixpkgs/pull/545222',
+  },
+  {
+    key: 'snacks',
+    repo: 'folke/snacks.nvim',
+    kind: 'report',
+    url: 'https://github.com/folke/snacks.nvim/issues/2689',
+  },
+  {
+    key: 'codexbar',
+    repo: 'steipete/CodexBar',
+    kind: 'report',
+    url: 'https://github.com/steipete/CodexBar/issues/420',
+  },
+  {
+    key: 'terminalBrowser',
+    repo: 'zenbu-labs/terminal-browser',
+    kind: 'report',
+    url: 'https://github.com/zenbu-labs/terminal-browser/issues/85',
+  },
+  {
+    key: 'elasticlens',
+    repo: 'pdphilip/elasticlens',
+    kind: 'report',
+    url: 'https://github.com/pdphilip/elasticlens/issues/16',
+  },
+] as const
+
+// A role counts its first and last month: Oct 2023 to Sep 2026 is 36 months, not 35
+function months(start: string, end: string | null): number {
+  const [y1, m1] = start.split('-').map(Number) as [number, number]
+  const [y2, m2] = (end ?? start).split('-').map(Number) as [number, number]
+  return (y2 - y1) * 12 + (m2 - m1) + 1
+}
+
+/** The figures on /experience and the home's Parcours, counted from the data: years worked
+ * (work-study included, rounded up), client projects, open source tools, degrees. Labels in
+ * experiencePage.figures.<key>. */
+export const CAREER_FIGURES = [
+  {
+    key: 'years',
+    value: Math.ceil(EXPERIENCES.reduce((sum, e) => sum + months(e.startDate, e.endDate), 0) / 12),
+  },
+  { key: 'projects', value: PROJECTS.length },
+  { key: 'openSource', value: OPEN_SOURCE_PROJECTS.length },
+  { key: 'studies', value: STUDIES.length },
+]
+
+/** "2023–2026", "2026" when it starts and ends the same year, "2024–" while it runs */
+export function yearSpan(start: string, end: string | null): string {
+  const [from, to] = [start.slice(0, 4), end?.slice(0, 4) ?? '']
+  return from === to ? from : `${from}–${to}`
+}
+
+/** "oct. 2023" / "Oct 2023" */
+export function formatMonth(date: string, locale: string): string {
+  // "2023-10" parses as midnight UTC: formatted in UTC, or a visitor west of it reads September
+  return new Date(date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : 'en-US', {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+}

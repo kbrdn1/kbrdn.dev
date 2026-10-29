@@ -1,12 +1,67 @@
-// Ordered-dither primitives behind UiDitherCanvas: a Bayer threshold matrix and
-// tileable value noise. Pure functions, no DOM: app/workers/dither-noise.ts runs
-// them off the main thread, scripts/dither.test.ts checks them.
+// Ordered-dither primitives behind UiDitherCanvas: a Bayer threshold matrix,
+// tileable value noise and pixel shape tiles. Pure functions, no DOM:
+// app/workers/dither-noise.ts runs the noise off the main thread,
+// scripts/dither.test.ts checks them.
 
 /** 4×4 Bayer matrix, thresholds in [0, 1). Index with `((y & 3) << 2) | (x & 3)`. */
 export const BAYER_4 = Float32Array.from(
   [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5],
   (v) => v / 16,
 )
+
+/** Pixel shapes of a dither field, after codrops' Bayer dithering demo. */
+export const DITHER_SHAPES = ['square', 'circle', 'triangle', 'diamond'] as const
+export type DitherShape = (typeof DITHER_SHAPES)[number]
+
+/**
+ * Smallest cell, in CSS px, at which a shape still reads as that shape: a 4px circle is
+ * a blurry dot. Squares keep the original 4px grid.
+ */
+export const SHAPE_CELL_PX: Record<DitherShape, number> = {
+  square: 4,
+  circle: 8,
+  triangle: 8,
+  diamond: 6,
+}
+
+/**
+ * Coverage of `shape` over one cell, as alpha in [0, 1] for each of `size × size`
+ * device pixels (row-major), 4×4 supersampled for smooth edges. The triangle alternates
+ * its orientation in a checkerboard, so its tile spans 2×2 cells. Each shape covers
+ * about half a cell: the field keeps a visible density without raising its alpha.
+ */
+export function shapeTile(shape: DitherShape, size: number): { span: number; alpha: Float32Array } {
+  const span = shape === 'triangle' ? size * 2 : size
+  const alpha = new Float32Array(span * span)
+  const inside = (u: number, v: number, flip: boolean): boolean => {
+    switch (shape) {
+      case 'circle':
+        return (u - 0.5) ** 2 + (v - 0.5) ** 2 <= 0.4 ** 2
+      case 'diamond':
+        return Math.abs(u - 0.5) + Math.abs(v - 0.5) <= 0.5
+      case 'triangle':
+        return flip ? v >= u : v >= 1 - u
+      default:
+        return true
+    }
+  }
+  const SS = 4
+  for (let py = 0; py < span; py++) {
+    for (let px = 0; px < span; px++) {
+      const flip = (Math.floor(px / size) + Math.floor(py / size)) % 2 === 1
+      let hits = 0
+      for (let sy = 0; sy < SS; sy++) {
+        for (let sx = 0; sx < SS; sx++) {
+          const u = ((px % size) + (sx + 0.5) / SS) / size
+          const v = ((py % size) + (sy + 0.5) / SS) / size
+          if (inside(u, v, flip)) hits++
+        }
+      }
+      alpha[py * span + px] = hits / (SS * SS)
+    }
+  }
+  return { span, alpha }
+}
 
 /** Noise texture size in texels. Powers of two, so sampling wraps with `& (size - 1)`. */
 export const NOISE_W = 512

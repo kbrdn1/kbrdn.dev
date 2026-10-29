@@ -5,22 +5,138 @@ withDefaults(
   }>(),
   { size: 16 },
 )
+
+// Lancée par le survol ou le focus du lien / bouton qui porte le logo (ou du logo seul),
+// l'animation va toujours au bout : `play` ne tombe qu'à sa fin, pas quand le pointeur sort.
+const root = ref<SVGSVGElement>()
+const playing = ref(false)
+let cleanup: (() => void) | undefined
+
+onMounted(() => {
+  const el = root.value
+  if (!el) return
+  const play = () => {
+    playing.value = true
+  }
+  // Event et non PointerEvent : la cible est un HTMLElement ou le <svg> lui-même
+  const onEnter = (e: Event) => {
+    if ((e as PointerEvent).pointerType !== 'touch') play()
+  }
+  const target = el.closest<HTMLElement>('a, button') ?? el
+  target.addEventListener('pointerenter', onEnter)
+  target.addEventListener('focusin', play)
+  cleanup = () => {
+    target.removeEventListener('pointerenter', onEnter)
+    target.removeEventListener('focusin', play)
+  }
+})
+
+onUnmounted(() => cleanup?.())
 </script>
 
 <template>
   <!--
-    Monogramme @kbrdn1 : le montant gauche du cadre sert de barre au K.
-    Cadre en rects pleins (et non en stroke) pour rester rendable par satori.
-    La masse neutre suit currentColor — pas de <style> ici, il fuiterait dans le document.
-    Version autonome pour le favicon : public/favicon.svg
+    Monogramme K : une barre montante, et la branche coupée en deux pièces orange
+    de part et d'autre, sur une grille de 96 à 45°, chaque coin arrondi d'un rayon de 4.
+    La barre suit currentColor : pas de <style> dans le SVG, il fuiterait dans le document.
+    Version autonome pour le favicon : public/favicon.svg ; variantes : public/images/logo/
   -->
-  <svg :width="size" :height="size" viewBox="0 0 32 32" aria-hidden="true" class="shrink-0">
-    <g fill="currentColor">
-      <rect x="2" y="2" width="28" height="4" />
-      <rect x="2" y="2" width="4" height="28" />
-      <rect x="26" y="2" width="4" height="14" />
-      <rect x="2" y="26" width="14" height="4" />
-    </g>
-    <path d="M19 9 L7 16 L19 23 V19 L14 16 L19 13 Z" fill="#d4825d" />
+  <svg
+    ref="root"
+    :width="size"
+    :height="size"
+    viewBox="0 0 96 96"
+    aria-hidden="true"
+    class="shrink-0 overflow-visible"
+    :class="{ play: playing }"
+    @animationend="playing = false"
+    @animationcancel="playing = false"
+  >
+    <!-- Le svg imbriqué clippe la barre quand elle sort du cadre ; les pièces, elles, en débordent -->
+    <svg width="96" height="96" overflow="hidden">
+      <path
+        class="bar"
+        d="M62.83 1.17A4 4 0 0 1 65.66 0L86.34 0A4 4 0 0 1 89.17 6.83L6.83 89.17A4 4 0 0 1 0 86.34L0 65.66A4 4 0 0 1 1.17 62.83Z"
+        fill="currentColor"
+      />
+    </svg>
+    <path
+      class="tri"
+      d="M0 9.66A4 4 0 0 1 6.83 6.83L21.17 21.17A4 4 0 0 1 21.17 26.83L6.83 41.17A4 4 0 0 1 0 38.34Z"
+      fill="#d4825d"
+    />
+    <path
+      class="leg"
+      d="M53.17 58.83A4 4 0 0 1 58.83 58.83L89.17 89.17A4 4 0 0 1 86.34 96L65.66 96A4 4 0 0 1 62.83 94.83L42.83 74.83A4 4 0 0 1 42.83 69.17Z"
+      fill="#d4825d"
+    />
   </svg>
 </template>
+
+<style scoped>
+/* La barre file le long de sa diagonale, sort par le haut, revient par le bas, et en
+   repassant recoupe la branche, dont les pièces s'écartent puis reviennent. Les trois durent
+   autant : le premier animationend rend la main. Mouvement réduit et bouton pause : la règle
+   globale d'accessibility.css ramène la durée à 0, animationend tombe quand même. */
+.play .bar {
+  animation: bar 820ms;
+}
+.play .tri {
+  animation: tri 820ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.play .leg {
+  animation: leg 820ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* En px : sur un élément SVG, ce sont des unités de la grille de 96 */
+@keyframes bar {
+  0% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5);
+  }
+  38% {
+    transform: translate(80px, -80px);
+    animation-timing-function: steps(1, end);
+  }
+  38.01% {
+    transform: translate(-80px, 80px);
+    animation-timing-function: cubic-bezier(0.15, 0.6, 0.3, 1);
+  }
+  70% {
+    transform: translate(2px, -2px);
+  }
+  84% {
+    transform: none;
+  }
+}
+@keyframes tri {
+  0%,
+  60% {
+    transform: none;
+  }
+  72% {
+    transform: translate(-7px, -7px);
+  }
+  85% {
+    transform: translate(2px, 2px);
+  }
+  94% {
+    transform: translate(-0.6px, -0.6px);
+  }
+}
+@keyframes leg {
+  0%,
+  62% {
+    transform: none;
+  }
+  74% {
+    transform: translate(7px, 7px);
+  }
+  87% {
+    transform: translate(-2px, -2px);
+  }
+  95% {
+    transform: translate(0.6px, 0.6px);
+  }
+}
+</style>

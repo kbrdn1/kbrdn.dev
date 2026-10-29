@@ -11,6 +11,18 @@
   outline: none;
 }
 
+/* Light: primary-500 is 2.7:1 on the page, under the 3:1 a focus ring needs */
+.light :focus-visible {
+  outline-color: var(--color-primary-700);
+}
+
+/* Focus never lands under the floating navbar and its notch (90px), nor under the bottom
+   bars (the article's contents, the music button): scrolled into view, it stops short */
+html {
+  scroll-padding-top: 7rem;
+  scroll-padding-bottom: 5rem;
+}
+
 /* ═══════════════════════════════════════════════════
    Reduced Motion Support
    ═══════════════════════════════════════════════════ */
@@ -25,6 +37,17 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* The same, from the site's pause control (UiMotionToggle): moving content can be stopped
+   from the page, not only from the system setting (RGAA 13.8) */
+html.motion-paused *,
+html.motion-paused *::before,
+html.motion-paused *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* Utility classes for motion-sensitive content */

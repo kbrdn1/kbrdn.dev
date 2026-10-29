@@ -31,13 +31,7 @@ const animationClasses = {
 
 <template>
   <div
-    :class="
-      cn(
-        'bg-neutral-200 dark:bg-neutral-800',
-        circle && 'rounded-full',
-        animationClasses[animation],
-      )
-    "
+    :class="cn('bg-(--placeholder)', circle && 'rounded-full', animationClasses[animation])"
     role="presentation"
     aria-hidden="true"
   />
@@ -65,7 +59,7 @@ const animationClasses = {
   will-change: background-position;
 }
 
-:root.dark .animate-shimmer {
+:root:is(.dark, .blur) .animate-shimmer {
   background: linear-gradient(90deg, rgb(38 38 38) 0%, rgb(64 64 64) 50%, rgb(38 38 38) 100%);
   background-size: 200% 100%;
 }
@@ -78,7 +72,7 @@ const animationClasses = {
     will-change: auto;
   }
 
-  :root.dark .animate-shimmer {
+  :root:is(.dark, .blur) .animate-shimmer {
     background: rgb(38 38 38);
   }
 

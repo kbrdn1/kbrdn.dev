@@ -15,13 +15,14 @@
 #                           remonte que d'un cran.
 #   --image ...:vX.Y.Z      redéploie une version précise depuis le registry.
 #                           Seule option qui traverse plusieurs versions, et la
-#                           seule qui survive à une perte des conteneurs — les
+#                           seule qui survive à une perte des conteneurs : les
 #                           tags de version sont immutables (cf. release.yml).
 #
 # env vars consommées (passées au conteneur runtime):
 #   GITHUB_TOKEN       (obligatoire pour github contribs)
 #   RESEND_API_KEY     (obligatoire pour contact form)
 #   NUXT_STUDIO_TOKEN  (optionnel)
+#   NUXT_APP_SECRET    (obligatoire, ≥ 32 caractères : signe les URLs /_og/*)
 
 set -euo pipefail
 
@@ -43,7 +44,7 @@ wait_healthy() {
     fi
     sleep 2
   done
-  warn "$name pas healthy (state=$s) — logs:"
+  warn "$name pas healthy (state=$s), logs:"
   docker logs --tail=50 "$name" >&2 || true
   return 1
 }
@@ -111,14 +112,14 @@ else
 fi
 CUR_NAME="${NAME_PREFIX}${CUR}"
 NEW_NAME="${NAME_PREFIX}${NEW}"
-log "actif: $CUR (:$CUR_PORT) — cible: $NEW (:$NEW_PORT)"
+log "actif: $CUR (:$CUR_PORT), cible: $NEW (:$NEW_PORT)"
 
 if [[ "$ACTION" == "rollback" ]]; then
   # `ps -a` et non `ps` : depuis que le deploy conserve la couleur sortante au
   # lieu de la supprimer, elle est là mais stoppée. Avant ce changement, le
   # deploy la détruisait et ce rollback ne pouvait qu'échouer au repos.
   docker ps -aq --filter "name=^${NEW_NAME}$" | grep -q . \
-    || die "rollback impossible: $NEW_NAME absent — viser une version précise avec --image ghcr.io/kbrdn1/kbrdn.dev:vX.Y.Z"
+    || die "rollback impossible: $NEW_NAME absent ; viser une version précise avec --image ghcr.io/kbrdn1/kbrdn.dev:vX.Y.Z"
 
   if ! docker ps -q --filter "name=^${NEW_NAME}$" | grep -q .; then
     log "redémarrage de $NEW_NAME (conservé stoppé par le dernier deploy)"
@@ -147,6 +148,13 @@ else
   fi
 
   : "${IMAGE:?--image ou --build requis}"
+  # Sans lui le conteneur passe healthy mais les images OG (nuxt-og-image 7)
+  # répondent 500 : rien d'autre ne le verrait. Un avertissement et pas un
+  # refus : un rollback vers une version d'avant la v7 n'en a pas besoin, et
+  # l'opérateur qui redéploie à la main n'a pas le secret du CI sous la main.
+  NUXT_APP_SECRET="${NUXT_APP_SECRET:-}"
+  [[ ${#NUXT_APP_SECRET} -ge 32 ]] \
+    || warn "NUXT_APP_SECRET absent ou < 32 caractères : les images OG de cette version répondront 500"
 
   docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
 
@@ -165,6 +173,7 @@ else
     -e GITHUB_TOKEN="${GITHUB_TOKEN:-}" \
     -e RESEND_API_KEY="${RESEND_API_KEY:-}" \
     -e NUXT_STUDIO_TOKEN="${NUXT_STUDIO_TOKEN:-}" \
+    -e NUXT_APP_SECRET="$NUXT_APP_SECRET" \
     -p "127.0.0.1:$NEW_PORT:3000" \
     --health-cmd "wget -q -O /dev/null http://127.0.0.1:3000/api/health" \
     --health-interval=5s \
@@ -191,7 +200,7 @@ upstream $UPSTREAM_NAME {
 EOF
 mv "$tmp" "$UPSTREAM_CONF"
 if ! nginx -t 2>/dev/null; then
-  warn "nginx -t fail — restore :$CUR_PORT"
+  warn "nginx -t fail, restore :$CUR_PORT"
   cat > "$UPSTREAM_CONF" <<EOF
 upstream $UPSTREAM_NAME {
     server 127.0.0.1:$CUR_PORT;
@@ -201,7 +210,7 @@ EOF
   nginx -t || true
   # Dans les deux cas la cible ne sert plus rien : l'upstream est revenu sur
   # $CUR. Un deploy la détruit (elle vient d'être créée) ; un rollback la
-  # stoppe seulement — c'est une couleur qu'on veut pouvoir relancer — mais
+  # stoppe seulement (c'est une couleur qu'on veut pouvoir relancer), mais
   # la laisser tourner sous `--restart unless-stopped` la maintiendrait en vie
   # sur un port mort.
   if [[ "$ACTION" != rollback ]]; then

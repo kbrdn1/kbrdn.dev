@@ -46,45 +46,6 @@
   background-repeat: no-repeat;
 }
 
-/* Nav tab active indicator */
-.nav-tab-active {
-  position: relative;
-}
-
-.nav-tab-active::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: var(--color-primary-500);
-}
-
-/* Accordion +/- icon animation */
-.accordion-icon-bar {
-  transition: transform 300ms ease !important;
-}
-
-.accordion-icon-bar.is-collapsed {
-  transform: rotate(90deg);
-}
-
-.accordion-icon-bar.is-expanded {
-  transform: rotate(0deg);
-}
-
-/* Disabled button with subtle diagonal striped background */
-.btn-disabled-striped {
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent,
-    transparent 4px,
-    rgba(212, 130, 93, 0.12) 4px,
-    rgba(212, 130, 93, 0.12) 5px
-  ) !important;
-}
-
 /* Square grid: page background and side zones (lines at half the stripe colour, muted) */
 .grid-background-blog {
   --grid-line: color-mix(in srgb, var(--stripe-color-alt) 50%, transparent);
@@ -92,4 +53,490 @@
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+/* ═══════════════════════════════════════════════════
+   Panels: rounded surfaces holding cards. Layered so utilities override them.
+   ═══════════════════════════════════════════════════ */
+/* The notch's width at rest, 31rem: an initial value must be computationally independent,
+   and rem is not (it follows the root's font size), which voids the whole rule */
+@property --notch-max {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 496px;
+}
+
+@layer components {
+  /* The announcement hanging under the floating navbar: the panel's surface, open at the top */
+  .notch {
+    margin-top: -1px;
+    border: 1px solid var(--panel-border);
+    border-top: 0;
+    border-radius: 0 0 0.875rem 0.875rem;
+    background: var(--panel-bg);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
+  }
+
+  /* The notch's width, shared with the navbar that opens for it (.notched). The two
+     resolve 100% against widths that match: the header's content, or the navbar which
+     fills it up to 61rem, past which both stay at 31rem */
+  .notch,
+  .notched {
+    --notch-w: min(var(--notch-max), 100% - 4rem);
+    --shoulder: 0.75rem;
+  }
+
+  /* Wider while a menu is open (useNavMenu): --notch-max is a registered length animated on
+     the header, so the notch and the navbar's cut for it (glass) widen frame by frame
+     together */
+  header:has(> .notch) {
+    transition: --notch-max 0.5s var(--ease-out-quint);
+  }
+
+  header[data-menu] {
+    --notch-max: 46rem;
+  }
+
+  /* Glass only: a translucent notch does not cover the navbar's bottom border, so the
+     navbar opens there, over the notch and its shoulders. Not in light and dark, where the
+     opaque notch covers it. The bottom border is drawn apart, on a pseudo-element cut for the
+     notch: masking the navbar itself would also hide what drops below it (the brand's menu). */
+  .blur .notched {
+    --notch-cut: calc(var(--notch-w) + 2 * var(--shoulder));
+    position: relative;
+    border-bottom-color: transparent;
+  }
+
+  .blur .notched::after {
+    content: "";
+    position: absolute;
+    inset: auto -1px -1px;
+    height: 1.25rem;
+    border: 1px solid var(--panel-border);
+    border-top: 0;
+    border-radius: 0 0 1.25rem 1.25rem;
+    pointer-events: none;
+    mask: linear-gradient(
+      to right,
+      #000 calc(50% - var(--notch-cut) / 2),
+      transparent 0 calc(50% + var(--notch-cut) / 2),
+      #000 0
+    );
+  }
+
+  /* Concave shoulders, after disarto's sheet tabs: each fills the corner between the
+     navbar's edge and the notch's side, its arc drawn in the border colour */
+  .notch::before,
+  .notch::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: var(--shoulder);
+    height: var(--shoulder);
+  }
+
+  .notch::before {
+    right: 100%;
+    background: radial-gradient(
+      circle at 0 100%,
+      transparent calc(var(--shoulder) - 1px),
+      var(--panel-border) calc(var(--shoulder) - 1px) var(--shoulder),
+      var(--panel-bg) var(--shoulder)
+    );
+  }
+
+  .notch::after {
+    left: 100%;
+    background: radial-gradient(
+      circle at 100% 100%,
+      transparent calc(var(--shoulder) - 1px),
+      var(--panel-border) calc(var(--shoulder) - 1px) var(--shoulder),
+      var(--panel-bg) var(--shoulder)
+    );
+  }
+
+  /* Outer surface: 4px of padding, so the cards inside keep concentric corners (20 - 4) */
+  .panel {
+    border: 1px solid var(--panel-border);
+    border-radius: 1.25rem;
+    background: var(--panel-bg);
+    box-shadow: var(--panel-shadow);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
+    padding: 0.25rem;
+    transition:
+      opacity 0.6s var(--ease-out-quint),
+      translate 0.6s var(--ease-out-quint),
+      rotate 0.7s var(--ease-out-quint),
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  /* Below the fold, waiting to be scrolled to (useReveal). On the panel itself, not a
+     wrapper: an ancestor's opacity would turn its glass off until the end */
+  .panel[data-hidden] {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+
+  /* Swung in slightly, from one side or the other in turn (Panel.vue) */
+  .panel[data-hidden="left"] {
+    translate: -1rem 1.5rem;
+    rotate: -1.5deg;
+  }
+
+  .panel[data-hidden="right"] {
+    translate: 1rem 1.5rem;
+    rotate: 1.5deg;
+  }
+
+  .panel-card {
+    border: 1px solid var(--card-border);
+    border-radius: 1rem;
+    background: var(--card-bg);
+  }
+
+  /* An empty slot: hairlines on the diagonal over the card */
+  .hatched {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--label) 22%, transparent) 0 1px,
+      transparent 1px 9px
+    );
+  }
+
+  /* Mono capitals above a figure or a list, and the "A · B" meta lines */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--label);
+  }
+
+  /* Pill segmented control: the active segment (aria-selected, aria-pressed, aria-current,
+     or aria-expanded for a disclosure) is tinted with the accent and bordered */
+  .segmented {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.1875rem;
+    border: 1px solid var(--panel-border);
+    border-radius: 9999px;
+  }
+
+  .segment {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    height: 1.75rem;
+    padding-inline: 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    color: var(--label);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .segment:hover {
+    color: var(--ui-text-highlighted);
+  }
+
+  .segment[aria-selected="true"],
+  .segment[aria-pressed="true"],
+  .segment[aria-expanded="true"],
+  .segment[aria-current="page"],
+  .segment-ink {
+    border-color: color-mix(in srgb, var(--color-primary-500) 40%, transparent);
+    background: color-mix(in srgb, var(--color-primary-500) 14%, transparent);
+    color: var(--accent-text);
+  }
+
+  /* With a SegmentInk inside, the fill is the ink's: the active segment only keeps its
+     colour, at once (no fade under the ink as it lands) */
+  .segmented[data-ink] .segment {
+    border-color: transparent;
+    background: transparent;
+    transition: color 0.2s ease;
+  }
+
+  .segment-ink {
+    position: absolute;
+    z-index: -1;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 9999px;
+    transition:
+      left 0.4s var(--ease-out-quint),
+      top 0.4s var(--ease-out-quint),
+      width 0.4s var(--ease-out-quint),
+      height 0.4s var(--ease-out-quint);
+  }
+
+  /* Pill buttons: orange with dark text (white on #d4825d fails AA), or outlined */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.25rem;
+    padding-inline: 1rem;
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  /* aria-disabled: looks disabled but keeps the focus (a disabled button drops it) */
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-sm {
+    height: 2rem;
+    padding-inline: 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .btn-primary {
+    background: var(--color-primary-500);
+    color: var(--color-neutral-950);
+  }
+
+  .btn-primary:not(:disabled, [aria-disabled="true"]):hover {
+    background: var(--color-primary-400);
+  }
+
+  .btn-outline {
+    border-color: var(--control-border);
+    color: var(--ui-text-highlighted);
+  }
+
+  .btn-outline:not(:disabled, [aria-disabled="true"]):hover {
+    background: var(--control-bg);
+  }
+
+  /* Text field: rounded, 1px border, the accent border thickens on focus */
+  .field {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--control-border);
+    border-radius: 0.75rem;
+    background: var(--card-bg);
+    font-size: 0.875rem;
+    color: var(--ui-text-highlighted);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .field::placeholder {
+    color: var(--label);
+  }
+
+  /* The border and a full ring: half a pixel of the accent was too faint to find */
+  .field:focus {
+    outline: none;
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 2px var(--color-primary-500);
+  }
+  .light .field:focus {
+    border-color: var(--color-primary-700);
+    box-shadow: 0 0 0 2px var(--color-primary-700);
+  }
+
+  /* Round icon button, for the header controls */
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    color: var(--label);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .icon-btn:hover {
+    background: var(--control-bg);
+    color: var(--ui-text-highlighted);
+  }
+
+  /* Status pill tinted by its text colour: a dot, then mono capitals */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    height: 1.5rem;
+    padding-inline: 0.625rem;
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: 9999px;
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  /* Bordered square in front of a list row: an icon, a logo or a letter */
+  .icon-box {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1px solid var(--control-border);
+    border-radius: 0.625rem;
+  }
+
+  /* A tinted pill over the active card of a strip, sliding from one card to the next */
+  .ink {
+    position: absolute;
+    pointer-events: none;
+    border: 1px solid color-mix(in srgb, var(--color-primary-500) 50%, transparent);
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-primary-500) 10%, transparent);
+    transition:
+      left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Expand (collapses): the height grows on the grid's row, and the content fades and
+     unblurs in proportion to it, same time, same curve (the time set by the height) */
+  .expand {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--expand-duration, 0.45s) var(--ease-out-quint);
+  }
+
+  .expand[data-open] {
+    grid-template-rows: 1fr;
+  }
+
+  .expand-content {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    filter: blur(8px);
+    transition:
+      opacity var(--expand-duration, 0.45s) var(--ease-out-quint),
+      filter var(--expand-duration, 0.45s) var(--ease-out-quint);
+  }
+
+  /* none, not blur(0): any filter would keep the content a backdrop root */
+  .expand[data-open] > .expand-content {
+    opacity: 1;
+    filter: none;
+  }
+
+  /* AutoHeight (lists): the measured height, eased; clipped with a margin, so focus rings
+     at the edges still show */
+  .auto-height {
+    overflow: clip;
+    overflow-clip-margin: 0.5rem;
+    transition: height 0.5s var(--ease-out-quint);
+  }
+
+  /* RollingNumber: one reel per digit, a column 0-9 twice, moved a line at a time. Equal
+     digit widths, so the reels line up and nothing shifts as they turn. */
+  .rolling-number {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reel {
+    display: inline-block;
+    height: 1lh;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .reel-strip {
+    display: block;
+    transition: translate calc(0.9s + var(--i, 0) * 0.15s) var(--ease-out-quint);
+  }
+
+  /* 0-9 twice, one per line */
+  .reel-strip::before {
+    content: "0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9\A 0\A 1\A 2\A 3\A 4\A 5\A 6\A 7\A 8\A 9";
+    white-space: pre;
+  }
+
+  .reel.is-instant .reel-strip {
+    transition: none;
+  }
+
+  /* Blurred while fast: the quint curve does most of its distance early, so does the blur;
+     the drum's edges fade while it turns */
+  .reel.is-spinning {
+    mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent);
+  }
+
+  .reel.is-spinning .reel-strip {
+    animation: reel-blur calc(0.9s + var(--i, 0) * 0.15s) linear both;
+  }
+
+  @keyframes reel-blur {
+    0% {
+      filter: blur(0);
+    }
+    6% {
+      filter: blur(2.5px);
+    }
+    35% {
+      filter: blur(0.8px);
+    }
+    70%,
+    100% {
+      filter: blur(0);
+    }
+  }
+
+  /* List row inside a card: lifts on hover */
+  .row {
+    border-radius: 0.75rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .row:hover {
+    background: var(--row-hover);
+  }
+
+  /* Cuts whatever it covers into 2px ticks, 4px apart: meters and bars */
+  .ticks {
+    mask-image: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 6px);
+  }
+}
+
+/* Scrolls sideways without a scrollbar: strips, tag rows, the table of contents. Not in
+   Tailwind 4, though the class was already used. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }

@@ -15,7 +15,6 @@ interface Track {
 const { data: tracks } = await useFetch<Track[]>('/api/music')
 
 const currentIndex = ref(0)
-const isTransitioning = ref(false)
 const track = computed(() => tracks.value?.[currentIndex.value] || null)
 
 const audio = ref<HTMLAudioElement | null>(null)
@@ -44,71 +43,44 @@ function onTimeUpdate() {
 }
 
 function onAudioEnded() {
-  slideDirection.value = 'left'
   shouldAutoPlay.value = true
   isPlaying.value = false
-  currentTime.value = 0
   if (!tracks.value?.length) return
-  const nextIdx = pickNextIndex('next')
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = nextIdx
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  showTrack(pickNextIndex('next'), 'next')
 }
 
 const shouldAutoPlay = ref(false)
-const slideDirection = ref<'left' | 'right'>('left')
+// The cover and the title swap sideways, the way the track went; the controls stay put
+const direction = ref<'next' | 'prev'>('next')
 
-function nextTrack() {
-  slideDirection.value = 'left'
-  if (!tracks.value?.length) return
+function showTrack(index: number, towards: 'next' | 'prev') {
+  direction.value = towards
+  currentIndex.value = index
+  currentTime.value = 0
+}
+
+function switchTrack(index: number, towards: 'next' | 'prev') {
   shouldAutoPlay.value = isPlaying.value
   if (audio.value) {
     audio.value.pause()
     isPlaying.value = false
   }
-  const nextIdx = pickNextIndex('next')
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = nextIdx
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  showTrack(index, towards)
+}
+
+function nextTrack() {
+  if (!tracks.value?.length) return
+  switchTrack(pickNextIndex('next'), 'next')
 }
 
 function prevTrack() {
-  slideDirection.value = 'right'
   if (!tracks.value?.length) return
-  shouldAutoPlay.value = isPlaying.value
-  if (audio.value) {
-    audio.value.pause()
-    isPlaying.value = false
-  }
-  const prevIdx = pickNextIndex('prev')
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = prevIdx
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  switchTrack(pickNextIndex('prev'), 'prev')
 }
 
 function goToTrack(index: number) {
   if (index === currentIndex.value) return
-  slideDirection.value = index > currentIndex.value ? 'left' : 'right'
-  shouldAutoPlay.value = isPlaying.value
-  if (audio.value) {
-    audio.value.pause()
-    isPlaying.value = false
-  }
-  isTransitioning.value = true
-  setTimeout(() => {
-    currentIndex.value = index
-    currentTime.value = 0
-    isTransitioning.value = false
-  }, 300)
+  switchTrack(index, index > currentIndex.value ? 'next' : 'prev')
 }
 
 function onCanPlay() {
@@ -119,12 +91,25 @@ function onCanPlay() {
   }
 }
 
-// Auto-rotate every 45s when not playing
+// One voice at a time: the music says it plays (the audio's play event), and stops when the
+// article reader starts, including the next track still loading after one ended (onCanPlay
+// would start it)
+const nowPlaying = usePlaying()
+watch(nowPlaying, (value) => {
+  if (value !== 'speech') return
+  shouldAutoPlay.value = false
+  if (!isPlaying.value) return
+  audio.value?.pause()
+  isPlaying.value = false
+})
+
+// Auto-rotate every 45s when not playing, and not while motion is reduced or paused
 let rotateInterval: ReturnType<typeof setInterval> | undefined
+const reducedMotion = useReducedMotion()
 
 onMounted(() => {
   rotateInterval = setInterval(() => {
-    if (!isPlaying.value) nextTrack()
+    if (!isPlaying.value && !reducedMotion.value) nextTrack()
   }, 45000)
 })
 
@@ -196,40 +181,29 @@ function formatTime(seconds: number): string {
 
 <template>
   <div v-if="tracks?.length">
-    <!-- Player card: floats over the page (LayoutMusicDock), so near-opaque and blurred -->
-    <div
-      :class="
-        cn(
-          'w-full border border-neutral-200 dark:border-neutral-800 overflow-hidden',
-          'bg-neutral-50/95 dark:bg-neutral-900/95 backdrop-blur-md shadow-xl',
-          'hover:border-primary-500/50 transition-all',
-        )
-      "
-    >
-      <div
-        class="flex items-center gap-4 p-3"
-        :class="{
-          'player-hidden-left': isTransitioning && slideDirection === 'left',
-          'player-hidden-right': isTransitioning && slideDirection === 'right',
-          'player-visible': !isTransitioning,
-        }"
-      >
+    <!-- Player card: a panel floating over the page (LayoutMusicDock) -->
+    <div class="panel w-full overflow-hidden transition-all hover:border-primary-500/50">
+      <div class="flex items-center gap-4 p-3">
         <!-- Album art -->
-        <div class="relative shrink-0 group/cover">
-          <img
-            v-if="track"
-            :src="track.cover"
-            :alt="track?.album"
-            width="56"
-            height="56"
-            class="object-cover"
-            style="width: 56px; height: 56px"
-          />
+        <div class="relative shrink-0 overflow-hidden rounded-[0.625rem] group/cover">
+          <div class="size-14">
+            <Transition :name="`swap-${direction}`" mode="out-in">
+              <img
+                v-if="track"
+                :key="track.cover"
+                :src="track.cover"
+                :alt="track?.album"
+                width="56"
+                height="56"
+                class="size-14 object-cover"
+              />
+            </Transition>
+          </div>
           <!-- Play overlay on cover -->
           <button
             type="button"
-            class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 transition-opacity"
-            :aria-label="isPlaying ? 'Pause' : 'Play'"
+            class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/cover:opacity-100 focus-visible:opacity-100 transition-opacity"
+            :aria-label="isPlaying ? t('music.pause') : t('music.play')"
             @click="togglePlay"
           >
             <svg
@@ -271,26 +245,28 @@ function formatTime(seconds: number): string {
         <!-- Track info + controls -->
         <div class="flex-1 min-w-0">
           <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <a
-                :href="track?.link"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate hover:text-primary-500 transition-colors"
-              >
-                {{ track?.title }}
-              </a>
-              <span class="block text-xs text-neutral-500 truncate mt-0.5">
-                {{ track?.artist }} · {{ track?.album }}
-              </span>
-            </div>
+            <Transition :name="`swap-${direction}`" mode="out-in">
+              <div :key="currentIndex" class="min-w-0">
+                <a
+                  :href="track?.link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="block text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate hover:text-primary-500 transition-colors"
+                >
+                  {{ track?.title }}
+                </a>
+                <span class="block text-xs text-neutral-500 truncate mt-0.5">
+                  {{ track?.artist }} · {{ track?.album }}
+                </span>
+              </div>
+            </Transition>
 
             <!-- Controls: prev / play / next + shuffle & listing grouped -->
-            <div class="flex items-center gap-0.5 shrink-0">
+            <div class="ml-auto flex items-center gap-0.5 shrink-0">
               <UTooltip :text="t('music.previous')">
                 <button
                   type="button"
-                  class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
+                  class="icon-btn size-8 cursor-pointer"
                   :aria-label="t('music.previous')"
                   @click.prevent.stop="prevTrack"
                 >
@@ -307,13 +283,7 @@ function formatTime(seconds: number): string {
               <UTooltip :text="isPlaying ? t('music.pause') : t('music.play')">
                 <button
                   type="button"
-                  :class="
-                    cn(
-                      'flex items-center justify-center w-8 h-8',
-                      'text-white bg-primary-500 hover:bg-primary-400',
-                      'transition-all cursor-pointer',
-                    )
-                  "
+                  class="mx-0.5 flex size-9 cursor-pointer items-center justify-center rounded-full bg-primary-500 text-neutral-950 transition-colors hover:bg-primary-400"
                   :aria-label="isPlaying ? t('music.pause') : t('music.play')"
                   @click="togglePlay"
                 >
@@ -340,7 +310,7 @@ function formatTime(seconds: number): string {
               <UTooltip :text="t('music.next')">
                 <button
                   type="button"
-                  class="flex items-center justify-center w-7 h-7 text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors cursor-pointer"
+                  class="icon-btn size-8 cursor-pointer"
                   :aria-label="t('music.next')"
                   @click.prevent.stop="nextTrack"
                 >
@@ -354,17 +324,13 @@ function formatTime(seconds: number): string {
                   </svg>
                 </button>
               </UTooltip>
-              <span class="w-px h-4 bg-neutral-200 dark:bg-neutral-700 mx-0.5" />
+              <span class="mx-1 h-4 w-px bg-(--panel-border)" aria-hidden="true" />
               <UTooltip :text="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')">
                 <button
                   type="button"
-                  :class="
-                    cn(
-                      'flex items-center justify-center w-7 h-7 transition-colors cursor-pointer',
-                      shuffleMode ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500',
-                    )
-                  "
-                  :aria-label="shuffleMode ? t('music.shuffleOff') : t('music.shuffleOn')"
+                  class="segment size-8 cursor-pointer px-0"
+                  :aria-pressed="shuffleMode"
+                  :aria-label="t('music.shuffle')"
                   @click.prevent.stop="shuffleMode = !shuffleMode"
                 >
                   <UIcon name="i-heroicons-arrows-right-left" class="w-3.5 h-3.5" />
@@ -373,13 +339,10 @@ function formatTime(seconds: number): string {
               <UTooltip :text="showListing ? t('music.hideList') : t('music.showList')">
                 <button
                   type="button"
-                  :class="
-                    cn(
-                      'flex items-center justify-center w-7 h-7 transition-colors cursor-pointer',
-                      showListing ? 'text-primary-500' : 'text-neutral-400 hover:text-primary-500',
-                    )
-                  "
-                  :aria-label="showListing ? t('music.hideList') : t('music.showList')"
+                  class="segment size-8 cursor-pointer px-0"
+                  :aria-expanded="showListing"
+                  aria-controls="music-tracklist"
+                  :aria-label="t('music.tracklist')"
                   @click.prevent.stop="showListing = !showListing"
                 >
                   <UIcon name="i-heroicons-queue-list" class="w-3.5 h-3.5" />
@@ -390,20 +353,22 @@ function formatTime(seconds: number): string {
 
           <!-- Progress bar -->
           <div class="flex items-center gap-2 mt-2">
-            <span class="text-[10px] font-mono text-neutral-400 w-7 text-right">
-              {{ formatTime(currentTime) }}
+            <!-- Start and end times roll like the site's numbers -->
+            <span class="eyebrow w-8 text-right tabular-nums">
+              <UiRollingNumber :value="formatTime(currentTime)" />
             </span>
+            <!-- A tick slider, after disarto's cost estimate: ticks filled up to a pill handle -->
             <div
-              class="progress-bar flex-1 h-1 bg-neutral-200 dark:bg-neutral-800 cursor-pointer group/bar relative"
+              class="progress-bar group/bar relative h-4 flex-1 cursor-pointer"
               role="slider"
               tabindex="0"
-              :aria-label="'Track progress'"
+              :aria-label="t('music.progress')"
               :aria-valuenow="Math.round(currentTime)"
               :aria-valuemin="0"
               :aria-valuemax="Math.round(duration)"
-              :aria-valuetext="`${formatTime(currentTime)} of ${formatTime(duration)}`"
-              :class="{ 'h-1.5': isSeeking }"
-              style="transition: height 0.15s ease"
+              :aria-valuetext="
+                t('music.timeOf', { current: formatTime(currentTime), total: formatTime(duration) })
+              "
               @mousedown="startSeek"
               @keydown.left.prevent="
                 audio && (audio.currentTime = Math.max(0, audio.currentTime - 5))
@@ -413,121 +378,113 @@ function formatTime(seconds: number): string {
               "
             >
               <div
-                class="h-full bg-primary-500 relative"
-                :style="{
-                  width: `${progress}%`,
-                  transition: isSeeking ? 'none' : 'width 1s linear',
-                }"
+                class="ticks absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 bg-neutral-300 dark:bg-neutral-700"
               >
                 <div
-                  :class="
-                    cn(
-                      'absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-primary-500 border-2 border-white dark:border-neutral-900 rounded-full',
-                      'transition-transform duration-150',
-                      isSeeking
-                        ? 'scale-125 opacity-100'
-                        : 'scale-0 group-hover/bar:scale-100 opacity-0 group-hover/bar:opacity-100',
-                    )
-                  "
+                  class="h-full bg-primary-500"
+                  :style="{
+                    width: `${progress}%`,
+                    transition: isSeeking ? 'none' : 'width 1s linear',
+                  }"
                 />
               </div>
+              <div
+                class="absolute top-1/2 h-4 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-900 transition-transform duration-150 dark:bg-white"
+                :class="isSeeking ? 'scale-110' : ''"
+                :style="{
+                  left: `${progress}%`,
+                  transition: isSeeking ? 'none' : 'left 1s linear',
+                }"
+              />
             </div>
-            <span class="text-[10px] font-mono text-neutral-400 w-7">
-              {{ formatTime(duration) }}
+            <span class="eyebrow w-8 tabular-nums">
+              <UiRollingNumber :value="formatTime(duration)" />
             </span>
           </div>
         </div>
       </div>
 
       <!-- Track indicators -->
-      <div
-        v-if="tracks.length > 1 && !showListing"
-        class="flex items-center justify-center gap-2 px-3 pb-3"
-      >
+      <!-- Track indicators: dots, the current one a longer orange pill; each button is
+           larger than its dot, to be easy to hit -->
+      <div v-if="tracks.length > 1 && !showListing" class="flex items-center justify-center pb-2">
         <button
           v-for="(_, index) in tracks"
           :key="index"
           type="button"
-          :aria-label="`Track ${index + 1} of ${tracks.length}${currentIndex === index ? ' (current)' : ''}`"
-          :class="
-            cn(
-              'h-0.5 cursor-pointer',
-              currentIndex === index
-                ? 'bg-primary-500'
-                : 'bg-neutral-300 dark:bg-neutral-600 hover:bg-neutral-400 dark:hover:bg-neutral-500',
-            )
-          "
-          :style="{
-            width: currentIndex === index ? '24px' : '12px',
-            transition: 'width 300ms ease, background-color 300ms ease',
-          }"
+          class="group/dot cursor-pointer p-1"
+          :aria-label="t('music.track', { n: index + 1, total: tracks.length })"
+          :aria-current="currentIndex === index ? 'true' : undefined"
           @click.prevent.stop="goToTrack(index)"
-        />
+        >
+          <span
+            :class="
+              cn(
+                'block h-1.5 rounded-full transition-[width,background-color] duration-300',
+                currentIndex === index
+                  ? 'w-4 bg-primary-500'
+                  : 'w-1.5 bg-neutral-300 group-hover/dot:bg-neutral-400 dark:bg-neutral-700 dark:group-hover/dot:bg-neutral-500',
+              )
+            "
+          />
+        </button>
       </div>
 
-      <!-- Track listing -->
-      <div
-        class="border-t border-neutral-200 dark:border-neutral-800 grid overflow-hidden"
-        :class="
-          showListing
-            ? 'grid-rows-[1fr] opacity-100'
-            : 'grid-rows-[0fr] opacity-0 border-t-transparent'
-        "
-        style="
-          transition:
-            grid-template-rows 300ms cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 200ms ease,
-            border-color 200ms ease !important;
-        "
-      >
-        <div class="overflow-hidden">
-          <div class="max-h-48 overflow-y-auto">
-            <button
-              v-for="(t, index) in tracks"
-              :key="index"
-              type="button"
+      <!-- Track listing: a card under the player, after disarto's ground station rows -->
+      <UiExpand :open="showListing">
+        <div id="music-tracklist" class="panel-card mt-1 max-h-56 overflow-y-auto p-1.5">
+          <button
+            v-for="(t, index) in tracks"
+            :key="index"
+            type="button"
+            :aria-current="currentIndex === index ? 'true' : undefined"
+            :class="
+              cn(
+                'row flex w-full items-center gap-3 px-2.5 py-2 text-left',
+                currentIndex === index && 'bg-primary-500/10 hover:bg-primary-500/15',
+              )
+            "
+            @click.prevent.stop="goToTrack(index)"
+          >
+            <span
               :class="
                 cn(
-                  'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
-                  currentIndex === index
-                    ? 'bg-primary-500/10'
-                    : 'hover:bg-neutral-100 dark:hover:bg-neutral-800/50',
+                  'eyebrow w-5 shrink-0 text-right tabular-nums',
+                  currentIndex === index && 'text-(--accent-text)',
                 )
               "
-              @click.prevent.stop="goToTrack(index)"
             >
+              <UIcon
+                v-if="currentIndex === index && isPlaying"
+                name="i-heroicons-speaker-wave-16-solid"
+                class="size-3.5"
+                aria-hidden="true"
+              />
+              <template v-else>{{ String(index + 1).padStart(2, '0') }}</template>
+            </span>
+            <img
+              :src="t.cover"
+              :alt="t.album"
+              class="size-9 shrink-0 rounded-lg object-cover ring-1 ring-(--card-border)"
+            />
+            <span class="min-w-0 flex-1">
               <span
                 :class="
                   cn(
-                    'text-[10px] font-mono w-4 text-right shrink-0',
-                    currentIndex === index ? 'text-primary-500' : 'text-neutral-400',
+                    'block truncate text-sm',
+                    currentIndex === index
+                      ? 'text-(--accent-text)'
+                      : 'text-neutral-900 dark:text-neutral-100',
                   )
                 "
               >
-                {{ currentIndex === index && isPlaying ? '▸' : String(index + 1) }}
+                {{ t.title }}
               </span>
-              <img :src="t.cover" :alt="t.album" class="w-8 h-8 shrink-0 object-cover" />
-              <div class="min-w-0 flex-1">
-                <span
-                  :class="
-                    cn(
-                      'block text-xs truncate',
-                      currentIndex === index
-                        ? 'text-primary-500 font-medium'
-                        : 'text-neutral-900 dark:text-neutral-100',
-                    )
-                  "
-                >
-                  {{ t.title }}
-                </span>
-                <span class="block text-[10px] text-neutral-500 truncate">
-                  {{ t.artist }}
-                </span>
-              </div>
-            </button>
-          </div>
+              <span class="eyebrow block truncate">{{ t.artist }}</span>
+            </span>
+          </button>
         </div>
-      </div>
+      </UiExpand>
 
       <audio
         v-if="track?.preview"
@@ -539,6 +496,7 @@ function formatTime(seconds: number): string {
         @ended="onAudioEnded"
         @loadedmetadata="onTimeUpdate"
         @canplay="onCanPlay"
+        @play="nowPlaying = 'music'"
       />
     </div>
   </div>

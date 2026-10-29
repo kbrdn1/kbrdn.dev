@@ -84,7 +84,7 @@ make help       # Show all commands
 make dev        # Start development server
 make build      # Build for production
 make lint       # Run linter (oxlint)
-make fmt        # Format code (oxfmt) — CI runs `bun run fmt:check`
+make fmt        # Format code (bun fmt); CI runs `bun run fmt:check`
 make typecheck  # Type checking
 make clean      # Clean build artifacts
 ```
@@ -149,10 +149,10 @@ docs/#23-update-readme
 
 SemVer, single source of truth in `package.json`, changelog split one file per
 version under `changelogs/`. Tags drive deployment: `vX.Y.Z-rc.N` ships a
-frozen candidate to preprod, `vX.Y.Z` ships to production — both publish their
+frozen candidate to preprod, `vX.Y.Z` ships to production; both publish their
 GitHub release from the CI, never by hand.
 
-One constraint bites on the first cut: every PR to `main` must close an issue —
+One constraint bites on the first cut: every PR to `main` must close an issue,
 the release PR included, so each version needs its own. `dev → main` merges as
 a **merge commit**, never a squash. Full protocol:
 [`docs/RELEASE.md`](docs/RELEASE.md).
