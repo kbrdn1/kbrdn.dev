@@ -11,9 +11,9 @@
   color: var(--color-neutral-300);
 }
 
-/* The elements themselves (lists, code, tables...) take Nuxt UI's prose theme. No :deep()
-   here: Vue only rewrites it in a scoped style, in this global sheet it voided every rule it
-   was in */
+/* The elements themselves (lists, code, tables...) take Nuxt UI's prose theme, set to the
+   site's design in app.config.ts. No :deep() here: Vue only rewrites it in a scoped style,
+   in this global sheet it voided every rule it was in */
 
 /* Light: the articles' links (Nuxt UI's text-primary) one step darker than --ui-primary,
    which also colours the dither: 600 is 3.9:1 on the page, 700 is 5.2:1 */
@@ -37,4 +37,8 @@ html:is(.dark, .blur) .prose-blog .shiki span {
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
   text-underline-offset: 3px;
+}
+
+.prose-blog :is(p, li, td) a:hover {
+  text-decoration-color: currentColor;
 }
