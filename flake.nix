@@ -11,7 +11,8 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         # bun fmt arrive avec Bun 1.4.4 ; nixos-unstable en est à 1.4.2. Même version
-        # que la CI et le Dockerfile. À retirer quand nixpkgs passe en 1.4.4 (NixOS/nixpkgs#577354).
+        # que la CI et le Dockerfile. À retirer quand nixpkgs passe en 1.4.4 (NixOS/nixpkgs#577354),
+        # avec la ligne flake.nix du step « Bun version pins » de ci.yml.
         bun = pkgs.bun.overrideAttrs (old: {
           version = "1.4.4";
           # src se lit dans passthru.sources, que nixpkgs ne voit pas changer

@@ -10,7 +10,7 @@
     "preview": "nuxt preview",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "fmt:check": "bun fmt --check",
+    "fmt:check": "bun fmt --check --no-script",
     "typecheck": "nuxt typecheck",
     "postinstall": "nuxt prepare"
   },
