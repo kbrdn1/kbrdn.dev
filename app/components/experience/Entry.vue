@@ -33,6 +33,14 @@ const { t } = useI18n()
 const open = ref(false)
 const lightbox = useLightbox()
 
+// The illustration in the colour mode (a banner comes in two), resized by IPX for the pixel
+// layer; the viewer opens it full size
+const $img = useImage()
+const colorMode = useColorMode()
+const picture = computed(
+  () => props.image && themedBanner(props.image, isDarkMode(colorMode.value)),
+)
+
 const from = computed(() => props.start.slice(0, 4))
 const to = computed(() => props.end?.slice(0, 4) ?? '')
 </script>
@@ -151,14 +159,19 @@ const to = computed(() => props.end?.slice(0, 4) ?? '')
         <!-- Through the pixel layer, crisp on hover; client only like every pixel picture.
              A click opens it full size. -->
         <button
-          v-if="image"
+          v-if="picture"
           type="button"
           class="group/zoom relative mt-4 block aspect-[16/10] w-full cursor-zoom-in overflow-hidden rounded-xl bg-(--placeholder) ring-1 ring-(--card-border) md:mt-3"
           :aria-label="t('lightbox.open', { name: title })"
-          @click="lightbox.open(image, title)"
+          @click="lightbox.open(picture, title)"
         >
           <ClientOnly>
-            <UiPixelImage :src="image" alt="" class="size-full" reveal />
+            <UiPixelImage
+              :src="$img(picture, { width: 640, format: 'webp' })"
+              alt=""
+              class="size-full"
+              reveal
+            />
           </ClientOnly>
           <span
             class="icon-btn absolute top-2 right-2 size-7 bg-(--card-bg) opacity-0 transition-opacity group-hover/zoom:opacity-100 group-focus-visible/zoom:opacity-100"

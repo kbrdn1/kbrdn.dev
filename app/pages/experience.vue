@@ -434,6 +434,7 @@ const list = (key: string, count: number) =>
               :stack="study.technologies"
               :items-label="t('experiencePage.skills')"
               :items="list(`studies.${study.key}.skills`, study.skillsCount)"
+              :image="study.image"
               :links="siteLinks(study.sites)"
               :active="activeId === study.id"
             />

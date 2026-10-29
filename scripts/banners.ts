@@ -409,28 +409,64 @@ function corner(defs: string[], tint: string, mode: Mode) {
     <path d="${filet.outline}" fill="${gradient(defs, [0, 700], [900, 0], [pal.metal[0]!, pal.metal[1]!, pal.metal[2]!, pal.metal[1]!])}"/>`
 }
 
+/** Un tirage pseudo-aléatoire (xorshift32) semé par `text` : le même à chaque génération */
+function seeded(text: string) {
+  let state =
+    [...text].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261) >>> 0 || 1
+  return () => {
+    state ^= state << 13
+    state ^= state >>> 17
+    state ^= state << 5
+    return (state >>> 0) / 0x100000000
+  }
+}
+type Random = () => number
+
 /**
  * Les lignes de métro d'un coin, le motif de /experience (le blog a ses rubans), après la carte
- * de son héros : dessinées pour le haut droit, le bas gauche en est la rotation. Trois lignes
- * parallèles entrent par le bord droit, tournent à 45° et sortent par le haut, sans entrer dans
- * la zone du sujet ; une station à chaque coude. Chaque ligne est un tube : son ombre, son flanc
- * sombre, sa face, un reflet en haut à gauche.
+ * de son héros : dessinées pour le haut droit, le bas gauche en est la rotation. Un faisceau de
+ * 2 à 4 lignes parallèles, tiré au sort par bannière (`rand`, semé par sa clé : le même en clair
+ * et en sombre) : elles entrent par le bord droit, tournent à 45°, puis sortent par le haut ou
+ * filent à plat vers un terminus. L'écart reste constant dans les coudes (décalage parallèle),
+ * et tout reste au-dessus du sujet (y < 250). Chaque ligne est un tube : son ombre, son flanc
+ * sombre, sa face, un reflet en haut à gauche ; des stations à ses coudes et à son terminus.
  */
-function metro(defs: string[], tint: string, mode: Mode) {
+function metro(defs: string[], tint: string, mode: Mode, rand: Random) {
   const r = ramp(tint, mode)
   const pal = palette(mode)
-  // Par ligne : sa hauteur d'entrée, la constante x - y de sa diagonale, le coude du haut, sa
-  // largeur et ses tons (face, flanc, reflet)
-  const lines: [number, number, number, number, [string, string, string]][] = [
-    [210, 1290, 40, 46, [r.base, r.deep, r.shine]],
-    [290, 1200, 70, 30, [mix(r.mid, pal.center, 0.3), r.base, mix(r.shine, '#ffffff', 0.3)]],
-    [360, 1120, 100, 18, [pal.metal[2]!, pal.metal[0]!, pal.metal[1]!]],
+  const between = (a: number, b: number) => a + rand() * (b - a)
+  const pick = <T>(items: T[]) => items[Math.floor(rand() * items.length)]!
+  const n = pick([2, 3, 3, 4])
+  const gap = between(50, 64)
+  const step = gap * Math.SQRT2 // l'écart des diagonales, en x - y
+  // Le premier coude reste dans le recadrage 16:10 de /experience (x < 1520), aucun hors champ
+  const y0 = between(60, Math.max(61, 250 - (n - 1) * gap))
+  const d0 = between(1360, 1500) - y0
+  const flat = rand() < 0.5 // vers un terminus, sinon par le haut
+  const top0 = flat ? between(Math.max(20, y0 - 160), y0 - 60) : between(-20, y0 - 50)
+  const run = between(160, 320)
+  const tones: [string, string, string][] = [
+    [r.base, r.deep, r.shine],
+    [mix(r.mid, pal.center, 0.3), r.base, mix(r.shine, '#ffffff', 0.3)],
+    [pal.metal[2]!, pal.metal[0]!, pal.metal[1]!],
   ]
-  const tubes = lines.map(([y, d, top, w, [face, flank, light]]) => {
-    const path = `M${W + 120} ${y} H${d + y} L${d + top} ${top} V-60`
+  const tubes: string[] = []
+  const stations: Point[] = []
+  for (let i = 0; i < n; i++) {
+    const [y, d] = [y0 + i * gap, d0 - i * step]
+    // Le second coude : à plat, décalé de l'écart ; vers le haut, sur la verticale décalée
+    const top = flat ? top0 + i * gap : top0 + i * (step - gap)
+    const bends: Point[] = [
+      [d + y, y],
+      [d + top, top],
+    ]
+    const end = flat ? `H${d + top - run}` : 'V-60'
+    const path = `M${W + 120} ${y} L${bends.map(([x, by]) => `${x} ${by}`).join(' L')} ${end}`
+    const w = i === 0 ? 40 : pick([20, 26, 32])
+    const [face, flank, light] = i === 0 ? tones[0]! : pick(tones)
     const stroke = (color: string, width: number, extra = '') =>
-      `<path d="${path}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linejoin="round" ${extra}/>`
-    return [
+      `<path d="${path}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linejoin="round" stroke-linecap="round" ${extra}/>`
+    tubes.push(
       stroke('#000', w, `opacity="${pal.shadow}" filter="url(#soft)" transform="translate(12 22)"`),
       stroke(flank, w),
       stroke(face, w * 0.7, 'transform="translate(-2 -3)"'),
@@ -439,12 +475,10 @@ function metro(defs: string[], tint: string, mode: Mode) {
         w * 0.22,
         `opacity=".9" filter="url(#glow)" transform="translate(${-w * 0.18} ${-w * 0.22})"`,
       ),
-    ].join('')
-  })
-  const stations = lines.flatMap(([y, d, top]) => [
-    [d + y, y],
-    [d + top, top],
-  ])
+    )
+    for (const bend of bends) if (rand() < 0.7) stations.push(bend)
+    if (flat) stations.push([d + top - run, top])
+  }
   return `${tubes.join('')}
     ${stations.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="22" fill="${pal.center}" stroke="${pal.text}" stroke-width="9"/>`).join('')}`
 }
@@ -513,7 +547,7 @@ function screen(banner: Banner, mode: Mode) {
 }
 
 /** Une bannière : la capture (ou le sol), le motif aux deux coins, le sujet en relief */
-function compose(banner: Banner, mode: Mode, motif: typeof corner) {
+function compose(banner: Banner, mode: Mode, motif: typeof metro, rand: Random) {
   const pal = palette(mode)
   const defs: string[] = []
   const { body, scale, width } = subject(banner, mode)
@@ -542,8 +576,8 @@ function compose(banner: Banner, mode: Mode, motif: typeof corner) {
     __DEFS__
   </defs>
   ${screen(banner, mode)}
-  ${motif(defs, banner.tints[0], mode)}
-  <g transform="rotate(180 ${W / 2} ${H / 2})">${motif(defs, banner.tints[1], mode)}</g>
+  ${motif(defs, banner.tints[0], mode, rand)}
+  <g transform="rotate(180 ${W / 2} ${H / 2})">${motif(defs, banner.tints[1], mode, rand)}</g>
   <ellipse cx="${W / 2}" cy="${H / 2}" rx="${width * 0.56}" ry="${LOGO_H * scale * 0.72}" fill="${pal.center}" opacity="${pal.halo}" filter="url(#halo)"/>
   <g transform="translate(${W / 2 - 8} ${H / 2 - 10}) scale(${scale})">
     <use href="#subject" filter="url(#shadow)" transform="translate(18 30)"/>
@@ -605,7 +639,7 @@ for (const key of keys.length ? keys : Object.keys(BANNERS)) {
   mkdirSync(out, { recursive: true })
   for (const mode of ['light', 'dark'] as const) {
     const motif = key.startsWith('blog/') ? corner : metro
-    const rendered = new Resvg(compose(banner, mode, motif), {
+    const rendered = new Resvg(compose(banner, mode, motif, seeded(key)), {
       ...resvgOptions,
       fitTo: { mode: 'width', value: OUT_W },
     }).render()
