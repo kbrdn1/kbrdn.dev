@@ -638,7 +638,8 @@ export function walkout(c: GitfutCard): Walkout {
   const countAt = slamAt + SLAM + 120
   const portraitAt = countAt + COUNT
   const shineAt = portraitAt + PORTRAIT + 80
-  const duration = shineAt + SHINE + 200
+  // Still once the last twinkle (shineAt + 360, 420 ms) is out, or a frozen one stays
+  const duration = shineAt + 800
   const from = Math.max(40, c.overall - 16)
 
   // Vignette: the scene fades into the page at its edges, dithered (a rounded rectangle)
