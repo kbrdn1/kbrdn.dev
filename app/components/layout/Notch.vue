@@ -53,7 +53,11 @@ watch(active, async (key) => {
 })
 // Another language: its own posts, fetched again on the next opening
 watch(collection, () => (posts.value = []))
-const banner = (src?: string) => (src ? $img(src, { width: 480, format: 'webp' }) : undefined)
+const colorMode = useColorMode()
+const banner = (src?: string) =>
+  src
+    ? $img(blogBanner(src, isDarkMode(colorMode.value)), { width: 480, format: 'webp' })
+    : undefined
 
 const menus = computed<Record<string, Menu>>(() => ({
   '/': {

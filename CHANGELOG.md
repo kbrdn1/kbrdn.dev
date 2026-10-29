@@ -243,6 +243,17 @@ migrates `[Unreleased]` into that file and empties this one, see
   show the share of each language like the pinned repositories (measured on the
   private repositories), their frameworks, and a swatch in the framework's
   colour.
+- **A banner for every post and every /experience entry**
+  ([#111](https://github.com/kbrdn1/kbrdn.dev/issues/111)). After two
+  reference sheets: the logo in relief and the name in heavy type beside it,
+  over the project's screenshot, satin ribbons in the corners on the blog,
+  metro lines on /experience (after its hero's map). Each comes light and dark
+  in the site's tokens and goes through the pixel layer like every picture of
+  the site; a post's OG gets that layer frozen. The studies and the Virtual
+  Immersion role get an illustration too, and the article header asks IPX for
+  twice its width, so the picture under the hover stays sharp on a dense
+  screen. `scripts/banners.ts` draws them all: the next post's is one entry
+  away.
 
 ### Changed
 

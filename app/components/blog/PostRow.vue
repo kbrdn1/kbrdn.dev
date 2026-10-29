@@ -18,11 +18,10 @@ const { postUrl } = useBlogUrl()
 const $img = useImage()
 const colorMode = useColorMode()
 const banner = computed(() =>
-  $img(
-    props.post.bannerImage ||
-      (isDarkMode(colorMode.value) ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'),
-    { width: 640, format: 'webp' },
-  ),
+  $img(blogBanner(props.post.bannerImage, isDarkMode(colorMode.value)), {
+    width: 640,
+    format: 'webp',
+  }),
 )
 </script>
 

@@ -50,11 +50,7 @@ const VIEW_MODES = [
 const $img = useImage()
 const colorMode = useColorMode()
 const bannerOf = (post: { bannerImage?: string }) =>
-  $img(
-    post.bannerImage ||
-      (isDarkMode(colorMode.value) ? '/images/banners/dark.jpg' : '/images/banners/light.jpg'),
-    { width: 640, format: 'webp' },
-  )
+  $img(blogBanner(post.bannerImage, isDarkMode(colorMode.value)), { width: 640, format: 'webp' })
 const blogListRef = ref<HTMLElement | null>(null)
 
 function goToPage(page: number) {

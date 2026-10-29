@@ -107,6 +107,8 @@ CI catches both: `scripts/og-smoke.sh` serves the build and compares the OG imag
 ### Content System
 The project uses Nuxt Content v3's collection-based API (not the legacy document-driven mode). Always use `queryCollection()` instead of deprecated content APIs.
 
+**Banners**: a post's `bannerImage` and an /experience entry's `image` (`app/utils/career.ts`) are drawn by `scripts/banners.ts` (`bun scripts/banners.ts [key…]`, ImageMagick needed): `public/images/<key>/cover.jpg` (light), `cover-dark.jpg`, picked by the colour mode through `app/utils/banner.ts`, and for a post `cover-og.png`, the pixel layer frozen for the OG (satori runs no canvas). The pixel look is never baked into the JPEGs: `UiPixelImage` applies it at render, in the page's shape and gap colour. A new post or entry: one entry in `BANNERS`. A changed `blog/gwm` banner changes the og-smoke reference.
+
 ### Auto-imports
 Nuxt auto-imports components from `app/components/` and composables from `app/composables/`. No manual imports needed for these.
 

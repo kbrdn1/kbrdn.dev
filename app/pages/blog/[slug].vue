@@ -33,6 +33,15 @@ const { data: relatedPosts } = await useAsyncData(
 
 const minutes = computed(() => readingTime(post.value?.body))
 const { formatDate } = useFormatDate()
+// The gwm card beside the article: gwm's banner, in the colour mode
+const $img = useImage()
+const colorMode = useColorMode()
+const gwmBanner = computed(() =>
+  $img(blogBanner('/images/blog/gwm/cover.jpg', isDarkMode(colorMode.value)), {
+    width: 640,
+    format: 'webp',
+  }),
+)
 
 // The device's own share sheet (Web Share), where the browser has one: checked once mounted,
 // the server cannot know
@@ -130,7 +139,7 @@ useSiteOgImage('Blog', {
   date: post.value.publishedAt ? formatDate(post.value.publishedAt, 'short') : '',
   tags: post.value.tags || [],
   minutes: minutes.value,
-  bannerImage: post.value.bannerImage,
+  bannerImage: ogBanner(post.value.bannerImage),
 })
 
 // Table of contents
@@ -255,7 +264,7 @@ function scrollToHeading(id: string) {
               <BlogSidebarCard
                 title="gwm: Git Worktree Manager"
                 :description="t('blog.sidebar.gwm')"
-                image="/images/blog/gwm/banner.png"
+                :image="gwmBanner"
                 :badge="t('blog.sidebar.new')"
                 url="https://github.com/kbrdn1/gwm-cli"
               />
