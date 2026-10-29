@@ -407,7 +407,8 @@ const sample = (flag: Raster | undefined, u: number, v: number): Rgb =>
 const badges = new Map<string, Raster>()
 /** The club's badge: the orbit's for its languages, else the name's initials on a tile */
 function badge(language: string, dark: boolean) {
-  const known = BADGE_OF[language]
+  // Own keys only: a language called `constructor` must not read the prototype
+  const known = Object.hasOwn(BADGE_OF, language) ? BADGE_OF[language] : undefined
   if (known !== undefined) return badgeArt(dark)[known]!
   const key = `${language}:${dark}`
   let art = badges.get(key)
@@ -478,7 +479,7 @@ export function walkout(c: GitfutCard): Walkout {
   const shineAt = landAt + 400
   // Still once the last twinkle is out
   const duration = shineAt + SHINE + 500
-  const glow = GLOWS[c.finish] ?? PAL.yellow
+  const glow = Object.hasOwn(GLOWS, c.finish) ? GLOWS[c.finish]! : PAL.yellow
 
   const stills = new Map<boolean, Raster>()
   const still = (dark: boolean) => {

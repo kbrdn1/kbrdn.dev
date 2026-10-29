@@ -1,5 +1,5 @@
-// Check de app/utils/cameos et app/utils/heroes : les scènes pixel des sections (UiCameo) et
-// des héros (UiHeroCanvas). Une scène qui lève une exception au milieu ne casse ni le
+// Check de app/utils/cameos et app/utils/heroes : les scènes pixel des sections (UiCameo), des
+// héros (UiHeroCanvas) et le walkout de l'easter egg (HomeWalkout). Une scène qui lève une exception au milieu ne casse ni le
 // typecheck ni le build : elle fige son canvas sur la page. Une couleur qui n'est pas un
 // #rrggbb est peinte en noir sans erreur. Un héros dont la fin de boucle n'est pas son début
 // saute d'un coup à chaque tour.
@@ -9,6 +9,9 @@ import assert from 'node:assert/strict'
 import { CAMEOS } from '../app/utils/cameos'
 import { HEROES } from '../app/utils/heroes'
 import { ORBIT } from '../app/utils/heroes/orbit'
+import { LEAVE, walkout } from '../app/utils/heroes/walkout'
+import { Raster } from '../app/utils/cameos/art'
+import { GROWN } from '../app/utils/pixelGrow'
 
 for (const [name, cameo] of Object.entries(CAMEOS)) {
   const [ox, oy] = cameo.origin
@@ -57,6 +60,50 @@ for (const dark of [false, true]) {
   )
 }
 
+// Le walkout : toute sa timeline, sa sortie et sa pousse, en clair et en sombre, avec et sans
+// drapeau, pour la carte de Kylian, une carte sans pays ni langage, et une carte aux valeurs
+// qui piègent un objet littéral (`constructor`)
+const KYLIAN = {
+  name: 'Kylian Bardini',
+  overall: 84,
+  position: 'CM',
+  country: 'fr',
+  language: 'TypeScript',
+  finish: 'totw',
+  stats: { pac: 77, sho: 63, pas: 83, dri: 75, def: 61, phy: 94 },
+}
+const flag = new Raster(3, 2)
+flag.cells.fill('#3355aa')
+const cards = [
+  KYLIAN,
+  { ...KYLIAN, country: null, language: null, overall: 90 },
+  { ...KYLIAN, finish: 'constructor', language: 'constructor', position: 'CAM', overall: 70 },
+]
+const colors = (art: Raster, at: string) => {
+  for (const color of art.cells)
+    if (color) assert.match(color, /^#[0-9a-f]{6}$/i, `${at} : « ${color} »`)
+}
+for (const card of cards) {
+  const scene = walkout(card)
+  for (const dark of [false, true])
+    for (const assets of [{}, { flag }]) {
+      for (let t = 0; t <= scene.duration; t += 33) {
+        colors(scene.paint(t, dark, assets), `walkout@${t}`)
+        const at = scene.card(t)
+        if (at)
+          assert.ok([at.x, at.y, at.w, at.h, at.k].every(Number.isFinite), `walkout@${t} : carte`)
+      }
+      for (let leave = 0; leave <= LEAVE + 33; leave += 33) {
+        colors(scene.paint(scene.duration, dark, assets, GROWN, leave), `walkout, sortie@${leave}`)
+        scene.card(scene.duration, leave)
+      }
+      for (let level = 0; level <= GROWN; level += 0.1)
+        colors(scene.paint(100, dark, assets, level), `walkout, pousse ${level}`)
+    }
+  assert.ok(scene.card(scene.revealed), 'walkout : pas de carte une fois révélée')
+  assert.equal(scene.card(scene.duration, LEAVE), undefined, 'walkout : la carte reste en partant')
+}
+
 console.log(
-  `cameos: ok (${Object.keys(CAMEOS).length} scènes, ${Object.keys(HEROES).length} héros)`,
+  `cameos: ok (${Object.keys(CAMEOS).length} scènes, ${Object.keys(HEROES).length} héros, walkout)`,
 )
