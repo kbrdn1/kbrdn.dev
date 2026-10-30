@@ -37,7 +37,7 @@
     "@iconify-json/simple-icons": "^1.2.100",
     "@resvg/resvg-js": "^2.6.2",
     "@takumi-rs/core": "^2.17.1",
-    "@types/node": "^25.5.0",
+    "@types/node": "^26.6.5",
     "baseline-browser-mapping": "^2.11.32",
     "nuxt-og-image": "^7.0.7",
     "oxlint": "^1.89.0",
