@@ -41,7 +41,7 @@
     "baseline-browser-mapping": "^2.11.32",
     "nuxt-og-image": "^7.0.7",
     "oxlint": "^1.89.0",
-    "satori": "^0.47.1",
+    "satori": "^0.62.0",
     "typescript": "~5.9.3",
     "vue-tsc": "^3.3.13"
   }
