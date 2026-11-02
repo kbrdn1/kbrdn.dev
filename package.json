@@ -17,7 +17,7 @@
   "dependencies": {
     "@nuxt/content": "3.16.2",
     "@nuxt/fonts": "1.2.0",
-    "@nuxt/image": "2.2.0",
+    "@nuxt/image": "2.2.1",
     "@nuxt/ui": "^4.12.0",
     "@nuxtjs/i18n": "^10.6.0",
     "@selemondev/svgl-vue": "^2.17.0",
@@ -36,13 +36,13 @@
     "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/simple-icons": "^1.2.100",
     "@resvg/resvg-js": "^2.6.2",
-    "@takumi-rs/core": "^2.17.1",
+    "@takumi-rs/core": "^2.19.0",
     "@types/node": "^25.5.0",
     "baseline-browser-mapping": "^2.11.32",
     "nuxt-og-image": "^7.0.7",
     "oxlint": "^1.89.0",
-    "satori": "^0.47.1",
+    "satori": "^0.61.0",
     "typescript": "~5.9.3",
-    "vue-tsc": "^3.3.13"
+    "vue-tsc": "^3.3.14"
   }
 }
