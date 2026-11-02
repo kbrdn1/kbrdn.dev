@@ -224,13 +224,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Clé partagée avec le job deploy de deploy.yml : les groupes de
-    # concurrence sont globaux au repo. Sans elle, le protocole normal met deux
-    # déploiements prod en vol simultanément : le merge dev → main réveille
-    # deploy.yml, le push du tag qui suit réveille release.yml, et leurs
-    # groupes au niveau workflow étant distincts, rien ne les sérialise. Les
-    # deux `deploy.sh --env prod` visent alors les mêmes noms de conteneurs et
-    # le même upstream nginx : le second `docker rm -f` celui du premier, et
-    # l'image active à l'arrivée est indéterminée.
+    # concurrence sont globaux au repo. Le merge d'une release ne déploie plus
+    # la prod depuis deploy.yml (#139), mais les deux workflows visent encore
+    # le même environnement : push dev puis tag rc vers preprod, push main
+    # sans bump ou workflow_dispatch pendant un tag vers prod. Leurs groupes au
+    # niveau workflow étant distincts, rien d'autre ne les sérialise. Deux
+    # `deploy.sh` en vol visent alors les mêmes noms de conteneurs et le même
+    # upstream nginx : le second `docker rm -f` celui du premier, et l'image
+    # active à l'arrivée est indéterminée.
     concurrency:
       group: vps-deploy-${{ needs.resolve.outputs.env }}
       cancel-in-progress: false

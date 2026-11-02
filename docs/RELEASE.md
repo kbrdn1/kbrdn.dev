@@ -20,10 +20,11 @@ arrière vers une version précise possible.
 
 `deploy.yml` déclenche sur `push: branches`, `release.yml` sur `push: tags`,
 mais une release réveille les deux : le merge `dev → main`, puis le tag. Ce
-merge change la version de `package.json`, donc `deploy.yml` construit `:main`
+merge monte la version de `package.json`, donc `deploy.yml` construit `:main`
 **sans déployer la prod** : elle appartient au tag, qui ne déploie qu'après les
 gates de `release.yml`. Le filet ne sert plus qu'aux pushes sur `main` sans
-bump. La règle vit dans `scripts/resolve-main-push.sh`, couverte par son
+bump, ou dont la version redescend (le revert d'une release n'a aucun tag à
+venir). La règle vit dans `scripts/resolve-main-push.sh`, couverte par son
 `.test.sh`.
 
 Avant, le merge déployait aussi : deux swaps en prod pour une release, avec
