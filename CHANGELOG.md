@@ -14,6 +14,18 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ## [Unreleased]
 
+### Fixed
+
+- **A release deployed production twice**
+  ([#139](https://github.com/kbrdn1/kbrdn.dev/issues/139)). The merge to
+  `main` shipped `:main` to prod, then the tag shipped `:vX.Y.Z` about a minute
+  later: two swaps, the first one before `release.yml`'s gates had run, and two
+  builds of the same commit whose chunks differ, so a visitor served by the
+  first could hit 404s on chunks the second no longer had. A push to `main`
+  that bumps the version now builds `:main` without deploying it: production
+  belongs to the tag. If the tag's deploy fails, production stays on the
+  previous version until `gh run rerun --failed`.
+
 ## Past releases
 
 - [2.1.0](changelogs/2.1.0.md) · 2026-11-02
