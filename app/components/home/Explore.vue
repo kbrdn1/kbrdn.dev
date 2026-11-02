@@ -10,6 +10,8 @@ interface Slide {
   title: string
   description: string
   cta?: { label: string; href: string; icon: string }
+  /** Its low-poly scene of the mascot (public/images/lowpoly/scene-<scene>[-light].png) */
+  scene: string
 }
 
 const slides = computed<Slide[]>(() => [
@@ -22,18 +24,21 @@ const slides = computed<Slide[]>(() => [
       href: 'mailto:hello@kbrdn.dev',
       icon: 'i-heroicons-envelope',
     },
+    scene: 'collab',
   },
   {
     label: t('explore.labels.crafting'),
     title: t('explore.slides.crafting.title'),
     description: t('explore.slides.crafting.description'),
     cta: { label: 'gwm', href: 'https://github.com/kbrdn1/gwm-cli', icon: 'i-simple-icons-github' },
+    scene: 'coding',
   },
   {
     label: t('explore.labels.blog'),
     title: t('explore.slides.blog.title'),
     description: t('explore.slides.blog.description'),
     cta: { label: t('explore.slides.blog.cta'), href: '/blog', icon: 'i-heroicons-document-text' },
+    scene: 'writing',
   },
   {
     label: t('explore.labels.sponsor'),
@@ -44,26 +49,28 @@ const slides = computed<Slide[]>(() => [
       href: 'https://github.com/sponsors/kbrdn1',
       icon: 'i-heroicons-heart',
     },
+    scene: 'sponsor',
   },
   {
     label: t('explore.labels.motto'),
     title: t('explore.slides.motto.title'),
     description: t('explore.slides.motto.description'),
+    scene: 'reading',
   },
 ])
 
 const currentSlide = ref(0)
 const slide = computed(() => slides.value[currentSlide.value])
 
-// One voxel scene per slide (public/images/scenes): the dark ones in dark and glass mode
-const SCENES = {
-  dark: ['city-gate', 'circuit-red'],
-  light: ['city-peach', 'city-domes', 'city-marble', 'village'],
-}
-const scene = computed(() => {
-  const list = SCENES[isDark.value ? 'dark' : 'light']
-  return `/images/scenes/${list[currentSlide.value % list.length]}.webp`
-})
+// Each slide's scene, its light variant in light mode, through IPX like the banners: the
+// originals are 1.5 MB PNGs
+const $img = useImage()
+const scene = computed(() =>
+  $img(`/images/lowpoly/scene-${slide.value?.scene}${isDark.value ? '' : '-light'}.png`, {
+    width: 960,
+    format: 'webp',
+  }),
+)
 
 // Next slides in from the right, previous from the left (the timer always goes next)
 const direction = ref<'next' | 'prev'>('next')
