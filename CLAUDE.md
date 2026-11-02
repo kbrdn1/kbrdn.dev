@@ -139,14 +139,14 @@ Located in `.github/workflows/`:
 
 **deploy.yml** - Main deployment pipeline (build → push → SSH deploy):
 - Triggers on push to `main` (→ prod) and `dev` (→ preprod), ignoring `**.md` / `docs/` / `specs/` changes; `workflow_dispatch` supports a target env + rollback-only run
-- `resolve` job: derives env (prod/preprod) and image tag (main/dev) from the ref
+- `resolve` job: derives env (prod/preprod) and image tag (main/dev) from the ref. On a push to `main` that changes `package.json`'s version (a release merge, or a bumped hotfix), `scripts/resolve-main-push.sh` turns the deploy off: the image is still built, but prod belongs to the tag, which `release.yml` deploys only after its gates. Deploying here as well meant two swaps per release, with two builds whose chunks differ (#139). Any doubt (`before` null or unreadable, no version) deploys; `scripts/resolve-main-push.test.sh` covers it
 - `build` job: builds the multi-stage Docker image with buildx and pushes it to GHCR (`ghcr.io/<repo>:<tag>` + `:sha-<sha>`)
 - `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`) inline; writes a GitHub step summary
 
-Content changes (`app/content/**.mdx`) deploy through this same pipeline: `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
+Content changes (`app/content/**.mdx`) deploy through this same pipeline: `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy (unless it bumps the version, see above).
 
 **release.yml** - Tag-driven release + deploy (see `docs/RELEASE.md`):
-- Triggers on `push: tags` matching `v*.*.*`, so it never overlaps `deploy.yml` (which only watches branches); `workflow_dispatch` takes an explicit tag
+- Triggers on `push: tags` matching `v*.*.*`; `workflow_dispatch` takes an explicit tag. A release still wakes both workflows (the merge to `main`, then the tag), so their deploy jobs share the `vps-deploy-<env>` concurrency key; for that merge `deploy.yml` builds without deploying
 - `resolve` job: routes the tag via `scripts/resolve-release-tag.sh`: `vX.Y.Z-rc.N` → preprod + GitHub pre-release, `vX.Y.Z` → prod + release. Gates on `package.json` matching the tag and on the notes file existing, **before** anything deploys
 - `build` job: pushes an **immutable** `ghcr.io/<repo>:vX.Y.Z`, with `APP_VERSION` / `GIT_SHA` baked in as build args
 - `deploy` job: same SSH wrapper as `deploy.yml`, then verifies `/api/health` from the outside actually serves that version on that domain

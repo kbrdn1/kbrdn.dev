@@ -6,8 +6,10 @@ name: Release
 #   tag v1.1.0       →  image :v1.1.0       →  prod     +  release GitHub
 #
 # `deploy.yml` reste en place et garde l'itération quotidienne (push dev →
-# preprod, push main → prod) : il déclenche sur `push: branches` et n'est donc
-# jamais réveillé par un tag, les deux ne se marchent pas dessus.
+# preprod, push main → prod). Il déclenche sur `push: branches`, jamais sur un
+# tag, mais une release réveille les deux : le merge sur main, puis le tag.
+# Pour ce merge, qui bumpe la version, deploy.yml construit :main sans
+# déployer la prod : elle revient à ce workflow, après ses gates (#139).
 #
 # Un seul fichier pour les deux étages, là où gwm-cli sépare release.yml et
 # pre-release.yml : chez lui les matrices de build diffèrent (5 cibles, .deb,

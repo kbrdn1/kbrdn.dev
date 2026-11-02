@@ -9,7 +9,7 @@ seulement une release, **il déploie**.
 
 ```
 push dev          → image :dev           → preprod    itération quotidienne (deploy.yml)
-push main         → image :main          → prod       filet, cf. note plus bas
+push main         → image :main          → prod       filet, sauf si le push bumpe la version
 tag v1.1.0-rc.1   → image :v1.1.0-rc.1   → preprod    candidat figé + pre-release GitHub
 tag v1.1.0        → image :v1.1.0        → prod       release GitHub
 ```
@@ -18,8 +18,18 @@ Les images de tag sont **immutables** : `:dev` et `:main` désignent « le
 dernier », `:v1.1.0` désigne 1.1.0 pour toujours. C'est ce qui rend un retour
 arrière vers une version précise possible.
 
-`deploy.yml` déclenche sur `push: branches`, `release.yml` sur `push: tags` :
-les deux ne se réveillent jamais ensemble.
+`deploy.yml` déclenche sur `push: branches`, `release.yml` sur `push: tags`,
+mais une release réveille les deux : le merge `dev → main`, puis le tag. Ce
+merge change la version de `package.json`, donc `deploy.yml` construit `:main`
+**sans déployer la prod** : elle appartient au tag, qui ne déploie qu'après les
+gates de `release.yml`. Le filet ne sert plus qu'aux pushes sur `main` sans
+bump. La règle vit dans `scripts/resolve-main-push.sh`, couverte par son
+`.test.sh`.
+
+Avant, le merge déployait aussi : deux swaps en prod pour une release, avec
+deux builds dont les chunks diffèrent (le build n'est pas reproductible à
+l'octet près, cf. #139), et un code en prod avant que les gates du tag l'aient
+validé.
 
 ## Knobs du repo
 
@@ -128,7 +138,9 @@ gh pr merge <N> --merge --admin
 ```
 
 ⚠️ `--admin` contourne aussi les checks requis : il mergerait une PR rouge,
-que `deploy.yml` enverrait en prod. Il ne vient qu'après les 5 checks verts.
+que le tag enverrait ensuite en prod (les gates de `release.yml` vérifient
+version, notes et ascendance, pas la CI). Il ne vient qu'après les 5 checks
+verts.
 
 `main` exige aussi une branche à jour (`strict`), ce que `dev` n'est jamais :
 chaque merge de release laisse sur `main` un commit de merge que `dev` ne
@@ -150,10 +162,16 @@ tag. `release.yml` le vérifie : un tag stable qui n'est pas un ancêtre de
 `origin/main` est refusé avant tout build, donc un `vX.Y.Z` posé sur `dev` ne
 déploiera pas la production.
 
-Les déploiements vers un même environnement sont sérialisés entre `deploy.yml`
-et `release.yml` (clé de concurrence partagée) : le merge réveille le premier,
-le tag le second, et sans ça les deux `deploy.sh --env prod` se disputeraient
-les mêmes conteneurs.
+Le merge ne déploie pas la prod (il bumpe la version, cf. la vue d'ensemble) :
+c'est ce tag qui le fait. Si son job `Deploy prod` échoue, la prod **reste sur
+la version précédente**, plus aucun filet ne l'y pousse quand même ;
+rattrapage ci-dessous (`rerun --failed`).
+
+Les déploiements vers un même environnement restent sérialisés entre
+`deploy.yml` et `release.yml` (clé de concurrence partagée) : les deux peuvent
+encore viser la même cible (push `dev` puis tag rc vers preprod, push `main`
+sans bump, `workflow_dispatch` ou rerun d'un tag vers prod), et sans ça deux
+`deploy.sh` se disputeraient les mêmes conteneurs.
 
 Republier un tag existant (`workflow_dispatch`) **ne reconstruit pas** l'image :
 le tag de registre est mutable, mais l'artefact d'origine est conservé et
@@ -185,13 +203,13 @@ Le workflow le fait déjà et échoue avant de publier la release si le compte n
 est pas ; cette commande sert à contrôler après coup, ou à répondre à « quelle
 version est live ».
 
-⚠️ **Elle ne prouve pas que la release a tourné.** Le merge sur `main` déploie
-aussi la prod par `deploy.yml` (avant ou après le job du tag, selon qui prend
-le verrou `vps-deploy-prod`), et pour une stable l'image du filet porte la
-même version que celle du tag (`APP_VERSION` vide hors release → repli sur
-`package.json`, cf. `nuxt.config.ts`) ; le `sha` aussi est le même. Sur la
-v1.0.1, `/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait
-échoué. La preuve, c'est la release elle-même : le job `release` dépend de
+⚠️ **Elle ne prouve pas à elle seule que la release a tourné.** Le merge ne
+déploie plus la prod, mais un `workflow_dispatch` de `deploy.yml` vers prod
+sert `:main`, qui porte la même version que le tag (`APP_VERSION` vide hors
+release → repli sur `package.json`, cf. `nuxt.config.ts`) et le même `sha`.
+Avant #139, le merge le faisait à chaque release : sur la v1.0.1,
+`/api/health` renvoyait `1.0.1` en prod alors que `Deploy prod` avait échoué.
+La preuve, c'est la release elle-même : le job `release` dépend de
 `deploy` (`needs: [resolve, deploy]`), qui fait le contrôle `/api/health` : une
 release publiée par le bot n'existe donc que si le déploiement a réussi, qu'il
 vienne du push du tag, d'un `rerun --failed` ou d'un `workflow_dispatch` (rangé
@@ -231,9 +249,9 @@ version d'origine : refaire le `gh release edit` après.
 
 - **La release est un snapshot.** Corriger `changelogs/X.Y.Z.md` après coup ne
   la met pas à jour : `gh release edit vX.Y.Z --notes-file changelogs/X.Y.Z.md`.
-- **`deploy.yml` a un `paths-ignore` sur `**.md` et `docs/**`.** Un merge de
-  release qui ne toucherait que du markdown ne redéploierait pas prod par ce
-  chemin : raison de plus pour que le déploiement de prod appartienne au tag.
+- **`deploy.yml` a un `paths-ignore` sur `**.md` et `docs/**`.** Un push sur
+  `main` qui ne toucherait que du markdown ne redéploie pas la prod par ce
+  chemin. Sans effet sur une release : son déploiement appartient au tag.
 
 ## La chaîne de déploiement
 
