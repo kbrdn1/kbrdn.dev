@@ -42,14 +42,20 @@ B=$(commit '{"name":"x","version":"1.1.0"}')
 C=$(commit '{"name":"x","version":"1.1.0","dependencies":{"nuxt":"4"}}')
 D=$(commit '{"name":"x","version":"1.1.0","dependencies":{"nuxt":"4"}}')
 UNVERSIONED=$(commit '{"name":"x"}')
+REVERTED=$(commit '{"name":"x","version":"1.0.0"}')
+V1_9=$(commit '{"name":"x","version":"1.9.0"}')
+V1_10=$(commit '{"name":"x","version":"1.10.0"}')
 
 echo "bump de version → le tag déploie"
 expect "merge de release" "$A" "$B" false
 expect "push de plusieurs commits" "$A" "$D" false
+expect "1.9.0 → 1.10.0 (ordre de version, pas lexical)" "$V1_9" "$V1_10" false
 
-echo "version inchangée → filet"
+echo "version inchangée ou redescendue → filet"
 expect "push sans bump" "$C" "$D" true
 expect "bump de dépendance seul" "$B" "$C" true
+expect "revert d'une release (1.1.0 → 1.0.0)" "$D" "$REVERTED" true
+expect "1.10.0 → 1.9.0" "$V1_10" "$V1_9" true
 
 echo "dans le doute, on déploie"
 expect "before nul (branche créée)" 0000000000000000000000000000000000000000 "$B" true

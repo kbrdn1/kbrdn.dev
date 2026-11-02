@@ -2,10 +2,10 @@
 # Décide si un push sur `main` déploie la prod (le filet de deploy.yml) ou la
 # laisse au tag. Émet des lignes `clé=valeur` au format de $GITHUB_OUTPUT.
 #
-#   version inchangée entre <before> et <after>  →  deploy=true   (filet)
-#   version changée                              →  deploy=false  (le tag déploie)
+#   version montée entre <before> et <after>     →  deploy=false  (le tag déploie)
+#   version inchangée ou redescendue             →  deploy=true   (filet)
 #
-# Un push qui change la version de package.json est un merge de release, ou un
+# Un push qui monte la version de package.json est un merge de release, ou un
 # hotfix bumpé : son tag vX.Y.Z suit, et release.yml déploie après ses gates
 # (version = tag, notes présentes, ancêtre de main). Le filet enverrait le même
 # code en prod avant elles, avec un build différent : deux swaps pour une
@@ -33,7 +33,11 @@ if [[ -n "$BEFORE" && ! "$BEFORE" =~ ^0+$ ]]; then
   FROM=$(version_at "$BEFORE" || true)
 fi
 
-if [[ -n "$FROM" && -n "$TO" && "$FROM" != "$TO" ]]; then
+# Une version qui redescend (revert d'une release) n'a aucun tag à venir : son
+# tag existe déjà, rien ne le repoussera. Seule une montée laisse la prod au
+# tag ; `sort -V` pour que 1.10.0 passe bien devant 1.9.0.
+if [[ -n "$FROM" && -n "$TO" && "$FROM" != "$TO" ]] &&
+  [[ "$(printf '%s\n%s\n' "$FROM" "$TO" | sort -V | tail -n 1)" == "$TO" ]]; then
   DEPLOY=false
 else
   DEPLOY=true
