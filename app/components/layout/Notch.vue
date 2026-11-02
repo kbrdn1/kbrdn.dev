@@ -28,9 +28,7 @@ interface Menu {
   image: string
 }
 
-const SCENES = '/images/scenes'
 const ME = '/images/me/portrait.webp'
-const GWM = '/images/apps/gwm.webp'
 
 // The blog's menu lists its latest posts, fetched the first time it opens; each shows its
 // banner, through IPX (the originals weigh megabytes)
@@ -54,14 +52,18 @@ watch(active, async (key) => {
 // Another language: its own posts, fetched again on the next opening
 watch(collection, () => (posts.value = []))
 const colorMode = useColorMode()
+// The low-poly scenes of the mascot (public/images/lowpoly, docs/LOWPOLY.md), through IPX like
+// the banners: the originals are 1.5 MB PNGs. The backgrounds come light and dark
+const lowpoly = (name: string) =>
+  $img(`/images/lowpoly/${name}.png`, { width: 480, format: 'webp' })
+const lowpolyBg = (name: string) => lowpoly(isDarkMode(colorMode.value) ? `${name}-dark` : name)
 const banner = (src?: string) =>
   src
     ? $img(blogBanner(src, isDarkMode(colorMode.value)), { width: 480, format: 'webp' })
     : undefined
 
 // The Parcours menu shows the page's own banners (scripts/banners.ts), read from its data: the
-// latest role's, the latest study's, the most recent by start like the page's timeline. No open
-// source project has one, gwm's screenshot stays
+// latest role's, the latest study's, the most recent by start like the page's timeline
 function latestBanner(entries: readonly { startDate: string; image?: string }[]) {
   const withBanner = entries.filter((entry) => entry.image)
   return withBanner.sort((a, b) => b.startDate.localeCompare(a.startDate))[0]?.image
@@ -78,11 +80,11 @@ const menus = computed<Record<string, Menu>>(() => ({
     text: t('navMenu.home'),
     links: [
       { label: t('bio.title'), to: '/#about', image: ME },
-      { label: t('blog.title'), to: '/#latest-posts', image: `${SCENES}/village.webp` },
-      { label: t('skills.title'), to: '/#skills', image: `${SCENES}/circuit-red.webp` },
-      { label: t('projects.title'), to: '/#projects', image: GWM },
+      { label: t('blog.title'), to: '/#latest-posts', image: lowpoly('scene-writing') },
+      { label: t('skills.title'), to: '/#skills', image: lowpoly('scene-coding') },
+      { label: t('projects.title'), to: '/#projects', image: lowpoly('scene-gwm') },
     ],
-    image: `${SCENES}/city-gate.webp`,
+    image: lowpolyBg('bg-world'),
   },
   '/experience': {
     text: t('navMenu.experience'),
@@ -97,30 +99,38 @@ const menus = computed<Record<string, Menu>>(() => ({
         to: { name: 'experience', hash: '#education' },
         image: careerBanner(STUDY_BANNER),
       },
-      { label: 'Open source', to: { name: 'experience', hash: '#open-source' }, image: GWM },
+      {
+        label: 'Open source',
+        to: { name: 'experience', hash: '#open-source' },
+        image: lowpoly('scene-open-source'),
+      },
     ],
     image: careerBanner(ROLE_BANNER) ?? ME,
   },
   '/apps': {
     text: t('navMenu.apps'),
     links: [
-      { label: 'gwm', to: '/apps#gwm', image: GWM },
-      { label: 'vellum', to: '/apps#vellum', image: `${SCENES}/circuit-red.webp` },
-      { label: 'LazyCurl', to: '/apps#lazycurl', image: '/images/apps/lazycurl.webp' },
+      { label: 'gwm', to: '/apps#gwm', image: lowpoly('scene-gwm') },
+      { label: 'vellum', to: '/apps#vellum', image: lowpoly('scene-vellum') },
+      { label: 'LazyCurl', to: '/apps#lazycurl', image: lowpoly('scene-lazycurl') },
     ],
-    image: GWM,
+    image: lowpolyBg('bg-studio'),
   },
   '/activity': {
     text: t('navMenu.activity'),
     links: [
-      { label: 'Open source', to: '/activity#activity-open-source-heading', image: GWM },
+      {
+        label: 'Open source',
+        to: '/activity#activity-open-source-heading',
+        image: lowpoly('scene-open-source'),
+      },
       {
         label: t('activityPage.feedTitle'),
         to: '/activity#activity-feed-heading',
-        image: `${SCENES}/city-domes.webp`,
+        image: lowpoly('scene-deploy'),
       },
     ],
-    image: `${SCENES}/circuit-red.webp`,
+    image: lowpoly('scene-gamedev'),
   },
   '/blog': {
     text: t('navMenu.blog'),
@@ -132,12 +142,12 @@ const menus = computed<Record<string, Menu>>(() => ({
       })),
       { label: t('blog.viewAll'), to: '/blog' },
     ],
-    image: banner(posts.value[0]?.bannerImage) ?? `${SCENES}/village.webp`,
+    image: banner(posts.value[0]?.bannerImage) ?? lowpoly('scene-writing'),
   },
   '/contact': {
     text: t('navMenu.contact'),
     links: [
-      { label: t('contactPage.write'), to: '/contact', image: ME },
+      { label: t('contactPage.write'), to: '/contact', image: lowpoly('scene-contact') },
       {
         label: 'hello@kbrdn.dev',
         to: 'mailto:hello@kbrdn.dev',
@@ -146,7 +156,7 @@ const menus = computed<Record<string, Menu>>(() => ({
       },
       ...(cvUrl.value ? [{ label: t('contactPage.cv'), to: cvUrl.value, external: true }] : []),
     ],
-    image: ME,
+    image: lowpoly('scene-contact'),
   },
   gwm: {
     text: t('navMenu.gwm'),
@@ -155,7 +165,7 @@ const menus = computed<Record<string, Menu>>(() => ({
       { label: 'GitHub', to: 'https://github.com/kbrdn1/gwm-cli', external: true },
       { label: t('navMenu.gwmApps'), to: '/apps#gwm' },
     ],
-    image: GWM,
+    image: lowpoly('scene-gwm'),
   },
 }))
 

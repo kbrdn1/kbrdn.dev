@@ -17,7 +17,7 @@ useSeoMeta({
 useSiteOgImage('Default', {
   title: t('activityPage.ogTitle'),
   subtitle: t('activityPage.ogSubtitle'),
-  scene: 'commits',
+  scene: 'open-source',
 })
 usePageSchema(
   'CollectionPage',
