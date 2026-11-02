@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // A page's hero scene. Those redrawn at the cameos' level (utils/heroes) play on a canvas
-// (UiHeroCanvas); the others as they were (utils/pixelScenes, which the OG images draw too), in
+// (UiHeroCanvas); the others as they were (utils/pixelScenes), in
 // the theme's palette on no background: what never moves once, then what each tick draws. It
 // plays only while on screen, and holds its frame while reduced motion is on, even if it is
 // turned on later. Decorative.

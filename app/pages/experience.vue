@@ -17,7 +17,7 @@ useSeoMeta({
 useSiteOgImage('Default', {
   title: t('experiencePage.ogTitle'),
   subtitle: t('experiencePage.ogSubtitle'),
-  scene: 'climb',
+  scene: 'journey',
 })
 const person = usePersonRef()
 usePageSchema(

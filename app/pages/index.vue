@@ -52,6 +52,7 @@ useSiteOgImage('Default', {
   subtitle: page.value?.titles?.[0] || t('seo.jobTitle'),
   handle: page.value?.handle || '@kbrdn1',
   isHirable: page.value?.isHirable ?? true,
+  scene: 'coding',
   figures: CAREER_FIGURES.map((figure) => ({
     label: t(`experiencePage.figures.${figure.key}`),
     value: figure.value,

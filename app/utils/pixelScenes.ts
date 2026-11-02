@@ -28,8 +28,7 @@ interface Scene {
 
 // The theme's palette (theme.css): the primary and neutral scales, the accents' 500 and 600,
 // one letter each. Upper-case letters and symbols change with the mode (sun or moon, clouds,
-// stars, glow). The page fills cells with these classes; the OG images (satori, no CSS) with
-// sceneColor().
+// stars, glow). The page fills cells with these classes.
 export const SCENE_FILL: Record<string, string> = {
   // Neutrals, dark to light
   '0': 'fill-neutral-950',
@@ -93,68 +92,6 @@ export const SCENE_FILL: Record<string, string> = {
   // Warm light (a candle, a screen's glow)
   K: 'fill-yellow-500/25',
   L: 'fill-yellow-500/12',
-}
-
-// The theme's colours the scenes use, as theme.css sets them (scripts/pixel-scenes.test.ts
-// keeps the two in step)
-export const THEME_HEX: Record<string, string> = {
-  'blue-500': '#7ab8ff',
-  'blue-600': '#5aa0e6',
-  'cyan-500': '#8abfb8',
-  'cyan-600': '#6fa39c',
-  'green-500': '#86e89a',
-  'green-600': '#6bc97f',
-  'neutral-50': '#f5f5f5',
-  'neutral-100': '#e0e0e0',
-  'neutral-200': '#d0d0d0',
-  'neutral-300': '#b0b0b0',
-  'neutral-400': '#999999',
-  'neutral-500': '#666666',
-  'neutral-600': '#555555',
-  'neutral-700': '#3a3a3a',
-  'neutral-800': '#2a2a2a',
-  'neutral-900': '#242424',
-  'neutral-950': '#1a1a1a',
-  'primary-100': '#fcf0e0',
-  'primary-200': '#f8ddb8',
-  'primary-300': '#f4c895',
-  'primary-400': '#e8a573',
-  'primary-500': '#d4825d',
-  'primary-600': '#c15f3c',
-  'primary-700': '#a64d2e',
-  'primary-800': '#8b3d24',
-  'primary-900': '#5c2f18',
-  'primary-950': '#3d1f10',
-  'purple-500': '#c79bff',
-  'purple-600': '#a87ee0',
-  'red-500': '#ff7a7a',
-  'red-600': '#e06060',
-  'yellow-500': '#ffdf61',
-  'yellow-600': '#e6c654',
-}
-
-// A cell's colour on the dark theme, the OG images': [hex, opacity], or none
-export function sceneColor(letter: string): [string, number] | undefined {
-  const fill = SCENE_FILL[letter]
-  if (!fill) return undefined
-  const dark = fill.split(' ').find((c) => c.startsWith('dark:')) ?? fill.split(' ')[0]!
-  const [name, alpha] = dark.replace('dark:', '').replace('fill-', '').split('/') as [
-    string,
-    string?,
-  ]
-  if (name === 'transparent') return undefined
-  const hex =
-    name === 'white' ? '#ffffff' : name.startsWith('[') ? name.slice(1, -1) : THEME_HEX[name]
-  return hex ? [hex, alpha ? Number(alpha) / 100 : 1] : undefined
-}
-
-// The frame each scene shows in an OG image: its best moment
-export const SCENE_OG_TICK: Record<PixelSceneName, number> = {
-  climb: 56,
-  terminal: 70,
-  commits: 40,
-  blog: 60,
-  mail: 20,
 }
 
 const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map((v) => (v + 0.5) / 16)

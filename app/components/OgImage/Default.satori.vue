@@ -2,20 +2,10 @@
 // The pages' OG image, the repos' banners' card (disarto's "Deployment" sheets): the dither
 // field, two dashed construction lines along the panel's sides, nothing else outside it. The
 // panel: a header (the handle, the window's icons), the card (the name and the title in Fenix,
-// the buttons; the drawn portrait, or the page's pixel scene, and the facts; the career in
+// the buttons; the drawn portrait, or the page's low-poly scene, and the facts; the career in
 // figures on the home, the stack elsewhere), a footer (icons, the address in mono, a button).
 // Satori: every style on one line (its gradient parser fails on split values), every box
 // with several children a flex box.
-import { HEROES } from '~/utils/heroes'
-import {
-  PIXEL_SCENES,
-  SCENE_H,
-  SCENE_OG_TICK,
-  SCENE_W,
-  sceneColor,
-  type PixelSceneName,
-} from '~/utils/pixelScenes'
-
 const props = withDefaults(defineProps<{
   title?: string
   subtitle?: string
@@ -31,8 +21,8 @@ const props = withDefaults(defineProps<{
   /** The page's address, and its language (useSiteOgImage) */
   address?: string
   lang?: string
-  /** The page's pixel scene (utils/pixelScenes) in place of the portrait */
-  scene?: PixelSceneName
+  /** The page's low-poly scene of the mascot (public/images/lowpoly/og) in place of the portrait */
+  scene?: string
 }>(), {
   title: 'Kylian Bardini',
   subtitle: 'Full Stack Developer',
@@ -50,35 +40,12 @@ const props = withDefaults(defineProps<{
   scene: undefined,
 })
 
-// The scene at its best moment, in the dark theme's colours (no CSS in satori): the page's
-// hero (utils/heroes) at its resting frame, each row's runs of a colour as one rect; else the
-// flat scene it replaced
-const sceneBox = computed(() => {
-  if (!props.scene) return undefined
-  // An unknown name (the OG URL is open to anyone) draws the portrait instead; own keys
-  // only, or `constructor` and the like pass for a scene
-  if (!Object.hasOwn(PIXEL_SCENES, props.scene)) return undefined
-  const hero = HEROES[props.scene]
-  if (hero) {
-    const art = hero.still(true).copy().over(hero.paint(hero.rest, true))
-    const cells: { x: number, y: number, w: number, h: number, fill: string, opacity: number }[] = []
-    for (let y = 0; y < art.h; y++)
-      for (let x = 0; x < art.w;) {
-        const fill = art.cells[y * art.w + x]
-        let w = 1
-        while (x + w < art.w && art.cells[y * art.w + x + w] === fill) w++
-        if (fill) cells.push({ x, y, w, h: 1, fill, opacity: 1 })
-        x += w
-      }
-    return { w: art.w, h: art.h, cells }
-  }
-  const scene = PIXEL_SCENES[props.scene]
-  const cells = [...scene.still, ...scene.frame(SCENE_OG_TICK[props.scene])].flatMap((cell) => {
-    const color = sceneColor(cell.c)
-    return color ? [{ ...cell, fill: color[0], opacity: color[1] }] : []
-  })
-  return { w: SCENE_W, h: SCENE_H, cells }
-})
+// The scenes cropped to the card's box (docs/LOWPOLY.md). An unknown name (the OG URL is open to
+// anyone) draws the portrait instead: never a path from the URL
+const SCENES = ['coding', 'writing', 'journey', 'gwm', 'open-source', 'contact']
+const sceneSrc = computed(() =>
+  props.scene && SCENES.includes(props.scene) ? `/images/lowpoly/og/scene-${props.scene}.png` : undefined,
+)
 
 const handle = computed(() => props.handle.replace(/^@/, ''))
 const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' | 'person' | 'text', value: string }[]>(() => [
@@ -131,10 +98,8 @@ const facts = computed<{ icon: keyof typeof OG_ICONS, label: string, kind: 'ok' 
 
           <!-- The drawn portrait, or the page's scene, and the facts -->
           <div class="flex items-center" style="margin-top: 20px; gap: 28px;">
-            <div v-if="sceneBox?.cells.length" class="flex items-center justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
-              <svg width="208" height="156" :viewBox="`0 0 ${sceneBox.w} ${sceneBox.h}`" shape-rendering="crispEdges">
-                <rect v-for="(cell, i) in sceneBox.cells" :key="i" :x="cell.x" :y="cell.y" :width="cell.w ?? 1" :height="cell.h ?? 1" :fill="cell.fill" :fill-opacity="cell.opacity" />
-              </svg>
+            <div v-if="sceneSrc" class="flex" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
+              <img :src="sceneSrc" alt="" width="290" height="168" style="width: 290px; height: 168px; object-fit: cover;" />
             </div>
             <div v-else class="flex items-end justify-center" style="box-sizing: border-box; width: 290px; height: 168px; overflow: hidden; background: #0f0f12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px;">
               <img :src="avatar" alt="" width="196" height="196" style="width: 196px; height: 196px; margin-bottom: -24px;" />

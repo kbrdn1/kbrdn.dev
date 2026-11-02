@@ -17,7 +17,7 @@ useSeoMeta({
 useSiteOgImage('Default', {
   title: t('contactPage.ogTitle'),
   subtitle: t('contactPage.ogSubtitle'),
-  scene: 'mail',
+  scene: 'contact',
 })
 usePageSchema(
   'ContactPage',
