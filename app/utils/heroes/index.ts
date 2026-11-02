@@ -1,4 +1,4 @@
-// The pages' hero scenes at the cameos' level (UiPixelScene, and the pages' OG images), by the
+// The pages' hero scenes at the cameos' level (UiPixelScene), by the
 // names of the flat scenes they replace (utils/pixelScenes): /parcours, /apps, /activity,
 // /blog, /contact.
 import { commits } from './commits'
