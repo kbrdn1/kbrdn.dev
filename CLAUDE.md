@@ -168,9 +168,13 @@ Repo-level GitHub Actions secrets (see `docs/CONFIGURATION.md`):
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - **not defined**: passed by `deploy.yml` and `release.yml`, but unused while `nuxt-studio` is disabled
 - `NUXT_APP_SECRET` - Nuxt app secret (64 hex chars, `openssl rand -hex 32`): nuxt-og-image 7 signs the `/_og/*` URLs with it. Missing or under 32 characters, every OG image returns 500; `scripts/deploy.sh` warns but still deploys (a rollback to a pre-v7 image does not need it). Rotating it invalidates the signed OG URLs already cached by social networks
+- `TURNSTILE_SECRET_KEY` - Cloudflare Turnstile secret, checked by `/api/contact` against `siteverify`. Fails closed: missing, the form refuses every message (503) and `scripts/deploy.sh` warns. A runtime secret like the others, so it is in the VPS wrapper's allowlist: sync `/srv` before a workflow sends a new one
 
 Repo-level **variables** (not secrets), passed as build-args by both workflows:
 - `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
+- `TURNSTILE_SITE_KEY` - site key of the contact form's Turnstile widget (hostnames `kbrdn.dev` + `pre-prod.kbrdn.dev`). Empty: no widget, so no message can be sent. Locally, `.env.example` has Cloudflare's always-pass test keys
+
+**Email**: the form sends from `contact@email.kbrdn.dev` (Resend, subdomain verified) to `hello@kbrdn.dev`. A bounce puts that address on Resend's suppression list, after which every message is dropped as `suppressed` while the form still answers success (`docs/CONFIGURATION.md`)
 
 ## Active Technologies
 - TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker
