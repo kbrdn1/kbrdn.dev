@@ -1,0 +1,117 @@
+/* The cookie banner (CookieConsent, plugins/cookie-consent.client.ts) dressed as the site's
+   panels: its variables mapped onto the theme's, which already switch between light, dark and
+   blur. Loaded with the banner, only where analytics is on. `:root #cc-main` outranks the
+   library's own `#cc-main`, whatever order the two sheets end up in. */
+@import "vanilla-cookieconsent/dist/cookieconsent.css";
+
+:root #cc-main {
+  /* Over the music dock (50) and the skip link (100), under the pixel cursor (200) */
+  --cc-z-index: 150;
+  --cc-font-family: var(--font-sans);
+  --cc-modal-border-radius: 1.25rem;
+  --cc-btn-border-radius: 9999px;
+  --cc-bg: var(--panel-bg);
+  --cc-primary-color: var(--ui-text-highlighted);
+  --cc-secondary-color: var(--label);
+  --cc-link-color: var(--accent-text);
+  --cc-separator-border-color: var(--panel-border);
+  --cc-overlay-bg: rgb(0 0 0 / 0.5);
+
+  /* .btn-primary: orange with dark text (white on it fails AA), and .btn-outline */
+  --cc-btn-primary-bg: var(--color-primary-500);
+  --cc-btn-primary-color: var(--color-neutral-950);
+  --cc-btn-primary-border-color: var(--color-primary-500);
+  --cc-btn-primary-hover-bg: var(--color-primary-400);
+  --cc-btn-primary-hover-color: var(--color-neutral-950);
+  --cc-btn-primary-hover-border-color: var(--color-primary-400);
+  --cc-btn-secondary-bg: transparent;
+  --cc-btn-secondary-color: var(--ui-text-highlighted);
+  --cc-btn-secondary-border-color: var(--control-border);
+  --cc-btn-secondary-hover-bg: var(--control-bg);
+  --cc-btn-secondary-hover-color: var(--ui-text-highlighted);
+  --cc-btn-secondary-hover-border-color: var(--control-border);
+
+  --cc-toggle-on-bg: var(--color-primary-500);
+  --cc-toggle-on-knob-bg: var(--color-neutral-950);
+  --cc-toggle-off-bg: var(--color-neutral-500);
+  --cc-toggle-readonly-bg: var(--control-border);
+  --cc-toggle-readonly-knob-bg: var(--panel-bg);
+
+  /* The categories: .panel-card surfaces inside the panel */
+  --cc-cookie-category-block-bg: var(--card-bg);
+  --cc-cookie-category-block-border: var(--card-border);
+  --cc-cookie-category-block-hover-bg: var(--card-bg);
+  --cc-cookie-category-block-hover-border: var(--control-border);
+  --cc-cookie-category-expanded-block-bg: transparent;
+  --cc-cookie-category-expanded-block-hover-bg: var(--row-hover);
+  --cc-section-category-border: var(--card-border);
+
+  --cc-footer-bg: transparent;
+  --cc-footer-color: var(--label);
+  --cc-footer-border-color: var(--panel-border);
+}
+
+/* The panel's edge, shadow and glass (blur turns its 4% white into frosted glass) */
+:root #cc-main :is(.cm, .pm) {
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+  -webkit-backdrop-filter: var(--glass);
+  backdrop-filter: var(--glass);
+}
+
+/* .btn's pills: medium weight, 2.25rem high */
+:root #cc-main .pm__btn {
+  min-height: 2.25rem;
+  font-weight: 500;
+}
+
+/* The banner, kept small: narrower, tighter, the title an .eyebrow, .btn-sm buttons */
+:root #cc-main .cm {
+  max-width: 21rem;
+}
+
+:root #cc-main .cm__texts {
+  padding-top: 0.875rem;
+}
+
+:root #cc-main :is(.cm__title, .cm__desc) {
+  padding-inline: 1rem;
+}
+
+:root #cc-main .cm__title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--label);
+}
+
+:root #cc-main .cm__title + .cm__desc {
+  margin-top: 0.375rem;
+}
+
+:root #cc-main .cm__desc {
+  font-size: 0.8125rem;
+  padding-bottom: 0.75rem;
+}
+
+:root #cc-main .cm__btns {
+  padding: 0.625rem 1rem 0.75rem;
+}
+
+:root #cc-main .cm__btn {
+  min-height: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Side by side on a phone too: under 640px the library stacks them, with !important */
+:root #cc-main .cm__btn-group {
+  flex-direction: row !important;
+}
+
+:root #cc-main .cm__btn + .cm__btn {
+  margin: 0 0 0 0.375rem !important;
+}
