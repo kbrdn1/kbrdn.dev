@@ -37,6 +37,9 @@ const form = reactive({
 
 const isSubmitting = ref(false)
 const submitStatus = ref<'idle' | 'success' | 'error'>('idle')
+// Cloudflare Turnstile: the server refuses a message without a valid token
+const turnstileToken = ref('')
+const turnstile = ref<{ reset: () => void }>()
 
 async function handleSubmit() {
   // The button stays enabled (aria-disabled) so it keeps the focus: the guard is here
@@ -44,13 +47,18 @@ async function handleSubmit() {
   isSubmitting.value = true
   submitStatus.value = 'idle'
   try {
-    await $fetch('/api/contact', { method: 'POST', body: form })
+    await $fetch('/api/contact', {
+      method: 'POST',
+      body: { ...form, turnstileToken: turnstileToken.value },
+    })
     submitStatus.value = 'success'
     Object.assign(form, { name: '', email: '', company: '', topic: '', message: '' })
   } catch {
     submitStatus.value = 'error'
   } finally {
     isSubmitting.value = false
+    // A token is single-use, spent or not: a retry needs a new one
+    turnstile.value?.reset()
   }
 }
 
@@ -186,6 +194,8 @@ const SOCIALS = [
                 :placeholder="t('footer.contact.messagePlaceholder')"
               />
             </div>
+
+            <UiTurnstile ref="turnstile" v-model="turnstileToken" />
 
             <div aria-live="polite" aria-atomic="true">
               <p
