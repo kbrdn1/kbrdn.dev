@@ -101,10 +101,13 @@ function drawCells(
   shape: string,
   rgb: [number, number, number],
 ) {
+  const { width, height } = ctx.canvas
+  // A parent laid out at 0 (a list row held at height 0 while it enters): nothing to draw,
+  // and a canvas of size 0 makes drawImage throw on every frame
+  if (!width || !height) return
   const renderer = cellRenderer()
   if (!renderer) return
   const { gl, uniforms } = renderer
-  const { width, height } = ctx.canvas
   const target = gl.canvas as HTMLCanvasElement
   // Two cards can animate at once (one fading out under the next): resized for each
   if (target.width !== width || target.height !== height) {
