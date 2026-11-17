@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody, createError } from 'h3'
+import { defineEventHandler, readBody, createError, getHeader } from 'h3'
 
 interface ContactForm {
   name: string
@@ -7,11 +7,14 @@ interface ContactForm {
   /** Optional, from /contact */
   company?: string
   topic?: string
+  /** The Cloudflare Turnstile token of the widget on /contact */
+  turnstileToken?: string
 }
 
 // The topics /contact offers; anything else is dropped
 const TOPICS = new Set(['role', 'project', 'openSource', 'other'])
-const MAX = { name: 200, email: 320, company: 200, message: 5000 }
+// 2048: the longest token Turnstile issues
+const MAX = { name: 200, email: 320, company: 200, message: 5000, turnstileToken: 2048 }
 
 // Every field ends up in an HTML email: escaped, so a message cannot inject markup into it
 const escapeHtml = (text: string) =>
@@ -32,7 +35,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // A crafted request can send arrays or objects: every field must be a string
-  const optional = [body.company, body.topic].filter((v) => v != null)
+  const optional = [body.company, body.topic, body.turnstileToken].filter((v) => v != null)
   if (![body.name, body.email, body.message, ...optional].every((v) => typeof v === 'string')) {
     throw createError({ statusCode: 400, message: 'Invalid field type' })
   }
@@ -43,7 +46,8 @@ export default defineEventHandler(async (event) => {
     body.name.length > MAX.name ||
     body.email.length > MAX.email ||
     body.message.length > MAX.message ||
-    (body.company?.length ?? 0) > MAX.company
+    (body.company?.length ?? 0) > MAX.company ||
+    (body.turnstileToken?.length ?? 0) > MAX.turnstileToken
   ) {
     throw createError({ statusCode: 400, message: 'Field too long' })
   }
@@ -55,6 +59,39 @@ export default defineEventHandler(async (event) => {
       statusCode: 400,
       message: 'Invalid email format',
     })
+  }
+
+  // Cloudflare Turnstile, after the cheap checks: a token is single-use, a request turned down
+  // above must not spend it. Fails closed: without the secret nothing is sent, a form open to
+  // bots is what this check exists to close. Read from process.env too, for the same reason as
+  // the Resend key below (the image is built without it).
+  const turnstileSecret = useRuntimeConfig().turnstileSecretKey || process.env.TURNSTILE_SECRET_KEY
+  if (!turnstileSecret) {
+    console.error('TURNSTILE_SECRET_KEY is not set: contact form submission refused')
+    throw createError({ statusCode: 503, message: 'Contact form unavailable' })
+  }
+  if (!body.turnstileToken) {
+    throw createError({ statusCode: 403, message: 'Captcha required' })
+  }
+  const outcome = await $fetch<{ success: boolean; 'error-codes'?: string[] }>(
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    {
+      method: 'POST',
+      body: {
+        secret: turnstileSecret,
+        response: body.turnstileToken,
+        // Set by Cloudflare's proxy in front of the site; only a hint to the check, a forged
+        // value cannot turn an invalid token into a valid one
+        remoteip: getHeader(event, 'cf-connecting-ip'),
+      },
+    },
+  ).catch((error) => {
+    console.error('Turnstile siteverify unreachable:', error)
+    return { success: false, 'error-codes': ['siteverify-unreachable'] }
+  })
+  if (!outcome.success) {
+    console.warn('Turnstile check failed:', outcome['error-codes'])
+    throw createError({ statusCode: 403, message: 'Captcha failed' })
   }
 
   const name = escapeHtml(body.name)

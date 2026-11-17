@@ -23,6 +23,7 @@
 #   RESEND_API_KEY     (obligatoire pour contact form)
 #   NUXT_STUDIO_TOKEN  (optionnel)
 #   NUXT_APP_SECRET    (obligatoire, ≥ 32 caractères : signe les URLs /_og/*)
+#   TURNSTILE_SECRET_KEY (obligatoire pour contact form : sans lui, tout message est refusé)
 
 set -euo pipefail
 
@@ -155,6 +156,10 @@ else
   NUXT_APP_SECRET="${NUXT_APP_SECRET:-}"
   [[ ${#NUXT_APP_SECRET} -ge 32 ]] \
     || warn "NUXT_APP_SECRET absent ou < 32 caractères : les images OG de cette version répondront 500"
+  # Même logique : sans lui le conteneur est healthy mais /api/contact refuse tout (503), et
+  # une image d'avant Turnstile n'en a pas besoin.
+  [[ -n "${TURNSTILE_SECRET_KEY:-}" ]] \
+    || warn "TURNSTILE_SECRET_KEY absent : le formulaire de contact refusera tout message"
 
   docker rm -f "$NEW_NAME" >/dev/null 2>&1 || true
 
@@ -174,6 +179,7 @@ else
     -e RESEND_API_KEY="${RESEND_API_KEY:-}" \
     -e NUXT_STUDIO_TOKEN="${NUXT_STUDIO_TOKEN:-}" \
     -e NUXT_APP_SECRET="$NUXT_APP_SECRET" \
+    -e TURNSTILE_SECRET_KEY="${TURNSTILE_SECRET_KEY:-}" \
     -p "127.0.0.1:$NEW_PORT:3000" \
     --health-cmd "wget -q -O /dev/null http://127.0.0.1:3000/api/health" \
     --health-interval=5s \

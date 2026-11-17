@@ -30,6 +30,8 @@ lerna-debug.log*
 # Local data
 .data/
 .serena/
+.playwright-mcp/
+.claude/commands/speckit*
 
 # Editor directories
 .vscode/*
@@ -45,4 +47,6 @@ lerna-debug.log*
 
 # CI/CD artifacts hors repo
 *.tmp
+
+.bash*
 

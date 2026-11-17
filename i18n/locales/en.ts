@@ -587,9 +587,9 @@ export default {
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:
-      "Kylian Bardini's terminal apps: gwm (git worktree manager), vellum (TUI SQL client, in development) and LazyCurl (TUI HTTP client, archived).",
+      "Kylian Bardini's apps: gwm (git worktree manager), gwm-gpui (its desktop app, in development), vellum (TUI SQL client, in development) and LazyCurl (TUI HTTP client, archived).",
     ogTitle: 'Apps',
-    ogSubtitle: 'gwm, vellum and LazyCurl',
+    ogSubtitle: 'gwm, gwm-gpui, vellum and LazyCurl',
     eyebrow: 'APPS',
     title: 'Tools for the terminal.',
     intro:
@@ -619,6 +619,16 @@ export default {
           'gwm undo and gwm history recover a worktree removed by mistake.',
         ],
       },
+      'gwm-gpui': {
+        tagline: 'Native desktop app for gwm, built on GPUI.',
+        description:
+          "A repository's worktrees in a window, kept live by gwm's daemon, which stays the source of truth: the app holds no worktree logic. Early, macOS only.",
+        features: [
+          'The worktree list, live, grouped by branch age.',
+          'Create a worktree from an issue, open it in an editor or a terminal, remove it.',
+          "Each worktree's AI agent sessions, and the ones working right now.",
+        ],
+      },
       vellum: {
         tagline: 'TUI SQL client, with a diff for every write.',
         description:
@@ -641,6 +651,76 @@ export default {
         ],
       },
     },
+  },
+
+  // /apps/tv-kylian and its privacy policy, unlisted (noindex, out of the sitemap). They
+  // describe the app: keep them true to it, the Google consent screen links to both
+  tvKylianPage: {
+    seoTitle: 'Accueil TV Kylian · Kylian Bardini',
+    seoDescription:
+      "Accueil TV Kylian, the personal home screen of Kylian Bardini's LG TV: what it shows and its privacy policy.",
+    eyebrow: 'Personal app',
+    title: 'Accueil TV Kylian',
+    intro:
+      'A personal home screen for my LG TV (webOS 3.5): a native app and a companion service, both running on the TV. It is strictly for personal use, neither published nor distributed.',
+    privacy: 'Privacy policy',
+    showsTitle: 'What it shows',
+    shows: [
+      'A feed and rows of apps.',
+      'YouTube: the latest videos from my subscriptions.',
+      'My Google Calendar: upcoming events.',
+      'Twitch, PlayStation Network, Apple Music and Mediapart.',
+      'Prayer times from Mawaqit.',
+      'Cast.',
+    ],
+  },
+
+  tvKylianPrivacy: {
+    seoTitle: 'Privacy · Accueil TV Kylian',
+    seoDescription:
+      'The privacy policy of Accueil TV Kylian: the data the app reads, where it keeps it and how to revoke its access.',
+    eyebrow: 'Accueil TV Kylian',
+    title: 'Privacy policy',
+    updated: 'Updated on {date}',
+    intro:
+      'Accueil TV Kylian is the personal home screen of my LG TV: a native app and a companion service running on the TV, strictly for personal use, neither published nor distributed. This page describes the data the app reads, where it keeps it and how to revoke its access.',
+    google: {
+      title: 'Google data',
+      readOnly:
+        'The app reads the following, read-only, without creating, changing or deleting anything:',
+      youtube: 'YouTube: my subscriptions and their latest videos ({scope}).',
+      calendar: 'Google Calendar: my upcoming events ({scope}).',
+      assistant:
+        'With Google Assistant, the app sends text commands to start music on my Google Home ({scope}).',
+      use: "This data only serves the features described here: showing my subscriptions' videos and my events on the TV, and starting the music asked for.",
+    },
+    limitedUse: {
+      title: 'Limited Use',
+      text: "Accueil TV Kylian's use of information received from Google APIs will adhere to the {policy}, including the Limited Use requirements.",
+    },
+    others: {
+      title: 'Other services',
+      session: 'With my own session: Twitch, PlayStation Network, Apple Music, Mediapart.',
+      public: 'Public data: TMDB, Mawaqit, Open-Meteo, the Mediapart RSS feed.',
+      local: 'Devices on the local network: Chromecast, Google Home Mini.',
+    },
+    storage: {
+      title: 'Storage',
+      where:
+        "Access tokens and data are stored only on my TV, in the companion service's private files (mode 0600), and on my admin Mac.",
+      none: 'There is no server or middleman of mine between the app and these services. The app does no audience measurement, and shares or sells no data.',
+    },
+    revoke: {
+      title: 'Revoking access',
+      app: 'In the app: sign out from the « Comptes » (Accounts) dialog.',
+      google: 'On the Google side, at any time: {link}.',
+    },
+    contact: {
+      title: 'Contact',
+      text: 'A question about this policy: {link}.',
+      link: 'write to me from the contact page',
+    },
+    back: 'Accueil TV Kylian',
   },
 
   blogNav: {
@@ -707,6 +787,8 @@ export default {
   // Footer Section
   footer: {
     heading: 'Site footer',
+    legal: 'Terms',
+    cookies: 'Cookies',
     nav: {
       articles: 'Articles',
       tags: 'Tags',
@@ -755,5 +837,41 @@ export default {
     reading: 'Reading',
     tags: 'Tags',
     author: 'Author',
+  },
+
+  // Terms of use page (/en/terms)
+  legalPage: {
+    eyebrow: 'Legal notice',
+    updated: 'Last updated: {date}',
+  },
+
+  // Cookie banner (plugins/cookie-consent.client.ts): CookieConsent renders them as HTML
+  cookies: {
+    title: 'Cookies',
+    description:
+      "I'd like to know what gets read here, with Google Analytics, if you accept. You can change your mind at the bottom of any page.",
+    learnMore: 'Learn more',
+    accept: 'Accept',
+    reject: 'Decline',
+    terms: 'Terms and privacy',
+    preferences: 'Your cookie choices',
+    save: 'Save my choices',
+    close: 'Close',
+    intro:
+      'This site uses no advertising cookie. Only audience measurement asks for your consent; the rest keeps the site working.',
+    necessary: {
+      title: 'Necessary',
+      description:
+        "Your cookie choice (cc_cookie, 6 months) and the site's language (i18n_locale, 1 year). The theme and the animation pause stay in the browser's local storage.",
+    },
+    analytics: {
+      title: 'Audience measurement',
+      description:
+        'Google Analytics 4: pages viewed, article reading, clicks and features used, in aggregate. Cookies _ga and _ga_*, 13 months; data kept for 14 months. Google signals and advertising turned off.',
+    },
+    more: {
+      title: 'More information',
+      description: 'The data processed and your rights, in detail:',
+    },
   },
 }

@@ -6,8 +6,10 @@ name: Release
 #   tag v1.1.0       →  image :v1.1.0       →  prod     +  release GitHub
 #
 # `deploy.yml` reste en place et garde l'itération quotidienne (push dev →
-# preprod, push main → prod) : il déclenche sur `push: branches` et n'est donc
-# jamais réveillé par un tag, les deux ne se marchent pas dessus.
+# preprod, push main → prod). Il déclenche sur `push: branches`, jamais sur un
+# tag, mais une release réveille les deux : le merge sur main, puis le tag.
+# Pour ce merge, qui bumpe la version, deploy.yml construit :main sans
+# déployer la prod : elle revient à ce workflow, après ses gates (#139).
 #
 # Un seul fichier pour les deux étages, là où gwm-cli sépare release.yml et
 # pre-release.yml : chez lui les matrices de build diffèrent (5 cibles, .deb,
@@ -212,6 +214,8 @@ jobs:
             APP_ENV=${{ needs.resolve.outputs.env }}
             CV_URL_FR=${{ vars.CV_URL_FR }}
             CV_URL_EN=${{ vars.CV_URL_EN }}
+            TURNSTILE_SITE_KEY=${{ vars.TURNSTILE_SITE_KEY }}
+            GA_ID=${{ needs.resolve.outputs.env == 'prod' && vars.GA_ID || '' }}
           tags: ${{ needs.resolve.outputs.image }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -222,13 +226,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Clé partagée avec le job deploy de deploy.yml : les groupes de
-    # concurrence sont globaux au repo. Sans elle, le protocole normal met deux
-    # déploiements prod en vol simultanément : le merge dev → main réveille
-    # deploy.yml, le push du tag qui suit réveille release.yml, et leurs
-    # groupes au niveau workflow étant distincts, rien ne les sérialise. Les
-    # deux `deploy.sh --env prod` visent alors les mêmes noms de conteneurs et
-    # le même upstream nginx : le second `docker rm -f` celui du premier, et
-    # l'image active à l'arrivée est indéterminée.
+    # concurrence sont globaux au repo. Le merge d'une release ne déploie plus
+    # la prod depuis deploy.yml (#139), mais les deux workflows visent encore
+    # le même environnement : push dev puis tag rc vers preprod, push main
+    # sans bump ou workflow_dispatch pendant un tag vers prod. Leurs groupes au
+    # niveau workflow étant distincts, rien d'autre ne les sérialise. Deux
+    # `deploy.sh` en vol visent alors les mêmes noms de conteneurs et le même
+    # upstream nginx : le second `docker rm -f` celui du premier, et l'image
+    # active à l'arrivée est indéterminée.
     concurrency:
       group: vps-deploy-${{ needs.resolve.outputs.env }}
       cancel-in-progress: false
@@ -279,8 +284,9 @@ jobs:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           NUXT_STUDIO_TOKEN: ${{ secrets.NUXT_STUDIO_TOKEN }}
           NUXT_APP_SECRET: ${{ secrets.NUXT_APP_SECRET }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         run: |
-          REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN NUXT_APP_SECRET=$NUXT_APP_SECRET deploy"
+          REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN NUXT_APP_SECRET=$NUXT_APP_SECRET TURNSTILE_SECRET_KEY=$TURNSTILE_SECRET_KEY deploy"
           ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_USER@$VPS_HOST" "$REMOTE_CMD"
 
       # Vérifie depuis l'extérieur que c'est bien cette version qui sert le

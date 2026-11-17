@@ -75,6 +75,12 @@ export default defineNuxtConfig({
   routeRules: {
     '/experience': { redirect: { to: '/parcours', statusCode: 301 } },
     '/en/experience': { redirect: { to: '/en/journey', statusCode: 301 } },
+    // The tv-kylian app's pages are unlisted: noindex in the header as in their head. Never a
+    // Disallow in robots.txt, a crawler that cannot fetch a page never reads its noindex
+    '/apps/tv-kylian': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/en/apps/tv-kylian': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/en/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
 
   // Reference to main CSS file with Claude Dark theme
@@ -116,6 +122,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     githubToken: process.env.GITHUB_TOKEN || '',
     resendApiKey: process.env.RESEND_API_KEY || '',
+    // Secret Turnstile du formulaire de contact : arrive à l'exécution, comme la clé Resend
+    // (l'image est construite sans), d'où le repli sur process.env dans /api/contact.
+    turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY || '',
     // Identité du build, exposée par /api/health. Figée ici au moment du
     // build : c'est ce qui rend l'image auto-descriptive, une valeur lue à
     // l'exécution suivrait le conteneur, pas l'artefact. La version est dans
@@ -141,6 +150,14 @@ export default defineNuxtConfig({
       // sections qui proposent le CV ne s'affichent pas.
       cvUrlFr: process.env.CV_URL_FR || '',
       cvUrlEn: process.env.CV_URL_EN || '',
+      // Site key Turnstile, publique par nature : build-arg depuis vars.TURNSTILE_SITE_KEY,
+      // surchargeable par NUXT_PUBLIC_TURNSTILE_SITE_KEY. Vide, le widget ne s'affiche pas et
+      // /api/contact refuse tout message.
+      turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || '',
+      // L'ID de mesure Google Analytics 4 (G-…), en build-arg depuis vars.GA_ID, passé au
+      // seul build de prod pour que la préprod ne pollue pas la propriété. Surchargeable par
+      // NUXT_PUBLIC_GA_ID. Vide, ni bannière cookies ni Google Analytics.
+      gaId: process.env.GA_ID || '',
     },
   },
 
