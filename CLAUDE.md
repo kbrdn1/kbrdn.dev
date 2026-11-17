@@ -49,7 +49,7 @@ bun run fmt:check   # bun fmt --check, what CI runs
 
 ### Content Management
 Content is managed through `@nuxt/content` with a collection-based approach defined in `content.config.ts`:
-- **Collections**: pages, blog, projects, skills, stacks, experiences (6 total)
+- **Collections**: pages, blog, legal, projects, skills, stacks, experiences (7 total)
 - **Source Pattern**: Collection-specific patterns in `app/content/`
 - **Nuxt Studio**: disabled, `nuxt-studio` is commented out in `nuxt.config.ts` (incompatible with @nuxt/content at the time)
 - **MDC Components**: Alert, Callout, CodeGroup available in `app/components/content/`
@@ -173,6 +173,7 @@ Repo-level GitHub Actions secrets (see `docs/CONFIGURATION.md`):
 Repo-level **variables** (not secrets), passed as build-args by both workflows:
 - `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
 - `TURNSTILE_SITE_KEY` - site key of the contact form's Turnstile widget (hostnames `kbrdn.dev` + `pre-prod.kbrdn.dev`). Empty: no widget, so no message can be sent. Locally, `.env.example` has Cloudflare's always-pass test keys
+- `GA_ID` - Google Analytics 4 measurement ID, passed to **prod builds only**. Empty: no cookie banner, no gtag. Consent is CookieConsent (`app/plugins/cookie-consent.client.ts`, basic consent mode: gtag.js loads only after "accept"); events go through `trackEvent()` (`app/utils/analytics.ts`), a no-op before consent. The terms page (`/cgu`, `/en/terms`) lists the cookies: keep it in step
 
 **Email**: the form sends from `contact@email.kbrdn.dev` (Resend, subdomain verified) to `hello@kbrdn.dev`. A bounce puts that address on Resend's suppression list, after which every message is dropped as `suppressed` while the form still answers success (`docs/CONFIGURATION.md`)
 
