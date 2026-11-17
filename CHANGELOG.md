@@ -34,6 +34,15 @@ migrates `[Unreleased]` into that file and empties this one, see
   `immutable` (their address carries the content's checksum), and a
   Cloudflare Cache Rule lets the edge keep them and the wasm
   (`docs/CONFIGURATION.md`).
+- **Lighter hover pixels on large cards**
+  ([#153](https://github.com/kbrdn1/kbrdn.dev/issues/153)). A card on /apps
+  holds about 17,000 cells, and each frame rebuilt a canvas path out of every
+  one of them. They are now drawn by the GPU in a single call (WebGL2, one
+  context shared by the whole page), with the same shapes, colours and
+  animation. Drawing that card's cells takes 0.3 to 0.5 ms of script per frame
+  instead of 1.6 to 3.7; on the page, hovering it with the circle shape costs
+  about half the main-thread and GPU time it did. A browser without WebGL2
+  (hardware acceleration turned off) still draws them the old way.
 
 ## Past releases
 
