@@ -3,7 +3,7 @@
 // browser keeps about sixteen alive, a blog list has more cards than that): all of a card's
 // cells in one instanced call, then copied into the card's own 2D canvas. A 2D path rebuilt
 // from every cell on every frame made the big cards lag (/apps: 17k cells, issue #153); one
-// drawImage per cell is slower still. No WebGL2 (hardware acceleration off): no hover pixels.
+// drawImage per cell is slower still. No WebGL2 (hardware acceleration off): that 2D path.
 const SHAPES = ['square', 'circle', 'diamond', 'triangle']
 
 // Per cell: x, y (device px), alpha (negative: the triangle flipped), size (fraction of the cell)
@@ -92,8 +92,8 @@ function cellRenderer(): CellRenderer | null {
   })
 }
 
-/** Draws `cells` (4 floats each, see VERTEX) over the whole of `ctx`'s canvas, replacing it
- * (`ctx` composites with `copy`). `cell` and the cells' positions in device px. */
+/** Draws `cells` (4 floats each, see VERTEX) over the whole of `ctx`'s canvas, replacing
+ * what was there. `cell` and the cells' positions in device px. */
 function drawCells(
   ctx: CanvasRenderingContext2D,
   cells: Float32Array,
@@ -106,7 +106,7 @@ function drawCells(
   // and a canvas of size 0 makes drawImage throw on every frame
   if (!width || !height) return
   const renderer = cellRenderer()
-  if (!renderer) return
+  if (!renderer) return drawPaths(ctx, cells, cell, shape, rgb)
   const { gl, uniforms } = renderer
   const target = gl.canvas as HTMLCanvasElement
   // Two cards can animate at once (one fading out under the next): resized for each
@@ -122,7 +122,53 @@ function drawCells(
   gl.uniform3f(uniforms.color, ...rgb)
   gl.bufferData(gl.ARRAY_BUFFER, cells, gl.STREAM_DRAW)
   gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, cells.length / 4)
+  ctx.globalCompositeOperation = 'copy'
   ctx.drawImage(target, 0, 0)
+}
+
+// Without WebGL2, the 2D path the cells were always drawn with: one per alpha level, every
+// lit cell added to it. It lags on a big card, but the effect is there.
+function drawPaths(
+  ctx: CanvasRenderingContext2D,
+  cells: Float32Array,
+  cell: number,
+  shape: string,
+  rgb: [number, number, number],
+) {
+  const paths = new Map<number, Path2D>()
+  for (let i = 0; i < cells.length; i += 4) {
+    const s = Math.min(1, cells[i + 3]!) * cell
+    if (s <= 0) continue
+    const alpha = cells[i + 2]!
+    let path = paths.get(Math.abs(alpha))
+    if (!path) paths.set(Math.abs(alpha), (path = new Path2D()))
+    const x0 = cells[i]! + (cell - s) / 2
+    const y0 = cells[i + 1]! + (cell - s) / 2
+    if (shape === 'circle') {
+      path.moveTo(x0 + s, y0 + s / 2)
+      path.arc(x0 + s / 2, y0 + s / 2, s / 2, 0, Math.PI * 2)
+    } else if (shape === 'diamond') {
+      path.moveTo(x0 + s / 2, y0)
+      path.lineTo(x0 + s, y0 + s / 2)
+      path.lineTo(x0 + s / 2, y0 + s)
+      path.lineTo(x0, y0 + s / 2)
+      path.closePath()
+    } else if (shape === 'triangle') {
+      path.moveTo(alpha < 0 ? x0 : x0 + s, y0)
+      path.lineTo(x0 + s, y0 + s)
+      path.lineTo(x0, y0 + s)
+      path.closePath()
+    } else {
+      path.rect(x0, y0, s, s)
+    }
+  }
+  ctx.globalCompositeOperation = 'source-over'
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  const [r, g, b] = rgb.map((c) => Math.round(c * 255))
+  for (const [alpha, path] of paths) {
+    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`
+    ctx.fill(path)
+  }
 }
 </script>
 
@@ -179,7 +225,6 @@ onMounted(() => {
     const height = rect.height
     el!.width = Math.round(width * dpr)
     el!.height = Math.round(height * dpr)
-    ctx!.globalCompositeOperation = 'copy' // reset by the resize: each frame replaces the last
     cell = GAP * dpr
     pixels = []
     const data: number[] = []
@@ -267,7 +312,6 @@ onMounted(() => {
   }
 
   function start(originX: number, originY: number) {
-    if (!cellRenderer()) return
     readColors()
     // Re-lay out from the new entry point only once everything has faded: entering
     // again mid-fade picks up where the pixels are.
