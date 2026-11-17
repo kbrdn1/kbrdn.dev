@@ -5,6 +5,9 @@ useSiteSeo()
 
 <template>
   <UApp>
+    <!-- A navigation slower than a moment (the first to a content page loads Nuxt Content's
+         database in the browser) shows a thin bar along the top, in the site's orange -->
+    <NuxtLoadingIndicator color="var(--color-primary-500)" :height="2" />
     <!-- Says the new page's title to screen readers on client-side navigation -->
     <NuxtRouteAnnouncer />
     <NuxtLayout>
