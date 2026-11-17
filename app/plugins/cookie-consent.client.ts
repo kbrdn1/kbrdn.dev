@@ -107,13 +107,19 @@ export default defineNuxtPlugin((nuxtApp) => {
       import('~/assets/css/cookie-consent.css'),
     ])
     const w = window as unknown as Record<string, unknown>
+    // The site's other open pages (tabs, windows side by side) hear a withdrawal at once
+    const channel = new BroadcastChannel('cookie-consent')
     // Withdrawing with gtag loaded: off first, then the cookies, then the reload. In the other
     // order a hit in between (the reload's own, on pagehide) writes _ga back right after
-    // autoClear erased it
+    // autoClear erased it.
+    // ponytail: until the reload commits, a loaded gtag can still send a ping (no cookie, no
+    // client id: storage is denied); ga-disable set after load does not stop it. Blocking
+    // Google's requests in that window means patching sendBeacon and fetch, if it ever matters
     const withdraw = () => {
       w[`ga-disable-${id}`] = true
       window.gtag?.('consent', 'update', { analytics_storage: 'denied' })
       cc.eraseCookies(/^_ga/)
+      channel.postMessage('withdrawn')
       location.reload()
     }
     const sync = () => {
@@ -121,12 +127,13 @@ export default defineNuxtPlugin((nuxtApp) => {
       else if (window.gtag) withdraw()
       else w[`ga-disable-${id}`] = true
     }
-    // A withdrawal made in another tab only reaches this one through the saved cookie, which
-    // getCookie reads again: checked when the tab comes back and when the back-forward cache
-    // restores the page (it runs nothing else)
+    // A withdrawal made elsewhere, confirmed by the saved cookie (getCookie reads it again):
+    // on the channel's message, and for the pages it cannot reach, when a frozen tab comes
+    // back and when the back-forward cache restores the page (it runs nothing else)
     const recheck = () => {
       if (window.gtag && !cc.getCookie('categories')?.includes('analytics')) withdraw()
     }
+    channel.onmessage = recheck
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') recheck()
     })
