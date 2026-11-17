@@ -36,11 +36,14 @@ function render(turnstile: Turnstile) {
   if (!el.value) return
   if (widgetId) turnstile.remove(widgetId)
   token.value = ''
+  // Measured before the widget is drawn: `flexible` never goes under 300px and would widen the
+  // form past a 360px screen, `compact` (150px) fits it
+  const size = el.value.offsetWidth < 300 ? 'compact' : 'flexible'
   widgetId = turnstile.render(el.value, {
     sitekey: turnstileSiteKey,
     theme: isDarkMode(colorMode.value) ? 'dark' : 'light',
     language: locale.value,
-    size: 'flexible',
+    size,
     callback: (value: string) => (token.value = value),
     'expired-callback': () => (token.value = ''),
     'error-callback': () => {
