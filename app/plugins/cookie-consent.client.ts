@@ -125,7 +125,12 @@ export default defineNuxtPlugin((nuxtApp) => {
     const sync = () => {
       if (cc.acceptedCategory('analytics')) loadGtag(cc)
       else if (window.gtag) withdraw()
-      else w[`ga-disable-${id}`] = true
+      else {
+        w[`ga-disable-${id}`] = true
+        // Refused here without gtag (a banner older than an "accept" given elsewhere): the
+        // pages that did load it still have to hear it
+        channel.postMessage('withdrawn')
+      }
     }
     // A withdrawal made elsewhere, confirmed by the saved cookie (getCookie reads it again):
     // on the channel's message, and for the pages it cannot reach, when a frozen tab comes
