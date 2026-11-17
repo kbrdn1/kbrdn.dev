@@ -587,9 +587,9 @@ export default {
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:
-      "Kylian Bardini's terminal apps: gwm (git worktree manager), vellum (TUI SQL client, in development) and LazyCurl (TUI HTTP client, archived).",
+      "Kylian Bardini's apps: gwm (git worktree manager), gwm-gpui (its desktop app, in development), vellum (TUI SQL client, in development) and LazyCurl (TUI HTTP client, archived).",
     ogTitle: 'Apps',
-    ogSubtitle: 'gwm, vellum and LazyCurl',
+    ogSubtitle: 'gwm, gwm-gpui, vellum and LazyCurl',
     eyebrow: 'APPS',
     title: 'Tools for the terminal.',
     intro:
@@ -617,6 +617,16 @@ export default {
           'Knows which AI agent works where: Claude Code, Codex, opencode and Mistral Vibe.',
           'A machine surface: JSON output, a JSON-RPC daemon and a statusline for your prompt.',
           'gwm undo and gwm history recover a worktree removed by mistake.',
+        ],
+      },
+      'gwm-gpui': {
+        tagline: 'Native desktop app for gwm, built on GPUI.',
+        description:
+          "A repository's worktrees in a window, kept live by gwm's daemon, which stays the source of truth: the app holds no worktree logic. Early, macOS only.",
+        features: [
+          'The worktree list, live, grouped by branch age.',
+          'Create a worktree from an issue, open it in an editor or a terminal, remove it.',
+          "Each worktree's AI agent sessions, and the ones working right now.",
         ],
       },
       vellum: {
@@ -707,6 +717,8 @@ export default {
   // Footer Section
   footer: {
     heading: 'Site footer',
+    legal: 'Terms',
+    cookies: 'Cookies',
     nav: {
       articles: 'Articles',
       tags: 'Tags',
@@ -755,5 +767,41 @@ export default {
     reading: 'Reading',
     tags: 'Tags',
     author: 'Author',
+  },
+
+  // Terms of use page (/en/terms)
+  legalPage: {
+    eyebrow: 'Legal notice',
+    updated: 'Last updated: {date}',
+  },
+
+  // Cookie banner (plugins/cookie-consent.client.ts): CookieConsent renders them as HTML
+  cookies: {
+    title: 'Cookies',
+    description:
+      "I'd like to know what gets read here, with Google Analytics, if you accept. You can change your mind at the bottom of any page.",
+    learnMore: 'Learn more',
+    accept: 'Accept',
+    reject: 'Decline',
+    terms: 'Terms and privacy',
+    preferences: 'Your cookie choices',
+    save: 'Save my choices',
+    close: 'Close',
+    intro:
+      'This site uses no advertising cookie. Only audience measurement asks for your consent; the rest keeps the site working.',
+    necessary: {
+      title: 'Necessary',
+      description:
+        "Your cookie choice (cc_cookie, 6 months) and the site's language (i18n_locale, 1 year). The theme and the animation pause stay in the browser's local storage.",
+    },
+    analytics: {
+      title: 'Audience measurement',
+      description:
+        'Google Analytics 4: pages viewed, article reading, clicks and features used, in aggregate. Cookies _ga and _ga_*, 13 months; data kept for 14 months. Google signals and advertising turned off.',
+    },
+    more: {
+      title: 'More information',
+      description: 'The data processed and your rights, in detail:',
+    },
   },
 }

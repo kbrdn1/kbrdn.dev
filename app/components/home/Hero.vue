@@ -91,6 +91,7 @@ async function tap() {
   if (!hatched) return
   walkout.value = { is: markRaw(hatched[0].default), card: hatched[1] }
   open.value = true
+  trackEvent('easter_egg', { egg: 'walkout' })
 }
 
 // Folded back: gone, and the mascot back even if `close` never came (an Escape before its

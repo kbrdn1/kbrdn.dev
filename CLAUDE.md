@@ -49,7 +49,7 @@ bun run fmt:check   # bun fmt --check, what CI runs
 
 ### Content Management
 Content is managed through `@nuxt/content` with a collection-based approach defined in `content.config.ts`:
-- **Collections**: pages, blog, projects, skills, stacks, experiences (6 total)
+- **Collections**: pages, blog, legal, projects, skills, stacks, experiences (7 total)
 - **Source Pattern**: Collection-specific patterns in `app/content/`
 - **Nuxt Studio**: disabled, `nuxt-studio` is commented out in `nuxt.config.ts` (incompatible with @nuxt/content at the time)
 - **MDC Components**: Alert, Callout, CodeGroup available in `app/components/content/`
@@ -141,7 +141,7 @@ Located in `.github/workflows/`:
 - Triggers on push to `main` (→ prod) and `dev` (→ preprod), ignoring `**.md` / `docs/` / `specs/` changes; `workflow_dispatch` supports a target env + rollback-only run
 - `resolve` job: derives env (prod/preprod) and image tag (main/dev) from the ref. On a push to `main` that raises `package.json`'s version (a release merge, or a bumped hotfix), `scripts/resolve-main-push.sh` turns the deploy off: the image is still built, but prod belongs to the tag, which `release.yml` deploys only after its gates. Deploying here as well meant two swaps per release, with two builds whose chunks differ (#139). A version that goes down (a reverted release) has no tag to come and deploys, as does any doubt (`before` null or unreadable, no version); `scripts/resolve-main-push.test.sh` covers it
 - `build` job: builds the multi-stage Docker image with buildx and pushes it to GHCR (`ghcr.io/<repo>:<tag>` + `:sha-<sha>`)
-- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`) inline; writes a GitHub step summary
+- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`, `TURNSTILE_SECRET_KEY`) inline; writes a GitHub step summary
 
 Content changes (`app/content/**.mdx`) deploy through this same pipeline: `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy (unless it bumps the version, see above).
 
@@ -168,9 +168,14 @@ Repo-level GitHub Actions secrets (see `docs/CONFIGURATION.md`):
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - **not defined**: passed by `deploy.yml` and `release.yml`, but unused while `nuxt-studio` is disabled
 - `NUXT_APP_SECRET` - Nuxt app secret (64 hex chars, `openssl rand -hex 32`): nuxt-og-image 7 signs the `/_og/*` URLs with it. Missing or under 32 characters, every OG image returns 500; `scripts/deploy.sh` warns but still deploys (a rollback to a pre-v7 image does not need it). Rotating it invalidates the signed OG URLs already cached by social networks
+- `TURNSTILE_SECRET_KEY` - Cloudflare Turnstile secret, checked by `/api/contact` against `siteverify`. Fails closed: missing, the form refuses every message (503) and `scripts/deploy.sh` warns. A runtime secret like the others, so it is in the VPS wrapper's allowlist: sync `/srv` before a workflow sends a new one
 
 Repo-level **variables** (not secrets), passed as build-args by both workflows:
 - `CV_URL_FR` / `CV_URL_EN` - addresses of the CV PDFs, hosted outside this public repo (on the VPS). Empty: the CV sections on `/experience` and `/contact` stay hidden
+- `TURNSTILE_SITE_KEY` - site key of the contact form's Turnstile widget (hostnames `kbrdn.dev` + `pre-prod.kbrdn.dev`). Empty: no widget, so no message can be sent. Locally, `.env.example` has Cloudflare's always-pass test keys
+- `GA_ID` - Google Analytics 4 measurement ID, passed to **prod builds only**. Empty: no cookie banner, no gtag. Consent is CookieConsent (`app/plugins/cookie-consent.client.ts`, basic consent mode: gtag.js loads only after "accept"); events go through `trackEvent()` (`app/utils/analytics.ts`), a no-op before consent. The terms page (`/cgu`, `/en/terms`) lists the cookies: keep it in step
+
+**Email**: the form sends from `contact@email.kbrdn.dev` (Resend, subdomain verified) to `hello@kbrdn.dev`. A bounce puts that address on Resend's suppression list, after which every message is dropped as `suppressed` while the form still answers success (`docs/CONFIGURATION.md`)
 
 ## Active Technologies
 - TypeScript 5.x, Node.js 22+ (via Bun runtime) + Nuxt 4, @nuxt/content, @nuxt/ui v4, @nuxtjs/i18n, Docker

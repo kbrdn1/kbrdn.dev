@@ -36,7 +36,7 @@ ORIG="${SSH_ORIGINAL_COMMAND:-}"
 #
 # Refus explicite plutôt qu'ignorance silencieuse : une variable inattendue
 # signale un workflow désynchronisé, ça doit se voir.
-ALLOWED_VARS=(ENV IMAGE GITHUB_TOKEN RESEND_API_KEY NUXT_STUDIO_TOKEN NUXT_APP_SECRET)
+ALLOWED_VARS=(ENV IMAGE GITHUB_TOKEN RESEND_API_KEY NUXT_STUDIO_TOKEN NUXT_APP_SECRET TURNSTILE_SECRET_KEY)
 
 declare -a CMD=()
 for tok in $ORIG; do

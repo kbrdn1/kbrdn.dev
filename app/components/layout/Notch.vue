@@ -111,6 +111,7 @@ const menus = computed<Record<string, Menu>>(() => ({
     text: t('navMenu.apps'),
     links: [
       { label: 'gwm', to: '/apps#gwm', image: lowpoly('scene-gwm') },
+      { label: 'gwm-gpui', to: '/apps#gwm-gpui' },
       { label: 'vellum', to: '/apps#vellum', image: lowpoly('scene-vellum') },
       { label: 'LazyCurl', to: '/apps#lazycurl', image: lowpoly('scene-lazycurl') },
     ],

@@ -13,6 +13,8 @@ services:
       - RESEND_API_KEY=${RESEND_API_KEY}
       - NUXT_STUDIO_TOKEN=${NUXT_STUDIO_TOKEN}
       - NUXT_APP_SECRET=${NUXT_APP_SECRET}
+      - TURNSTILE_SECRET_KEY=${TURNSTILE_SECRET_KEY}
+      - NUXT_PUBLIC_TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY}
       - NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-https://kbrdn.dev}
     restart: unless-stopped
     healthcheck:

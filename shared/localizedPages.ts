@@ -2,4 +2,5 @@
 // route name; the others keep their file path in both. Read by the sitemap too.
 export const LOCALIZED_PAGES = {
   experience: { fr: '/parcours', en: '/journey' },
+  cgu: { fr: '/cgu', en: '/terms' },
 } as const

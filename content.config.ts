@@ -60,6 +60,19 @@ export default defineContentConfig({
       },
       schema: blogSchema,
     }),
+    // The terms of use, one per language (fr/cgu.mdx, en/cgu.mdx), read by pages/cgu.vue
+    legal: defineCollection({
+      type: 'page',
+      source: {
+        include: '*/cgu.mdx',
+        cwd: contentDir,
+      },
+      schema: z.object({
+        title: z.string(),
+        description: z.string(),
+        updatedAt: z.string(),
+      }),
+    }),
     projects: defineCollection({
       type: 'page',
       source: {

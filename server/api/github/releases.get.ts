@@ -3,7 +3,7 @@ import { createError, defineEventHandler, setResponseHeader } from 'h3'
 // Latest published release of each app on /apps, so the page never shows a stale
 // version. A fixed list: the route takes no input. GraphQL needs a token (githubToken).
 
-const APPS = ['gwm-cli', 'vellum', 'LazyCurl'] as const
+const APPS = ['gwm-cli', 'gwm-gpui', 'vellum', 'LazyCurl'] as const
 
 interface ReleasesResponse {
   data?: Record<string, { latestRelease: { tagName: string; publishedAt: string } | null } | null>

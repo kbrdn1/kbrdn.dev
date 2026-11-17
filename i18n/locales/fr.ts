@@ -587,9 +587,9 @@ export default {
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:
-      'Les apps pour le terminal de Kylian Bardini : gwm (gestionnaire de worktrees git), vellum (client SQL en TUI, en développement) et LazyCurl (client HTTP en TUI, archivé).',
+      'Les apps de Kylian Bardini : gwm (gestionnaire de worktrees git), gwm-gpui (son app desktop, en développement), vellum (client SQL en TUI, en développement) et LazyCurl (client HTTP en TUI, archivé).',
     ogTitle: 'Apps',
-    ogSubtitle: 'gwm, vellum et LazyCurl',
+    ogSubtitle: 'gwm, gwm-gpui, vellum et LazyCurl',
     eyebrow: 'APPS',
     title: 'Des outils pour le terminal.',
     intro:
@@ -617,6 +617,16 @@ export default {
           'Sait quel agent IA travaille où : Claude Code, Codex, opencode et Mistral Vibe.',
           'Une surface machine : sortie JSON, un daemon JSON-RPC et une ligne de statut pour le prompt.',
           'gwm undo et gwm history rattrapent un worktree supprimé par erreur.',
+        ],
+      },
+      'gwm-gpui': {
+        tagline: 'App desktop native pour gwm, construite sur GPUI.',
+        description:
+          "Les worktrees d'un dépôt dans une fenêtre, tenus à jour par le daemon de gwm, qui reste la source de vérité : l'app ne contient aucune logique de worktree. Encore tôt, macOS uniquement.",
+        features: [
+          'La liste des worktrees en direct, groupée par âge de branche.',
+          "Créer un worktree depuis une issue, l'ouvrir dans un éditeur ou un terminal, le supprimer.",
+          'Les sessions des agents IA de chaque worktree, et celles qui travaillent en ce moment.',
         ],
       },
       vellum: {
@@ -708,6 +718,8 @@ export default {
   // Footer Section
   footer: {
     heading: 'Pied de page',
+    legal: 'CGU',
+    cookies: 'Cookies',
     nav: {
       articles: 'Articles',
       tags: 'Tags',
@@ -756,5 +768,41 @@ export default {
     reading: 'Lecture',
     tags: 'Tags',
     author: 'Auteur',
+  },
+
+  // Terms of use page (/cgu)
+  legalPage: {
+    eyebrow: 'Mentions légales',
+    updated: 'Dernière mise à jour : {date}',
+  },
+
+  // Cookie banner (plugins/cookie-consent.client.ts): CookieConsent renders them as HTML
+  cookies: {
+    title: 'Cookies',
+    description:
+      "J'aimerais savoir ce qui est lu ici, avec Google Analytics, si vous l'acceptez. Modifiable à tout moment en bas de page.",
+    learnMore: 'En savoir plus',
+    accept: 'Accepter',
+    reject: 'Refuser',
+    terms: 'CGU et confidentialité',
+    preferences: 'Vos choix sur les cookies',
+    save: 'Enregistrer mes choix',
+    close: 'Fermer',
+    intro:
+      "Ce site n'utilise aucun cookie publicitaire. Seule la mesure d'audience demande votre accord ; le reste sert à faire fonctionner le site.",
+    necessary: {
+      title: 'Nécessaires',
+      description:
+        'Votre choix sur les cookies (cc_cookie, 6 mois) et la langue du site (i18n_locale, 1 an). Le thème et la pause des animations restent dans le stockage local du navigateur.',
+    },
+    analytics: {
+      title: "Mesure d'audience",
+      description:
+        'Google Analytics 4 : pages consultées, lecture des articles, clics et fonctionnalités utilisées, de façon agrégée. Cookies _ga et _ga_*, 13 mois ; données conservées 14 mois. Signaux Google et publicité désactivés.',
+    },
+    more: {
+      title: "Plus d'informations",
+      description: 'Le détail des données traitées et de vos droits\u00a0:',
+    },
   },
 }
