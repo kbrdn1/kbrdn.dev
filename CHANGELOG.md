@@ -14,6 +14,16 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ## [Unreleased]
 
+### Fixed
+
+- **Google Analytics page views on client-side navigation.** GA's own
+  history-based page view fired as the address changed, before Nuxt had
+  rendered the next page: up to 7 s before on a first visit to `/blog`, which
+  downloads the content database, so the page was counted under the previous
+  page's title. The cookie plugin now sends the page view itself, once the new
+  page and its title are on screen. A clicked row with no heading (the home's
+  latest posts) is labelled with a space between its date and its title.
+
 ## Past releases
 
 - [2.2.0](changelogs/2.2.0.md) · 2026-11-17
