@@ -672,7 +672,7 @@ export default {
       'Mon agenda Google : les événements à venir.',
       'Twitch, PlayStation Network, Apple Music et Mediapart.',
       'Les horaires de prière de Mawaqit.',
-      'Cast : ce qui est en lecture sur mes appareils Cast.',
+      'Cast.',
     ],
   },
 
@@ -701,7 +701,7 @@ export default {
     others: {
       title: 'Autres services',
       session: 'Avec ma propre session : Twitch, PlayStation Network, Apple Music, Mediapart.',
-      public: 'Données publiques : TMDB, Mawaqit, Open-Meteo.',
+      public: 'Données publiques : TMDB, Mawaqit, Open-Meteo, le flux RSS de Mediapart.',
       local: 'Appareils du réseau local : Chromecast, Google Home Mini.',
     },
     storage: {

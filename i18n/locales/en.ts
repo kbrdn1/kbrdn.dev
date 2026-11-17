@@ -671,7 +671,7 @@ export default {
       'My Google Calendar: upcoming events.',
       'Twitch, PlayStation Network, Apple Music and Mediapart.',
       'Prayer times from Mawaqit.',
-      'Cast: what is playing on my Cast devices.',
+      'Cast.',
     ],
   },
 
@@ -701,7 +701,7 @@ export default {
     others: {
       title: 'Other services',
       session: 'With my own session: Twitch, PlayStation Network, Apple Music, Mediapart.',
-      public: 'Public data: TMDB, Mawaqit, Open-Meteo.',
+      public: 'Public data: TMDB, Mawaqit, Open-Meteo, the Mediapart RSS feed.',
       local: 'Devices on the local network: Chromecast, Google Home Mini.',
     },
     storage: {
