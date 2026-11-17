@@ -1,8 +1,8 @@
 // The cookie banner (CookieConsent) and Google Analytics 4 behind it, only where a measurement
 // ID is set (runtimeConfig.public.gaId: the prod build). Consent mode "basic": gtag.js is not
 // even downloaded before the reader accepts, so nothing reaches Google until then, not even
-// the cookieless pings of the advanced mode. Withdrawing erases the _ga cookies and reloads the
-// page, the only way to unload gtag. Page views are GA's own: the initial one from `config`,
+// the cookieless pings of the advanced mode. Withdrawing turns gtag off, erases the _ga cookies
+// and reloads the page, the only way to unload gtag. Page views are GA's own: the initial one from `config`,
 // the next ones from enhanced measurement, which follows the router's history changes.
 import type { CookieConsentConfig, Translation } from 'vanilla-cookieconsent'
 
@@ -106,11 +106,33 @@ export default defineNuxtPlugin((nuxtApp) => {
       import('vanilla-cookieconsent'),
       import('~/assets/css/cookie-consent.css'),
     ])
+    const w = window as unknown as Record<string, unknown>
+    // Withdrawing with gtag loaded: off first, then the cookies, then the reload. In the other
+    // order a hit in between (the reload's own, on pagehide) writes _ga back right after
+    // autoClear erased it
+    const withdraw = () => {
+      w[`ga-disable-${id}`] = true
+      window.gtag?.('consent', 'update', { analytics_storage: 'denied' })
+      cc.eraseCookies(/^_ga/)
+      location.reload()
+    }
     const sync = () => {
       if (cc.acceptedCategory('analytics')) loadGtag(cc)
-      // Off until the reload autoClear asks for
-      else (window as unknown as Record<string, unknown>)[`ga-disable-${id}`] = true
+      else if (window.gtag) withdraw()
+      else w[`ga-disable-${id}`] = true
     }
+    // A withdrawal made in another tab only reaches this one through the saved cookie, which
+    // getCookie reads again: checked when the tab comes back and when the back-forward cache
+    // restores the page (it runs nothing else)
+    const recheck = () => {
+      if (window.gtag && !cc.getCookie('categories')?.includes('analytics')) withdraw()
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') recheck()
+    })
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) recheck()
+    })
     const config: CookieConsentConfig = {
       guiOptions: {
         // Bottom left: the music player's button holds the bottom right corner
@@ -119,7 +141,8 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
       categories: {
         necessary: { enabled: true, readOnly: true },
-        analytics: { autoClear: { cookies: [{ name: /^_ga/ }], reloadPage: true } },
+        // No reload from autoClear: withdraw() reloads, once gtag is off
+        analytics: { autoClear: { cookies: [{ name: /^_ga/ }] } },
       },
       language: {
         default: locale.value,
