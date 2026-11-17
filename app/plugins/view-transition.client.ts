@@ -7,9 +7,15 @@ import type { RouteLocationNormalized } from 'vue-router'
 // snapshots: a glass panel under a named, faded or filtered ancestor blurs nothing. The view
 // transition only fades out what stays of the old page (transitions.css).
 //
-// A page that takes longer than the browser allows (a few seconds) makes its view transition
-// give up: the page still shows, only the animation is skipped. Nuxt leaves that rejection
-// unhandled, and it lands in the console as an error.
+// While a view transition waits for the new page, the browser paints nothing: the screen stays
+// on the old page's last frame, the loading bar (app.vue) included. So a page still not ready
+// after a moment (the first content page loads Nuxt Content's database in the browser, seconds
+// cold) drops its view transition: the live page shows, bar running, and the new page's blocks
+// still swing in. Left alone, Chrome gave up after 4 s of a frozen screen.
+
+// How long a view transition may hold the screen waiting for the new page. Warm navigations
+// took 130 to 480 ms in prod (the home the slowest), 2026-11-17: they keep their transition
+const SLOW_UPDATE = 600
 
 // Off to one side (rem, deg, px), and the curves: quick out, soft end. In on an ease-out
 // cubic, not the panels' quint: a whole page lands at once, and on the quint a tall panel
@@ -160,7 +166,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('page:view-transition:start', (transition) => {
     // The site's pause control counts as reduced motion, like the system setting
     if (isMotionReduced()) transition.skipTransition()
+    const slow = setTimeout(() => transition.skipTransition(), SLOW_UPDATE)
+    const settled = () => clearTimeout(slow)
+    // Skipped, or given up: a rejection Nuxt leaves unhandled, which lands in the console
     transition.ready.catch(() => {})
-    transition.updateCallbackDone.catch(() => {})
+    transition.updateCallbackDone.then(settled, settled)
   })
 })

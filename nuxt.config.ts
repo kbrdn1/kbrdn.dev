@@ -81,6 +81,13 @@ export default defineNuxtConfig({
     '/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/en/apps/tv-kylian': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/en/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    // Nuxt Content's database dumps, which the browser downloads on the first client-side
+    // navigation to a content page. Their address carries the content's checksum (?v=), so a
+    // new build is a new address: cached for good, by the browser and by Cloudflare (whose
+    // Cache Rule makes them eligible, docs/CONFIGURATION.md)
+    '/__nuxt_content/*/sql_dump.txt': {
+      headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+    },
   },
 
   // Reference to main CSS file with Claude Dark theme

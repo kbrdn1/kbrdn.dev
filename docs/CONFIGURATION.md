@@ -123,6 +123,32 @@ returns 500; `scripts/deploy.sh` warns without blocking (a rollback to an image 
 nuxt-og-image 7 does not need it). Rotating it invalidates the OG URLs already cached by
 social networks.
 
+## Cloudflare
+
+### Cache Rule: Nuxt Content's database
+
+The first client-side navigation to a content page (`/blog`, a post, the home's latest posts,
+`/cgu`) runs Nuxt Content's queries in the browser: it downloads `/_nuxt/sqlite3.*.wasm`
+(about 400 KB brotli) and the collection's dump (`/__nuxt_content/<collection>/sql_dump.txt?v=<checksum>`).
+Cloudflare does not cache `.wasm` nor `.txt` by default (`cf-cache-status: DYNAMIC`), so every
+reader went to the VPS for them. One Cache Rule makes them eligible:
+
+| Field | Value |
+|-------|-------|
+| Name | `Nuxt Content database (wasm + dumps)` |
+| Expression | `(starts_with(http.request.uri.path, "/_nuxt/") and ends_with(http.request.uri.path, ".wasm")) or (starts_with(http.request.uri.path, "/__nuxt_content/") and ends_with(http.request.uri.path, "/sql_dump.txt"))` |
+| Cache eligibility | Eligible for cache |
+| Edge TTL / Browser TTL | Respect origin |
+
+Both are safe to keep: the wasm's name carries its hash, the dump's address its content
+checksum (`?v=`, part of the cache key), so a new build is a new address. The origin marks them
+`immutable` (`routeRules` in `nuxt.config.ts` for the dumps). Check with two requests: the second
+answers `cf-cache-status: HIT`.
+
+It lives in the zone's cache settings (**Caching → Cache Rules**), outside this repository. The
+phase holds a single ruleset per zone: add the rule beside the others, never replace the
+ruleset.
+
 ## Local development
 
 Copy `.env.example` to `.env` (ignored by git):
