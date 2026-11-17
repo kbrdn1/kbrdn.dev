@@ -52,6 +52,8 @@ async function handleSubmit() {
       body: { ...form, turnstileToken: turnstileToken.value },
     })
     submitStatus.value = 'success'
+    // GA4's own name for a contact, to mark as a key event (after consent only)
+    trackEvent('generate_lead', { topic: form.topic || undefined })
     Object.assign(form, { name: '', email: '', company: '', topic: '', message: '' })
   } catch {
     submitStatus.value = 'error'

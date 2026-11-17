@@ -154,6 +154,10 @@ export default defineNuxtConfig({
       // surchargeable par NUXT_PUBLIC_TURNSTILE_SITE_KEY. Vide, le widget ne s'affiche pas et
       // /api/contact refuse tout message.
       turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || '',
+      // L'ID de mesure Google Analytics 4 (G-…), en build-arg depuis vars.GA_ID, passé au
+      // seul build de prod pour que la préprod ne pollue pas la propriété. Surchargeable par
+      // NUXT_PUBLIC_GA_ID. Vide, ni bannière cookies ni Google Analytics.
+      gaId: process.env.GA_ID || '',
     },
   },
 

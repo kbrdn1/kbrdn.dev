@@ -787,6 +787,8 @@ export default {
   // Footer Section
   footer: {
     heading: 'Site footer',
+    legal: 'Terms',
+    cookies: 'Cookies',
     nav: {
       articles: 'Articles',
       tags: 'Tags',
@@ -835,5 +837,41 @@ export default {
     reading: 'Reading',
     tags: 'Tags',
     author: 'Author',
+  },
+
+  // Terms of use page (/en/terms)
+  legalPage: {
+    eyebrow: 'Legal notice',
+    updated: 'Last updated: {date}',
+  },
+
+  // Cookie banner (plugins/cookie-consent.client.ts): CookieConsent renders them as HTML
+  cookies: {
+    title: 'Cookies',
+    description:
+      "I'd like to know what gets read here, with Google Analytics, if you accept. You can change your mind at the bottom of any page.",
+    learnMore: 'Learn more',
+    accept: 'Accept',
+    reject: 'Decline',
+    terms: 'Terms and privacy',
+    preferences: 'Your cookie choices',
+    save: 'Save my choices',
+    close: 'Close',
+    intro:
+      'This site uses no advertising cookie. Only audience measurement asks for your consent; the rest keeps the site working.',
+    necessary: {
+      title: 'Necessary',
+      description:
+        "Your cookie choice (cc_cookie, 6 months) and the site's language (i18n_locale, 1 year). The theme and the animation pause stay in the browser's local storage.",
+    },
+    analytics: {
+      title: 'Audience measurement',
+      description:
+        'Google Analytics 4: pages viewed, article reading, clicks and features used, in aggregate. Cookies _ga and _ga_*, 13 months; data kept for 14 months. Google signals and advertising turned off.',
+    },
+    more: {
+      title: 'More information',
+      description: 'The data processed and your rights, in detail:',
+    },
   },
 }

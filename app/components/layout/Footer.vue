@@ -47,7 +47,12 @@ const socialLinks = [
 
 const currentYear = new Date().getFullYear()
 // The build's version (APP_VERSION, else package.json), as /api/health returns it
-const appVersion = useRuntimeConfig().public.appVersion
+const { appVersion, gaId } = useRuntimeConfig().public
+// The cookie choices, open to change at any time: the banner is only there with analytics on
+async function openCookies() {
+  const { showPreferences } = await import('vanilla-cookieconsent')
+  showPreferences()
+}
 </script>
 
 <template>
@@ -212,6 +217,24 @@ const appVersion = useRuntimeConfig().public.appVersion
             <span class="sr-only">Version </span>v{{ appVersion }}
             <span class="sr-only">({{ t('common.newTab') }})</span>
           </a>
+          ·
+          <NuxtLinkLocale
+            :to="{ name: 'cgu' }"
+            class="transition-colors hover:text-(--accent-text)"
+          >
+            {{ t('footer.legal') }}
+          </NuxtLinkLocale>
+          <template v-if="gaId">
+            ·
+            <button
+              type="button"
+              class="uppercase transition-colors hover:text-(--accent-text)"
+              aria-haspopup="dialog"
+              @click="openCookies"
+            >
+              {{ t('footer.cookies') }}
+            </button>
+          </template>
         </template>
         <template #footer>
           <UiLogo :size="20" class="text-neutral-900 dark:text-neutral-100" />

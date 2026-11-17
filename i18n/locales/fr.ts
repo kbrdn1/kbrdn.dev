@@ -787,6 +787,8 @@ export default {
   // Footer Section
   footer: {
     heading: 'Pied de page',
+    legal: 'CGU',
+    cookies: 'Cookies',
     nav: {
       articles: 'Articles',
       tags: 'Tags',
@@ -835,5 +837,41 @@ export default {
     reading: 'Lecture',
     tags: 'Tags',
     author: 'Auteur',
+  },
+
+  // Terms of use page (/cgu)
+  legalPage: {
+    eyebrow: 'Mentions légales',
+    updated: 'Dernière mise à jour : {date}',
+  },
+
+  // Cookie banner (plugins/cookie-consent.client.ts): CookieConsent renders them as HTML
+  cookies: {
+    title: 'Cookies',
+    description:
+      "J'aimerais savoir ce qui est lu ici, avec Google Analytics, si vous l'acceptez. Modifiable à tout moment en bas de page.",
+    learnMore: 'En savoir plus',
+    accept: 'Accepter',
+    reject: 'Refuser',
+    terms: 'CGU et confidentialité',
+    preferences: 'Vos choix sur les cookies',
+    save: 'Enregistrer mes choix',
+    close: 'Fermer',
+    intro:
+      "Ce site n'utilise aucun cookie publicitaire. Seule la mesure d'audience demande votre accord ; le reste sert à faire fonctionner le site.",
+    necessary: {
+      title: 'Nécessaires',
+      description:
+        'Votre choix sur les cookies (cc_cookie, 6 mois) et la langue du site (i18n_locale, 1 an). Le thème et la pause des animations restent dans le stockage local du navigateur.',
+    },
+    analytics: {
+      title: "Mesure d'audience",
+      description:
+        'Google Analytics 4 : pages consultées, lecture des articles, clics et fonctionnalités utilisées, de façon agrégée. Cookies _ga et _ga_*, 13 mois ; données conservées 14 mois. Signaux Google et publicité désactivés.',
+    },
+    more: {
+      title: "Plus d'informations",
+      description: 'Le détail des données traitées et de vos droits\u00a0:',
+    },
   },
 }
