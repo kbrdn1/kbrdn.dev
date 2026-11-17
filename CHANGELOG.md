@@ -40,6 +40,16 @@ migrates `[Unreleased]` into that file and empties this one, see
   `GA_ID` repository variable: without it, no banner and no Google at all. The
   new `/cgu` (`/en/terms`) page holds the legal notice, the terms of use,
   personal data and the cookies, linked from the footer and the banner.
+- **A homepage and a privacy policy for Accueil TV Kylian, unlisted**
+  ([#150](https://github.com/kbrdn1/kbrdn.dev/issues/150)). The Google OAuth
+  consent screen of my LG TV's home screen pointed at the site's root.
+  `/apps/tv-kylian` now says what the app is and what it shows, and
+  `/apps/tv-kylian/confidentialite` (`/en/apps/tv-kylian/privacy`) what Google
+  and other data it reads, where it keeps it, the Limited Use statement and how
+  to revoke its access. Nothing on the site links to them and the sitemap leaves
+  them out; both carry a `noindex, nofollow` robots meta and `X-Robots-Tag`
+  header, and robots.txt does not disallow them, so a crawler can still read
+  that noindex.
 
 ### Security
 

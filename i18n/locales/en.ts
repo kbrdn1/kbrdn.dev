@@ -653,6 +653,76 @@ export default {
     },
   },
 
+  // /apps/tv-kylian and its privacy policy, unlisted (noindex, out of the sitemap). They
+  // describe the app: keep them true to it, the Google consent screen links to both
+  tvKylianPage: {
+    seoTitle: 'Accueil TV Kylian · Kylian Bardini',
+    seoDescription:
+      "Accueil TV Kylian, the personal home screen of Kylian Bardini's LG TV: what it shows and its privacy policy.",
+    eyebrow: 'Personal app',
+    title: 'Accueil TV Kylian',
+    intro:
+      'A personal home screen for my LG TV (webOS 3.5): a native app and a companion service, both running on the TV. It is strictly for personal use, neither published nor distributed.',
+    privacy: 'Privacy policy',
+    showsTitle: 'What it shows',
+    shows: [
+      'A feed and rows of apps.',
+      'YouTube: the latest videos from my subscriptions.',
+      'My Google Calendar: upcoming events.',
+      'Twitch, PlayStation Network, Apple Music and Mediapart.',
+      'Prayer times from Mawaqit.',
+      'Cast.',
+    ],
+  },
+
+  tvKylianPrivacy: {
+    seoTitle: 'Privacy · Accueil TV Kylian',
+    seoDescription:
+      'The privacy policy of Accueil TV Kylian: the data the app reads, where it keeps it and how to revoke its access.',
+    eyebrow: 'Accueil TV Kylian',
+    title: 'Privacy policy',
+    updated: 'Updated on {date}',
+    intro:
+      'Accueil TV Kylian is the personal home screen of my LG TV: a native app and a companion service running on the TV, strictly for personal use, neither published nor distributed. This page describes the data the app reads, where it keeps it and how to revoke its access.',
+    google: {
+      title: 'Google data',
+      readOnly:
+        'The app reads the following, read-only, without creating, changing or deleting anything:',
+      youtube: 'YouTube: my subscriptions and their latest videos ({scope}).',
+      calendar: 'Google Calendar: my upcoming events ({scope}).',
+      assistant:
+        'With Google Assistant, the app sends text commands to start music on my Google Home ({scope}).',
+      use: "This data only serves the features described here: showing my subscriptions' videos and my events on the TV, and starting the music asked for.",
+    },
+    limitedUse: {
+      title: 'Limited Use',
+      text: "Accueil TV Kylian's use of information received from Google APIs will adhere to the {policy}, including the Limited Use requirements.",
+    },
+    others: {
+      title: 'Other services',
+      session: 'With my own session: Twitch, PlayStation Network, Apple Music, Mediapart.',
+      public: 'Public data: TMDB, Mawaqit, Open-Meteo, the Mediapart RSS feed.',
+      local: 'Devices on the local network: Chromecast, Google Home Mini.',
+    },
+    storage: {
+      title: 'Storage',
+      where:
+        "Access tokens and data are stored only on my TV, in the companion service's private files (mode 0600), and on my admin Mac.",
+      none: 'There is no server or middleman of mine between the app and these services. The app does no audience measurement, and shares or sells no data.',
+    },
+    revoke: {
+      title: 'Revoking access',
+      app: 'In the app: sign out from the « Comptes » (Accounts) dialog.',
+      google: 'On the Google side, at any time: {link}.',
+    },
+    contact: {
+      title: 'Contact',
+      text: 'A question about this policy: {link}.',
+      link: 'write to me from the contact page',
+    },
+    back: 'Accueil TV Kylian',
+  },
+
   blogNav: {
     tags: 'Tags',
     portfolio: 'Portfolio',
