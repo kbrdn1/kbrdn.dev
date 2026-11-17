@@ -33,9 +33,15 @@ the image and served to every visitor.
 |----------|---------|---------|
 | `CV_URL_FR` / `CV_URL_EN` | Addresses of the CV PDFs, hosted on the VPS outside this repository | `deploy.yml`, `release.yml`, as Docker build args |
 | `TURNSTILE_SITE_KEY` | Site key of the contact form's Turnstile widget | `deploy.yml`, `release.yml`, as a Docker build arg |
+| `GA_ID` | Google Analytics 4 measurement ID (`G-…`) | `deploy.yml`, `release.yml`, as a Docker build arg, **prod builds only** |
 
 Empty, the CV sections of `/experience` and `/contact` stay hidden. Without
 `TURNSTILE_SITE_KEY` the widget does not render, so no message can be sent.
+
+`GA_ID` only reaches the prod build, so preprod never feeds the property. Without it there is
+no cookie banner and no Google Analytics at all (`app/plugins/cookie-consent.client.ts`):
+gtag.js is only downloaded once a reader accepts the analytics cookies. To try it locally,
+`NUXT_PUBLIC_GA_ID=G-… bun run dev`.
 
 ## From the workflow to the container
 
@@ -57,8 +63,8 @@ A new runtime secret therefore needs four changes: the two workflows, the allowl
 VPS (`docs/RELEASE.md`, « Synchroniser le VPS ») **before** the first deploy that sends it.
 Otherwise the wrapper refuses the variable and the deploy fails.
 
-Build-time values (`GIT_SHA`, `APP_VERSION`, `APP_ENV`, `CV_URL_*`, `TURNSTILE_SITE_KEY`) are
-Docker build args, baked into the image.
+Build-time values (`GIT_SHA`, `APP_VERSION`, `APP_ENV`, `CV_URL_*`, `TURNSTILE_SITE_KEY`,
+`GA_ID`) are Docker build args, baked into the image.
 
 ## How to obtain each secret
 

@@ -202,6 +202,19 @@ onMounted(() => {
 
 onUnmounted(() => observer?.disconnect())
 
+// The reader reaching the article's end (GA4, after consent): what a page view cannot tell
+const articleEnd = ref<HTMLElement>()
+let endObserver: IntersectionObserver | undefined
+onMounted(() => {
+  endObserver = new IntersectionObserver(([entry]) => {
+    if (!entry?.isIntersecting) return
+    trackEvent('article_read', { article: slug })
+    endObserver?.disconnect()
+  })
+  if (articleEnd.value) endObserver.observe(articleEnd.value)
+})
+onUnmounted(() => endObserver?.disconnect())
+
 // Reading progress based on active heading position in TOC
 const readProgress = computed(() => {
   if (!tocItems.value.length || !activeHeading.value) return 0
@@ -248,6 +261,7 @@ function scrollToHeading(id: string) {
             <div class="prose-blog" :lang="postLang">
               <ContentRenderer :value="post" />
             </div>
+            <div ref="articleEnd" aria-hidden="true" />
             <BlogReaderHeadings :reader="reader" />
           </div>
 

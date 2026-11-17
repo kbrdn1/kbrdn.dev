@@ -213,6 +213,7 @@ jobs:
             CV_URL_FR=${{ vars.CV_URL_FR }}
             CV_URL_EN=${{ vars.CV_URL_EN }}
             TURNSTILE_SITE_KEY=${{ vars.TURNSTILE_SITE_KEY }}
+            GA_ID=${{ needs.resolve.outputs.env == 'prod' && vars.GA_ID || '' }}
           tags: ${{ needs.resolve.outputs.image }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
