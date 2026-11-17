@@ -24,7 +24,7 @@ migrates `[Unreleased]` into that file and empties this one, see
   animation. Drawing that card's cells takes 0.3 to 0.5 ms of script per frame
   instead of 1.6 to 3.7; on the page, hovering it with the circle shape costs
   about half the main-thread and GPU time it did. A browser without WebGL2
-  (hardware acceleration turned off) shows no hover pixels.
+  (hardware acceleration turned off) still draws them the old way.
 
 ## Past releases
 
