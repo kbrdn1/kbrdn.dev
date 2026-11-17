@@ -55,6 +55,9 @@ ENV CV_URL_EN=$CV_URL_EN
 # secret, lui, n'arrive qu'à l'exécution (scripts/deploy.sh).
 ARG TURNSTILE_SITE_KEY=""
 ENV TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY
+# L'ID de mesure GA4 : vide (préprod, build local), ni bannière cookies ni Google Analytics.
+ARG GA_ID=""
+ENV GA_ID=$GA_ID
 
 # Copy installed dependencies
 COPY --from=deps /app/node_modules ./node_modules
