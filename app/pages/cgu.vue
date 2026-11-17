@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // /cgu, /en/terms: legal notice, terms of use, personal data and cookies, in prose
-// (content/{fr,en}/cgu.md). Linked from the footer and from the cookie banner.
+// (content/{fr,en}/cgu.mdx). Linked from the footer and from the cookie banner.
 import { useI18n } from '#imports'
 
 const { t, locale } = useI18n()
