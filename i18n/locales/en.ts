@@ -659,7 +659,7 @@ export default {
       'A feed and rows of apps.',
       'YouTube: the latest videos from my subscriptions.',
       'My Google Calendar: upcoming events.',
-      'Twitch, PlayStation Network, Apple Music and Mediapart, with my own accounts.',
+      'Twitch, PlayStation Network, Apple Music and Mediapart.',
       'Prayer times from Mawaqit.',
       'Cast: what is playing on my Cast devices.',
     ],

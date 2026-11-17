@@ -660,7 +660,7 @@ export default {
       "Un flux et des rangées d'apps.",
       'YouTube : les vidéos récentes de mes abonnements.',
       'Mon agenda Google : les événements à venir.',
-      'Twitch, PlayStation Network, Apple Music et Mediapart, avec mes propres comptes.',
+      'Twitch, PlayStation Network, Apple Music et Mediapart.',
       'Les horaires de prière de Mawaqit.',
       'Cast : ce qui est en lecture sur mes appareils Cast.',
     ],
