@@ -114,12 +114,18 @@ export default defineNuxtPlugin((nuxtApp) => {
       'section[id], header, nav, footer, aside, main, [role="dialog"]',
     )
     // Its name as read out: the aria-label, else its text without the decorative copies
-    // (UiScrambleText draws its letters again, aria-hidden); a card, its title alone
+    // (UiScrambleText draws its letters again, aria-hidden); a card, its title alone. Its text
+    // nodes joined by a space: a row's date and title are two spans with nothing in between
     const text = el.cloneNode(true) as Element
     text.querySelectorAll('[aria-hidden="true"]').forEach((node) => node.remove())
-    const title = text.querySelector('h1, h2, h3, h4')
+    const words: string[] = []
+    const walker = document.createTreeWalker(
+      text.querySelector('h1, h2, h3, h4') ?? text,
+      NodeFilter.SHOW_TEXT,
+    )
+    while (walker.nextNode()) words.push(walker.currentNode.textContent ?? '')
     trackEvent('ui_click', {
-      label: (el.getAttribute('aria-label') || (title ?? text).textContent || '')
+      label: (el.getAttribute('aria-label') || words.join(' '))
         .replace(/\s+/g, ' ')
         .trim()
         .slice(0, 100),
