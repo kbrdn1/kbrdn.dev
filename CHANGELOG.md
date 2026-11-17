@@ -23,6 +23,18 @@ migrates `[Unreleased]` into that file and empties this one, see
   before anything is sent: no token or an invalid one, the message is refused.
   The token is single-use, so the widget resets after every attempt.
 
+### Security
+
+- **Dependencies updated, 120 known vulnerabilities down to 7**
+  ([#145](https://github.com/kbrdn1/kbrdn.dev/issues/145)). Every dependency
+  moved to its latest version within its declared range (Nuxt 4.6.4, Vue
+  3.5.45, Nuxt UI 4.12.2, vue-router 5.5.1…), which clears the critical `tar`
+  advisory and the high ones on the server path (`h3`, `defu`,
+  `@vue/server-renderer`, `ws`). The seven left have no fix within those
+  ranges: `sharp` 0.34 only comes with the disabled `nuxt-studio`, `zod` 3 is
+  required by Nuxt Content, the rest is build tooling or waits on a major
+  (`satori`).
+
 ## Past releases
 
 - [2.1.0](changelogs/2.1.0.md) · 2026-11-02
