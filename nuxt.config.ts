@@ -116,6 +116,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     githubToken: process.env.GITHUB_TOKEN || '',
     resendApiKey: process.env.RESEND_API_KEY || '',
+    // Secret Turnstile du formulaire de contact : arrive à l'exécution, comme la clé Resend
+    // (l'image est construite sans), d'où le repli sur process.env dans /api/contact.
+    turnstileSecretKey: process.env.TURNSTILE_SECRET_KEY || '',
     // Identité du build, exposée par /api/health. Figée ici au moment du
     // build : c'est ce qui rend l'image auto-descriptive, une valeur lue à
     // l'exécution suivrait le conteneur, pas l'artefact. La version est dans
@@ -141,6 +144,10 @@ export default defineNuxtConfig({
       // sections qui proposent le CV ne s'affichent pas.
       cvUrlFr: process.env.CV_URL_FR || '',
       cvUrlEn: process.env.CV_URL_EN || '',
+      // Site key Turnstile, publique par nature : build-arg depuis vars.TURNSTILE_SITE_KEY,
+      // surchargeable par NUXT_PUBLIC_TURNSTILE_SITE_KEY. Vide, le widget ne s'affiche pas et
+      // /api/contact refuse tout message.
+      turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || '',
     },
   },
 

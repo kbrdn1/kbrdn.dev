@@ -14,6 +14,15 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ## [Unreleased]
 
+### Added
+
+- **A Cloudflare Turnstile check on the contact form**
+  ([#143](https://github.com/kbrdn1/kbrdn.dev/issues/143)). Bots were posting to
+  `/api/contact` directly. The form now carries a Turnstile widget (theme and
+  language follow the site's), and the server checks its token with Cloudflare
+  before anything is sent: no token or an invalid one, the message is refused.
+  The token is single-use, so the widget resets after every attempt.
+
 ## Past releases
 
 - [2.1.0](changelogs/2.1.0.md) · 2026-11-02
