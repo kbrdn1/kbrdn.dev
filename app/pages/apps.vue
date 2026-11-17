@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// /apps: the terminal apps, with their status as the site states it (LazyCurl is
+// /apps: the apps, with their status as the site states it (LazyCurl is
 // "archived" here, its repository is untouched) and their latest release read live
 // from GitHub. Features and install commands come from each README.
 import { useI18n } from '#imports'
@@ -47,6 +47,16 @@ const APPS = [
       'nix profile install github:kbrdn1/gwm-cli',
       'aqua g -i kbrdn1/gwm-cli',
     ],
+  },
+  {
+    key: 'gwm-gpui',
+    name: 'gwm-gpui',
+    repo: 'gwm-gpui',
+    language: 'Rust',
+    license: 'MIT OR Apache-2.0',
+    status: 'inDevelopment',
+    icon: 'i-simple-icons-rust',
+    features: 3,
   },
   {
     key: 'vellum',
