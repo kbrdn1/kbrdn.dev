@@ -3,4 +3,8 @@
 export const LOCALIZED_PAGES = {
   experience: { fr: '/parcours', en: '/journey' },
   cgu: { fr: '/cgu', en: '/terms' },
+  'apps-tv-kylian-confidentialite': {
+    fr: '/apps/tv-kylian/confidentialite',
+    en: '/apps/tv-kylian/privacy',
+  },
 } as const
