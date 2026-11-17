@@ -141,7 +141,7 @@ Located in `.github/workflows/`:
 - Triggers on push to `main` (→ prod) and `dev` (→ preprod), ignoring `**.md` / `docs/` / `specs/` changes; `workflow_dispatch` supports a target env + rollback-only run
 - `resolve` job: derives env (prod/preprod) and image tag (main/dev) from the ref
 - `build` job: builds the multi-stage Docker image with buildx and pushes it to GHCR (`ghcr.io/<repo>:<tag>` + `:sha-<sha>`)
-- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`) inline; writes a GitHub step summary
+- `deploy` job: SSHes into the VPS (key from `VPS_SSH_PRIVATE_KEY`) and runs the remote `deploy`/`rollback` wrapper, passing the image ref and runtime secrets (`GITHUB_TOKEN`, `RESEND_API_KEY`, `NUXT_STUDIO_TOKEN`, `NUXT_APP_SECRET`, `TURNSTILE_SECRET_KEY`) inline; writes a GitHub step summary
 
 Content changes (`app/content/**.mdx`) deploy through this same pipeline: `.mdx` is not covered by the `**.md` paths-ignore, so a content push to `main` triggers a full build + deploy.
 
