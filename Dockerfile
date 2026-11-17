@@ -51,6 +51,10 @@ ARG CV_URL_FR=""
 ARG CV_URL_EN=""
 ENV CV_URL_FR=$CV_URL_FR
 ENV CV_URL_EN=$CV_URL_EN
+# La site key Turnstile du formulaire de contact, publique : même chemin que les CV. Son
+# secret, lui, n'arrive qu'à l'exécution (scripts/deploy.sh).
+ARG TURNSTILE_SITE_KEY=""
+ENV TURNSTILE_SITE_KEY=$TURNSTILE_SITE_KEY
 
 # Copy installed dependencies
 COPY --from=deps /app/node_modules ./node_modules
