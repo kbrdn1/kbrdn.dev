@@ -75,6 +75,12 @@ export default defineNuxtConfig({
   routeRules: {
     '/experience': { redirect: { to: '/parcours', statusCode: 301 } },
     '/en/experience': { redirect: { to: '/en/journey', statusCode: 301 } },
+    // The tv-kylian app's pages are unlisted: noindex in the header as in their head. Never a
+    // Disallow in robots.txt, a crawler that cannot fetch a page never reads its noindex
+    '/apps/tv-kylian': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/en/apps/tv-kylian': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    '/en/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
 
   // Reference to main CSS file with Claude Dark theme
