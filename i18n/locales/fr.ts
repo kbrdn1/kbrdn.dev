@@ -644,6 +644,75 @@ export default {
     },
   },
 
+  // /apps/tv-kylian and its privacy policy, unlisted (noindex, out of the sitemap). They
+  // describe the app: keep them true to it, the Google consent screen links to both
+  tvKylianPage: {
+    seoTitle: 'Accueil TV Kylian · Kylian Bardini',
+    seoDescription:
+      "Accueil TV Kylian, l'écran d'accueil personnel de la télévision LG de Kylian Bardini : ce qu'il affiche et ses règles de confidentialité.",
+    eyebrow: 'App personnelle',
+    title: 'Accueil TV Kylian',
+    intro:
+      "Un écran d'accueil personnel pour ma télévision LG (webOS 3.5) : une app native et un service compagnon, qui tournent tous les deux sur la télé. Elle est à usage strictement personnel, ni publiée ni distribuée.",
+    privacy: 'Règles de confidentialité',
+    showsTitle: "Ce qu'elle affiche",
+    shows: [
+      "Un flux et des rangées d'apps.",
+      'YouTube : les vidéos récentes de mes abonnements.',
+      'Mon agenda Google : les événements à venir.',
+      'Twitch, PlayStation Network, Apple Music et Mediapart, avec mes propres comptes.',
+      'Les horaires de prière de Mawaqit.',
+      'Cast : ce qui est en lecture sur mes appareils Cast.',
+    ],
+  },
+
+  tvKylianPrivacy: {
+    seoTitle: 'Confidentialité · Accueil TV Kylian',
+    seoDescription:
+      "Règles de confidentialité d'Accueil TV Kylian : les données que l'application lit, où elle les garde et comment révoquer son accès.",
+    eyebrow: 'Accueil TV Kylian',
+    title: 'Règles de confidentialité',
+    updated: 'Mise à jour le {date}',
+    intro:
+      "Accueil TV Kylian est l'écran d'accueil personnel de ma télévision LG : une app native et un service compagnon qui tournent sur la télé, à usage strictement personnel, ni publiés ni distribués. Cette page décrit les données que l'application lit, où elle les garde et comment révoquer son accès.",
+    google: {
+      title: 'Données Google',
+      readOnly: "L'application lit, en lecture seule, sans rien y créer, modifier ni supprimer :",
+      youtube: 'YouTube : mes abonnements et leurs vidéos récentes ({scope}).',
+      calendar: 'Google Agenda : mes événements à venir ({scope}).',
+      assistant:
+        "Avec l'Assistant Google, l'application envoie des commandes texte pour lancer de la musique sur mon Google Home ({scope}).",
+      use: "Ces données ne servent qu'aux fonctions décrites ici : afficher sur la télévision les vidéos de mes abonnements et mes événements, lancer la musique demandée.",
+    },
+    limitedUse: {
+      title: 'Utilisation limitée',
+      text: "L'utilisation par Accueil TV Kylian des informations reçues des API Google respecte la {policy}, y compris les exigences d'utilisation limitée (Limited Use).",
+    },
+    others: {
+      title: 'Autres services',
+      session: 'Avec ma propre session : Twitch, PlayStation Network, Apple Music, Mediapart.',
+      public: 'Données publiques : TMDB, Mawaqit, Open-Meteo.',
+      local: 'Appareils du réseau local : Chromecast, Google Home Mini.',
+    },
+    storage: {
+      title: 'Stockage',
+      where:
+        "Les jetons d'accès et les données ne sont stockés que sur ma télévision, dans les fichiers privés du service compagnon (droits 0600), et sur mon Mac d'administration.",
+      none: "Il n'y a aucun serveur ni intermédiaire à moi entre l'application et ces services. L'application ne fait aucune mesure d'audience, ne partage et ne vend aucune donnée.",
+    },
+    revoke: {
+      title: "Révoquer l'accès",
+      app: "Dans l'application : se déconnecter depuis le dialogue « Comptes ».",
+      google: 'Côté Google, à tout moment : {link}.',
+    },
+    contact: {
+      title: 'Contact',
+      text: 'Une question sur ces règles : {link}.',
+      link: 'écrivez-moi depuis la page de contact',
+    },
+    back: 'Accueil TV Kylian',
+  },
+
   blogNav: {
     tags: 'Tags',
     portfolio: 'Portfolio',
