@@ -47,10 +47,10 @@ migrates `[Unreleased]` into that file and empties this one, see
   ([#42](https://github.com/kbrdn1/kbrdn.dev/issues/42)). The `Setup ssh`
   step of `deploy.yml` and `release.yml` threw its stderr away, so the v1.0.1
   release failed on five "sans reponse" with nothing else to go on. Its stderr
-  now reaches the log, the host masked as `***`: a DNS error or a connection
-  the server closes shows up there. A refused connection or a timeout still
-  prints nothing, so an attempt with no `ssh-keyscan` line before its "sans
-  reponse" means one of those two.
+  now reaches the log, the host and its resolved addresses masked as `***`: a
+  DNS error or a connection the server closes shows up there. A refused
+  connection or a timeout still prints nothing, so an attempt with no
+  `ssh-keyscan` line before its "sans reponse" means one of those two.
 
 ## Past releases
 
