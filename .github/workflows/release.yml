@@ -259,9 +259,12 @@ jobs:
           # derniere commande d'un step lance sous `bash -e` faisait tomber tout
           # le deploiement, avec `2>/dev/null` pour masquer la raison. Vecu sur
           # le premier deploiement prod de v1.0.0. Timeout explicite, retry, et
-          # verification qu'on a vraiment une cle avant de continuer.
+          # verification qu'on a vraiment une cle avant de continuer. Son
+          # stderr reste dans le log pour diagnostiquer (#42) : un refus ou un
+          # timeout n'y ecrit rien, et l'hote n'y est masque que parce que
+          # VPS_HOST est un secret.
           for i in 1 2 3 4 5; do
-            if ssh-keyscan -T 10 -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null \
+            if ssh-keyscan -T 10 -H "$VPS_HOST" >> ~/.ssh/known_hosts \
                && [ -s ~/.ssh/known_hosts ]; then
               echo "known_hosts ok (tentative $i)"
               break
