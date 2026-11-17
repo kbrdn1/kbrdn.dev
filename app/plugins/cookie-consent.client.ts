@@ -2,8 +2,13 @@
 // ID is set (runtimeConfig.public.gaId: the prod build). Consent mode "basic": gtag.js is not
 // even downloaded before the reader accepts, so nothing reaches Google until then, not even
 // the cookieless pings of the advanced mode. Withdrawing turns gtag off, erases the _ga cookies
-// and reloads the page, the only way to unload gtag. Page views are GA's own: the initial one from `config`,
-// the next ones from enhanced measurement, which follows the router's history changes.
+// and reloads the page, the only way to unload gtag. The landing page view is the tag's own;
+// the next ones are sent here (pageView).
+//
+// The tag's settings live in GA, not here: the Google tag ignores an on-page `config` that
+// repeats its own (ignoreDupeGtagConfigCalls), parameters included. So its cookies (13 months
+// from the first visit, the CNIL's ceiling), Google signals (off) and the history-based page
+// views (off) are set in the stream's tag settings, and the `config` below stays bare.
 import type { CookieConsentConfig, Translation } from 'vanilla-cookieconsent'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -49,6 +54,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
   })
 
+  // The address of the last page counted, the referrer of the next one
+  let lastPage = ''
+
   function loadGtag(cc: typeof import('vanilla-cookieconsent')) {
     const w = window as unknown as Record<string, unknown>
     w[`ga-disable-${id}`] = false
@@ -66,16 +74,36 @@ export default defineNuxtPlugin((nuxtApp) => {
       ad_personalization: 'denied',
     })
     window.gtag('js', new Date())
-    window.gtag('config', id, {
-      allow_google_signals: false,
-      allow_ad_personalization_signals: false,
-      // 13 months, the CNIL's ceiling for an audience cookie (GA's default is 2 years), and
-      // not pushed back on each visit, which the CNIL rules out too
-      cookie_expires: 13 * 30 * 24 * 60 * 60,
-      cookie_update: false,
-    })
+    window.gtag('config', id)
     cc.loadScript(`https://www.googletagmanager.com/gtag/js?id=${id}`)
+    // The tag counts the page it loads on
+    lastPage = location.href
   }
+
+  // A page view once the next page is on screen, with its title. GA's own history-based one
+  // fires on pushState, which Nuxt does before that page has loaded: up to 7 s before on a
+  // first visit to /blog, which downloads the content database, so it got the previous title
+  function pageView() {
+    if (!window.gtag || location.href === lastPage) return
+    window.gtag('event', 'page_view', {
+      page_location: location.href,
+      page_referrer: lastPage || document.referrer,
+      page_title: document.title,
+    })
+    lastPage = location.href
+  }
+  // The new page's head is written after page:finish, on unhead's next render (a timeout):
+  // the page view goes with that render
+  let pagePending = false
+  nuxtApp.hook('page:finish', () => {
+    pagePending = true
+  })
+  // The client head always has hooks; the type is the shared one, as in Nuxt's own head plugin
+  injectHead().hooks?.hook('dom:rendered', () => {
+    if (!pagePending) return
+    pagePending = false
+    pageView()
+  })
 
   // Where readers click: every link and button, named by its label and placed by the nearest
   // section with an id, else its landmark. The banner's own buttons are not counted
@@ -86,12 +114,18 @@ export default defineNuxtPlugin((nuxtApp) => {
       'section[id], header, nav, footer, aside, main, [role="dialog"]',
     )
     // Its name as read out: the aria-label, else its text without the decorative copies
-    // (UiScrambleText draws its letters again, aria-hidden); a card, its title alone
+    // (UiScrambleText draws its letters again, aria-hidden); a card, its title alone. Its text
+    // nodes joined by a space: a row's date and title are two spans with nothing in between
     const text = el.cloneNode(true) as Element
     text.querySelectorAll('[aria-hidden="true"]').forEach((node) => node.remove())
-    const title = text.querySelector('h1, h2, h3, h4')
+    const words: string[] = []
+    const walker = document.createTreeWalker(
+      text.querySelector('h1, h2, h3, h4') ?? text,
+      NodeFilter.SHOW_TEXT,
+    )
+    while (walker.nextNode()) words.push(walker.currentNode.textContent ?? '')
     trackEvent('ui_click', {
-      label: (el.getAttribute('aria-label') || (title ?? text).textContent || '')
+      label: (el.getAttribute('aria-label') || words.join(' '))
         .replace(/\s+/g, ' ')
         .trim()
         .slice(0, 100),
