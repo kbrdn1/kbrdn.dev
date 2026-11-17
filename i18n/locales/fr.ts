@@ -587,9 +587,9 @@ export default {
   appsPage: {
     seoTitle: 'Apps · Kylian Bardini',
     seoDescription:
-      'Les apps pour le terminal de Kylian Bardini : gwm (gestionnaire de worktrees git), vellum (client SQL en TUI, en développement) et LazyCurl (client HTTP en TUI, archivé).',
+      'Les apps de Kylian Bardini : gwm (gestionnaire de worktrees git), gwm-gpui (son app desktop, en développement), vellum (client SQL en TUI, en développement) et LazyCurl (client HTTP en TUI, archivé).',
     ogTitle: 'Apps',
-    ogSubtitle: 'gwm, vellum et LazyCurl',
+    ogSubtitle: 'gwm, gwm-gpui, vellum et LazyCurl',
     eyebrow: 'APPS',
     title: 'Des outils pour le terminal.',
     intro:
@@ -617,6 +617,16 @@ export default {
           'Sait quel agent IA travaille où : Claude Code, Codex, opencode et Mistral Vibe.',
           'Une surface machine : sortie JSON, un daemon JSON-RPC et une ligne de statut pour le prompt.',
           'gwm undo et gwm history rattrapent un worktree supprimé par erreur.',
+        ],
+      },
+      'gwm-gpui': {
+        tagline: 'App desktop native pour gwm, construite sur GPUI.',
+        description:
+          "Les worktrees d'un dépôt dans une fenêtre, tenus à jour par le daemon de gwm, qui reste la source de vérité : l'app ne contient aucune logique de worktree. Encore tôt, macOS uniquement.",
+        features: [
+          'La liste des worktrees en direct, groupée par âge de branche.',
+          "Créer un worktree depuis une issue, l'ouvrir dans un éditeur ou un terminal, le supprimer.",
+          'Les sessions des agents IA de chaque worktree, et celles qui travaillent en ce moment.',
         ],
       },
       vellum: {

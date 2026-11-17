@@ -22,6 +22,12 @@ migrates `[Unreleased]` into that file and empties this one, see
   language follow the site's), and the server checks its token with Cloudflare
   before anything is sent: no token or an invalid one, the message is refused.
   The token is single-use, so the widget resets after every attempt.
+- **gwm-gpui on /apps** ([#149](https://github.com/kbrdn1/kbrdn.dev/issues/149)).
+  The native desktop app for gwm, built on GPUI, gets its panel next to gwm's,
+  tagged "In development" like vellum: what it does, from its README, and a
+  link to its repository. The notch's /apps menu links to it, and its latest
+  release is read with the others', so its version shows once one ships. The
+  page's SEO description no longer calls the apps "terminal apps".
 
 ### Security
 
