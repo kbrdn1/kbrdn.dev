@@ -552,6 +552,12 @@
   :is(.dark, .blur) .dither-band::before {
     background: color-mix(in srgb, var(--band, var(--color-primary-500)) 42%, transparent);
   }
+
+  /* The grey of the mono lines one step lighter over the band, in dark: --label (400) falls
+     to 3.5:1 on its .67 dots, 300 holds 4.59:1 on the densest (blue). Light keeps 500 (4.7:1) */
+  :is(.dark, .blur) .dither-band {
+    --label: var(--color-neutral-300);
+  }
 }
 
 /* Scrolls sideways without a scrollbar: strips, tag rows, the table of contents. Not in

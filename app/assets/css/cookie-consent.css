@@ -140,6 +140,12 @@
   background: color-mix(in srgb, var(--color-primary-500) 42%, transparent);
 }
 
+/* The banner's title, an .eyebrow in --label, over the band's .67 dots: 300 in dark, as
+   .dither-band does (components.css) */
+:root:is(.dark, .blur) #cc-main :is(.cm__texts, .pm__header) {
+  --label: var(--color-neutral-300);
+}
+
 /* Motion: a 6px rise in 180ms on the site's curve, the veil after the card on the way out.
    The library's own reduced-motion rule (0s) stays the one that applies there */
 @media (prefers-reduced-motion: no-preference) {
