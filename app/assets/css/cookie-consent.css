@@ -115,3 +115,100 @@
 :root #cc-main .cm__btn + .cm__btn {
   margin: 0 0 0 0.375rem !important;
 }
+
+/* ── The Herdr modals' head (#167) ───────────────────────────────────────────────────────
+   The banner's texts and the preferences' header sit over the dither band: the plugin puts
+   .dither-band (components.css) on them once the library has built them (onModalReady) */
+
+/* Motion: a 6px rise in 180ms on the site's curve, the veil after the card on the way out.
+   The library's own reduced-motion rule (0s) stays the one that applies there */
+@media (prefers-reduced-motion: no-preference) {
+  :root #cc-main {
+    --cc-modal-transition-duration: 0.18s;
+  }
+}
+
+:root #cc-main .cc--anim :is(.cm, .pm) {
+  transition-timing-function: var(--ease-out-quint);
+}
+
+:root #cc-main .cm {
+  transform: translateY(6px);
+}
+
+:root #cc-main .pm--box {
+  transform: translateY(calc(-50% + 6px));
+}
+
+:root #cc-main .cc--anim .pm-overlay {
+  transition-delay: 0.06s;
+}
+
+:root.show--preferences #cc-main .cc--anim .pm-overlay {
+  transition-delay: 0s;
+}
+
+@media screen and (max-width: 640px) {
+  :root #cc-main .pm {
+    transform: translateY(6px);
+  }
+}
+
+/* The preferences' head: 60px, a 32px mark, the title in 14 semibold, a round close button */
+:root #cc-main .pm__header {
+  min-height: 3.75rem;
+  padding: 0.625rem 0.5rem 0.625rem 0.875rem;
+  border-bottom: 1px dashed color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+}
+
+:root #cc-main .pm__title {
+  position: relative;
+  gap: 0.75rem;
+  margin-right: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* The mark: a soft square edged with the band's colour, and the cookie over it */
+:root #cc-main .pm__title::before,
+:root #cc-main .pm__title::after {
+  content: "";
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+}
+
+:root #cc-main .pm__title::before {
+  border: 1px solid color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+}
+
+:root #cc-main .pm__title::after {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  translate: 0 -50%;
+  background: var(--color-primary-500);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M11 17h.01m.486-15c.324-.016.558.292.529.615a4 4 0 0 0 4.235 4.368a.713.713 0 0 1 .758.757a4 4 0 0 0 4.366 4.237c.323-.03.63.204.614.527a10 10 0 0 1-2.915 6.566A1 1 0 1 1 4.93 4.918A10 10 0 0 1 11.496 2M12 12h.01M16 16h.01M16 3h.01M21 4h.01M21 8h.01M7 14h.01M9 8h.01'/%3E%3C/svg%3E")
+    center / 1rem 1rem no-repeat;
+}
+
+/* .icon-btn's: round, borderless, the label's colour */
+:root #cc-main .pm__close-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-color: transparent;
+}
+
+:root #cc-main .pm__close-btn svg {
+  stroke: var(--label);
+}
+
+:root #cc-main .pm__close-btn:hover svg {
+  stroke: var(--ui-text-highlighted);
+}
+
+:root #cc-main .pm__footer {
+  border-top-style: dashed;
+}
