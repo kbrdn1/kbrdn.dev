@@ -72,9 +72,17 @@ const subtitle = computed(() => {
   return [decoded, size.value].filter(Boolean).join(' · ')
 })
 
+// Only the picture shown now: a picture left before it loaded keeps loading, detached, and its
+// late load or error would land on the next one
 function onLoad(event: Event) {
   const img = event.target as HTMLImageElement
+  if (img.getAttribute('src') !== shown.value?.src) return
   size.value = `${img.naturalWidth} × ${img.naturalHeight}`
+}
+
+function onError(event: Event) {
+  if ((event.target as HTMLImageElement).getAttribute('src') === shown.value?.src)
+    failed.value = true
 }
 </script>
 
@@ -124,7 +132,7 @@ function onLoad(event: Event) {
           >
             <p
               v-if="failed"
-              class="flex min-h-40 flex-col items-center justify-center gap-2 p-6 text-center text-sm text-(--label)"
+              class="flex min-h-40 flex-col items-center justify-center gap-2 p-6 text-center text-sm text-(--ui-text-muted)"
               role="alert"
             >
               <UIcon name="i-lucide-image-off" class="size-5" aria-hidden="true" />
@@ -147,7 +155,7 @@ function onLoad(event: Event) {
               :alt="shown.alt"
               class="lightbox-picture"
               @load="onLoad"
-              @error="failed = true"
+              @error="onError"
             />
           </figure>
         </div>
