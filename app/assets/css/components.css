@@ -529,6 +529,29 @@
   .ticks {
     mask-image: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 6px);
   }
+
+  /* The pixel dither band under a modal's or a card's head, after Kylian's Herdr modals: one
+     128px tile (public/images/dither-band.svg) repeated on x, so no width sees it end, tinted
+     by --band (the context's colour) at Herdr's strengths. The card's radius and overflow clip
+     it at the arc, inside the border, corners filled. The content sits over it */
+  .dither-band {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .dither-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: color-mix(in srgb, var(--band, var(--color-primary-500)) 30%, transparent);
+    mask: url("/images/dither-band.svg") 0 0 / 128px 80px repeat-x;
+  }
+
+  :is(.dark, .blur) .dither-band::before {
+    background: color-mix(in srgb, var(--band, var(--color-primary-500)) 42%, transparent);
+  }
 }
 
 /* Scrolls sideways without a scrollbar: strips, tag rows, the table of contents. Not in
