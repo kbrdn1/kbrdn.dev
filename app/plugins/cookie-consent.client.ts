@@ -196,10 +196,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
       onConsent: sync,
       onChange: sync,
-      // The banner's texts and the preferences' header over the dither band, as the site's
-      // modal heads (components.css): the library builds them, so the class comes once built
-      onModalReady: ({ modal }) =>
-        modal.querySelector('.cm__texts, .pm__header')?.classList.add('dither-band'),
     }
     await cc.run(config)
     nuxtApp.hook('i18n:localeSwitched', ({ newLocale }) => {

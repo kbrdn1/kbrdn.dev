@@ -117,8 +117,28 @@
 }
 
 /* ── The Herdr modals' head (#167) ───────────────────────────────────────────────────────
-   The banner's texts and the preferences' header sit over the dither band: the plugin puts
-   .dither-band (components.css) on them once the library has built them (onModalReady) */
+   The banner's texts and the preferences' header sit over the dither band. The band of
+   components.css (.dither-band) is declared again here: the library's reset
+   (`#cc-main :before, #cc-main div { all: unset }`) is unlayered, so it beats anything in
+   @layer components, the class included. Same tile, same strengths */
+:root #cc-main :is(.cm__texts, .pm__header) {
+  position: relative;
+  isolation: isolate;
+}
+
+:root #cc-main :is(.cm__texts, .pm__header)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-primary-500) 30%, transparent);
+  mask: url("/images/dither-band.svg") 0 0 / 128px 80px repeat-x;
+}
+
+:root:is(.dark, .blur) #cc-main :is(.cm__texts, .pm__header)::before {
+  background: color-mix(in srgb, var(--color-primary-500) 42%, transparent);
+}
 
 /* Motion: a 6px rise in 180ms on the site's curve, the veil after the card on the way out.
    The library's own reduced-motion rule (0s) stays the one that applies there */
