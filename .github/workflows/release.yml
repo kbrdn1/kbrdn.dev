@@ -257,17 +257,19 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
           # La clé hôte vient du secret VPS_HOST_KEY (`ssh-ed25519 AAAA…`, lue
-          # sur le VPS) : plus de ssh-keyscan au déploiement, ses timeouts muets
-          # ont fait tomber v1.0.0 et v1.0.1 (#42, #163). Pas de repli sur
-          # keyscan, sinon la dépendance reste. Le sed retire un CRLF collé avec
-          # la valeur ; ssh-keygen -l refuse une ligne mal formée.
+          # sur le VPS) : plus de scan au déploiement, ses timeouts muets ont
+          # fait tomber v1.0.0 et v1.0.1 (#42, #163). Pas de repli sur un scan,
+          # sinon la dépendance reste. Le sed retire un CRLF collé avec la
+          # valeur ; ssh-keygen -l refuse une ligne mal formée. Son empreinte ne
+          # va pas au log public : elle se cherche dans les index de scan
+          # Internet et y rend l'IP d'origine.
           if [ -z "$VPS_HOST_KEY" ]; then
             echo "::error::VPS_HOST_KEY manquant, voir docs/CONFIGURATION.md (The deploy key)"
             exit 1
           fi
           printf '%s %s\n' "$VPS_HOST" "$VPS_HOST_KEY" > ~/.ssh/known_hosts
           sed -i 's/\r$//' ~/.ssh/known_hosts
-          if ! ssh-keygen -l -f ~/.ssh/known_hosts; then
+          if ! ssh-keygen -l -f ~/.ssh/known_hosts >/dev/null; then
             echo "::error::VPS_HOST_KEY illisible : une ligne \`ssh-ed25519 AAAA…\`, sans nom d'hôte devant"
             exit 1
           fi
@@ -287,9 +289,14 @@ jobs:
           # ssh cite l'adresse résolue sur certaines erreurs (`Connection closed
           # by <ip> port 22`), que le masque du secret ne couvre pas quand
           # VPS_HOST est un nom d'hôte : masquée avant la connexion (#162).
+          # Sur une clé hôte qui ne correspond pas, il imprime l'empreinte que
+          # le serveur a envoyée, qui rend l'IP d'origine comme celle de Setup
+          # ssh : le sed la masque, pipefail garde le code de sortie de ssh.
           getent ahosts "$VPS_HOST" | awk '!s[$1]++ {print "::add-mask::" $1}' || true
           REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN NUXT_APP_SECRET=$NUXT_APP_SECRET TURNSTILE_SECRET_KEY=$TURNSTILE_SECRET_KEY deploy"
-          ssh -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" "$REMOTE_CMD"
+          set -o pipefail
+          ssh -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" "$REMOTE_CMD" 2>&1 \
+            | sed -u -E 's/SHA256:[A-Za-z0-9+/]+/SHA256:***/g'
 
       # Vérifie depuis l'extérieur que c'est bien cette version qui sert le
       # trafic, pas seulement que le conteneur a démarré. deploy.sh attend
