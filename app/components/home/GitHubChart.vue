@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from '#imports'
-import { TOOLTIP_CLASS } from '~/utils/tooltip'
+import type { DitherChartSpec } from '~/components/ui/DitherChart.vue'
 
 const { t, locale } = useI18n()
 
@@ -35,30 +35,43 @@ const EXPANDED_MONTHS = 12
 // Month names in the page's language: short over the grids, long for the monthly view
 const monthName = (month: number, format: 'short' | 'long') =>
   new Date(2000, month, 1).toLocaleDateString(locale.value, { month: format })
-const monthLabels = computed(() => Array.from({ length: 12 }, (_, m) => monthName(m, 'short')))
 
-// Calculate month positions based on actual week data
-function getMonthPositions(weeks: { contributionDays: { date: string }[] }[]) {
-  const positions: { label: string; offset: number }[] = []
-  let lastMonth = -1
+// The API's dates ("2026-11-18") read at UTC midnight, written in the page's language
+const utc = (date: Date, format: Intl.DateTimeFormatOptions) =>
+  date.toLocaleDateString(locale.value, { ...format, timeZone: 'UTC' })
+const shortMonth = (date: Date) => utc(date, { month: 'short' })
 
-  weeks.forEach((week, weekIndex) => {
-    const firstDay = week.contributionDays[0]
-    if (!firstDay) return
-    const date = new Date(firstDay.date)
-    const month = date.getMonth()
-    if (month !== lastMonth) {
-      positions.push({
-        label: monthLabels.value[month] ?? '',
-        offset: weekIndex,
-      })
-      lastMonth = month
-    }
-  })
-
-  // A label only fits if the next one is at least 3 weeks away: the first week of a year
-  // often starts in December, and "Dec" then sat on top of "Jan".
-  return positions.filter((pos, i) => (positions[i + 1]?.offset ?? Infinity) - pos.offset >= 3)
+// Days as a dithered heatmap: the hovered (or keyboard-selected) day and its count in the readout
+function heatmap({
+  values,
+  days,
+  columns,
+}: {
+  values: (number | null)[][]
+  days: (string | null)[][]
+  columns?: string[]
+}): DitherChartSpec {
+  return {
+    kind: 'heatmap',
+    values,
+    columns,
+    color: 'accent',
+    readout: (row, column) => ({
+      title: utc(new Date(days[row]![column]!), {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      }),
+      rows: [
+        [
+          'accent',
+          t('github.readout', values[row]![column] ?? 0),
+          (values[row]![column] ?? 0).toLocaleString(locale.value),
+        ],
+      ],
+    }),
+  }
 }
 
 // Group contributions by month for monthly view (last 12 months)
@@ -67,9 +80,10 @@ const monthlyData = computed(() => {
 
   const months: {
     name: string
+    period: string
     year: number
     contributions: number
-    days: { contributionCount: number; date: string }[]
+    chart: DitherChartSpec
   }[] = []
 
   // Group all days by month from all years
@@ -78,8 +92,9 @@ const monthlyData = computed(() => {
   contributions.value.years.forEach((yearData) => {
     yearData.weeks.forEach((week) => {
       week.contributionDays.forEach((day) => {
-        const date = new Date(day.date)
-        const key = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`
+        // The date's own month ("2026-11-18"), as the heatmaps read it: not the reader's local
+        // one, which west of UTC filed each month's first day under the month before
+        const key = day.date.slice(0, 7)
         if (!grouped.has(key)) {
           grouped.set(key, [])
         }
@@ -93,15 +108,21 @@ const monthlyData = computed(() => {
 
   // Take last 12 months
   sortedKeys.slice(0, 12).forEach((key) => {
-    const [year = 0, month = 0] = key.split('-').map(Number)
-    const days = grouped.get(key)!
+    const [year = 0, number = 1] = key.split('-').map(Number)
+    const month = number - 1
+    const days = grouped.get(key)!.sort((a, b) => a.date.localeCompare(b.date))
     const total = days.reduce((sum, d) => sum + d.contributionCount, 0)
 
     months.push({
       name: monthName(month, 'long').toLocaleUpperCase(locale.value),
+      period: `${monthName(month, 'long')} ${year}`,
       year,
       contributions: total,
-      days: days.sort((a, b) => a.date.localeCompare(b.date)),
+      // One row of days, as wide as the month
+      chart: heatmap({
+        values: [days.map((d) => d.contributionCount)],
+        days: [days.map((d) => d.date)],
+      }),
     })
   })
 
@@ -129,7 +150,7 @@ const visibleCalendars = computed(() => {
         key: 'recent',
         label: `${format(days[0]?.date)} – ${format(days.at(-1)?.date)}`,
         total: data.recent.totalContributions,
-        weeks: data.recent.weeks,
+        chart: heatmap(calendarGrid(data.recent.weeks, shortMonth)),
       },
     ]
   }
@@ -138,7 +159,7 @@ const visibleCalendars = computed(() => {
     key: String(year.year),
     label: String(year.year),
     total: year.totalContributions,
-    weeks: year.weeks,
+    chart: heatmap(calendarGrid(year.weeks, shortMonth)),
   }))
 })
 
@@ -155,10 +176,11 @@ const canExpandMonths = computed(() => {
   return monthlyData.value.length > DEFAULT_MONTHS
 })
 
-// Stats follow the tab: the rolling year for "recent", every fetched year otherwise
+// Stats follow the tab: the rolling year for "recent", every fetched year otherwise. Written in
+// the page's language: "27,2" in French
 const stats = computed(() => {
   const data = contributions.value
-  if (!data) return { total: 0, avgPerDay: '0' }
+  if (!data) return { total: '0', avgPerDay: '0' }
 
   const recent = activeTab.value === 'recent'
   const total = recent ? data.recent.totalContributions : data.totalContributions
@@ -169,42 +191,24 @@ const stats = computed(() => {
     0,
   )
 
-  return { total, avgPerDay: totalDays > 0 ? (total / totalDays).toFixed(1) : '0' }
+  return {
+    total: total.toLocaleString(locale.value),
+    avgPerDay: (totalDays > 0 ? total / totalDays : 0).toLocaleString(locale.value, {
+      minimumFractionDigits: totalDays > 0 ? 1 : 0,
+      maximumFractionDigits: 1,
+    }),
+  }
 })
 
-function getColor(count: number): string {
-  if (count === 0) return 'bg-neutral-200 dark:bg-neutral-800'
-  if (count <= 2) return 'bg-primary-500/30'
-  if (count <= 5) return 'bg-primary-500/50'
-  if (count <= 8) return 'bg-primary-500/70'
-  return 'bg-primary-500'
-}
-
-const tooltipData = ref<{
-  count: number
-  date: string
-  x: number
-  y: number
-} | null>(null)
-
-function showTooltip(day: { contributionCount: number; date: string }, event: MouseEvent) {
-  const rect = (event.target as HTMLElement).getBoundingClientRect()
-  tooltipData.value = {
-    count: day.contributionCount,
-    date: new Date(day.date).toLocaleDateString(locale.value, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    }),
-    x: rect.left + rect.width / 2,
-    y: rect.top - 8,
-  }
-}
-
-function hideTooltip() {
-  tooltipData.value = null
-}
+// Under "last 12 months": the monthly view's twelve totals, oldest first, and in words
+const lastMonths = computed(() => [...monthlyData.value].reverse())
+const trendLabel = computed(() =>
+  t('github.trendLabel', {
+    values: lastMonths.value
+      .map((month) => `${month.period} ${month.contributions.toLocaleString(locale.value)}`)
+      .join(', '),
+  }),
+)
 
 // Arrow keys cycle through the tabs, focus following within this tablist only: other tab sets
 // on the page (featured projects, open source) carry an aria-selected too
@@ -264,10 +268,12 @@ function switchTab(step: 1 | -1) {
       <template v-if="status === 'pending' || status === 'idle'">
         <!-- Stats skeleton -->
         <!-- Line boxes of the real ones: the eyebrow's 16px and its margin, the figure's 40px -->
-        <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
-          <div>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
+          <div class="sm:flex-1">
             <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-28" /></div>
             <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-20" /></div>
+            <!-- The sparkline's 56px -->
+            <UiSkeleton class="mt-3 h-14" />
           </div>
           <div>
             <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-24" /></div>
@@ -315,28 +321,28 @@ function switchTab(step: 1 | -1) {
 
       <!-- Content -->
       <template v-else-if="contributions?.years">
-        <!-- Stats -->
-        <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
-          <div>
-            <p class="eyebrow mb-1">
-              {{ activeTab === 'recent' ? t('github.lastYear') : t('github.totalContributions') }}
-            </p>
-            <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              <UiRollingNumber :value="stats.total.toLocaleString()" />
-            </p>
+        <!-- Stats; the last twelve months by month under their total. The sparkline comes and
+             goes with the tab: the height follows instead of jumping -->
+        <UiAutoHeight>
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
+            <UiDitherStat
+              class="min-w-0 sm:flex-1"
+              :label="
+                activeTab === 'recent' ? t('github.lastYear') : t('github.totalContributions')
+              "
+              :value="stats.total"
+              :trend="
+                activeTab === 'recent' ? lastMonths.map((month) => month.contributions) : undefined
+              "
+              :trend-label="trendLabel"
+            />
+            <UiDitherStat
+              :label="t('github.dailyAverage')"
+              :value="stats.avgPerDay"
+              :unit="t('github.perDay')"
+            />
           </div>
-          <div>
-            <p class="eyebrow mb-1">
-              {{ t('github.dailyAverage') }}
-            </p>
-            <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              <UiRollingNumber :value="stats.avgPerDay" />
-              <span class="text-base text-neutral-500 dark:text-neutral-400">{{
-                t('github.perDay')
-              }}</span>
-            </p>
-          </div>
-        </div>
+        </UiAutoHeight>
 
         <UiAutoHeight>
           <!-- Recent and Annual views: one grid per calendar -->
@@ -361,48 +367,24 @@ function switchTab(step: 1 | -1) {
                   {{ calendar.label }}
                 </p>
                 <p class="text-xs text-neutral-400 font-mono">
-                  {{ calendar.total.toLocaleString() }} {{ t('github.contributions') }}
+                  {{ calendar.total.toLocaleString(locale) }} {{ t('github.contributions') }}
                 </p>
               </div>
 
-              <!-- Contribution grid with month labels -->
-              <div class="overflow-x-auto">
-                <div class="min-w-max">
-                  <!-- Month labels - positioned by actual week offset -->
-                  <div class="relative text-xs text-neutral-500 mb-1 h-4">
-                    <span
-                      v-for="pos in getMonthPositions(calendar.weeks)"
-                      :key="`${calendar.key}-${pos.offset}`"
-                      class="absolute"
-                      :style="{ left: `${pos.offset * (12 + 3)}px` }"
-                    >
-                      {{ pos.label }}
-                    </span>
-                  </div>
-
-                  <!-- Grid: drawn without text, a cameo keeps off it (UiCameo) -->
-                  <div class="flex gap-[3px]" data-cameo-solid>
-                    <div
-                      v-for="(week, weekIndex) in calendar.weeks"
-                      :key="weekIndex"
-                      class="flex flex-col gap-[3px]"
-                    >
-                      <div
-                        v-for="day in week.contributionDays"
-                        :key="day.date"
-                        :class="
-                          cn(
-                            'w-3 h-3 rounded-[3px] cursor-pointer transition-all duration-150',
-                            'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
-                            getColor(day.contributionCount),
-                          )
-                        "
-                        @mouseenter="showTooltip(day, $event)"
-                        @mouseleave="hideTooltip"
-                      />
-                    </div>
-                  </div>
-                </div>
+              <!-- The weeks, month names on top, scrolled sideways rather than cut when they do
+                   not fit. Room around them for the focus ring the scroller would clip. A cameo
+                   keeps off the drawing (UiCameo) -->
+              <div class="-m-1 overflow-x-auto p-1">
+                <UiDitherChart
+                  data-cameo-solid
+                  :chart="calendar.chart"
+                  :label="
+                    t('github.calendarLabel', {
+                      count: calendar.total.toLocaleString(locale),
+                      period: calendar.label,
+                    })
+                  "
+                />
               </div>
             </div>
           </TransitionGroup>
@@ -428,24 +410,21 @@ function switchTab(step: 1 | -1) {
                   <span class="text-neutral-600">/ {{ month.year }}</span>
                 </p>
                 <p class="text-xs text-neutral-400 font-mono">
-                  {{ month.contributions.toLocaleString() }} {{ t('github.contributions') }}
+                  {{ month.contributions.toLocaleString(locale) }} {{ t('github.contributions') }}
                 </p>
               </div>
 
-              <!-- Month grid -->
-              <div class="flex gap-[3px] flex-wrap" data-cameo-solid>
-                <div
-                  v-for="day in month.days"
-                  :key="day.date"
-                  :class="
-                    cn(
-                      'w-3 h-3 rounded-[3px] cursor-pointer transition-all duration-150',
-                      'hover:ring-2 hover:ring-primary-500/50 hover:scale-125 hover:z-10',
-                      getColor(day.contributionCount),
-                    )
+              <!-- The month's days in a row, scrolled sideways on a phone -->
+              <div class="-m-1 overflow-x-auto p-1">
+                <UiDitherChart
+                  data-cameo-solid
+                  :chart="month.chart"
+                  :label="
+                    t('github.calendarLabel', {
+                      count: month.contributions.toLocaleString(locale),
+                      period: month.period,
+                    })
                   "
-                  @mouseenter="showTooltip(day, $event)"
-                  @mouseleave="hideTooltip"
                 />
               </div>
             </div>
@@ -479,31 +458,6 @@ function switchTab(step: 1 | -1) {
         <UiMascot mood="sad" :size="40" />
         {{ t('github.error') }}
       </div>
-
-      <!-- Tooltip -->
-      <Teleport to="body">
-        <Transition
-          enter-active-class="transition-opacity duration-150"
-          enter-from-class="opacity-0"
-          leave-active-class="transition-opacity duration-100"
-          leave-to-class="opacity-0"
-        >
-          <div
-            v-if="tooltipData"
-            :class="
-              cn(
-                TOOLTIP_CLASS,
-                'pointer-events-none fixed z-50 flex items-center gap-1.5 whitespace-nowrap',
-                'transform -translate-x-1/2 -translate-y-full',
-              )
-            "
-            :style="{ left: `${tooltipData.x}px`, top: `${tooltipData.y}px` }"
-          >
-            <strong class="text-primary-700 dark:text-primary-500">{{ tooltipData.count }}</strong>
-            {{ t('github.on') }} {{ tooltipData.date }}
-          </div>
-        </Transition>
-      </Teleport>
     </div>
   </UiPanel>
 </template>

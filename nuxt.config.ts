@@ -1,5 +1,13 @@
+import { readFileSync } from 'node:fs'
 import pkg from './package.json'
 import { LOCALIZED_PAGES } from './shared/localizedPages'
+
+// Monocode's MIT notice, from the head of the dither charts' core: the minifier drops every
+// comment, legal ones included, so the notice goes back on the chunk that carries the core
+const MONOCODE_NOTICE = /MIT License[\s\S]*?SOFTWARE\.\n/.exec(
+  readFileSync(new URL('./app/utils/dither-charts.js', import.meta.url), 'utf8'),
+)?.[0]
+if (!MONOCODE_NOTICE) throw new Error('app/utils/dither-charts.js: Monocode MIT notice not found')
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -59,6 +67,20 @@ export default defineNuxtConfig({
       cookieKey: 'i18n_locale',
       redirectOn: 'root',
       fallbackLocale: 'fr',
+    },
+  },
+
+  vite: {
+    build: {
+      rolldownOptions: {
+        output: {
+          // After minification, on the chunk holding app/utils/dither-charts.js only
+          postBanner: (chunk) =>
+            chunk.moduleIds.some((id) => id.endsWith('/app/utils/dither-charts.js'))
+              ? `/*! dither-charts.js, Monocode's visuals (github.com/hardbeat920/monocode)\n${MONOCODE_NOTICE}*/`
+              : '',
+        },
+      },
     },
   },
 
