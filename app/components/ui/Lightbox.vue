@@ -87,12 +87,12 @@ function onError(event: Event) {
 </script>
 
 <template>
-  <!-- Focus on the dialog itself first: its name is read out, and Tab reaches the button -->
+  <!-- showModal() focuses the close button, the first control: the site's own ring, and the
+       dialog's name read out on the way in -->
   <dialog
     ref="dialog"
     class="lightbox"
     aria-labelledby="lightbox-title"
-    autofocus
     :style="{ '--band': band }"
     @close="onClose"
     @click="onClick"
@@ -184,14 +184,7 @@ function onError(event: Event) {
   padding: 0;
   overflow: visible;
   border: 0;
-  /* The card's corners: focused first, the dialog draws the site's focus ring along them */
-  border-radius: 1.25rem;
   background: transparent;
-}
-
-/* Inside, over the card's edge: outside it would sit on the veil, at 1.7:1 in light */
-.lightbox:focus-visible {
-  outline-offset: -2px;
 }
 
 /* The veil: fades in with the card, leaves after it */
