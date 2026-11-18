@@ -184,10 +184,11 @@ jobs:
           # stderr reste dans le log pour diagnostiquer (#42) : un refus ou un
           # timeout n'y ecrit rien. Il cite VPS_HOST, un secret donc masque,
           # et sur certaines erreurs l'adresse resolue (`Received disconnect
-          # from <ip>`) : masquee ici aussi, l'IP d'origine ne doit jamais
-          # sortir dans ce log public.
-          getent ahosts "$VPS_HOST" | awk '!s[$1]++ {print "::add-mask::" $1}' || true
+          # from <ip>`) : masquee avant chaque tentative (la resolution peut
+          # echouer puis reussir), l'IP d'origine ne doit jamais sortir dans
+          # ce log public.
           for i in 1 2 3 4 5; do
+            getent ahosts "$VPS_HOST" | awk '!s[$1]++ {print "::add-mask::" $1}' || true
             if ssh-keyscan -T 10 -H "$VPS_HOST" >> ~/.ssh/known_hosts \
                && [ -s ~/.ssh/known_hosts ]; then
               echo "known_hosts ok (tentative $i)"
