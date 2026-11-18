@@ -164,6 +164,7 @@ The routing logic lives in a script rather than inline YAML because getting it w
 ### Required Secrets
 Repo-level GitHub Actions secrets (see `docs/CONFIGURATION.md`):
 - `VPS_HOST` / `VPS_USER` / `VPS_SSH_PRIVATE_KEY` - SSH deploy target + key
+- `VPS_HOST_KEY` - the VPS's host key (`ssh-ed25519 AAAA…`, no host name), pinned in `known_hosts` instead of an `ssh-keyscan` at deploy time (#163). Missing or malformed, `Setup ssh` fails; a reinstalled VPS fails every deploy on `Host key verification failed` until it is updated
 - `GH_TOKEN` - GitHub API access (threaded to the VPS at deploy time)
 - `RESEND_API_KEY` - Email sending (contact form), **source of truth for prod**, injected into the VPS by `deploy.yml`
 - `NUXT_STUDIO_TOKEN` - **not defined**: passed by `deploy.yml` and `release.yml`, but unused while `nuxt-studio` is disabled
