@@ -248,6 +248,7 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_HOST_KEY: ${{ secrets.VPS_HOST_KEY }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
@@ -255,31 +256,23 @@ jobs:
           sed -i 's/\r$//' ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null && echo "ssh key OK"
-          # ssh-keyscan expire au bout de 5 s par defaut, et son echec en
-          # derniere commande d'un step lance sous `bash -e` faisait tomber tout
-          # le deploiement, avec `2>/dev/null` pour masquer la raison. Vecu sur
-          # le premier deploiement prod de v1.0.0. Timeout explicite, retry, et
-          # verification qu'on a vraiment une cle avant de continuer. Son
-          # stderr reste dans le log pour diagnostiquer (#42) : un refus ou un
-          # timeout n'y ecrit rien. Il cite VPS_HOST, un secret donc masque,
-          # et sur certaines erreurs l'adresse resolue (`Received disconnect
-          # from <ip>`) : masquee avant chaque tentative (la resolution peut
-          # echouer puis reussir), l'IP d'origine ne doit jamais sortir dans
-          # ce log public.
-          for i in 1 2 3 4 5; do
-            getent ahosts "$VPS_HOST" | awk '!s[$1]++ {print "::add-mask::" $1}' || true
-            if ssh-keyscan -T 10 -H "$VPS_HOST" >> ~/.ssh/known_hosts \
-               && [ -s ~/.ssh/known_hosts ]; then
-              echo "known_hosts ok (tentative $i)"
-              break
-            fi
-            echo "ssh-keyscan sans reponse (tentative $i/5)"
-            if [ "$i" -eq 5 ]; then
-              echo "::error::ssh-keyscan n'a pas recupere la cle hote apres 5 tentatives"
-              exit 1
-            fi
-            sleep 5
-          done
+          # La clé hôte vient du secret VPS_HOST_KEY (`ssh-ed25519 AAAA…`, lue
+          # sur le VPS) : plus de scan au déploiement, ses timeouts muets ont
+          # fait tomber v1.0.0 et v1.0.1 (#42, #163). Pas de repli sur un scan,
+          # sinon la dépendance reste. Le sed retire un CRLF collé avec la
+          # valeur ; ssh-keygen -l refuse une ligne mal formée. Son empreinte ne
+          # va pas au log public : elle se cherche dans les index de scan
+          # Internet et y rend l'IP d'origine.
+          if [ -z "$VPS_HOST_KEY" ]; then
+            echo "::error::VPS_HOST_KEY manquant, voir docs/CONFIGURATION.md (The deploy key)"
+            exit 1
+          fi
+          printf '%s %s\n' "$VPS_HOST" "$VPS_HOST_KEY" > ~/.ssh/known_hosts
+          sed -i 's/\r$//' ~/.ssh/known_hosts
+          if ! ssh-keygen -l -f ~/.ssh/known_hosts >/dev/null; then
+            echo "::error::VPS_HOST_KEY illisible : une ligne \`ssh-ed25519 AAAA…\`, sans nom d'hôte devant"
+            exit 1
+          fi
 
       - name: Deploy via ssh wrapper
         env:
@@ -293,8 +286,17 @@ jobs:
           NUXT_APP_SECRET: ${{ secrets.NUXT_APP_SECRET }}
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         run: |
+          # ssh cite l'adresse résolue sur certaines erreurs (`Connection closed
+          # by <ip> port 22`), que le masque du secret ne couvre pas quand
+          # VPS_HOST est un nom d'hôte : masquée avant la connexion (#162).
+          # Sur une clé hôte qui ne correspond pas, il imprime l'empreinte que
+          # le serveur a envoyée, qui rend l'IP d'origine comme celle de Setup
+          # ssh : le sed la masque, pipefail garde le code de sortie de ssh.
+          getent ahosts "$VPS_HOST" | awk '!s[$1]++ {print "::add-mask::" $1}' || true
           REMOTE_CMD="ENV=$ENV IMAGE=$IMAGE GITHUB_TOKEN=$GH_TOKEN RESEND_API_KEY=$RESEND_API_KEY NUXT_STUDIO_TOKEN=$NUXT_STUDIO_TOKEN NUXT_APP_SECRET=$NUXT_APP_SECRET TURNSTILE_SECRET_KEY=$TURNSTILE_SECRET_KEY deploy"
-          ssh -o BatchMode=yes -o ConnectTimeout=20 "$VPS_USER@$VPS_HOST" "$REMOTE_CMD"
+          set -o pipefail
+          ssh -o BatchMode=yes -o ConnectTimeout=20 -o StrictHostKeyChecking=yes "$VPS_USER@$VPS_HOST" "$REMOTE_CMD" 2>&1 \
+            | sed -u -E 's/SHA256:[A-Za-z0-9+/]+/SHA256:***/g'
 
       # Vérifie depuis l'extérieur que c'est bien cette version qui sert le
       # trafic, pas seulement que le conteneur a démarré. deploy.sh attend

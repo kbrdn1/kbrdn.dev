@@ -12,6 +12,7 @@ reaches the container. **No real value ever goes in this file: the repository is
 | `VPS_HOST` | SSH target of the deployment | `deploy.yml`, `release.yml` | hostname or IP |
 | `VPS_USER` | SSH user on the VPS | `deploy.yml`, `release.yml` (falls back to `root`) | `root` |
 | `VPS_SSH_PRIVATE_KEY` | Key of the restricted CI account, see [The deploy key](#the-deploy-key) | `deploy.yml`, `release.yml` | OpenSSH ed25519 private key |
+| `VPS_HOST_KEY` | The VPS's SSH host key, pinned in `known_hosts`, see [The deploy key](#the-deploy-key) | `deploy.yml`, `release.yml` (missing: the deploy fails) | one line `ssh-ed25519 AAAA…`, no host name |
 | `GH_TOKEN` | GitHub API: contribution chart, activity feed | `ci.yml` (build), then the container as `GITHUB_TOKEN` | `ghp_…` or `github_pat_…` |
 | `RESEND_API_KEY` | Contact form emails | `ci.yml` (build), then the container | `re_…` |
 | `NUXT_APP_SECRET` | Signs the OG image URLs (`/_og/*`, nuxt-og-image 7) | the container | 64 hex chars |
@@ -79,9 +80,23 @@ A dedicated key, used by the CI only:
    restrict,command="/srv/github-deploy.sh" ssh-ed25519 AAAA… github-actions
    ```
 3. Store the private key in `VPS_SSH_PRIVATE_KEY`, and the host in `VPS_HOST`.
+4. Store the VPS's host key in `VPS_HOST_KEY`: the first two fields of its public host key,
+   read on the VPS itself, not over a first network connection:
+   ```bash
+   ssh <vps> "cut -d' ' -f1,2 /etc/ssh/ssh_host_ed25519_key.pub" | gh secret set VPS_HOST_KEY
+   ```
+   Your own `known_hosts` already authenticates that `ssh`. To compare fingerprints:
+   `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` on the VPS, `ssh-keygen -lF <VPS_HOST>`
+   locally. The workflows write `$VPS_HOST $VPS_HOST_KEY` into `known_hosts`, so a value with
+   a host name in front (a `known_hosts` line) is refused.
 
 With that key the CI can only run `deploy`, `rollback`, `status` or `ping`, with the
 variables of the allowlist.
+
+The workflows no longer run `ssh-keyscan` (it failed the v1.0.0 and v1.0.1 deploys on
+silent timeouts, #42, #163): the deploy's `ssh` checks the pinned key strictly. Reinstalling
+the VPS or regenerating its host keys makes every deploy fail on `Host key verification
+failed`: update `VPS_HOST_KEY` with step 4.
 
 ### GH_TOKEN
 
