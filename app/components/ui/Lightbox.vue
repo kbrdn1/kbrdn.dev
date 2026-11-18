@@ -24,9 +24,13 @@ watch(
   picture,
   (next) => {
     if (next && !dialog.value?.open) {
+      // The same picture again: its <img> stays and does not load twice, so its size and its
+      // error stay too
+      if (next.src !== shown.value?.src) {
+        size.value = undefined
+        failed.value = false
+      }
       shown.value = next
-      size.value = undefined
-      failed.value = false
       opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
       dialog.value?.showModal()
     } else if (!next && dialog.value?.open) dialog.value.close()
