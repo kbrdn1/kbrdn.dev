@@ -88,8 +88,9 @@ const monthlyData = computed(() => {
   contributions.value.years.forEach((yearData) => {
     yearData.weeks.forEach((week) => {
       week.contributionDays.forEach((day) => {
-        const date = new Date(day.date)
-        const key = `${date.getFullYear()}-${String(date.getMonth()).padStart(2, '0')}`
+        // The date's own month ("2026-11-18"), as the heatmaps read it: not the reader's local
+        // one, which west of UTC filed each month's first day under the month before
+        const key = day.date.slice(0, 7)
         if (!grouped.has(key)) {
           grouped.set(key, [])
         }
@@ -103,7 +104,8 @@ const monthlyData = computed(() => {
 
   // Take last 12 months
   sortedKeys.slice(0, 12).forEach((key) => {
-    const [year = 0, month = 0] = key.split('-').map(Number)
+    const [year = 0, number = 1] = key.split('-').map(Number)
+    const month = number - 1
     const days = grouped.get(key)!.sort((a, b) => a.date.localeCompare(b.date))
     const total = days.reduce((sum, d) => sum + d.contributionCount, 0)
 
@@ -170,11 +172,11 @@ const canExpandMonths = computed(() => {
   return monthlyData.value.length > DEFAULT_MONTHS
 })
 
-// Stats follow the tab: the rolling year for "recent", every fetched year otherwise. Their
-// sparkline: the contributions of each month over the same span
+// Stats follow the tab: the rolling year for "recent", every fetched year otherwise. Written in
+// the page's language: "27,2" in French
 const stats = computed(() => {
   const data = contributions.value
-  if (!data) return { total: 0, avgPerDay: '0', months: [] as [string, number][] }
+  if (!data) return { total: '0', avgPerDay: '0' }
 
   const recent = activeTab.value === 'recent'
   const total = recent ? data.recent.totalContributions : data.totalContributions
@@ -184,29 +186,22 @@ const stats = computed(() => {
       days + calendar.weeks.reduce((n, week) => n + week.contributionDays.length, 0),
     0,
   )
-  const months = new Map<string, number>()
-  for (const calendar of calendars)
-    for (const week of calendar.weeks)
-      for (const day of week.contributionDays) {
-        const key = day.date.slice(0, 7)
-        months.set(key, (months.get(key) ?? 0) + day.contributionCount)
-      }
 
   return {
-    total,
-    avgPerDay: totalDays > 0 ? (total / totalDays).toFixed(1) : '0',
-    months: [...months].sort(([a], [b]) => a.localeCompare(b)),
+    total: total.toLocaleString(locale.value),
+    avgPerDay: (totalDays > 0 ? total / totalDays : 0).toLocaleString(locale.value, {
+      minimumFractionDigits: totalDays > 0 ? 1 : 0,
+      maximumFractionDigits: 1,
+    }),
   }
 })
 
-// What the sparkline draws, in words: "nov. 2025 12, déc. 2025 30…"
+// Under "last 12 months": the monthly view's twelve totals, oldest first, and in words
+const lastMonths = computed(() => [...monthlyData.value].reverse())
 const trendLabel = computed(() =>
   t('github.trendLabel', {
-    values: stats.value.months
-      .map(
-        ([key, count]) =>
-          `${utc(new Date(`${key}-01`), { month: 'short', year: 'numeric' })} ${count.toLocaleString(locale.value)}`,
-      )
+    values: lastMonths.value
+      .map((month) => `${month.period} ${month.contributions.toLocaleString(locale.value)}`)
       .join(', '),
   }),
 )
@@ -269,17 +264,17 @@ function switchTab(step: 1 | -1) {
       <template v-if="status === 'pending' || status === 'idle'">
         <!-- Stats skeleton -->
         <!-- Line boxes of the real ones: the eyebrow's 16px and its margin, the figure's 40px -->
-        <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
-          <div>
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
+          <div class="sm:flex-1">
             <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-28" /></div>
             <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-20" /></div>
+            <!-- The sparkline's 56px -->
+            <UiSkeleton class="mt-3 h-14" />
           </div>
           <div>
             <div class="mb-1 flex h-4 items-center"><UiSkeleton class="h-3 w-24" /></div>
             <div class="flex h-10 items-center"><UiSkeleton class="h-9 w-24" /></div>
           </div>
-          <!-- The sparkline's 56px -->
-          <UiSkeleton class="h-14 sm:flex-1 sm:self-end" />
         </div>
 
         <!-- Calendar header skeleton -->
@@ -322,34 +317,28 @@ function switchTab(step: 1 | -1) {
 
       <!-- Content -->
       <template v-else-if="contributions?.years">
-        <!-- Stats -->
-        <div class="flex flex-col sm:flex-row sm:items-baseline gap-4 sm:gap-8">
-          <div>
-            <p class="eyebrow mb-1">
-              {{ activeTab === 'recent' ? t('github.lastYear') : t('github.totalContributions') }}
-            </p>
-            <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              <UiRollingNumber :value="stats.total.toLocaleString()" />
-            </p>
+        <!-- Stats; the last twelve months by month under their total. The sparkline comes and
+             goes with the tab: the height follows instead of jumping -->
+        <UiAutoHeight>
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
+            <UiDitherStat
+              class="min-w-0 sm:flex-1"
+              :label="
+                activeTab === 'recent' ? t('github.lastYear') : t('github.totalContributions')
+              "
+              :value="stats.total"
+              :trend="
+                activeTab === 'recent' ? lastMonths.map((month) => month.contributions) : undefined
+              "
+              :trend-label="trendLabel"
+            />
+            <UiDitherStat
+              :label="t('github.dailyAverage')"
+              :value="stats.avgPerDay"
+              :unit="t('github.perDay')"
+            />
           </div>
-          <div>
-            <p class="eyebrow mb-1">
-              {{ t('github.dailyAverage') }}
-            </p>
-            <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-              <UiRollingNumber :value="stats.avgPerDay" />
-              <span class="text-base text-neutral-500 dark:text-neutral-400">{{
-                t('github.perDay')
-              }}</span>
-            </p>
-          </div>
-          <!-- Month by month over the same span, in the room the figures leave -->
-          <UiDitherChart
-            class="min-w-0 sm:flex-1 sm:self-end"
-            :chart="{ kind: 'trend', values: stats.months.map(([, count]) => count) }"
-            :label="trendLabel"
-          />
-        </div>
+        </UiAutoHeight>
 
         <UiAutoHeight>
           <!-- Recent and Annual views: one grid per calendar -->
@@ -374,7 +363,7 @@ function switchTab(step: 1 | -1) {
                   {{ calendar.label }}
                 </p>
                 <p class="text-xs text-neutral-400 font-mono">
-                  {{ calendar.total.toLocaleString() }} {{ t('github.contributions') }}
+                  {{ calendar.total.toLocaleString(locale) }} {{ t('github.contributions') }}
                 </p>
               </div>
 
@@ -417,7 +406,7 @@ function switchTab(step: 1 | -1) {
                   <span class="text-neutral-600">/ {{ month.year }}</span>
                 </p>
                 <p class="text-xs text-neutral-400 font-mono">
-                  {{ month.contributions.toLocaleString() }} {{ t('github.contributions') }}
+                  {{ month.contributions.toLocaleString(locale) }} {{ t('github.contributions') }}
                 </p>
               </div>
 
