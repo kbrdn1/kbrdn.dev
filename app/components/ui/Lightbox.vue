@@ -167,7 +167,8 @@ function onLoad(event: Event) {
   padding: 0;
   overflow: visible;
   border: 0;
-  outline: none;
+  /* The card's corners: focused first, the dialog draws the site's focus ring around it */
+  border-radius: 1.25rem;
   background: transparent;
   transition:
     display 0.18s allow-discrete,
