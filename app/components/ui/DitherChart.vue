@@ -248,13 +248,23 @@ function keyboard(v: Visual) {
   })
 }
 
+// The screen's pixel ratio moves with the browser's zoom, and the core's cell with it: the
+// heatmap's width and the keyboard's aim follow, or the core would drop its oldest columns
+let ratio: MediaQueryList | undefined
+function followRatio() {
+  cell.value = Math.max(1, Math.round(3 * devicePixelRatio)) / devicePixelRatio
+  ratio?.removeEventListener('change', followRatio)
+  ratio = matchMedia(`(resolution: ${devicePixelRatio}dppx)`)
+  ratio.addEventListener('change', followRatio)
+}
+
 onMounted(() => {
   const DC = core()
   if (!configured) {
     DC.configure({ tokens: TOKENS })
     configured = true
   }
-  cell.value = Math.max(1, Math.round(3 * devicePixelRatio)) / devicePixelRatio
+  followRatio()
   const { kind } = props.chart
   const make = kind === 'bar' || kind === 'line' || kind === 'area' ? DC.chart : DC[kind]
   visual = make(options())
@@ -277,6 +287,7 @@ watch(reduced, (value) => {
 
 onBeforeUnmount(() => {
   visual?.destroy()
+  ratio?.removeEventListener('change', followRatio)
   if (away) document.removeEventListener('pointerdown', away)
 })
 </script>
