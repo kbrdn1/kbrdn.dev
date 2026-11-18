@@ -24,6 +24,9 @@ function handleClickOutside(e: MouseEvent) {
 
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
+    // Its link goes as it closes: the focus goes back to the menu's button, not to the body
+    const brand = document.activeElement?.closest('.group\\/brand, .group\\/brand-mobile')
+    if (showBrandMenu.value && brand) brand.querySelector('button')?.focus()
     showBrandMenu.value = false
     // Its links turn inert as it folds: the focus goes back to its button, not to the body
     if (isMobileMenuOpen.value && document.activeElement?.closest('#mobile-nav')) {
