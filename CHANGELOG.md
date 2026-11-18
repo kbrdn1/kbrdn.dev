@@ -71,9 +71,11 @@ migrates `[Unreleased]` into that file and empties this one, see
 - **Focus and motion in the overlays**
   ([#167](https://github.com/kbrdn1/kbrdn.dev/issues/167)). The site's pause
   control now stills a modal's veil too (`::backdrop`). Escape in the mobile
-  menu left the focus on the page's body; it goes back to the menu's button.
-  The article's mobile contents close on Escape too, focusing their button. The
-  picture viewer is named by its visible title, never by an empty alt.
+  menu and in the logo menu left the focus on the page's body; it goes back to
+  the menu's button. The article's mobile contents close on Escape too,
+  focusing their button. Closing the picture viewer gives the focus back to the
+  picture's button, in Safari too (a click does not focus a button there), and
+  the viewer is named by its visible title, never by an empty alt.
 
 ## Past releases
 
