@@ -25,9 +25,9 @@ watch(
   picture,
   (next) => {
     if (next && !dialog.value?.open) {
-      // The same picture again: its <img> stays and does not load twice, so its size and its
-      // error stay too
-      if (next.src !== shown.value?.src) {
+      // The same picture again: its <img> stays and does not load twice, so its size stays too.
+      // One that failed is tried again (its <img> was gone)
+      if (next.src !== shown.value?.src || failed.value) {
         size.value = undefined
         failed.value = false
       }
