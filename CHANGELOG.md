@@ -14,6 +14,20 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ## [Unreleased]
 
+### Added
+
+- **Monocode's dither charts**
+  ([#165](https://github.com/kbrdn1/kbrdn.dev/issues/165)). The GitHub
+  calendar (home, `/activity`) is drawn as a dithered heatmap, after
+  Monocode's `/visualize` (MIT): a day's count becomes a share of inked 3px
+  cells through a 4x4 Bayer matrix. Its days can now be read from the keyboard
+  too (arrow keys, said aloud), not only under the mouse, and its figures gain
+  a sparkline of the contributions month by month. The open source card
+  (`/activity`, `/parcours`) shows each figure's statuses as a dithered ring.
+  `UiDitherChart` draws them with the charts' shared core, a verbatim copy, in
+  the theme's colours (light, dark, blur), and lands them at once when motion
+  is reduced or paused.
+
 ### Fixed
 
 - **Google Analytics page views on client-side navigation.** GA's own
