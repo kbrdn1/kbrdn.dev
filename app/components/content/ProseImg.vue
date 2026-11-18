@@ -25,7 +25,7 @@ const lightbox = useLightbox()
     type="button"
     class="group/zoom relative block w-full cursor-zoom-in overflow-hidden rounded-[1rem] bg-(--placeholder) ring-1 ring-(--card-border)"
     :aria-label="t('lightbox.open', { name: alt })"
-    @click="lightbox.open(src, alt)"
+    @click="lightbox.open(src, alt, $event.currentTarget)"
   >
     <img
       v-if="src.toLowerCase().endsWith('.gif')"

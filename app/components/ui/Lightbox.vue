@@ -9,7 +9,7 @@
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
-const { picture, close } = useLightbox()
+const { picture, close, takeOpener } = useLightbox()
 const dialog = ref<HTMLDialogElement>()
 const route = useRoute()
 
@@ -17,7 +17,8 @@ const route = useRoute()
 const shown = ref<{ src: string; alt: string }>()
 const size = ref<string>()
 const failed = ref(false)
-// What had the focus before: it gets it back on close (showModal's own restoring is recent)
+// What opened it gets the focus back on close (showModal's own restoring is recent): the
+// button clicked, else what had the focus
 let opener: HTMLElement | null = null
 
 watch(
@@ -31,7 +32,8 @@ watch(
         failed.value = false
       }
       shown.value = next
-      opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      const focused = document.activeElement
+      opener = takeOpener() ?? (focused instanceof HTMLElement ? focused : null)
       dialog.value?.showModal()
     } else if (!next && dialog.value?.open) dialog.value.close()
   },
