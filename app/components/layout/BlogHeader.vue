@@ -23,6 +23,10 @@ function handleClickOutside(e: MouseEvent) {
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
     showBrandMenu.value = false
+    // Its links turn inert as it folds: the focus goes back to its button, not to the body
+    if (isMobileMenuOpen.value && document.activeElement?.closest('#blog-mobile-nav')) {
+      menuButton.value?.focus()
+    }
     isMobileMenuOpen.value = false
   }
 }
@@ -41,6 +45,7 @@ onUnmounted(() => {
 const { links: navLinks, isActive } = useSiteNav()
 
 const isMobileMenuOpen = ref(false)
+const menuButton = ref<HTMLButtonElement>()
 </script>
 
 <template>
@@ -197,6 +202,7 @@ const isMobileMenuOpen = ref(false)
           <button
             type="button"
             class="icon-btn md:hidden"
+            ref="menuButton"
             :aria-expanded="isMobileMenuOpen"
             aria-controls="blog-mobile-nav"
             :aria-label="isMobileMenuOpen ? t('nav.closeMenu') : t('nav.openMenu')"
