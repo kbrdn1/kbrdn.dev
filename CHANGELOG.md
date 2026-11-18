@@ -43,6 +43,14 @@ migrates `[Unreleased]` into that file and empties this one, see
   instead of 1.6 to 3.7; on the page, hovering it with the circle shape costs
   about half the main-thread and GPU time it did. A browser without WebGL2
   (hardware acceleration turned off) still draws them the old way.
+- **`ssh-keyscan`'s errors in the deploy logs**
+  ([#42](https://github.com/kbrdn1/kbrdn.dev/issues/42)). The `Setup ssh`
+  step of `deploy.yml` and `release.yml` threw its stderr away, so the v1.0.1
+  release failed on five "sans reponse" with nothing else to go on. Its stderr
+  now reaches the log, the host and its resolved addresses masked as `***`: a
+  DNS error or a connection the server closes shows up there. A refused
+  connection or a timeout still prints nothing, so an attempt with no
+  `ssh-keyscan` line before its "sans reponse" means one of those two.
 
 ## Past releases
 
