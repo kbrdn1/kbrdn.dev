@@ -140,8 +140,12 @@
   background: color-mix(in srgb, var(--color-primary-500) 42%, transparent);
 }
 
-/* The banner's title, an .eyebrow in --label, over the band's .67 dots: 300 in dark, as
-   .dither-band does (components.css) */
+/* The banner's title, an .eyebrow in --label, over the band's .67 dots: 600 in light, 300 in
+   dark, as .dither-band does (components.css) */
+:root #cc-main :is(.cm__texts, .pm__header) {
+  --label: var(--color-neutral-600);
+}
+
 :root:is(.dark, .blur) #cc-main :is(.cm__texts, .pm__header) {
   --label: var(--color-neutral-300);
 }

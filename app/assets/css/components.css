@@ -553,8 +553,13 @@
     background: color-mix(in srgb, var(--band, var(--color-primary-500)) 42%, transparent);
   }
 
-  /* The grey of the mono lines one step lighter over the band, in dark: --label (400) falls
-     to 3.5:1 on its .67 dots, 300 holds 4.59:1 on the densest (blue). Light keeps 500 (4.7:1) */
+  /* The grey of the mono lines one step further from the band. Over its densest dots the
+     site's --label falls under 4.5:1: 4.39 in light on a #f5f5f5 panel (500), 3.49 in dark
+     on the blog's blue (400). 600 holds 5.17:1 at worst in light, 300 4.59:1 in dark */
+  .dither-band {
+    --label: var(--color-neutral-600);
+  }
+
   :is(.dark, .blur) .dither-band {
     --label: var(--color-neutral-300);
   }
