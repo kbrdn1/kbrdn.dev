@@ -129,8 +129,11 @@ function onLoad(event: Event) {
                 {{ t('lightbox.openFile') }}
               </a>
             </p>
+            <!-- One element per picture: a reused <img> keeps showing the last one, fully
+                 loaded, while the new address loads -->
             <img
               v-else
+              :key="shown.src"
               :src="shown.src"
               :alt="shown.alt"
               class="lightbox-picture"
