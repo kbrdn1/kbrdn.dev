@@ -1,100 +1,246 @@
 <script setup lang="ts">
 // A picture full size over the page, after a click on an illustration (/experience, an
-// article's pictures). A native modal dialog: Escape closes it and focus stays inside; a
-// click on the backdrop or on the button closes it too.
+// article's pictures), in the card of Kylian's Herdr modals (#167): a 60px head over the
+// dither band, tinted by the context (the blog's blue in an article, the site's orange
+// elsewhere), with a 32px mark, the title and a mono line; the picture in a block; the keys
+// in the foot. A native modal dialog: the page behind is inert and Escape closes it. A close
+// is immediate, focus included; the card then leaves before the veil, in CSS, where the
+// browser can keep a closed dialog drawn (@starting-style, allow-discrete).
 import { useI18n } from '#imports'
 
 const { t } = useI18n()
 const { picture, close } = useLightbox()
 const dialog = ref<HTMLDialogElement>()
+const route = useRoute()
+
+// The last picture shown: it stays drawn while the card leaves
+const shown = ref<{ src: string; alt: string }>()
+const size = ref<string>()
+const failed = ref(false)
+// What had the focus before: it gets it back on close (showModal's own restoring is recent)
+let opener: HTMLElement | null = null
 
 watch(
   picture,
-  (shown) => {
-    if (shown && !dialog.value?.open) dialog.value?.showModal()
-    else if (!shown) dialog.value?.close()
+  (next) => {
+    if (next && !dialog.value?.open) {
+      shown.value = next
+      size.value = undefined
+      failed.value = false
+      opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+      dialog.value?.showModal()
+    } else if (!next && dialog.value?.open) dialog.value.close()
   },
   { flush: 'post' },
 )
 
+// Escape, the button, the veil and a new page all end here
+function onClose() {
+  close()
+  if (opener?.isConnected) opener.focus()
+  opener = null
+}
+
 // Another page: the picture belonged to the one left
-const route = useRoute()
 watch(() => route.fullPath, close)
 
-// Outside the picture: the dialog itself is the backdrop's target
+// Outside the card: the dialog itself is the veil's target
 function onClick(event: MouseEvent) {
   if (event.target === dialog.value) close()
+}
+
+// The blog layout's blue, as its dither background (layouts/blog.vue)
+const band = computed(() =>
+  route.meta.layout === 'blog' ? 'var(--color-sky-400)' : 'var(--color-primary-500)',
+)
+// The file's name and, once loaded, its size: "gwm-tui.png · 1600 × 1000"
+const subtitle = computed(() =>
+  [decodeURIComponent(shown.value?.src.split(/[?#]/)[0]?.split('/').pop() ?? ''), size.value]
+    .filter(Boolean)
+    .join(' · '),
+)
+
+function onLoad(event: Event) {
+  const img = event.target as HTMLImageElement
+  size.value = `${img.naturalWidth} × ${img.naturalHeight}`
 }
 </script>
 
 <template>
-  <dialog ref="dialog" class="lightbox" :aria-label="picture?.alt" @close="close" @click="onClick">
-    <figure v-if="picture" class="panel">
-      <img :src="picture.src" :alt="picture.alt" class="lightbox-picture rounded-[1rem]" />
-      <figcaption class="flex items-center justify-between gap-3 py-1.5 pr-1.5 pl-3">
-        <span class="eyebrow truncate">{{ picture.alt }}</span>
-        <button
-          type="button"
-          class="icon-btn shrink-0"
-          :aria-label="t('lightbox.close')"
-          @click="close"
+  <!-- Focus on the dialog itself first: its name is read out, and Tab reaches the button -->
+  <dialog
+    ref="dialog"
+    class="lightbox"
+    aria-labelledby="lightbox-title"
+    autofocus
+    :style="{ '--band': band }"
+    @close="onClose"
+    @click="onClick"
+  >
+    <div v-if="shown" class="lightbox-card panel">
+      <div class="panel-card overflow-hidden">
+        <header class="dither-band flex h-15 items-center gap-3 pr-2 pl-3.5">
+          <span class="lightbox-mark" aria-hidden="true">
+            <UIcon name="i-lucide-image" class="size-4" />
+          </span>
+          <div class="min-w-0 flex-1">
+            <h2
+              id="lightbox-title"
+              class="truncate text-sm font-semibold text-(--ui-text-highlighted)"
+            >
+              {{ shown.alt || t('lightbox.untitled') }}
+            </h2>
+            <p class="truncate font-mono text-[10.5px] text-(--label)">{{ subtitle }}</p>
+          </div>
+          <!-- In the dialog: a tooltip in the body would sit under the top layer -->
+          <UTooltip :text="t('lightbox.close')" :kbds="['escape']" :portal="dialog ?? false">
+            <button
+              type="button"
+              class="icon-btn shrink-0"
+              :aria-label="t('lightbox.close')"
+              @click="close"
+            >
+              <UIcon name="i-heroicons-x-mark-20-solid" class="size-4" aria-hidden="true" />
+            </button>
+          </UTooltip>
+        </header>
+
+        <div class="lightbox-body border-t border-dashed p-2">
+          <figure
+            class="overflow-hidden rounded-[0.5rem] bg-(--placeholder) ring-1 ring-(--card-border)"
+          >
+            <p
+              v-if="failed"
+              class="flex min-h-40 flex-col items-center justify-center gap-2 p-6 text-center text-sm text-(--label)"
+              role="alert"
+            >
+              <UIcon name="i-lucide-image-off" class="size-5" aria-hidden="true" />
+              {{ t('lightbox.error') }}
+              <a
+                :href="shown.src"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline underline-offset-4 hover:text-(--accent-text)"
+              >
+                {{ t('lightbox.openFile') }}
+              </a>
+            </p>
+            <img
+              v-else
+              :src="shown.src"
+              :alt="shown.alt"
+              class="lightbox-picture"
+              @load="onLoad"
+              @error="failed = true"
+            />
+          </figure>
+        </div>
+
+        <footer
+          class="flex items-center gap-1.5 border-t border-dashed border-(--card-border) px-3.5 py-2.5 text-xs text-(--label)"
         >
-          <UIcon name="i-heroicons-x-mark-20-solid" class="size-4" aria-hidden="true" />
-        </button>
-      </figcaption>
-    </figure>
+          <UKbd value="escape" />
+          {{ t('lightbox.close') }}
+        </footer>
+      </div>
+    </div>
   </dialog>
 </template>
 
 <style scoped>
+/* Fixed in its own right, not only while :modal: a closing dialog leaves the top layer, and
+   where `overlay` cannot keep it there, it stays put for the card's way out */
 .lightbox {
-  max-width: min(92vw, 80rem);
-  max-height: 94vh;
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  max-width: min(calc(100vw - 2rem), 80rem);
+  max-height: calc(100dvh - 2rem);
   margin: auto;
   padding: 0;
   overflow: visible;
   border: 0;
+  outline: none;
   background: transparent;
+  transition:
+    display 0.18s allow-discrete,
+    overlay 0.18s allow-discrete;
 }
 
+/* The veil: fades in with the card, leaves after it */
 .lightbox::backdrop {
+  background: rgb(0 0 0 / 0);
+  backdrop-filter: blur(0);
+  transition:
+    background-color 0.12s ease-in 0.06s,
+    backdrop-filter 0.12s ease-in 0.06s,
+    display 0.18s allow-discrete,
+    overlay 0.18s allow-discrete;
+}
+
+.lightbox[open]::backdrop {
   background: rgb(0 0 0 / 0.72);
   backdrop-filter: blur(6px);
+  transition-delay: 0s;
+  transition-duration: 0.18s;
+  transition-timing-function: var(--ease-out-quint);
 }
 
+/* The card: rises 6px into place, sinks back on the way out. The panel's own (slower)
+   transitions are replaced */
+.lightbox-card {
+  min-width: min(22rem, calc(100vw - 2rem));
+  opacity: 0;
+  translate: 0 6px;
+  transition:
+    opacity 0.12s ease-in,
+    translate 0.12s ease-in;
+}
+
+.lightbox[open] .lightbox-card {
+  opacity: 1;
+  translate: 0 0;
+  transition-duration: 0.18s;
+  transition-timing-function: var(--ease-out-quint);
+}
+
+@starting-style {
+  .lightbox[open]::backdrop {
+    background: rgb(0 0 0 / 0);
+    backdrop-filter: blur(0);
+  }
+
+  .lightbox[open] .lightbox-card {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+/* Herdr's mark: the icon on a soft square, edged with the band's colour */
+.lightbox-mark {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid color-mix(in srgb, var(--band) 30%, transparent);
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+  color: var(--band);
+}
+
+/* The rule under the head, in the band's colour */
+.lightbox-body {
+  border-top-color: color-mix(in srgb, var(--band) 30%, transparent);
+}
+
+/* As large as the window allows, below the head and the foot */
 .lightbox-picture {
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: 82vh;
-}
-
-.lightbox[open] {
-  animation: lightbox-in 0.4s var(--ease-out-quint);
-}
-
-.lightbox[open]::backdrop {
-  animation: lightbox-fade 0.4s ease;
-}
-
-@keyframes lightbox-in {
-  from {
-    opacity: 0;
-    scale: 0.94;
-    filter: blur(6px);
-  }
-}
-
-@keyframes lightbox-fade {
-  from {
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lightbox[open],
-  .lightbox[open]::backdrop {
-    animation: none;
-  }
+  max-height: calc(100dvh - 12rem);
+  margin-inline: auto;
 }
 </style>
