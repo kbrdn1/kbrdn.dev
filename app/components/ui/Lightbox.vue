@@ -172,8 +172,8 @@ function onError(event: Event) {
 </template>
 
 <style scoped>
-/* Fixed in its own right, not only while :modal: a closing dialog leaves the top layer, and
-   where `overlay` cannot keep it there, it stays put for the card's way out */
+/* Fixed in its own right, not only while :modal: a closing dialog no longer matches :modal,
+   and stays drawn for the card's way out (see @supports below) */
 .lightbox {
   position: fixed;
   inset: 0;
@@ -187,9 +187,6 @@ function onError(event: Event) {
   /* The card's corners: focused first, the dialog draws the site's focus ring around it */
   border-radius: 1.25rem;
   background: transparent;
-  transition:
-    display 0.18s allow-discrete,
-    overlay 0.18s allow-discrete;
 }
 
 /* The veil: fades in with the card, leaves after it */
@@ -198,9 +195,25 @@ function onError(event: Event) {
   backdrop-filter: blur(0);
   transition:
     background-color 0.12s ease-in 0.06s,
-    backdrop-filter 0.12s ease-in 0.06s,
-    display 0.18s allow-discrete,
-    overlay 0.18s allow-discrete;
+    backdrop-filter 0.12s ease-in 0.06s;
+}
+
+/* Drawn for the way out only where `overlay` keeps a closed dialog in the top layer: elsewhere
+   (Firefox, WebKit) it leaves it at once, the veil gone before the card. There it closes at once */
+@supports (overlay: auto) {
+  .lightbox {
+    transition:
+      display 0.18s allow-discrete,
+      overlay 0.18s allow-discrete;
+  }
+
+  .lightbox::backdrop {
+    transition:
+      background-color 0.12s ease-in 0.06s,
+      backdrop-filter 0.12s ease-in 0.06s,
+      display 0.18s allow-discrete,
+      overlay 0.18s allow-discrete;
+  }
 }
 
 .lightbox[open]::backdrop {
