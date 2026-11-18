@@ -35,6 +35,14 @@ function handleScrollTo(id: string) {
   emit('scroll-to', id)
   open.value = false
 }
+
+// Escape folds it, and the focus, on a step turned inert, goes back to its button
+const toggle = ref<HTMLButtonElement>()
+function onEscape() {
+  if (!open.value) return
+  open.value = false
+  toggle.value?.focus()
+}
 </script>
 
 <template>
@@ -44,6 +52,7 @@ function handleScrollTo(id: string) {
       v-if="items.length > 0"
       class="panel fixed right-17 bottom-3 left-3 z-50 lg:hidden"
       :aria-label="t('blog.toc')"
+      @keydown.esc="onEscape"
     >
       <UiExpand :open="open">
         <BlogReaderBar :reader="reader" class="px-1.5 pt-1 pb-2.5" />
@@ -64,6 +73,7 @@ function handleScrollTo(id: string) {
       <div class="flex items-center gap-2 pl-2">
         <BlogReaderPlay :reader="reader" />
         <button
+          ref="toggle"
           type="button"
           class="flex min-h-11 min-w-0 flex-1 items-center gap-2.5 py-1.5 pr-2.5 text-left"
           :aria-expanded="open"

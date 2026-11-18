@@ -24,7 +24,14 @@ function handleClickOutside(e: MouseEvent) {
 
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
+    // Its link goes as it closes: the focus goes back to the menu's button, not to the body
+    const brand = document.activeElement?.closest('.group\\/brand, .group\\/brand-mobile')
+    if (showBrandMenu.value && brand) brand.querySelector('button')?.focus()
     showBrandMenu.value = false
+    // Its links turn inert as it folds: the focus goes back to its button, not to the body
+    if (isMobileMenuOpen.value && document.activeElement?.closest('#mobile-nav')) {
+      menuButton.value?.focus()
+    }
     isMobileMenuOpen.value = false
   }
 }
@@ -40,6 +47,7 @@ onUnmounted(() => {
 })
 
 const isMobileMenuOpen = ref(false)
+const menuButton = ref<HTMLButtonElement>()
 </script>
 
 <template>
@@ -84,12 +92,10 @@ const isMobileMenuOpen = ref(false)
 
           <!-- Dropdown -->
           <Transition
-            enter-active-class="transition-all duration-150 ease-out"
-            enter-from-class="opacity-0 scale-95 -translate-y-1"
-            enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition-all duration-100 ease-in"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
+            enter-active-class="transition-[opacity,translate] duration-180 ease-out-quint"
+            enter-from-class="opacity-0 translate-y-1.5"
+            leave-active-class="transition-[opacity,translate] duration-120 ease-in"
+            leave-to-class="opacity-0 translate-y-1.5"
           >
             <div v-if="showBrandMenu" class="absolute left-0 top-full z-50 min-w-full w-max pt-2.5">
               <div
@@ -166,12 +172,10 @@ const isMobileMenuOpen = ref(false)
             ><span class="text-primary-500">kbrdn1</span>
           </button>
           <Transition
-            enter-active-class="transition-all duration-150 ease-out"
-            enter-from-class="opacity-0 scale-95 -translate-y-1"
-            enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition-all duration-100 ease-in"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
+            enter-active-class="transition-[opacity,translate] duration-180 ease-out-quint"
+            enter-from-class="opacity-0 translate-y-1.5"
+            leave-active-class="transition-[opacity,translate] duration-120 ease-in"
+            leave-to-class="opacity-0 translate-y-1.5"
           >
             <div
               v-if="showBrandMenu"
@@ -200,6 +204,7 @@ const isMobileMenuOpen = ref(false)
           <button
             type="button"
             class="icon-btn md:hidden"
+            ref="menuButton"
             :aria-expanded="isMobileMenuOpen"
             aria-controls="mobile-nav"
             :aria-label="
