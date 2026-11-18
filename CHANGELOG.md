@@ -52,7 +52,8 @@ migrates `[Unreleased]` into that file and empties this one, see
   secret, read on the VPS itself, and the deploy's `ssh` checks it strictly:
   one SSH connection per deploy instead of up to six. A missing or malformed
   secret, a changed host key or an unreachable VPS each fail with their reason
-  in the log, the host and its resolved addresses masked as `***`.
+  in the log, the host, its resolved addresses and its key's fingerprint
+  masked as `***`.
 
 ## Past releases
 
