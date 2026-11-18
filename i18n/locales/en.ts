@@ -218,8 +218,8 @@ export default {
     },
     tabsLabel: 'Contribution view',
     viewProfile: 'View GitHub profile',
-    // A day's readout: the date, then "contributions 3"
-    readout: 'contributions',
+    // A day's tooltip: "3 contributions · Wed, Nov 18, 2026" (0, 1, more)
+    readout: 'contributions | contribution | contributions',
     // For screen readers: a calendar, how to read it day by day, and the sparkline's months
     calendarLabel: '{count} contributions, {period}. Arrow keys step through the days.',
     trendLabel: 'Contributions per month: {values}',

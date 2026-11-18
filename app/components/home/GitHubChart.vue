@@ -64,7 +64,11 @@ function heatmap({
         year: 'numeric',
       }),
       rows: [
-        ['accent', t('github.readout'), (values[row]![column] ?? 0).toLocaleString(locale.value)],
+        [
+          'accent',
+          t('github.readout', values[row]![column] ?? 0),
+          (values[row]![column] ?? 0).toLocaleString(locale.value),
+        ],
       ],
     }),
   }
