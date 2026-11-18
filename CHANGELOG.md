@@ -31,6 +31,11 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ### Fixed
 
+- **The GitHub calendar's dates west of UTC**
+  ([#165](https://github.com/kbrdn1/kbrdn.dev/issues/165)). A day's tooltip
+  read its date in the reader's timezone, a day early west of UTC, and the
+  monthly view filed each month's first day under the month before. Both now
+  read the date as GitHub gives it.
 - **Google Analytics page views on client-side navigation.** GA's own
   history-based page view fired as the address changed, before Nuxt had
   rendered the next page: up to 7 s before on a first visit to `/blog`, which
