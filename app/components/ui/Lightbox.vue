@@ -59,12 +59,18 @@ function onClick(event: MouseEvent) {
 const band = computed(() =>
   route.meta.layout === 'blog' ? 'var(--color-sky-400)' : 'var(--color-primary-500)',
 )
-// The file's name and, once loaded, its size: "gwm-tui.png · 1600 × 1000"
-const subtitle = computed(() =>
-  [decodeURIComponent(shown.value?.src.split(/[?#]/)[0]?.split('/').pop() ?? ''), size.value]
-    .filter(Boolean)
-    .join(' · '),
-)
+// The file's name and, once loaded, its size: "gwm-tui.png · 1600 × 1000". A stray "%" in a
+// name would make decodeURIComponent throw: the name stays as written then
+const subtitle = computed(() => {
+  const name = shown.value?.src.split(/[?#]/)[0]?.split('/').pop() ?? ''
+  let decoded: string
+  try {
+    decoded = decodeURIComponent(name)
+  } catch {
+    decoded = name
+  }
+  return [decoded, size.value].filter(Boolean).join(' · ')
+})
 
 function onLoad(event: Event) {
   const img = event.target as HTMLImageElement
@@ -85,7 +91,8 @@ function onLoad(event: Event) {
   >
     <div v-if="shown" class="lightbox-card panel">
       <div class="panel-card overflow-hidden">
-        <header class="dither-band flex h-15 items-center gap-3 pr-2 pl-3.5">
+        <!-- Plain divs: a header or footer outside a sectioning element is a page's banner -->
+        <div class="dither-band flex h-15 items-center gap-3 pr-2 pl-3.5">
           <span class="lightbox-mark" aria-hidden="true">
             <UIcon name="i-lucide-image" class="size-4" />
           </span>
@@ -109,7 +116,7 @@ function onLoad(event: Event) {
               <UIcon name="i-heroicons-x-mark-20-solid" class="size-4" aria-hidden="true" />
             </button>
           </UTooltip>
-        </header>
+        </div>
 
         <div class="lightbox-body border-t border-dashed p-2">
           <figure
@@ -145,12 +152,12 @@ function onLoad(event: Event) {
           </figure>
         </div>
 
-        <footer
+        <div
           class="flex items-center gap-1.5 border-t border-dashed border-(--card-border) px-3.5 py-2.5 text-xs text-(--label)"
         >
           <UKbd value="escape" />
           {{ t('lightbox.close') }}
-        </footer>
+        </div>
       </div>
     </div>
   </dialog>
