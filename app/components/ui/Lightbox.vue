@@ -184,9 +184,14 @@ function onError(event: Event) {
   padding: 0;
   overflow: visible;
   border: 0;
-  /* The card's corners: focused first, the dialog draws the site's focus ring around it */
+  /* The card's corners: focused first, the dialog draws the site's focus ring along them */
   border-radius: 1.25rem;
   background: transparent;
+}
+
+/* Inside, over the card's edge: outside it would sit on the veil, at 1.7:1 in light */
+.lightbox:focus-visible {
+  outline-offset: -2px;
 }
 
 /* The veil: fades in with the card, leaves after it */
