@@ -86,12 +86,10 @@ const isMobileMenuOpen = ref(false)
           </button>
 
           <Transition
-            enter-active-class="transition-all duration-150 ease-out"
-            enter-from-class="opacity-0 scale-95 -translate-y-1"
-            enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition-all duration-100 ease-in"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
+            enter-active-class="transition-[opacity,translate] duration-180 ease-out-quint"
+            enter-from-class="opacity-0 translate-y-1.5"
+            leave-active-class="transition-[opacity,translate] duration-120 ease-in"
+            leave-to-class="opacity-0 translate-y-1.5"
           >
             <div v-if="showBrandMenu" class="absolute left-0 top-full z-50 min-w-full w-max pt-2.5">
               <div
@@ -168,12 +166,10 @@ const isMobileMenuOpen = ref(false)
             ><span class="text-primary-500">kbrdn1</span>
           </button>
           <Transition
-            enter-active-class="transition-all duration-150 ease-out"
-            enter-from-class="opacity-0 scale-95 -translate-y-1"
-            enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition-all duration-100 ease-in"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
+            enter-active-class="transition-[opacity,translate] duration-180 ease-out-quint"
+            enter-from-class="opacity-0 translate-y-1.5"
+            leave-active-class="transition-[opacity,translate] duration-120 ease-in"
+            leave-to-class="opacity-0 translate-y-1.5"
           >
             <div
               v-if="showBrandMenu"
