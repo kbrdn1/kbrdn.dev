@@ -4,6 +4,7 @@
 // gives it a place in the page, the theme's colours, the site's pause button, and the keyboard
 // on a heatmap. The core is plain JS: imported for its side effect, it sits on globalThis.
 import '~/utils/dither-charts.js'
+import { TOOLTIP_CLASS } from '~/utils/tooltip'
 
 export type DitherColor =
   | 'ink'
@@ -116,15 +117,51 @@ const props = defineProps<{
   label?: string
 }>()
 
+type Heatmap = Extract<DitherChartSpec, { kind: 'heatmap' }>
+type Readout = ReturnType<NonNullable<Heatmap['readout']>>
+
 const host = ref<HTMLElement>()
 const reduced = useReducedMotion()
 // 3 on the server, the screen's own once mounted
 const cell = ref(3)
-// The day the keyboard is on, said aloud
+// A heatmap's cell under the pointer, the keyboard or a tap: the site's tooltip shows it (its
+// left and top, in the viewport), the keyboard's is also said aloud
+const tip = ref<Readout & { left: number; top: number }>()
 const announced = ref('')
 let visual: Visual | undefined
+let away: ((event: PointerEvent) => void) | undefined
 
-const options = () => ({ ...props.chart, aria: props.label })
+const options = () => ({
+  ...props.chart,
+  aria: props.label,
+  // The core reads a click (a tap) only with an onSelect: then it lights the cell as a hover would
+  ...(props.chart.kind === 'heatmap' && { onHover: hover, onSelect: () => {} }),
+})
+
+// Where a heatmap's cell sits in the viewport: its centre, its top
+function place(row: number, column: number) {
+  const spec = props.chart as Heatmap
+  const rect = visual!.canvas.getBoundingClientRect()
+  const centre = (SQUARE / 2) * cell.value
+  const top = rect.top + (spec.columns?.length ? NAMES : 0) + row * PITCH * cell.value
+  return { left: rect.left + column * PITCH * cell.value + centre, top, centre: top + centre }
+}
+
+function read(row: number, column: number): Readout {
+  const spec = props.chart as Heatmap
+  return (
+    spec.readout?.(row, column) ?? {
+      title: '',
+      rows: [[null, '', String(spec.values[row]?.[column] ?? '')]],
+    }
+  )
+}
+
+// The core's hover, a cell or none (null)
+function hover(row: number | null, column?: number) {
+  tip.value =
+    row == null || column == null ? undefined : { ...read(row, column), ...place(row, column) }
+}
 
 // Room for the drawing before it is drawn, server side too, so nothing moves when it is. A
 // heatmap is exactly as wide as its columns: wider, a cameo would count the rest as graph;
@@ -146,8 +183,8 @@ const box = computed(() => {
 })
 
 // A heatmap from the keyboard: the arrows walk the cells, Home and End go to the first and last.
-// The core's readout follows (a pointer event at the cell's centre, as a mouse shows it), and
-// the cell is said aloud.
+// The cell is lit and read as under a mouse (a pointer event at its centre), brought into view
+// when its parent scrolls sideways, and said aloud. A tap elsewhere puts the tooltip away.
 function keyboard(v: Visual) {
   const canvas = v.canvas
   let at: [number, number] | undefined
@@ -160,6 +197,10 @@ function keyboard(v: Visual) {
     announced.value = ''
   }
   canvas.addEventListener('blur', leave)
+  away = (event) => {
+    if (event.target !== canvas && (tip.value || at)) leave()
+  }
+  document.addEventListener('pointerdown', away)
   canvas.addEventListener('keydown', (event) => {
     const spec = props.chart
     if (spec.kind !== 'heatmap') return
@@ -189,18 +230,21 @@ function keyboard(v: Visual) {
 
     at = next!
     const [row, column] = at
-    const rect = canvas.getBoundingClientRect()
-    const centre = (SQUARE / 2) * cell.value
-    canvas.dispatchEvent(
-      new PointerEvent('pointermove', {
-        clientX: rect.left + column * PITCH * cell.value + centre,
-        clientY: rect.top + (spec.columns?.length ? NAMES : 0) + row * PITCH * cell.value + centre,
-      }),
-    )
-    const readout = spec.readout?.(row, column)
-    announced.value = readout
-      ? [...readout.rows.map(([, name, value]) => `${value} ${name}`), readout.title].join(', ')
-      : String(values[row]![column])
+    const pitch = PITCH * cell.value
+    for (let el = host.value?.parentElement; el; el = el.parentElement) {
+      if (!/auto|scroll/.test(getComputedStyle(el).overflowX)) continue
+      const { left, right } = el.getBoundingClientRect()
+      const x = place(row, column).left
+      if (x < left + pitch) el.scrollLeft -= left + pitch - x
+      else if (x > right - pitch) el.scrollLeft += x - right + pitch
+      break
+    }
+    const { left, centre } = place(row, column)
+    canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: left, clientY: centre }))
+    const { title, rows } = read(row, column)
+    announced.value = [...rows.map(([, name, value]) => `${value} ${name}`), title]
+      .filter(Boolean)
+      .join(', ')
   })
 }
 
@@ -231,11 +275,54 @@ watch(reduced, (value) => {
   visual.redraw()
 })
 
-onBeforeUnmount(() => visual?.destroy())
+onBeforeUnmount(() => {
+  visual?.destroy()
+  if (away) document.removeEventListener('pointerdown', away)
+})
 </script>
 
 <template>
-  <div ref="host" :style="box" :aria-hidden="label ? undefined : 'true'">
-    <span v-if="chart.kind === 'heatmap'" class="sr-only" aria-live="polite">{{ announced }}</span>
+  <div
+    ref="host"
+    :class="{ heatmap: chart.kind === 'heatmap' }"
+    :style="box"
+    :aria-hidden="label ? undefined : 'true'"
+  >
+    <template v-if="chart.kind === 'heatmap'">
+      <span class="sr-only" aria-live="polite">{{ announced }}</span>
+      <!-- The site's tooltip over the cell, outside any scroller that would clip it -->
+      <Teleport to="body">
+        <Transition
+          enter-active-class="transition-opacity duration-150"
+          enter-from-class="opacity-0"
+          leave-active-class="transition-opacity duration-100"
+          leave-to-class="opacity-0"
+        >
+          <div
+            v-if="tip"
+            :class="
+              cn(
+                TOOLTIP_CLASS,
+                'pointer-events-none fixed z-50 flex items-center gap-1.5 whitespace-nowrap',
+                '-translate-x-1/2 -translate-y-full transform',
+              )
+            "
+            :style="{ left: `${tip.left}px`, top: `${tip.top - 8}px` }"
+          >
+            <template v-for="([, name, value], i) in tip.rows" :key="i">
+              <strong class="text-(--accent-text)">{{ value }}</strong> {{ name }}
+            </template>
+            <span v-if="tip.title">· {{ tip.title }}</span>
+          </div>
+        </Transition>
+      </Teleport>
+    </template>
   </div>
 </template>
+
+<style scoped>
+/* A heatmap reads in the site's tooltip: the core's own card stays hidden */
+.heatmap :deep(.dc-readout) {
+  display: none;
+}
+</style>
