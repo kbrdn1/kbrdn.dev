@@ -14,6 +14,18 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ## [Unreleased]
 
+### Added
+
+- **An app icon, and the favicon on a dithered tile**
+  ([#169](https://github.com/kbrdn1/kbrdn.dev/issues/169)). Adding the site to
+  an iOS home screen used a screenshot of the page: `apple-touch-icon.png`
+  (180 px, opaque and square to the edge, iOS rounds it itself) now stands in.
+  It and the favicon put the K on the tile of the project logos in Herdr, a
+  ramp from `#505050` at the top left to `#262626` at the bottom right in four
+  tones dithered by a Bayer matrix. The favicon keeps the rounded corners and
+  no longer follows the system's colour scheme. The pages keep the bare K; the
+  repository banner takes the tile.
+
 ### Fixed
 
 - **Google Analytics page views on client-side navigation.** GA's own
