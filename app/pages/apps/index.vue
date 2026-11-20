@@ -20,7 +20,6 @@ useSiteOgImage('Default', {
   scene: 'gwm',
 })
 
-const RAW = 'https://raw.githubusercontent.com/kbrdn1'
 const APPS = [
   {
     key: 'gwm',
@@ -30,10 +29,9 @@ const APPS = [
     license: 'MIT OR Apache-2.0',
     status: 'released',
     site: 'https://gwm.kbrdn.dev',
-    logo: {
-      dark: `${RAW}/gwm-cli/HEAD/docs/_assets/logo.svg`,
-      light: `${RAW}/gwm-cli/HEAD/docs/_assets/logo-light.svg`,
-    },
+    // gwm-cli's logo on its dithered tile, the site's copy (public/images/tiles): gwm-cli's
+    // default branch, main, lags dev, where the tile is
+    logo: { dark: '/images/tiles/gwm-cli.svg', light: '/images/tiles/gwm-cli-light.svg' },
     icon: 'i-simple-icons-rust',
     features: 4,
     // docs/2.tui/_assets/hero.png and docs/_capture/demo.gif of gwm-cli, as webp and mp4
@@ -209,24 +207,26 @@ const STATUS_CLASS: Record<string, string> = {
         <div class="grid gap-8 md:grid-cols-12">
           <!-- min-w-0 on every grid child: a grid item defaults to min-width: auto -->
           <div class="min-w-0 md:col-span-5">
-            <span class="icon-box size-12">
-              <template v-if="'logo' in app">
-                <img
-                  :src="app.logo.light"
-                  alt=""
-                  width="28"
-                  height="28"
-                  class="size-7 dark:hidden"
-                />
-                <img
-                  :src="app.logo.dark"
-                  alt=""
-                  width="28"
-                  height="28"
-                  class="hidden size-7 dark:block"
-                />
-              </template>
-              <UIcon v-else :name="app.icon" class="size-6 text-neutral-500" aria-hidden="true" />
+            <!-- A logo is its own tile, in the box's place and size; the others, their
+                 language in the box -->
+            <template v-if="'logo' in app">
+              <img
+                :src="app.logo.light"
+                alt=""
+                width="48"
+                height="48"
+                class="block size-12 dark:hidden"
+              />
+              <img
+                :src="app.logo.dark"
+                alt=""
+                width="48"
+                height="48"
+                class="hidden size-12 dark:block"
+              />
+            </template>
+            <span v-else class="icon-box size-12">
+              <UIcon :name="app.icon" class="size-6 text-neutral-500" aria-hidden="true" />
             </span>
             <p class="mt-5 text-lg text-neutral-900 dark:text-neutral-100">
               {{ t(`appsPage.apps.${app.key}.tagline`) }}
