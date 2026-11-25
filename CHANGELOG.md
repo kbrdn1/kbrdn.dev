@@ -96,7 +96,9 @@ migrates `[Unreleased]` into that file and empties this one, see
   the menu's button. The article's mobile contents close on Escape too,
   focusing their button. Closing the picture viewer gives the focus back to the
   picture's button, in Safari too (a click does not focus a button there), and
-  the viewer is named by its visible title, never by an empty alt.
+  the viewer is named by its visible title, never by an empty alt. For the same
+  reason, closing the cookie preferences opened with the mouse in Safari left
+  the focus on the body; it goes back to the footer's "Cookies" button.
 
 ## Past releases
 
