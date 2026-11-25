@@ -111,10 +111,14 @@ function png(file: string) {
   return { data, w: data.readUInt32BE(16), h: data.readUInt32BE(20) }
 }
 
+/** Ce qu'un fichier SVG dessine, sans sa balise <svg> */
+const innerOf = (svg: string) =>
+  svg.slice(svg.indexOf('>', svg.indexOf('<svg')) + 1, svg.lastIndexOf('</svg>'))
+
 /** Un logo SVG de scripts/banners/, ses couleurs remplacées en sombre (`dark` : [de, vers]) */
 function svgFile(name: string, dark: [string, string][] = []) {
   const svg = readFileSync(`scripts/banners/${name}.svg`, 'utf8')
-  const inner = svg.slice(svg.indexOf('>', svg.indexOf('<svg')) + 1, svg.lastIndexOf('</svg>'))
+  const inner = innerOf(svg)
   return {
     box: svg.match(/viewBox="([^"]+)"/)![1]!,
     body: (mode: Mode) =>
@@ -154,19 +158,14 @@ function tile(file: string) {
 
 /** Un logo : son SVG intérieur dans `box`, selon le mode quand ses couleurs en dépendent */
 const LOGOS: Record<string, { box: string; body: (mode: Mode) => string }> = {
-  // docs/_assets/logo{,-light}.svg de gwm-cli : le tronc, ses branches, trois worktrees
+  // Le logo de gwm sur sa tuile tramée, celle du site (public/images/tiles/gwm-cli{,-light}.svg) :
+  // le tronc, ses branches, trois worktrees
   gwm: {
     box: '0 0 24 24',
-    body: (mode) => {
-      const [trunk, ring, nodes] =
-        mode === 'light'
-          ? ['#1a1a1a', '#f5f5f5', ['#2563eb', '#16a34a', '#c15f3c']]
-          : ['#e0e0e0', '#1a1a1a', ['#7ab8ff', '#86e89a', '#d4825d']]
-      return `<path d="M4.5 4.75 H7 V9.75 H15 V12.25 H7 V17.25 H15 V19.75 H4.5 Z" fill="${trunk}"/>
-        <rect x="3" y="2" width="5.5" height="5.5" fill="${nodes[0]}" stroke="${ring}"/>
-        <rect x="14.5" y="8.25" width="5.5" height="5.5" fill="${nodes[1]}" stroke="${ring}"/>
-        <rect x="14.5" y="15.75" width="5.5" height="5.5" fill="${nodes[2]}" stroke="${ring}"/>`
-    },
+    body: (mode) =>
+      innerOf(
+        readFileSync(`public/images/tiles/gwm-cli${mode === 'light' ? '-light' : ''}.svg`, 'utf8'),
+      ),
   },
   // L'étoile de Starlight (withastro/starlight, docs/public/favicon.svg, MIT)
   starlight: {
