@@ -218,8 +218,11 @@ export default {
     },
     tabsLabel: 'Vue des contributions',
     viewProfile: 'Voir le profil GitHub',
-    // The tooltip: "3 le lun. 12 oct. 2026"
-    on: 'le',
+    // A day's tooltip: "3 contributions · mer. 18 nov. 2026" (0, 1, more)
+    readout: 'contribution | contribution | contributions',
+    // For screen readers: a calendar, how to read it day by day, and the sparkline's months
+    calendarLabel: '{count} contributions, {period}. Les flèches parcourent les jours.',
+    trendLabel: 'Contributions par mois : {values}',
   },
 
   // Theme

@@ -16,6 +16,18 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ### Added
 
+- **Monocode's dither charts**
+  ([#165](https://github.com/kbrdn1/kbrdn.dev/issues/165)). The GitHub
+  calendar (home, `/activity`) is drawn as a dithered heatmap, after
+  Monocode's `/visualize` (MIT): a day's count becomes a share of inked 3px
+  cells through a 4x4 Bayer matrix. Its days can now be read from the keyboard
+  (arrow keys, said aloud) and with a tap, not only under the mouse, and the
+  last twelve months gain a sparkline of their monthly totals. The open
+  source card (`/activity`, `/parcours`) shows each figure's statuses as a
+  dithered ring.
+  `UiDitherChart` draws them with the charts' shared core, a verbatim copy, in
+  the theme's colours (light, dark, blur), and lands them at once when motion
+  is reduced or paused.
 - **An app icon, and the favicon on a dithered tile**
   ([#169](https://github.com/kbrdn1/kbrdn.dev/issues/169)). Adding the site to
   an iOS home screen used a screenshot of the page: `apple-touch-icon.png`
@@ -51,6 +63,11 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ### Fixed
 
+- **The GitHub calendar's dates west of UTC**
+  ([#165](https://github.com/kbrdn1/kbrdn.dev/issues/165)). A day's tooltip
+  read its date in the reader's timezone, a day early west of UTC, and the
+  monthly view filed each month's first day under the month before. Both now
+  read the date as GitHub gives it.
 - **Google Analytics page views on client-side navigation.** GA's own
   history-based page view fired as the address changed, before Nuxt had
   rendered the next page: up to 7 s before on a first visit to `/blog`, which

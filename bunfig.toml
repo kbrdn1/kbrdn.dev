@@ -6,7 +6,7 @@ flavor = "oxfmt"
 printWidth = 100
 singleQuote = true
 semi = false
-ignorePatterns = ["**/*.md", "**/*.mdx", "app/components/OgImage/**"]
+ignorePatterns = ["**/*.md", "**/*.mdx", "app/utils/dither-charts.js", "app/components/OgImage/**"]
 
 [[fmt.overrides]]
 files = ["**/*.css"]

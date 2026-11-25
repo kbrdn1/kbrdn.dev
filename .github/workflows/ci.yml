@@ -70,13 +70,14 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
-      # The checks of the logic no build exercises: the dither field, the hero scenes and their
+      # The checks of the logic no build exercises: the dither field and charts, the hero scenes and their
       # OG colours (kept in step with theme.css), the panels' cameos, the activity feed, the
       # gitfut card the hero's easter egg reads, the article reader's voice and utterances, the
       # release tag routing, and which pushes to main deploy production
       - name: Script checks
         run: |
           bun scripts/dither.test.ts
+          bun scripts/dither-charts.test.ts
           bun scripts/pixel-scenes.test.ts
           bun scripts/cameos.test.ts
           bun scripts/github-activity.test.ts
