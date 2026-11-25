@@ -49,7 +49,10 @@ const currentYear = new Date().getFullYear()
 // The build's version (APP_VERSION, else package.json), as /api/health returns it
 const { appVersion, gaId } = useRuntimeConfig().public
 // The cookie choices, open to change at any time: the banner is only there with analytics on
-async function openCookies() {
+// The library gives the focus back to what had it on open: Safari does not focus a clicked
+// button, so it is focused here, or the focus would go back to the body
+async function openCookies(event: MouseEvent) {
+  if (event.currentTarget instanceof HTMLElement) event.currentTarget.focus()
   const { showPreferences } = await import('vanilla-cookieconsent')
   showPreferences()
 }
