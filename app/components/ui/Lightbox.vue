@@ -23,7 +23,7 @@ let opener: HTMLElement | null = null
 
 watch(
   picture,
-  (next) => {
+  async (next) => {
     if (next && !dialog.value?.open) {
       // The same picture again: its <img> stays and does not load twice, so its size stays too.
       // One that failed is tried again (its <img> was gone)
@@ -34,7 +34,10 @@ watch(
       shown.value = next
       const focused = document.activeElement
       opener = takeOpener() ?? (focused instanceof HTMLElement ? focused : null)
-      dialog.value?.showModal()
+      // The card is drawn first: on the first open the dialog is still empty, and showModal()
+      // would focus the dialog itself instead of the close button
+      await nextTick()
+      if (picture.value === next && !dialog.value?.open) dialog.value?.showModal()
     } else if (!next && dialog.value?.open) dialog.value.close()
   },
   { flush: 'post' },
