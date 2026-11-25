@@ -14,6 +14,27 @@ migrates `[Unreleased]` into that file and empties this one, see
 
 ## [Unreleased]
 
+### Added
+
+- **An app icon, and the favicon on a dithered tile**
+  ([#169](https://github.com/kbrdn1/kbrdn.dev/issues/169)). Adding the site to
+  an iOS home screen used a screenshot of the page: `apple-touch-icon.png`
+  (180 px, opaque and square to the edge, iOS rounds it itself) now stands in.
+  It and the favicon put the K on the tile of the project logos in Herdr, a
+  ramp from `#505050` at the top left to `#262626` at the bottom right in four
+  tones dithered by a Bayer matrix. The favicon keeps the rounded corners and
+  no longer follows the system's colour scheme. The pages keep the bare K; the
+  repository banner takes the tile.
+- **Project logos on their dithered tile**
+  ([#171](https://github.com/kbrdn1/kbrdn.dev/issues/171)). On the home's
+  pinned repositories and on `/apps`, a repository with a logo shows it on its
+  tile, in place of the bordered box and at its size: gwm-cli and the K of
+  kbrdn.dev, dark and light, on the same ramps as the favicon (the site's own
+  copies, `public/images/tiles`: gwm-cli's default branch does not have its
+  tile yet), and dotfiles, newly listed, with its own orange tile. The banner
+  of the gwm article and its Open Graph image, and the poster on the wall of the
+  `/apps` hero, take gwm's tile too.
+
 ### Changed
 
 - **Modals and popups in the look of the Herdr modals**

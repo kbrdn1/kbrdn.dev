@@ -23,15 +23,17 @@ const { data: repos, status } = useAsyncData<PinnedRepo[]>(
   { default: () => [], server: false },
 )
 
-// Logos of the repositories that ship one, served raw from their default branch, with a
-// light-background variant when the logo needs one: a path from `/` is this site's own file.
-// The others show their primary language. This site's logo is its own, never main's: main
-// lags dev, and the favicon follows the system's colour scheme, not the site's.
+// Logos of the repositories that have one, each on its dithered tile, with a light-background
+// variant: a path from `/` is this site's own copy (public/images/tiles), any other is read raw
+// from the repository's default branch. gwm-cli's tile is copied because its default branch,
+// main, lags dev, where the tile is; kbrdn.dev's K is the site's own. The others show their
+// primary language.
 // ponytail: curated list, one line per newly pinned repo with a logo; detect logo files
 // through the repo tree API if the pinned set starts changing often.
 const LOGOS: Record<string, { dark: string; light?: string }> = {
-  'gwm-cli': { dark: 'docs/_assets/logo.svg', light: 'docs/_assets/logo-light.svg' },
-  'kbrdn.dev': { dark: '/images/logo/k-light.svg', light: '/images/logo/k-dark.svg' },
+  'gwm-cli': { dark: '/images/tiles/gwm-cli.svg', light: '/images/tiles/gwm-cli-light.svg' },
+  'kbrdn.dev': { dark: '/images/tiles/kbrdn.dev.svg', light: '/images/tiles/kbrdn.dev-light.svg' },
+  dotfiles: { dark: 'docs/_assets/logo.svg', light: 'docs/_assets/logo-light.svg' },
 }
 
 function logo(repo: PinnedRepo): { dark: string; light: string } | null {
@@ -92,25 +94,26 @@ function logo(repo: PinnedRepo): { dark: string; light: string } | null {
             rel="noopener noreferrer"
             class="flex min-w-0 items-center gap-3 text-[15px] text-neutral-900 dark:text-neutral-100 hover:text-primary-500 transition-colors after:absolute after:inset-0"
           >
-            <span class="icon-box size-8">
-              <template v-if="logo(repo)">
-                <img
-                  :src="logo(repo)!.light"
-                  alt=""
-                  width="20"
-                  height="20"
-                  class="size-5 shrink-0 dark:hidden"
-                />
-                <img
-                  :src="logo(repo)!.dark"
-                  alt=""
-                  width="20"
-                  height="20"
-                  class="hidden size-5 shrink-0 dark:block"
-                />
-              </template>
+            <!-- A logo is its own tile, in the box's place and size; the others, their
+                 language in the box -->
+            <template v-if="logo(repo)">
+              <img
+                :src="logo(repo)!.light"
+                alt=""
+                width="32"
+                height="32"
+                class="size-8 shrink-0 dark:hidden"
+              />
+              <img
+                :src="logo(repo)!.dark"
+                alt=""
+                width="32"
+                height="32"
+                class="hidden size-8 shrink-0 dark:block"
+              />
+            </template>
+            <span v-else class="icon-box size-8">
               <UIcon
-                v-else
                 :name="LANGUAGE_ICONS[repo.language ?? ''] ?? 'i-lucide-book-marked'"
                 class="size-4 shrink-0 text-neutral-500"
                 aria-hidden="true"
