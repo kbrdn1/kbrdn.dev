@@ -28,7 +28,7 @@ html {
    ═══════════════════════════════════════════════════ */
 
 /* Disable all animations and transitions for users who prefer reduced motion. ::backdrop
-   too: a modal's veil (UiLightbox, the cookie preferences) is no element's descendant */
+   too: a native dialog's veil (UiLightbox) is no element's descendant */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
