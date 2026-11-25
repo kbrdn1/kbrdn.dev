@@ -7,26 +7,12 @@
 // usage: bun scripts/dither-charts.test.ts
 import assert from 'node:assert/strict'
 import '../app/utils/dither-charts.js'
+import type { DitherCore } from '../app/utils/dither-charts.js'
 import { calendarGrid } from '../app/utils/contributions'
 
 process.env.TZ = 'America/Los_Angeles' // west of UTC, where a local weekday goes wrong
 
-interface Core {
-  inked(col: number, row: number, tone: number): boolean
-  runs(
-    cols: number,
-    rows: number,
-    ink: (col: number, row: number) => number | null,
-  ): [number, number, number, number, number][]
-  Scale: {
-    nice(
-      values: number[],
-      zero: boolean,
-    ): { min: number; max: number; step: number; ticks(): number[] }
-  }
-  Curve: new (points: [number, number][]) => { at(x: number): number }
-}
-const D = (globalThis as unknown as { DitherCharts: Core }).DitherCharts
+const D = (globalThis as unknown as { DitherCharts: DitherCore }).DitherCharts
 
 // A tone of k/16 inks exactly k cells of a 4x4 tile
 for (let steps = 0; steps <= 16; steps++) {

@@ -4,6 +4,7 @@
 // gives it a place in the page, the theme's colours, the site's pause button, and the keyboard
 // on a heatmap. The core is plain JS: imported for its side effect, it sits on globalThis.
 import '~/utils/dither-charts.js'
+import type { DitherCore, DitherVisual } from '~/utils/dither-charts.js'
 import { TOOLTIP_CLASS } from '~/utils/tooltip'
 
 export type DitherColor =
@@ -81,20 +82,8 @@ const TOKENS: Record<DitherColor | 'surface', string> = {
 /** A token as CSS, for what sits beside a chart in its colours (a legend's dots) */
 export const ditherColor = (color: DitherColor) => `var(--${TOKENS[color]})`
 
-interface Visual {
-  el: HTMLElement
-  canvas: HTMLCanvasElement
-  /** The core's own "entrance over" flag: once set, every paint draws the final state */
-  settled: boolean
-  update(options: object): void
-  redraw(): void
-  destroy(): void
-}
-type Make = (options: object) => Visual
-type Core = Record<'chart' | 'trend' | 'donut' | 'gauge' | 'progress' | 'heatmap', Make> & {
-  configure(options: object): void
-}
-const core = () => (globalThis as unknown as { DitherCharts: Core }).DitherCharts
+type Visual = DitherVisual
+const core = () => (globalThis as unknown as { DitherCharts: DitherCore }).DitherCharts
 let configured = false
 
 // The core's heatmap geometry: squares of 4 cells at a pitch of 5, the column names in 18px
@@ -137,6 +126,27 @@ const options = () => ({
   // The core reads a click (a tap) only with an onSelect: then it lights the cell as a hover would
   ...(props.chart.kind === 'heatmap' && { onHover: hover, onSelect: () => {} }),
 })
+
+// Each kind to its maker, so vue-tsc checks the options against the core's API (dither-charts.d.ts)
+function draw(DC: DitherCore): Visual {
+  const o = options()
+  switch (o.kind) {
+    case 'bar':
+    case 'line':
+    case 'area':
+      return DC.chart(o)
+    case 'trend':
+      return DC.trend(o)
+    case 'donut':
+      return DC.donut(o)
+    case 'gauge':
+      return DC.gauge(o)
+    case 'progress':
+      return DC.progress(o)
+    case 'heatmap':
+      return DC.heatmap(o)
+  }
+}
 
 // Where a heatmap's cell sits in the viewport: its centre, its top
 function place(row: number, column: number) {
@@ -266,8 +276,7 @@ onMounted(() => {
   }
   followRatio()
   const { kind } = props.chart
-  const make = kind === 'bar' || kind === 'line' || kind === 'area' ? DC.chart : DC[kind]
-  visual = make(options())
+  visual = draw(DC)
   // The core reads prefers-reduced-motion only, not the site's pause button
   if (reduced.value) visual.settled = true
   host.value!.append(visual.el)
