@@ -35,6 +35,20 @@ migrates `[Unreleased]` into that file and empties this one, see
   of the gwm article and its Open Graph image, and the poster on the wall of the
   `/apps` hero, take gwm's tile too.
 
+### Changed
+
+- **Modals and popups in the look of the Herdr modals**
+  ([#167](https://github.com/kbrdn1/kbrdn.dev/issues/167)). The picture viewer
+  (an article's pictures, `/experience`'s illustrations) is now a card with a
+  60px head over a pixel dither band tinted by its context (the blog's blue in
+  an article, the site's orange elsewhere): a mark, the picture's title, its
+  file name and size in mono, the close button with its key. The picture sits
+  in a block, Esc is recalled in the foot, and a picture that fails to load is
+  explained. It opens with a fade and a 6px rise in 180ms; on the way out the
+  card leaves before the veil, and the focus is given back at once. The cookie
+  preferences and banner and the home's profile cards take the same head, and
+  the logo menu opens with the same motion.
+
 ### Fixed
 
 - **Google Analytics page views on client-side navigation.** GA's own
@@ -75,6 +89,16 @@ migrates `[Unreleased]` into that file and empties this one, see
   secret, a changed host key or an unreachable VPS each fail with their reason
   in the log, the host, its resolved addresses and its key's fingerprint
   masked as `***`.
+- **Focus and motion in the overlays**
+  ([#167](https://github.com/kbrdn1/kbrdn.dev/issues/167)). The site's pause
+  control now stills a modal's veil too (`::backdrop`). Escape in the mobile
+  menu and in the logo menu left the focus on the page's body; it goes back to
+  the menu's button. The article's mobile contents close on Escape too,
+  focusing their button. Closing the picture viewer gives the focus back to the
+  picture's button, in Safari too (a click does not focus a button there), and
+  the viewer is named by its visible title, never by an empty alt. For the same
+  reason, closing the cookie preferences opened with the mouse in Safari left
+  the focus on the body; it goes back to the footer's "Cookies" button.
 
 ## Past releases
 

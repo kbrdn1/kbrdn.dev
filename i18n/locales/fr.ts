@@ -733,6 +733,9 @@ export default {
   lightbox: {
     open: 'Agrandir l’illustration : {name}',
     close: 'Fermer',
+    untitled: 'Image',
+    error: 'L’image n’a pas pu être chargée.',
+    openFile: 'Ouvrir le fichier',
   },
 
   blog: {

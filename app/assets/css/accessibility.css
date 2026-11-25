@@ -27,11 +27,13 @@ html {
    Reduced Motion Support
    ═══════════════════════════════════════════════════ */
 
-/* Disable all animations and transitions for users who prefer reduced motion */
+/* Disable all animations and transitions for users who prefer reduced motion. ::backdrop
+   too: a native dialog's veil (UiLightbox) is no element's descendant */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
-  *::after {
+  *::after,
+  *::backdrop {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -43,7 +45,8 @@ html {
    from the page, not only from the system setting (RGAA 13.8) */
 html.motion-paused *,
 html.motion-paused *::before,
-html.motion-paused *::after {
+html.motion-paused *::after,
+html.motion-paused *::backdrop {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;

@@ -529,6 +529,40 @@
   .ticks {
     mask-image: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 6px);
   }
+
+  /* The pixel dither band under a modal's or a card's head, after Kylian's Herdr modals: one
+     128px tile (public/images/dither-band.svg) repeated on x, so no width sees it end, tinted
+     by --band (the context's colour) at Herdr's strengths. The card's radius and overflow clip
+     it at the arc, inside the border, corners filled. The content sits over it */
+  .dither-band {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .dither-band::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: color-mix(in srgb, var(--band, var(--color-primary-500)) 30%, transparent);
+    mask: url("/images/dither-band.svg") 0 0 / 128px 80px repeat-x;
+  }
+
+  :is(.dark, .blur) .dither-band::before {
+    background: color-mix(in srgb, var(--band, var(--color-primary-500)) 42%, transparent);
+  }
+
+  /* The grey of the mono lines one step further from the band. Over its densest dots the
+     site's --label falls under 4.5:1: 4.39 in light on a #f5f5f5 panel (500), 3.49 in dark
+     on the blog's blue (400). 600 holds 5.17:1 at worst in light, 300 4.59:1 in dark */
+  .dither-band {
+    --label: var(--color-neutral-600);
+  }
+
+  :is(.dark, .blur) .dither-band {
+    --label: var(--color-neutral-300);
+  }
 }
 
 /* Scrolls sideways without a scrollbar: strips, tag rows, the table of contents. Not in
