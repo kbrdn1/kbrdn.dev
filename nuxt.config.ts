@@ -1,5 +1,13 @@
+import { readFileSync } from 'node:fs'
 import pkg from './package.json'
 import { LOCALIZED_PAGES } from './shared/localizedPages'
+
+// Monocode's MIT notice, from the head of the dither charts' core: the minifier drops every
+// comment, legal ones included, so the notice goes back on the chunk that carries the core
+const MONOCODE_NOTICE = /MIT License[\s\S]*?SOFTWARE\.\n/.exec(
+  readFileSync(new URL('./app/utils/dither-charts.js', import.meta.url), 'utf8'),
+)?.[0]
+if (!MONOCODE_NOTICE) throw new Error('app/utils/dither-charts.js: Monocode MIT notice not found')
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -62,6 +70,20 @@ export default defineNuxtConfig({
     },
   },
 
+  vite: {
+    build: {
+      rolldownOptions: {
+        output: {
+          // After minification, on the chunk holding app/utils/dither-charts.js only
+          postBanner: (chunk) =>
+            chunk.moduleIds.some((id) => id.endsWith('/app/utils/dither-charts.js'))
+              ? `/*! dither-charts.js, Monocode's visuals (github.com/hardbeat920/monocode)\n${MONOCODE_NOTICE}*/`
+              : '',
+        },
+      },
+    },
+  },
+
   // The hero's easter egg (HomeWalkout) is imported on its fifth click: no prefetch hint for its
   // chunk and its styles, which every visit to the home would download for an egg few hatch
   hooks: {
@@ -81,6 +103,13 @@ export default defineNuxtConfig({
     '/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/en/apps/tv-kylian': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
     '/en/apps/tv-kylian/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
+    // Nuxt Content's database dumps, which the browser downloads on the first client-side
+    // navigation to a content page. Their address carries the content's checksum (?v=), so a
+    // new build is a new address: cached for good, by the browser and by Cloudflare (whose
+    // Cache Rule makes them eligible, docs/CONFIGURATION.md)
+    '/__nuxt_content/*/sql_dump.txt': {
+      headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+    },
   },
 
   // Reference to main CSS file with Claude Dark theme
@@ -163,7 +192,11 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        // 180 px, opaque and square to the edge: iOS draws its own rounded mask over it
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      ],
     },
   },
 

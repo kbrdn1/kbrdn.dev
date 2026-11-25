@@ -1,3 +1,177 @@
+<script lang="ts">
+// The cells are drawn by one WebGL2 context shared by every hover canvas of the page (a
+// browser keeps about sixteen alive, a blog list has more cards than that): all of a card's
+// cells in one instanced call, then copied into the card's own 2D canvas. A 2D path rebuilt
+// from every cell on every frame made the big cards lag (/apps: 17k cells, issue #153); one
+// drawImage per cell is slower still. No WebGL2 (hardware acceleration off): that 2D path.
+const SHAPES = ['square', 'circle', 'diamond', 'triangle']
+
+// Per cell: x, y (device px), alpha (negative: the triangle flipped), size (fraction of the cell)
+const VERTEX = `#version 300 es
+in vec4 aCell;
+uniform vec2 uView;
+uniform float uCell;
+out vec2 vQ;
+out float vHalf;
+out float vAlpha;
+void main() {
+  vec2 corner = vec2(gl_VertexID & 1, gl_VertexID >> 1);
+  vQ = (corner - 0.5) * uCell;
+  vHalf = min(aCell.w, 1.0) * uCell * 0.5;
+  vAlpha = aCell.z;
+  vec2 p = (aCell.xy + corner * uCell) / uView * 2.0 - 1.0;
+  // An unlit cell lands outside the clip space: nothing to rasterise
+  gl_Position = aCell.w > 0.0 ? vec4(p.x, -p.y, 0.0, 1.0) : vec4(2.0, 2.0, 2.0, 1.0);
+}`
+
+// Signed distance to the shape's edge in device px, negative inside, the same shapes the 2D
+// path drew: a square, the circle and the diamond inscribed in it, the half of it under a
+// diagonal that alternates in a checkerboard. Half a pixel of it is the antialiasing.
+const FRAGMENT = `#version 300 es
+precision mediump float;
+in vec2 vQ;
+in float vHalf;
+in float vAlpha;
+uniform int uShape;
+uniform vec3 uColor;
+out vec4 color;
+void main() {
+  vec2 a = abs(vQ);
+  float d = max(a.x, a.y) - vHalf;
+  if (uShape == 1) d = length(vQ) - vHalf;
+  else if (uShape == 2) d = (a.x + a.y - vHalf) * 0.7071;
+  else if (uShape == 3) d = max(d, -((vAlpha < 0.0 ? -vQ.x : vQ.x) + vQ.y) * 0.7071);
+  float alpha = clamp(0.5 - d, 0.0, 1.0) * abs(vAlpha);
+  color = vec4(uColor * alpha, alpha);
+}`
+
+interface CellRenderer {
+  gl: WebGL2RenderingContext
+  uniforms: Record<'view' | 'cell' | 'shape' | 'color', WebGLUniformLocation | null>
+}
+
+let shared: CellRenderer | null | undefined // null: no WebGL2 on this page
+
+function cellRenderer(): CellRenderer | null {
+  if (shared !== undefined) return shared
+  shared = null
+  const canvas = document.createElement('canvas')
+  const gl = canvas.getContext('webgl2', { antialias: false, depth: false, stencil: false })
+  if (!gl) return null
+  const program = gl.createProgram()
+  for (const [type, source] of [
+    [gl.VERTEX_SHADER, VERTEX],
+    [gl.FRAGMENT_SHADER, FRAGMENT],
+  ] as const) {
+    const shader = gl.createShader(type)
+    if (!shader) return null
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
+    gl.attachShader(program, shader)
+  }
+  gl.linkProgram(program)
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null
+  gl.useProgram(program)
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  const cell = gl.getAttribLocation(program, 'aCell')
+  gl.enableVertexAttribArray(cell)
+  gl.vertexAttribPointer(cell, 4, gl.FLOAT, false, 0, 0)
+  gl.vertexAttribDivisor(cell, 1)
+  gl.clearColor(0, 0, 0, 0)
+  // A lost context (GPU reset, too many contexts) is rebuilt on the next frame
+  canvas.addEventListener('webglcontextlost', () => (shared = undefined))
+  const uniform = (name: string) => gl.getUniformLocation(program, name)
+  return (shared = {
+    gl,
+    uniforms: {
+      view: uniform('uView'),
+      cell: uniform('uCell'),
+      shape: uniform('uShape'),
+      color: uniform('uColor'),
+    },
+  })
+}
+
+/** Draws `cells` (4 floats each, see VERTEX) over the whole of `ctx`'s canvas, replacing
+ * what was there. `cell` and the cells' positions in device px. */
+function drawCells(
+  ctx: CanvasRenderingContext2D,
+  cells: Float32Array,
+  cell: number,
+  shape: string,
+  rgb: [number, number, number],
+) {
+  const { width, height } = ctx.canvas
+  // A parent laid out at 0 (a list row held at height 0 while it enters): nothing to draw,
+  // and a canvas of size 0 makes drawImage throw on every frame
+  if (!width || !height) return
+  const renderer = cellRenderer()
+  if (!renderer) return drawPaths(ctx, cells, cell, shape, rgb)
+  const { gl, uniforms } = renderer
+  const target = gl.canvas as HTMLCanvasElement
+  // Two cards can animate at once (one fading out under the next): resized for each
+  if (target.width !== width || target.height !== height) {
+    target.width = width
+    target.height = height
+  }
+  gl.viewport(0, 0, width, height)
+  gl.clear(gl.COLOR_BUFFER_BIT)
+  gl.uniform2f(uniforms.view, width, height)
+  gl.uniform1f(uniforms.cell, cell)
+  gl.uniform1i(uniforms.shape, SHAPES.indexOf(shape))
+  gl.uniform3f(uniforms.color, ...rgb)
+  gl.bufferData(gl.ARRAY_BUFFER, cells, gl.STREAM_DRAW)
+  gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, cells.length / 4)
+  ctx.globalCompositeOperation = 'copy'
+  ctx.drawImage(target, 0, 0)
+}
+
+// Without WebGL2, the 2D path the cells were always drawn with: one per alpha level, every
+// lit cell added to it. It lags on a big card, but the effect is there.
+function drawPaths(
+  ctx: CanvasRenderingContext2D,
+  cells: Float32Array,
+  cell: number,
+  shape: string,
+  rgb: [number, number, number],
+) {
+  const paths = new Map<number, Path2D>()
+  for (let i = 0; i < cells.length; i += 4) {
+    const s = Math.min(1, cells[i + 3]!) * cell
+    if (s <= 0) continue
+    const alpha = cells[i + 2]!
+    let path = paths.get(Math.abs(alpha))
+    if (!path) paths.set(Math.abs(alpha), (path = new Path2D()))
+    const x0 = cells[i]! + (cell - s) / 2
+    const y0 = cells[i + 1]! + (cell - s) / 2
+    if (shape === 'circle') {
+      path.moveTo(x0 + s, y0 + s / 2)
+      path.arc(x0 + s / 2, y0 + s / 2, s / 2, 0, Math.PI * 2)
+    } else if (shape === 'diamond') {
+      path.moveTo(x0 + s / 2, y0)
+      path.lineTo(x0 + s, y0 + s / 2)
+      path.lineTo(x0 + s / 2, y0 + s)
+      path.lineTo(x0, y0 + s / 2)
+      path.closePath()
+    } else if (shape === 'triangle') {
+      path.moveTo(alpha < 0 ? x0 : x0 + s, y0)
+      path.lineTo(x0 + s, y0 + s)
+      path.lineTo(x0, y0 + s)
+      path.closePath()
+    } else {
+      path.rect(x0, y0, s, s)
+    }
+  }
+  ctx.globalCompositeOperation = 'source-over'
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+  const [r, g, b] = rgb.map((c) => Math.round(c * 255))
+  for (const [alpha, path] of paths) {
+    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`
+    ctx.fill(path)
+  }
+}
+</script>
+
 <script setup lang="ts">
 // Hover pixels, after hexagoncircle's <pixel-canvas> (codepen.io/hexagoncircle/pen/KwPpdBZ):
 // when the pointer enters the parent, or keyboard focus lands in it, cells of the page's
@@ -11,10 +185,6 @@ const ALPHAS = [0.06, 0.12, 0.18]
 const FRAME_MS = 1000 / 60
 
 interface Pixel {
-  x: number
-  y: number
-  level: number
-  flip: boolean
   size: number // fraction of GAP
   minSize: number
   maxSize: number
@@ -40,32 +210,31 @@ onMounted(() => {
 
   const shape = ditherShape()
   let pixels: Pixel[] = []
-  let width = 0
-  let height = 0
+  let cells = new Float32Array() // per pixel, the 4 floats drawCells() reads
+  let cell = 0 // GAP in device px
   let dirty = true // size changed since the pixels were laid out
   let frame = 0
   let lastFrame = 0
   let mode: 'appear' | 'disappear' = 'disappear'
-  const fills: string[] = []
+  let rgb: [number, number, number] = [0, 0, 0]
 
   function layout(originX: number, originY: number) {
     const rect = parent!.getBoundingClientRect()
     const dpr = Math.min(2, window.devicePixelRatio || 1)
-    width = rect.width
-    height = rect.height
+    const width = rect.width
+    const height = rect.height
     el!.width = Math.round(width * dpr)
     el!.height = Math.round(height * dpr)
-    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0)
+    cell = GAP * dpr
     pixels = []
+    const data: number[] = []
     const step = Math.random() * 4 + (width + height) * 0.01
     for (let y = 0, j = 0; y < height; y += GAP, j++) {
       for (let x = 0, i = 0; x < width; x += GAP, i++) {
         const minSize = 0.3
+        const alpha = ALPHAS[Math.floor(Math.random() * ALPHAS.length)]!
+        data.push(x * dpr, y * dpr, (i + j) % 2 === 1 ? -alpha : alpha, 0)
         pixels.push({
-          x,
-          y,
-          level: Math.floor(Math.random() * ALPHAS.length),
-          flip: (i + j) % 2 === 1,
           size: 0,
           minSize,
           maxSize: minSize + Math.random() * 0.6,
@@ -80,40 +249,13 @@ onMounted(() => {
         })
       }
     }
+    cells = new Float32Array(data)
     dirty = false
   }
 
-  // One path per alpha level, every pixel of that level added to it, one fill each.
   function draw() {
-    ctx!.clearRect(0, 0, width, height)
-    for (let level = 0; level < ALPHAS.length; level++) {
-      ctx!.beginPath()
-      for (const p of pixels) {
-        if (p.level !== level || p.size <= 0) continue
-        const s = Math.min(1, p.size) * GAP
-        const x0 = p.x + (GAP - s) / 2
-        const y0 = p.y + (GAP - s) / 2
-        if (shape === 'circle') {
-          ctx!.moveTo(x0 + s, y0 + s / 2)
-          ctx!.arc(x0 + s / 2, y0 + s / 2, s / 2, 0, Math.PI * 2)
-        } else if (shape === 'diamond') {
-          ctx!.moveTo(x0 + s / 2, y0)
-          ctx!.lineTo(x0 + s, y0 + s / 2)
-          ctx!.lineTo(x0 + s / 2, y0 + s)
-          ctx!.lineTo(x0, y0 + s / 2)
-          ctx!.closePath()
-        } else if (shape === 'triangle') {
-          ctx!.moveTo(p.flip ? x0 : x0 + s, y0)
-          ctx!.lineTo(x0 + s, y0 + s)
-          ctx!.lineTo(x0, y0 + s)
-          ctx!.closePath()
-        } else {
-          ctx!.rect(x0, y0, s, s)
-        }
-      }
-      ctx!.fillStyle = fills[level]!
-      ctx!.fill()
-    }
+    for (let i = 0; i < pixels.length; i++) cells[i * 4 + 3] = pixels[i]!.size
+    drawCells(ctx!, cells, cell, shape, rgb)
   }
 
   function appear(p: Pixel) {
@@ -166,7 +308,7 @@ onMounted(() => {
     probe.fillStyle = getComputedStyle(el!).color
     probe.fillRect(0, 0, 1, 1)
     const [r = 0, g = 0, b = 0] = probe.getImageData(0, 0, 1, 1).data
-    ALPHAS.forEach((a, i) => (fills[i] = `rgba(${r}, ${g}, ${b}, ${a})`))
+    rgb = [r / 255, g / 255, b / 255]
   }
 
   function start(originX: number, originY: number) {

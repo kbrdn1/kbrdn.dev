@@ -276,6 +276,14 @@ html[data-theme-switch] *::after {
   translate: 0 -0.5em;
 }
 
+/* A popup's way in, as the Herdr modals' card (6px in 180ms): the profile cards (Socials) */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
 /* Tab switch transition (Skills) */
 .tab-switch-enter {
   transition:

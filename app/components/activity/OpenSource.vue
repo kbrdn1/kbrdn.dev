@@ -1,10 +1,11 @@
 <script setup lang="ts">
 // The open source work, shown on /experience and /activity. A card of figures (projects,
-// contributions and reports: a count, a tick bar coloured by status, a legend), then the
+// contributions and reports: a count, a dithered ring of its statuses, a legend), then the
 // lists one at a time, after disarto's integrations list: a segmented control and a search
 // field, rows with an icon tile, a title and mono meta, a status tag, the summary, the
 // install channels as pills and the links in underlined mono.
 import { useI18n } from '#imports'
+import { ditherColor, type DitherColor } from '~/components/ui/DitherChart.vue'
 
 const props = defineProps<{ headingId: string }>()
 
@@ -58,13 +59,14 @@ const UPSTREAM_ICON: Record<string, string> = {
   review: 'i-lucide-git-pull-request',
   report: 'i-lucide-circle-dot',
 }
-const STATUS_BAR: Record<string, string> = {
-  released: 'bg-green-600 dark:bg-green-500',
-  merged: 'bg-green-600 dark:bg-green-500',
-  inDevelopment: 'bg-primary-500',
-  review: 'bg-primary-500',
-  archived: 'bg-neutral-400 dark:bg-neutral-600',
-  report: 'bg-sky-500',
+// Status colours, the ring's and its legend's
+const STATUS_COLOR: Record<string, DitherColor> = {
+  released: 'positive',
+  merged: 'positive',
+  inDevelopment: 'accent',
+  review: 'accent',
+  archived: 'muted',
+  report: 'series2',
 }
 // Status tag colours: the tag tints itself from its text colour
 const STATUS_CLASS: Record<string, string> = {
@@ -101,14 +103,24 @@ const reference = (url: string) =>
       >
         <div v-for="group in groups" :key="group.key" class="sm:px-5 sm:first:pl-0 sm:last:pr-0">
           <p class="eyebrow">{{ t(`experiencePage.openSource.${group.key}`) }}</p>
-          <p class="mt-1 text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
-            <UiRollingNumber :value="group.statuses.length" />
-          </p>
-          <div class="mt-3 flex h-3 gap-1" aria-hidden="true">
-            <span
-              v-for="(status, i) in group.statuses"
-              :key="i"
-              :class="cn('ticks h-full flex-1', STATUS_BAR[status])"
+          <div class="mt-1 flex items-center justify-between gap-4">
+            <p class="text-4xl tracking-tight text-neutral-900 dark:text-neutral-100">
+              <UiRollingNumber :value="group.statuses.length" />
+            </p>
+            <!-- The statuses' shares as a ring, the legend saying them in words. No hover: it
+                 writes the status in the hole, too narrow at this size -->
+            <UiDitherChart
+              class="pointer-events-none shrink-0"
+              :chart="{
+                kind: 'donut',
+                size: 80,
+                legend: false,
+                slices: tally(group.statuses).map(([status, count]) => ({
+                  label: t(`experiencePage.openSource.status.${status}`),
+                  value: count,
+                  color: STATUS_COLOR[status],
+                })),
+              }"
             />
           </div>
           <ul class="mt-3 space-y-1">
@@ -117,7 +129,11 @@ const reference = (url: string) =>
               :key="status"
               class="eyebrow flex items-center gap-2"
             >
-              <span :class="cn('size-1.5 rounded-full', STATUS_BAR[status])" aria-hidden="true" />
+              <span
+                class="size-1.5 rounded-full"
+                :style="{ backgroundColor: ditherColor(STATUS_COLOR[status]!) }"
+                aria-hidden="true"
+              />
               {{ t(`experiencePage.openSource.status.${status}`) }}:
               <span class="text-neutral-900 dark:text-neutral-100">{{ count }}</span>
             </li>

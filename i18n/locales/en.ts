@@ -218,8 +218,11 @@ export default {
     },
     tabsLabel: 'Contribution view',
     viewProfile: 'View GitHub profile',
-    // The tooltip: "3 on Mon, Oct 12, 2026"
-    on: 'on',
+    // A day's tooltip: "3 contributions · Wed, Nov 18, 2026" (0, 1, more)
+    readout: 'contributions | contribution | contributions',
+    // For screen readers: a calendar, how to read it day by day, and the sparkline's months
+    calendarLabel: '{count} contributions, {period}. Arrow keys step through the days.',
+    trendLabel: 'Contributions per month: {values}',
   },
 
   // Theme
@@ -733,6 +736,9 @@ export default {
   lightbox: {
     open: 'Enlarge the illustration: {name}',
     close: 'Close',
+    untitled: 'Picture',
+    error: 'The picture could not be loaded.',
+    openFile: 'Open the file',
   },
 
   blog: {

@@ -2,7 +2,8 @@
 // command types itself, keys lighting up, a new worktree joins the list, the selection bar
 // walks down to it, it turns dirty and clean again; a second command removes it and the bar
 // walks back up. Coffee steams by the keyboard, the screen's glow spills on the desk, gwm's
-// logo hangs on the wall.
+// logo hangs on the wall, on its dithered tile.
+import { BAYER_4 } from '../dither'
 import { INVADERS } from '../invaders'
 import {
   ease,
@@ -212,14 +213,24 @@ function key(art: Raster, i: number, tones: Tones) {
 
 // ── What never moves
 
+// gwm's tile (public/images/tiles/gwm-cli.svg): a ramp from #505050 at the top left to #262626
+// at the bottom right, in 4 tones dithered between neighbours through the site's Bayer matrix
+const TILE_TONES = [0, 1, 2, 3].map((k) => mix('#505050', '#262626', k / 3))
+const TILE = 20
+function tile(x: number, y: number): Rgb {
+  const v = ((x + y) / (2 * TILE - 2)) * 3
+  const k = Math.floor(v)
+  return TILE_TONES[k < 3 && v - k > BAYER_4[((y & 3) << 2) | (x & 3)]! + 1 / 32 ? k + 1 : k]!
+}
+
 function poster(art: Raster, c: Look) {
-  // A frame on the wall, a dark canvas in it
+  // A frame on the wall, gwm's tile in it, in the frame's shadow along its top and left
   art.box(7, 12, 24, 24, c.frame)
-  art.rect(9, 14, 20, 20, '#1f2125')
+  for (let y = 0; y < TILE; y++) for (let x = 0; x < TILE; x++) art.set(9 + x, 14 + y, tile(x, y))
   art.rect(9, 14, 20, 1, '#16181b')
   art.rect(9, 14, 1, 20, '#16181b')
   // gwm's logo: the trunk from the repository, a branch to each worktree; each node parted
-  // from the lines by the canvas, lit on its top left
+  // from the lines by the tile itself, lit on its top left
   const [lx, ly] = [12, 16]
   art.rect(lx + 1, ly + 2, 2, 13, '#e0e0e0')
   art.rect(lx + 1, ly + 7, 12, 2, '#e0e0e0')
@@ -229,7 +240,8 @@ function poster(art: Raster, c: Look) {
     [10, 5, '#86e89a'],
     [10, 11, PAL.orange],
   ] as const) {
-    art.rect(lx + x - 1, ly + y - 1, 7, 7, '#1f2125')
+    for (let j = y - 1; j <= y + 5; j++)
+      for (let i = x - 1; i <= x + 5; i++) art.set(lx + i, ly + j, tile(lx + i - 9, ly + j - 14))
     art.box(lx + x, ly + y, 5, 5, shades(color, 0.3, 0.45))
   }
 }
