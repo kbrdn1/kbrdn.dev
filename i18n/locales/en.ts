@@ -736,6 +736,9 @@ export default {
   lightbox: {
     open: 'Enlarge the illustration: {name}',
     close: 'Close',
+    untitled: 'Picture',
+    error: 'The picture could not be loaded.',
+    openFile: 'Open the file',
   },
 
   blog: {
