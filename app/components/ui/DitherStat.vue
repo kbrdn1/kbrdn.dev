@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // A figure after Monocode's stat: its label, its value rolling in, then a signed change if any
 // (Monocode's delta: ▲ or ▼ in the good or the bad colour) and its trend as a dithered sparkline.
-// Numbers come already written in the page's language: this shows them as given.
+// Numbers come already written by the caller: this shows them as given.
 defineProps<{
   label: string
   value: string

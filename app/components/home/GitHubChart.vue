@@ -176,8 +176,9 @@ const canExpandMonths = computed(() => {
   return monthlyData.value.length > DEFAULT_MONTHS
 })
 
-// Stats follow the tab: the rolling year for "recent", every fetched year otherwise. Written in
-// the page's language: "27,2" in French
+// Stats follow the tab: the rolling year for "recent", every fetched year otherwise. Written as
+// before the dither charts: the total in the browser's own format ("10,322" in English), the
+// average with a point ("28.0")
 const stats = computed(() => {
   const data = contributions.value
   if (!data) return { total: '0', avgPerDay: '0' }
@@ -192,11 +193,8 @@ const stats = computed(() => {
   )
 
   return {
-    total: total.toLocaleString(locale.value),
-    avgPerDay: (totalDays > 0 ? total / totalDays : 0).toLocaleString(locale.value, {
-      minimumFractionDigits: totalDays > 0 ? 1 : 0,
-      maximumFractionDigits: 1,
-    }),
+    total: total.toLocaleString(),
+    avgPerDay: totalDays > 0 ? (total / totalDays).toFixed(1) : '0',
   }
 })
 
@@ -367,7 +365,7 @@ function switchTab(step: 1 | -1) {
                   {{ calendar.label }}
                 </p>
                 <p class="text-xs text-neutral-400 font-mono">
-                  {{ calendar.total.toLocaleString(locale) }} {{ t('github.contributions') }}
+                  {{ calendar.total.toLocaleString() }} {{ t('github.contributions') }}
                 </p>
               </div>
 
@@ -410,7 +408,7 @@ function switchTab(step: 1 | -1) {
                   <span class="text-neutral-600">/ {{ month.year }}</span>
                 </p>
                 <p class="text-xs text-neutral-400 font-mono">
-                  {{ month.contributions.toLocaleString(locale) }} {{ t('github.contributions') }}
+                  {{ month.contributions.toLocaleString() }} {{ t('github.contributions') }}
                 </p>
               </div>
 
