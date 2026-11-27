@@ -4,7 +4,7 @@
 # ============================================
 
 # Même version de Bun que la CI (ci.yml) et le devShell (flake.nix)
-FROM oven/bun:1.4.4-alpine AS base
+FROM oven/bun:1.4.5-alpine AS base
 WORKDIR /app
 
 # ============================================
